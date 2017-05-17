@@ -1,6 +1,6 @@
-# OpenWhisk Utilities
+# OpenWhisk Deployment for Kubernetes
 
-Shared utilities used across Apache OpenWhisk project repositories.
+Scripts and configuration files for deploying Apache OpenWhisk to a local Kubernetes installation.
 
 ### Issues
 
