@@ -56,7 +56,8 @@ Because of the limitations mentioned above, all requirments to deploy OpenWhisk
 on Kubernetes need to be met.
 
 **Kubernetes**
-* Kube version 1.5.0-1.5.5
+* Kubernetes version 1.5.0-1.5.5
+  - https://github.com/kubernetes/kubernetes
 * Kubernetes has [KubeDNS](https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/) deployed
 * (Optional) Kubernetes Pods can receive public addresses.
   This will be required if you wish to reach Nginx from outside
