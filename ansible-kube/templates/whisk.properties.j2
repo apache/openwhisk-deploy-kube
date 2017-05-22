@@ -1,0 +1,135 @@
+openwhisk.home={{ openwhisk_home }}
+
+python.27=python
+use.cli.download=false
+nginx.conf.dir={{ nginx_conf_dir }}
+testing.auth={{ openwhisk_home }}/ansible/files/auth.guest
+vcap.services.file=
+
+whisk.logs.dir={{ whisk_logs_dir }}
+whisk.version.name={{ whisk_version_name }}
+whisk.version.date={{ whisk.version.date }}
+whisk.version.buildno={{ docker_image_tag }}
+whisk.ssl.cert={{ openwhisk_home }}/ansible/roles/nginx/files/openwhisk-cert.pem
+whisk.ssl.key={{ openwhisk_home }}/ansible/roles/nginx/files/openwhisk-key.pem
+whisk.ssl.challenge=openwhisk
+
+{#
+ # the whisk.api.host.name must be a name that can resolve form inside an action container,
+ # or an ip address reachable from inside the action container.
+ #
+ # the whisk.api.localhost.name must be a name that resolves from the client; it is either the
+ # whisk_api_host_name if it is defined, an environment specific localhost name, or the default
+ # localhost name.
+ #
+ # the whisk.api.vanity.subdomain.parts indicates how many conforming parts the router is configured to
+ # match in the subdomain, which it rewrites into a namespace; each part must match ([a-zA-Z0-9]+)
+ # with parts separated by a single dash.
+ #}
+whisk.api.host.proto={{ whisk_api_host_proto | default('https') }}
+whisk.api.host.port={{ whisk_api_host_port | default('443') }}
+whisk.api.host.name={{ whisk_api_host_name | default(groups['edge'] | first) }}
+whisk.api.localhost.name={{ whisk_api_localhost_name | default(whisk_api_host_name) | default(whisk_api_localhost_name_default) }}
+whisk.api.vanity.subdomain.parts=1
+
+runtimes.manifest={{ runtimesManifest | to_json }}
+defaultLimits.actions.invokes.perMinute={{ defaultLimits.actions.invokes.perMinute }}
+defaultLimits.actions.invokes.concurrent={{ defaultLimits.actions.invokes.concurrent }}
+defaultLimits.triggers.fires.perMinute={{ defaultLimits.triggers.fires.perMinute }}
+defaultLimits.actions.invokes.concurrentInSystem={{ defaultLimits.actions.invokes.concurrentInSystem }}
+defaultLimits.actions.sequence.maxLength={{ defaultLimits.actions.sequence.maxLength }}
+
+{% if limits is defined %}
+limits.actions.invokes.perMinute={{ limits.actions.invokes.perMinute }}
+limits.actions.invokes.concurrent={{ limits.actions.invokes.concurrent }}
+limits.actions.invokes.concurrentInSystem={{ limits.actions.invokes.concurrentInSystem }}
+limits.triggers.fires.perMinute={{ limits.triggers.fires.perMinute }}
+{% endif %}
+
+# DNS host resolution
+consulserver.host={{ consul_host }}
+invoker.hosts={{ invoker_hosts | join(",") }}
+controller.host={{ controller_host }}
+kafka.host={{ kafka_host }}
+zookeeper.host={{ zookeeper_host }}
+edge.host={{ nginx_host }}
+loadbalancer.host={{ controller_host }}
+router.host={{ nginx_host }}
+
+{#
+ # replaced host entries
+ #
+ # consulserver.host={{ groups["consul_servers"]|first }}
+ # invoker.hosts={{ groups["invokers"] | join(",") }}
+ # controller.host={{ groups["controllers"]|first }}
+ # kafka.host={{ groups["kafka"]|first }}
+ # zookeeper.host={{ groups["kafka"]|first }}
+ # edge.host={{ groups["edge"]|first }}
+ # loadbalancer.host={{ groups["controllers"]|first }}
+ # router.host={{ groups["edge"]|first }}
+ #}
+
+edge.host.apiport=443
+zookeeper.host.port={{ zookeeper.port }}
+kafka.host.port={{ kafka.port }}
+kafkaras.host.port={{ kafka.ras.port }}
+controller.host.port={{ controller.port }}
+loadbalancer.host.port={{ controller.port }}
+consul.host.port4={{ consul.port.http }}
+consul.host.port5={{ consul.port.server }}
+invoker.hosts.baseport={{ invoker_port }}
+
+{#
+ # ports that are replaced
+ # using Kube stateful sets, we are able to get
+ # one DNS entry per IP address. Unlike the usual
+ # Kube DNS entries, we are unable to do port mappings.
+ # So we need to use the port of the invoker instance.
+ #
+ #invoker.hosts.baseport={{ invoker.port }}
+ #}
+
+invoker.container.network=bridge
+invoker.container.policy={{ invoker_container_policy_name | default()}}
+invoker.numcore={{ invoker.numcore }}
+invoker.coreshare={{ invoker.coreshare }}
+invoker.serializeDockerOp={{ invoker.serializeDockerOp }}
+invoker.serializeDockerPull={{ invoker.serializeDockerPull }}
+invoker.useRunc={{ invoker_use_runc | default(invoker.useRunc) }}
+
+consulserver.docker.endpoint={{ groups["consul_servers"]|first }}:{{ docker.port }}
+edge.docker.endpoint={{ groups["edge"]|first }}:{{ docker.port }}
+kafka.docker.endpoint={{ groups["kafka"]|first }}:{{ docker.port }}
+main.docker.endpoint={{ groups["controllers"]|first }}:{{ docker.port }}
+
+# configure to use the public docker images
+docker.image.prefix=openwhisk
+
+docker.registry={{ docker_registry }}
+#docker.image.prefix={{ docker_image_prefix }}
+#use.docker.registry=false
+docker.port={{ docker.port }}
+docker.timezone.mount=
+docker.image.tag={{ docker_image_tag }}
+docker.tls.cmd=
+docker.addHost.cmd=
+docker.dns.cmd={{ docker_dns }}
+docker.restart.opts={{ docker.restart.policy }}
+
+db.provider={{ db_provider }}
+db.protocol={{ db_protocol }}
+db.host={{ db_host }}
+db.port={{ db_port }}
+db.username={{ db_username }}
+db.password={{ db_password }}
+db.prefix={{ db_prefix }}
+db.whisk.actions={{ db.whisk.actions }}
+db.whisk.activations={{ db.whisk.activations }}
+db.whisk.auths={{ db.whisk.auth }}
+
+apigw.auth.user={{apigw_auth_user}}
+apigw.auth.pwd={{apigw_auth_pwd}}
+apigw.host={{apigw_host}}
+apigw.host.v2={{apigw_host_v2}}
+
+loadbalancer.activationCountBeforeNextInvoker={{ loadbalancer_activation_count_before_next_invoker | default(10) }}

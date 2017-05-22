@@ -1,0 +1,28 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: zookeeper
+  namespace: openwhisk
+  labels:
+    name: zookeeper
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: zookeeper
+    spec:
+      restartPolicy: Always
+
+      containers:
+      - name: zookeeper
+        image: zookeeper:3.4
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: zookeeper
+          containerPort: 2181
+        - name: server
+          containerPort: 2888
+        - name: leader-election
+          containerPort: 3888

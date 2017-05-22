@@ -1,0 +1,53 @@
+---
+# This role starts a nginx component
+
+- name: ensure nginx config directory exists
+  file:
+    path: "{{ nginx_conf_dir }}"
+    state: directory
+
+- name: copy template from local to remote in nginx config directory
+  template:
+    src: nginx.conf.j2
+    dest: "{{ nginx_conf_dir }}/nginx.conf"
+
+- name: copy cert files from local to remote in nginx config directory
+  copy:
+    src: "files/"
+    dest: "{{ nginx_conf_dir }}"
+
+- name: create configmap
+  shell: "kubectl create configmap nginx --from-file={{ nginx_conf_dir }}/nginx.conf --from-file={{ nginx_conf_dir }}/genssl.sh --from-file={{ nginx_conf_dir }}/openwhisk-key.pem --from-file={{ nginx_conf_dir }}/openwhisk-cert.pem --from-file={{ nginx_conf_dir }}/openwhisk-request.csr"
+
+- name: create nginx pod
+  shell: "kubectl create -f {{kube_pod_dir}}/nginx.yml"
+
+# TODO Rebplace this with a proper uri request once certs have been configured correctly
+- name: wait until nginx is up and running
+  shell: "curl -k https://{{ nginx_host }}:{{ nginx.port.api }}"
+  register: result
+  until: (result.rc == 0) and (result.stdout != "")
+  retries: 20
+  delay: 10
+
+- name: get whisk system key
+  shell: "cat {{ playbook_dir }}/files/auth.whisk.system | base64 --wrap=0"
+  register: auth_whisk_system_var
+
+- name: get whisk system key
+  shell: "cat {{ playbook_dir }}/files/auth.guest | base64 --wrap=0"
+  register: auth_guest_var
+
+- name: set facts
+  set_fact:
+    auth_whisk_system: "{{ auth_whisk_system_var.stdout }}"
+    auth_guest: "{{ auth_guest_var.stdout }}"
+
+- name: fill secret template
+  template:
+    src: secrets.conf.j2
+    dest: "{{ nginx_conf_dir }}/secrets.yml"
+
+- name: create the secrets yaml
+  shell: "kubectl apply -f {{ nginx_conf_dir }}/secrets.yml"
+

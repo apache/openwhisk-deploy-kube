@@ -1,0 +1,14 @@
+sudo: required
+
+env:
+  matrix:
+    - VERSION: kubernetes
+
+services:
+  - docker
+
+before_install:
+  - .travis/setup.sh
+
+script:
+  - .travis/build.sh
