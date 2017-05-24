@@ -11,6 +11,8 @@ cd $ROOTDIR
 # build openwhisk images
 # This way everything that is teset will use the lates openwhisk builds
 
+sed -ie "s/whisk_config:v1.5.6/whisk_config:$TRAVIS_KUBE_VERSION/g" configure/configure_whisk.yml
+
 # run scripts to deploy using the new images.
 kubectl apply -f configure/openwhisk_kube_namespace.yml
 kubectl apply -f configure/configure_whisk.yml

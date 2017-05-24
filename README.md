@@ -56,7 +56,7 @@ Because of the limitations mentioned above, all requirments to deploy OpenWhisk
 on Kubernetes need to be met.
 
 **Kubernetes**
-* Kubernetes version 1.5.0-1.5.5
+* Kubernetes version 1.5.6 and 1.6.2
   - https://github.com/kubernetes/kubernetes
 * Kubernetes has [KubeDNS](https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/) deployed
 * (Optional) Kubernetes Pods can receive public addresses.
@@ -80,7 +80,18 @@ kubectl apply -f configure/openwhisk_kube_namespace.yml
 ```
 
 From here, you should just need to run the Kubernetes job to
-setup the OpenWhisk environment.
+setup the OpenWhisk environment. The only caveat is that
+the default image is used to deploy to kube v1.5.6.
+Take a look
+[here](https://github.com/apache/incubator-openwhisk-deploy-kube/blob/master/configure/configure_whisk.yml#L19)
+if you wish to change to kube v1.6.2 by replacing `v1.5.2` to `v1.6.2`.
+
+**NOTE** Unfortunately Kube does not have backward compatibility
+requirements between the cli and Kube api server. However,
+the v1.5.6 image will probably work with any Kube v1.5+
+and the v1.6.2 image will probably work with any Kube v1.6+.
+If the configuration image does return compatibility
+issues then try [building a custom image](#manually-building-custom-docker-files).
 
 ```
 kubectl apply -f configure/configure_whisk.yml
@@ -139,7 +150,14 @@ wsk property set --auth $AUTH_SECRET --apihost https://[nginx_ip]:$WSK_PORT
 ## Manually Building Custom Docker Files
 
 There are two images that are required when deploying OpenWhisk on Kube,
-Nginx and the OpenWhisk configuration image.
+Nginx and the OpenWhisk configuration image. Right now the the configuration
+images built will work with a Kube version 1.5.6 and 1.6.2. To build the
+configuration image with a custom Kube version you can edit the build script
+[here](https://github.com/apache/incubator-openwhisk-deploy-kube/blob/kube-1.6/docker/build.sh#L87-L88)
+
+Take a look
+[here](https://github.com/apache/incubator-openwhisk-deploy-kube/blob/master/configure/configure_whisk.yml#L19)
+to view which images are buing used.
 
 To build these images, there is a helper script to build the
 required dependencies and build the docker images itself. For example,
@@ -227,7 +245,6 @@ ip link set docker0 promisc on
 
 ## Enhancements and TODOS
 
-* Deploy OpenWhisk on Kubernetes 1.6+
 * Allow users to provide custom certs for Nginx
 * Enable the configuration job to run any number of times. This way it updates an already running
   OpenWhisk deployment on all subsequent runs
