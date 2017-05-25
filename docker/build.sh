@@ -69,15 +69,21 @@ pushd $SCRIPTDIR/nginx
  rm -rf blackbox
 popd
 
-# build the OpenWhisk deploy image
-pushd $SCRIPTDIR/..
- # copy whisk cli
- cp $OPENWHISK_DIR/bin/wsk .
+BuildKubeConfigureImage () {
+  pushd $SCRIPTDIR/..
+   # copy whisk cli
+   cp $OPENWHISK_DIR/bin/wsk .
 
- WHISK_DEPLOY_IMAGE=$(docker build . | grep "Successfully built" | awk '{print $3}')
- docker tag $WHISK_DEPLOY_IMAGE "$1"/whisk_config:dev
- docker push "$1"/whisk_config:dev
+   WHISK_DEPLOY_IMAGE=$(docker build --build-arg KUBE_VERSION="$2" . | grep "Successfully built" | awk '{print $3}')
+   docker tag $WHISK_DEPLOY_IMAGE "$1"/whisk_config:"$2"-dev
+   docker push "$1"/whisk_config:"$2"-dev
 
- # rm the whisk cli to keep things clean
- rm wsk
-popd
+   # rm the whisk cli to keep things clean
+   rm wsk
+  popd
+}
+
+# build the OpenWhisk configure image
+BuildKubeConfigureImage "$1" "v1.5.6"
+BuildKubeConfigureImage "$1" "v1.6.2"
+

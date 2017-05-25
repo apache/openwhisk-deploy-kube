@@ -2,7 +2,12 @@ sudo: required
 
 env:
   matrix:
-    - VERSION: kubernetes
+    - env:
+      - TRAVIS_KUBE_VERSION=v1.5.6
+      - TRAVIS_ETCD_VERSION=v3.0.14
+    - env:
+      - TRAVIS_KUBE_VERSION=v1.6.2
+      - TRAVIS_ETCD_VERSION=v3.0.17
 
 services:
   - docker

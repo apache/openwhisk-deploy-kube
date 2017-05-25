@@ -2,6 +2,7 @@ FROM ubuntu:trusty
 ENV DEBIAN_FRONTEND noninteractive
 ENV UCF_FORCE_CONFFNEW YES
 RUN ucf --purge /boot/grub/menu.lst
+ARG KUBE_VERSION
 
 # install openwhisk
 RUN apt-get -y update && \
@@ -37,7 +38,6 @@ COPY configure /incubator-openwhisk-deploy-kube/configure
 COPY wsk /openwhisk/bin/wsk
 
 # install kube dependencies
-# Kubernetes assumes that the version is 1.5.0+
-RUN wget https://storage.googleapis.com/kubernetes-release/release/v1.5.0/bin/linux/amd64/kubectl && \
+RUN wget https://storage.googleapis.com/kubernetes-release/release/$KUBE_VERSION/bin/linux/amd64/kubectl && \
     chmod +x kubectl && \
     mv kubectl /usr/local/bin/kubectl
