@@ -25,7 +25,6 @@ EndOfMessage
   OPENWHISK_DIR=$HOME/workspace/openwhisk
 else
   OPENWHISK_DIR="$2"
-exit 1
 fi
 
 
