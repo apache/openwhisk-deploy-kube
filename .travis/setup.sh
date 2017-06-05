@@ -37,7 +37,7 @@ pushd $HOME/kubernetes
        hack/local-up-cluster.sh &
 popd
 
-# Wait untill kube is up and running
+# Wait until kube is up and running
 TIMEOUT=0
 TIMEOUT_COUNT=40
 until $( curl --output /dev/null --silent http://localhost:8080 ) || [ $TIMEOUT -eq $TIMEOUT_COUNT ]; do
