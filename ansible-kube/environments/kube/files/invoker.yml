@@ -53,6 +53,8 @@ spec:
             value: "2s"
           - name: "SERVICE_CHECK_INTERVAL"
             value: "15s"
+          - name: "DOCKER_API_VERSION"
+            value: "1.23"
         ports:
         - name: invoker
           containerPort: 8080
