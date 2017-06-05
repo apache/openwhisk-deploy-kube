@@ -9,7 +9,7 @@ cd $ROOTDIR
 
 # TODO: need official repo
 # build openwhisk images
-# This way everything that is teset will use the lates openwhisk builds
+# This way everything that is tested will use the latest openwhisk builds
 
 sed -ie "s/whisk_config:v1.5.6/whisk_config:$TRAVIS_KUBE_VERSION/g" configure/configure_whisk.yml
 
