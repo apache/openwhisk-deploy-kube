@@ -76,5 +76,7 @@ can be deployed with [Callico](https://www.projectcalico.org/) for the
 By default kubeadm runs with KubeDNS already enabled, but please make sure
 to install Kubeadm for Kube version 1.5.
 
-**Minikube is not supported** at this time because it uses an old version
-of docker (1.11.x).
+[Minikube](https://github.com/kubernetes/minikube) support is
+experimental, see the
+[Minikube-specific install instructions](/minikube/README.md) for more
+details.
