@@ -41,7 +41,7 @@
   shell: "kubectl -n openwhisk logs {{ item[0] }} -c kafka"
   register: result
   until: ('[Kafka Server 0], started' in result.stdout)
-  retries: 10
+  retries: 36
   delay: 5
   with_nested:
     - ["{{ kafka_pods }}"]
