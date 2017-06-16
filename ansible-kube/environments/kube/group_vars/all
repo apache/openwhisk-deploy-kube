@@ -2,6 +2,7 @@
 # general properties
 kube_pod_dir: "{{ playbook_dir }}/environments/kube/files"
 whisk_version_name: kube
+config_root_dir: /tmp
 whisk_logs_dir: /tmp/wsklogs
 
 # docker properties
