@@ -53,6 +53,10 @@ fi
 
 echo "Kubernetes is deployed and reachable"
 
+# Try and sleep before issuing chown. Currently, Kubernetes is started by
+# a command that is run in the background. Technically Kubernetes could be
+# up and running, but those files might not exist yet as the previous command
+# could create them after Kube starts successfully.
 sleep 1
 
 sudo chown -R $USER:$USER $HOME/.kube
