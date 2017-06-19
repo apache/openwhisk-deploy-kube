@@ -53,8 +53,10 @@ fi
 
 echo "Kubernetes is deployed and reachable"
 
+sleep 1
+
 sudo chown -R $USER:$USER $HOME/.kube
 
 # Have seen issues where chown does not instantly change file permissions.
 # When this happens the build.sh cript can have failures.
-sleep 1
+sleep 30
