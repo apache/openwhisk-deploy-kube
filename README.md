@@ -184,7 +184,7 @@ setup can be found [here](https://github.com/apache/incubator-openwhisk#native-d
 To build custom docker images, you will need to be on a Linux machine.
 During the `wsk` cli build process it mounts a number of files from the
 host machine. Because of this, Golang determines that the `wsk` build
-architecture should be for MAC OS, but of course this is the wrong version
+architecture should be for macOS, but of course this is the wrong version
 when running later. It needs to be built for the Linux architecture.
 
 To use the script, it takes in 2 arguments:
