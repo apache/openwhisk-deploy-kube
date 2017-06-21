@@ -21,6 +21,9 @@ kubectl -n openwhisk delete cm consul
 kubectl -n openwhisk delete cm controller
 kubectl -n openwhisk delete cm nginx
 
+# delete secrets
+kubectl -n openwhisk delete secret nginx
+
 # delete services
 kubectl -n openwhisk delete service couchdb
 kubectl -n openwhisk delete service consul
@@ -29,6 +32,3 @@ kubectl -n openwhisk delete service kafka
 kubectl -n openwhisk delete service controller
 kubectl -n openwhisk delete service invoker
 kubectl -n openwhisk delete service nginx
-
-# delete secrets
-kubectl -n openwhisk delete secret openwhisk-auth-tokens

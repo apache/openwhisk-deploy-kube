@@ -35,7 +35,6 @@ RUN git clone https://github.com/openwhisk/openwhisk && \
 # Change this to https://github.com/openwhisk/openwhisk-devtools when committing to master
 COPY ansible-kube /incubator-openwhisk-deploy-kube/ansible-kube
 COPY configure /incubator-openwhisk-deploy-kube/configure
-COPY wsk /openwhisk/bin/wsk
 
 # install kube dependencies
 RUN wget https://storage.googleapis.com/kubernetes-release/release/$KUBE_VERSION/bin/linux/amd64/kubectl && \

@@ -33,13 +33,6 @@ SCRIPTDIR="$( dirname "$SOURCE" )"
 
 # build nginx
 pushd $SCRIPTDIR/nginx
- pushd $OPENWHISK_DIR
-   ./gradlew tools:cli:distDocker
- popd
-
- # copy whisk cli to nginx directory
- cp $OPENWHISK_DIR/bin/wsk .
-
  mkdir -p blackbox
  pushd blackbox
    # copy docker sdk to dockerSkeleton in scratch space
@@ -63,22 +56,17 @@ pushd $SCRIPTDIR/nginx
  docker push "$1"/whisk_nginx
 
  # cleanup
- rm wsk
  rm blackbox-0.1.0.tar.gz
  rm -rf blackbox
 popd
 
 BuildKubeConfigureImage () {
   pushd $SCRIPTDIR/..
-   # copy whisk cli
-   cp $OPENWHISK_DIR/bin/wsk .
 
    WHISK_DEPLOY_IMAGE=$(docker build --build-arg KUBE_VERSION="$2" . | grep "Successfully built" | awk '{print $3}')
    docker tag $WHISK_DEPLOY_IMAGE "$1"/whisk_config:"$2"-dev
    docker push "$1"/whisk_config:"$2"-dev
 
-   # rm the whisk cli to keep things clean
-   rm wsk
   popd
 }
 
