@@ -169,7 +169,7 @@ take a look at the info [here](https://kubernetes.io/docs/admin/authorization/rb
 
 Unfortunitaly when Deploying OpenWhisk on Kubernetes it currently mounts some
 of the host OS files for the Invoker process and needs to make some assumptions.
-Because of this, some failures are know to happen on certain Linux versions,
+Because of this, some failures are known to happen on certain Linux versions,
 like CoreOs. If you see an error like:
 
 ```
@@ -180,7 +180,7 @@ Error syncing pod, skipping: failed to "StartContainer" for "invoker" with rpc e
 Then you might need to modify some of the volume mounts in the
 [invoker.yml](ansible-kube/environments/kube/files/invoker.yml). For example,
 the error above is trying to find something from the apparmor mount which makes no
-sense for CoreOS. To fix the issue, you will need to remove the mount and rebuild
+sense to CoreOS. To fix the issue, you will need to remove the mount and rebuild
 the [custom Docker image](#manually-building-custom-docker-files).
 
 # Manually Building Custom Docker Files
