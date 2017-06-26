@@ -54,6 +54,10 @@ ways to setup a Dev/Test environmnet depending on your host OS. To mitigate that
 VirtualBox with a Ubuntu VM. For the full instructions on setting an environment up,
 take a look at these [instructions](/docs/setting_up_kube/README.md).
 
+We also have experimental support for
+[Minikube](https://github.com/kubernetes/minikube), see the
+[Minikube-specific install instructions](/minikube/README.md) for more details.
+
 # Configure OpenWhisk
 
 To configure OpenWhisk on Kubernetes, you will need to target a Kubernetes
@@ -280,9 +284,10 @@ the correct kubectl version to be built into `danlavine/whisk_config`. For now,
 there is only a version for Kube 1.5, and one can be built for 1.6, but there
 is no CI to test it against at the moment.
 
-**Minikube is not supported** at this time because it uses an old version
-of docker (1.11.x). See the the [Requirements](#requirements)
-section for more info.
+**Minikube (experimental)** 
+We also have experimental support for
+* [Minikube](https://github.com/kubernetes/minikube), see the
+* [Minikube-specific install instructions](/minikube/README.md) for more details.
 
 **Bad Kube versions**
 * Kube 1.6.3 has an issue with volume mount subpaths. See
