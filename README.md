@@ -169,6 +169,24 @@ in the Kube cluster. You will need to create a ClusterRoleBinding with proper
 security settings. For information about the role bindings,
 take a look at the info [here](https://kubernetes.io/docs/admin/authorization/rbac/).
 
+## Kubernetes Host Linux Versions
+
+Unfortunitaly when Deploying OpenWhisk on Kubernetes it currently mounts some
+of the host OS files for the Invoker process and needs to make some assumptions.
+Because of this, some failures are known to happen on certain Linux versions,
+like CoreOs. If you see an error like:
+
+```
+Failed to start container with id 8d9125bf2d3711312a98a8b98de15306e495883cc470a03beb6689b34895791f with error: rpc error: code = 2 desc = failed to start container "8d9125bf2d3711312a98a8b98de15306e495883cc470a03beb6689b34895791f": Error response from daemon: {"message":"mkdir /usr/lib/x86_64-linux-gnu: read-only file system"}
+Error syncing pod, skipping: failed to "StartContainer" for "invoker" with rpc error: code = 2 desc = failed to start container "8d9125bf2d3711312a98a8b98de15306e495883cc470a03beb6689b34895791f": Error response from daemon: {"message":"mkdir /usr/lib/x86_64-linux-gnu: read-only file system"}: "Start Container Failed"
+```
+
+Then you might need to modify some of the volume mounts in the
+[invoker.yml](ansible-kube/environments/kube/files/invoker.yml). For example,
+the error above is trying to find something from the apparmor mount which makes no
+sense to CoreOS. To fix the issue, you will need to remove the mount and rebuild
+the [custom Docker image](#manually-building-custom-docker-files).
+
 # Manually Building Custom Docker Files
 
 There are two images that are required when deploying OpenWhisk on Kube,
@@ -183,6 +201,13 @@ one the required dependencies is the wsk cli and to build it you will need
 to download the [OpenWhisk repo](https://github.com/openwhisk/openwhisk)
 and setup your invironment to build the docker images via gradle. That
 setup can be found [here](https://github.com/apache/incubator-openwhisk#native-development).
+
+**Important**
+To build custom docker images, you will need to be on a Linux machine.
+During the `wsk` cli build process it mounts a number of files from the
+host machine. Because of this, Golang determines that the `wsk` build
+architecture should be for macOS, but of course this is the wrong version
+when running later. It needs to be built for the Linux architecture.
 
 To use the script, it takes in 2 arguments:
 1. (Required) The first argument is the Docker account to push the built images
@@ -258,6 +283,16 @@ Lastly, since OpenWhisk is configured/deployed via a Kubernetes Pod it requires
 the correct kubectl version to be built into `danlavine/whisk_config`. For now,
 there is only a version for Kube 1.5, and one can be built for 1.6, but there
 is no CI to test it against at the moment.
+
+**Minikube (experimental)** 
+We also have experimental support for
+* [Minikube](https://github.com/kubernetes/minikube), see the
+* [Minikube-specific install instructions](/minikube/README.md) for more details.
+
+**Bad Kube versions**
+* Kube 1.6.3 has an issue with volume mount subpaths. See
+  [here](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG.md#v163)
+  for more information.
 
 ## Enhancements
 
