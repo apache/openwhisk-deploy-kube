@@ -259,6 +259,11 @@ is no CI to test it against at the moment.
 of docker (1.11.x). See the the [Requirements](#requirements)
 section for more info.
 
+**Bad Kube versions**
+* Kube 1.6.3 has an issue with volume mount subpaths. See
+  [here](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG.md#v163)
+  for more information.
+
 ## Enhancements
 
 * Allow users to provide custom certs for Nginx
