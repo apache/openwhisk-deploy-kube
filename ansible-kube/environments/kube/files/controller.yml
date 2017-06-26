@@ -19,7 +19,7 @@ spec:
       - name: controller
         imagePullPolicy: Always
         image: openwhisk/controller
-        command: ["/bin/bash", "-c", "/controller/bin/controller"]
+        command: ["/bin/bash", "-c", "/controller/bin/controller 0"]
         ports:
         - name: controller
           containerPort: 8080
