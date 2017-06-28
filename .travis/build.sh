@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -ex
+set -x
 
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 ROOTDIR="$SCRIPTDIR/../"
@@ -113,6 +113,12 @@ RESULT=$(./wsk -i action invoke --blocking hello | grep "\"status\": \"success\"
 
 if [ -z "$RESULT" ]; then
   echo "FAILED! Could not invoked custom action"
+
+
+  echo " ----------------------------- controller logs ---------------------------"
+  kubectl -n openwhisk logs $(kubectl get pods --all-namespaces -o wide | grep controller | awk '{print $2}')
+  echo " ----------------------------- invoker logs ---------------------------"
+  kubectl -n openwhisk logs $(kubectl get pods --all-namespaces -o wide | grep invoker | awk '{print $2}')
   exit 1
 fi
 
