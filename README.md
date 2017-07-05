@@ -95,21 +95,9 @@ the logs from the configuration Pod creted by the previous command.
 kubectl -n openwhisk logs configure-openwhisk-XXXXX
 ```
 
-Once the configuration job successfully finishes, you will need the
-default user auth tokens provided by OpenWhisk. As part of the deployment
-process, we store these tokens in Kubernetes
-[secrets](https://kubernetes.io/docs/concepts/configuration/secret/).
-To get these tokens, you can run the following command:
-
-```
-kubectl -n openwhisk get secret openwhisk-auth-tokens -o yaml
-```
-
-To use the secrets, you will need to base64 decode them. E.g:
-
-```
-export AUTH_SECRET=$(kubectl -n openwhisk get secret openwhisk-auth-tokens -o yaml | grep 'auth_whisk_system:' | awk '{print $2}' | base64 --decode)
-```
+Once the configuration job successfully finishes, you will need
+manually deploy Nginx. To do this, follow the Nginx
+[README](kubernetes/nginx/README.md).
 
 From here, you will now need to get the publicly available address
 of Nginx.
@@ -135,7 +123,25 @@ Now you should be able to setup the wsk cli like normal and interact with
 Openwhisk.
 
 ```
-wsk property set --auth $AUTH_SECRET --apihost https://[nginx_ip]:$WSK_PORT
+wsk property set --auth 789c46b1-71f6-4ed5-8c54-816aa4f8c502:abczO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP --apihost https://[nginx_ip]:$WSK_PORT
+```
+
+Lastly, you will need to install the initial catalog. To do this, you will need
+to set the `OPENWHISK_HOME` environment variable:
+
+```
+export OPENWHISK_HOME [location of the openwhisk repo]
+```
+
+Then you should be able to run the following commands. Just make sure to
+replace the `[nginx_ip]` bellow.
+
+```
+  pushd /tmp
+    git clone https://github.com/apache/incubator-openwhisk-catalog
+    cd incubator-openwhisk-catalog
+    ./installCatalog.sh 789c46b1-71f6-4ed5-8c54-816aa4f8c502:abczO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP https://[nginx_ip]:$WSK_PORT
+  popd
 ```
 
 # Cleanup
@@ -284,7 +290,7 @@ the correct kubectl version to be built into `danlavine/whisk_config`. For now,
 there is only a version for Kube 1.5, and one can be built for 1.6, but there
 is no CI to test it against at the moment.
 
-**Minikube (experimental)** 
+**Minikube (experimental)**
 We also have experimental support for
 * [Minikube](https://github.com/kubernetes/minikube), see the
 * [Minikube-specific install instructions](/minikube/README.md) for more details.

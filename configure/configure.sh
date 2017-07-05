@@ -51,7 +51,6 @@ pushd /incubator-openwhisk-deploy-kube/ansible
   kubectl apply -f environments/kube/files/kafka-service.yml
   kubectl apply -f environments/kube/files/controller-service.yml
   kubectl apply -f environments/kube/files/invoker-service.yml
-  kubectl apply -f environments/kube/files/nginx-service.yml
 
   if deployCouchDB; then
     # Create and configure the CouchDB deployment
@@ -62,7 +61,4 @@ pushd /incubator-openwhisk-deploy-kube/ansible
 
   # Run through the openwhisk deployment
   ansible-playbook -i environments/kube openwhisk.yml
-
-  # Post deploy step
-  ansible-playbook -i environments/kube postdeploy.yml
 popd

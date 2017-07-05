@@ -10,6 +10,6 @@ spec:
   selector:
     name: controller
   ports:
-    - port: 10001
+    - port: 8080
       targetPort: 8080
       name: controller

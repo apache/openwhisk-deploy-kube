@@ -1,15 +1,11 @@
 #!/bin/bash
 
-set -ex
+set -x
 
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 ROOTDIR="$SCRIPTDIR/../"
 
 cd $ROOTDIR
-
-# TODO: need official repo
-# build openwhisk images
-# This way everything that is tested will use the latest openwhisk builds
 
 sed -ie "s/whisk_config:v1.5.6/whisk_config:$TRAVIS_KUBE_VERSION/g" configure/configure_whisk.yml
 
@@ -47,19 +43,58 @@ fi
 
 echo "The job to configure OpenWhisk finished successfully"
 
-# Don't try and perform wsk actions the second it finishes deploying.
-# The CI ocassionaly fails if you perform actions to quickly.
-sleep 30
+# setup nginx
+pushd kubernetes/nginx
+  ./certs.sh localhost
+  kubectl -n openwhisk create configmap nginx --from-file=nginx.conf
+  kubectl -n openwhisk create secret tls nginx --cert=certs/cert.pem --key=certs/key.pem
+  kubectl apply -f nginx.yml
 
-AUTH_SECRET=$(kubectl -n openwhisk get secret openwhisk-auth-tokens -o yaml | grep 'auth_whisk_system:' | awk '{print $2}' | base64 --decode)
-WSK_PORT=$(kubectl -n openwhisk describe service nginx | grep https-api | grep NodePort| awk '{print $3}' | cut -d'/' -f1)
+  WSK_PORT=$(kubectl -n openwhisk describe service nginx | grep https-api | grep NodePort| awk '{print $3}' | cut -d'/' -f1)
 
-# download the wsk cli from nginx
-wget --no-check-certificate https://127.0.0.1:$WSK_PORT/cli/go/download/linux/amd64/wsk
+  # wait untill nginx is ready
+  TIMEOUT=0
+  TIMEOUT_COUNT=40
+  until $(curl --output /dev/null --silent -k https://localhost:$WSK_PORT) || [ $TIMEOUT -eq $TIMEOUT_COUNT ]; do
+    echo "Nginx is not up yet"
+    let TIMEOUT=TIMEOUT+1
+    sleep 20
+  done
+
+  if [ $TIMEOUT -eq $TIMEOUT_COUNT ]; then
+    echo "Nginx is not up and running"
+    exit 1
+  fi
+popd
+
+echo "Nginx is up and running"
+
+AUTH_WSK_SECRET=789c46b1-71f6-4ed5-8c54-816aa4f8c502:abczO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP
+AUTH_GUEST=23bc46b1-71f6-4ed5-8c54-816aa4f8c502:123zO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP
+
+# download and setup the wsk cli from nginx
+wget --no-check-certificate https://localhost:$WSK_PORT/cli/go/download/linux/amd64/wsk
 chmod +x wsk
+sudo cp wsk /usr/local/bin/wsk
 
-# setup the wsk cli
-./wsk property set --auth $AUTH_SECRET --apihost https://127.0.0.1:$WSK_PORT
+./wsk property set --auth $AUTH_GUEST --apihost https://localhost:$WSK_PORT
+
+
+# setup the catalog
+pushd /tmp
+  git clone https://github.com/apache/incubator-openwhisk
+  export OPENWHISK_HOME=$PWD/incubator-openwhisk
+
+  git clone https://github.com/apache/incubator-openwhisk-catalog
+
+  pushd incubator-openwhisk-catalog/packages
+    export WHISK_CLI_PATH=/usr/local/bin/wsk
+
+    # This script currently has an issue where the cli path is the 4th argument
+    # https://github.com/apache/incubator-openwhisk-catalog/pull/231 is a fix
+    ./installCatalog.sh $AUTH_WSK_SECRET https://localhost:$WSK_PORT "EMPTY" $WHISK_CLI_PATH
+  popd
+popd
 
 # create wsk action
 cat > hello.js << EOL
@@ -78,9 +113,13 @@ RESULT=$(./wsk -i action invoke --blocking hello | grep "\"status\": \"success\"
 
 if [ -z "$RESULT" ]; then
   echo "FAILED! Could not invoked custom action"
+
+
+  echo " ----------------------------- controller logs ---------------------------"
+  kubectl -n openwhisk logs $(kubectl get pods --all-namespaces -o wide | grep controller | awk '{print $2}')
+  echo " ----------------------------- invoker logs ---------------------------"
+  kubectl -n openwhisk logs $(kubectl get pods --all-namespaces -o wide | grep invoker | awk '{print $2}')
   exit 1
 fi
 
 echo "PASSED! Deployed openwhisk and invoked custom action"
-
-# push the images to an official repo
