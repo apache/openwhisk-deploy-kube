@@ -1,8 +1,9 @@
 # OpenWhisk Deployment for Kubernetes
 
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 [![Build Status](https://travis-ci.org/apache/incubator-openwhisk-deploy-kube.svg?branch=master)](https://travis-ci.org/apache/incubator-openwhisk-deploy-kube)
 
-This repo can be used to deploy OpenWhisk to a Kubernetes cluster.
+This repository can be used to deploy OpenWhisk to a Kubernetes cluster.
 To accomplish this, we have created a Kubernetes job responsible for
 deploying OpenWhisk from inside of Kubernetes. This job runs through
 the OpenWhisk Ansible playbooks with some modifications to "Kube-ify"
