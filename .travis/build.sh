@@ -91,8 +91,7 @@ pushd /tmp
     export WHISK_CLI_PATH=/usr/local/bin/wsk
 
     # This script currently has an issue where the cli path is the 4th argument
-    # https://github.com/apache/incubator-openwhisk-catalog/pull/231 is a fix
-    ./installCatalog.sh $AUTH_WSK_SECRET https://localhost:$WSK_PORT "EMPTY" $WHISK_CLI_PATH
+    ./installCatalog.sh $AUTH_WSK_SECRET https://localhost:$WSK_PORT $WHISK_CLI_PATH
   popd
 popd
 
