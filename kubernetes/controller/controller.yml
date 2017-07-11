@@ -1,0 +1,124 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: controller
+  namespace: openwhisk
+  labels:
+    name: controller
+spec:
+  selector:
+    name: controller
+  clusterIP: None
+  ports:
+    - port: 8080
+      targetPort: 8080
+      name: http
+---
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: controller
+  namespace: openwhisk
+  labels:
+    name: controller
+spec:
+  replicas: 2
+  serviceName: "controller"
+  template:
+    metadata:
+      labels:
+        name: controller
+    spec:
+      restartPolicy: Always
+
+      containers:
+      - name: controller
+        imagePullPolicy: Always
+        # Update this image to the publix OpenWhisk Image once this PR is merged.
+        # https://github.com/apache/incubator-openwhisk/pull/2452
+        image: danlavine/whisk_controller
+        command: ["/bin/bash", "-c", "/controller/bin/controller `hostname | cut -d'-' -f2`"]
+        ports:
+        - name: controller
+          containerPort: 8080
+        livenessProbe:
+          httpGet:
+            path: "/ping"
+            port: 8080
+            scheme: "HTTP"
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 1
+        env:
+        - name: "PORT"
+          value: "8080"
+        - name: "COMPONENT_NAME"
+          value: "controller"
+        - name: "KAFKA_NUMPARTITIONS"
+          value: "2"
+        - name: "SERVICE_CHECK_HTTP"
+          value: "/ping"
+        - name: "SERVICE_CHECK_TIMEOUT"
+          value: "2s"
+        - name: "SERVICE_CHECK_INTERVAL"
+          value: "15s"
+
+        # Loadbalancer options
+        - name: "LOADBALANCER_INVOKERBUSYTHRESHOLD"
+          value: "16"
+
+        # This needs to stay up to date with the lates runtime in Ansible Groupvars
+        - name: "RUNTIMES_MANIFEST"
+          value: '{ "defaultImagePrefix": "openwhisk", "defaultImageTag": "latest", "runtimes": { "nodejs": [ { "kind": "nodejs", "image": { "name": "nodejsaction" }, "deprecated": true }, { "kind": "nodejs:6", "default": true, "image": { "name": "nodejs6action" }, "deprecated": false } ], "python": [ { "kind": "python", "image": { "name": "python2action" }, "deprecated": false }, { "kind": "python:2", "default": true, "image": { "name": "python2action" }, "deprecated": false }, { "kind": "python:3", "image": { "name": "python3action" }, "deprecated": false } ], "swift": [ { "kind": "swift", "image": { "name": "swiftaction" }, "deprecated": true }, { "kind": "swift:3", "image": { "name": "swift3action" }, "deprecated": false }, { "kind": "swift:3.1.1", "default": true, "image": { "name": "action-swift-v3.1.1" }, "deprecated": false } ], "java": [ { "kind": "java", "default": true, "image": { "name": "java8action" }, "deprecated": false, "attached": { "attachmentName": "jarfile", "attachmentType": "application/java-archive" }, "sentinelledLogs": false, "requireMain": true } ] }, "blackboxes": [ { "name": "dockerskeleton" } ] }'
+
+        # this version is the day it is deployed and should be configured every time
+        - name:  "WHISK_VERSION_DATE"
+          value: "2017-01-01T00:00:00Z"
+        # the buildno should be the docker image tag to use
+        - name: "WHISK_VERSION_BUILDNO"
+          value: "latest"
+
+        # Java options
+        - name: "JAVA_OPTS"
+          value: "-Xmx2g"
+
+        # Kafka properties
+        - name: "KAFKA_HOST"
+          value: "kafka.openwhisk"
+        - name: "KAFKA_HOST_PORT"
+          value: "9092"
+
+        # specific controller arguments
+        - name: "CONTROLLER_OPTS"
+          value: ""
+        - name: "DEFAULTLIMITS_ACTIONS_INVOKES_PERMINUTE"
+          value: "120"
+        - name: "DEFAULTLIMITS_ACTIONS_INVOKES_CONCURRENT"
+          value: "100"
+        - name: "DEFAULTLIMITS_ACTIONS_INVOKES_CONCURRENTINSYSTEM"
+          value: "500"
+        - name: "DEFAULTLIMITS_ACTIONS_SEQUENCE_MAXLENGTH"
+          value: "50"
+        - name: "DEFAULTLIMITS_TRIGGERS_FIRES_PERMINUTE"
+          value: "60"
+
+        # properties for DB connection
+        - name: "DB_USERNAME"
+          value: "couch_user"
+        - name: "DB_PASSWORD"
+          value: "couch_password"
+        - name: "DB_PORT"
+          value: "5984"
+        - name:  "DB_PROTOCOL"
+          value: "http"
+        - name: "DB_HOST"
+          value: "couchdb.openwhisk"
+        - name: "DB_PROVIDER"
+          value: "CouchDB"
+        - name: "DB_WHISK_ACTIVATIONS"
+          value: "openwhisk_kube_activations"
+        - name: "DB_WHISK_ACTIONS"
+          value: "openwhisk_kube_whisks"
+        - name: "DB_WHISK_AUTHS"
+          value: "openwhisk_kube_subjects"

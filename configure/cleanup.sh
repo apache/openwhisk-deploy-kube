@@ -12,7 +12,7 @@ kubectl -n openwhisk delete deployment couchdb
 kubectl -n openwhisk delete deployment consul
 kubectl -n openwhisk delete deployment zookeeper
 kubectl -n openwhisk delete deployment kafka
-kubectl -n openwhisk delete deployment controller
+kubectl -n openwhisk delete statefulsets controller
 kubectl -n openwhisk delete statefulsets invoker
 kubectl -n openwhisk delete deployment nginx
 

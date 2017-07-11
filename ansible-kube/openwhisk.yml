@@ -7,6 +7,4 @@
 
 - include: kafka.yml
 
-- include: controller.yml
-
 #- include: routemgmt.yml

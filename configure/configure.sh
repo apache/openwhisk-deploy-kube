@@ -40,7 +40,6 @@ pushd /incubator-openwhisk-deploy-kube/ansible
   kubectl apply -f environments/kube/files/consul-service.yml
   kubectl apply -f environments/kube/files/zookeeper-service.yml
   kubectl apply -f environments/kube/files/kafka-service.yml
-  kubectl apply -f environments/kube/files/controller-service.yml
 
   if deployCouchDB; then
     # Create and configure the CouchDB deployment
