@@ -106,6 +106,20 @@ statefulsetHealthCheck () {
 
 }
 
+# setup zookeeper
+pushd kubernetes/zookeeper
+  kubectl apply -f zookeeper.yml
+
+  deploymentHealthCheck "zookeeper"
+popd
+
+# setup kafka
+pushd kubernetes/kafka
+  kubectl apply -f kafka.yml
+
+  deploymentHealthCheck "kafka"
+popd
+
 # setup the controller
 pushd kubernetes/controller
   kubectl apply -f controller.yml

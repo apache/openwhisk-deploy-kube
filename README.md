@@ -98,6 +98,8 @@ kubectl -n openwhisk logs configure-openwhisk-XXXXX
 
 Once the configuration job successfully finishes, you will need
 manually deploy the rest of the OpenWhisk components.
+* [Zookeeper](kubernetes/zookeeper/README.md)
+* [Kafka](kubernetes/kafka/README.md)
 * [Controller](kubernetes/controller/README.md)
 * [Invoker](kubernetes/invoker/README.md)
 * [Nginx](kubernetes/nginx/README.md)
