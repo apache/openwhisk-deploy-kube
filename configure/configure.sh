@@ -18,15 +18,6 @@ deployCouchDB() {
 
 set -ex
 
-# Currently, Consul needs to be seeded with the proper Invoker name to DNS address. To account for
-# this, we need to use StatefulSets(https://kubernetes.io/stutorials/stateful-application/basic-stateful-set/)
-# to generate the Invoker addresses in a guranteed pattern. We can then use properties from the
-# StatefulSet yaml file for OpenWhisk deployment configuration options.
-
-INVOKER_REP_COUNT=$(cat /incubator-openwhisk-deploy-kube/ansible-kube/environments/kube/files/invoker.yml | grep 'replicas:' | awk '{print $2}')
-INVOKER_COUNT=${INVOKER_REP_COUNT:-1}
-sed -ie "s/REPLACE_INVOKER_COUNT/$INVOKER_COUNT/g" /incubator-openwhisk-deploy-kube/ansible-kube/environments/kube/group_vars/all
-
 # copy the ansible playbooks and tools to this repo
 cp -R /openwhisk/ansible/ /incubator-openwhisk-deploy-kube/ansible
 cp -R /openwhisk/tools/ /incubator-openwhisk-deploy-kube/tools
@@ -50,7 +41,6 @@ pushd /incubator-openwhisk-deploy-kube/ansible
   kubectl apply -f environments/kube/files/zookeeper-service.yml
   kubectl apply -f environments/kube/files/kafka-service.yml
   kubectl apply -f environments/kube/files/controller-service.yml
-  kubectl apply -f environments/kube/files/invoker-service.yml
 
   if deployCouchDB; then
     # Create and configure the CouchDB deployment
