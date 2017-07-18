@@ -5,6 +5,20 @@
   fail: msg="The db provider in your {{ inventory_dir }}/group_vars/all is {{ db_provider }}, it has to be CouchDB, pls double check"
   when: db_provider != "CouchDB"
 
+- name: ensure couchdb config directory exists
+  file:
+    path: "{{ db_config_dir }}"
+    state: directory
+
+- name: copy template from local to remote (which is really local) and fill in templates
+  template:
+    src: admins.ini.j2
+    dest: "{{ db_config_dir }}/admins.ini"
+
+- name: create secrets
+  shell: "kubectl create secret generic couchdb-config --from-file={{ db_config_dir }}//admins.ini"
+  ignore_errors: yes
+
 - name: create db pod
   shell: "kubectl apply -f {{kube_pod_dir}}/db.yml"
 
@@ -14,15 +28,6 @@
     host: "{{ db_host }}"
     port: "{{ db_port }}"
     timeout: 60
-
-- name: create admin user
-  uri:
-    url: "{{ db_protocol }}://{{ db_host }}:{{ db_port }}/_config/admins/{{ db_username }}"
-    method: PUT
-    body: >
-        "{{ db_password }}"
-    body_format: json
-    status_code: 200
 
 - name: disable reduce limit on views
   uri:

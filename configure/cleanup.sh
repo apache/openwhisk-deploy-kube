@@ -23,6 +23,8 @@ kubectl -n openwhisk delete cm nginx
 
 # delete secrets
 kubectl -n openwhisk delete secret nginx
+kubectl -n openwhisk delete secret couchdb-config
+
 
 # delete services
 kubectl -n openwhisk delete service couchdb

@@ -20,6 +20,7 @@ db_password: couch_password
 db_auth: "subjects"
 db_prefix: "openwhisk_kube_"
 db_split_actions_and_activations: true
+db_config_dir: /tmp/couchdb
 
 # apigw db credentials minimum read/write
 db_apigw_username: "couch_user"

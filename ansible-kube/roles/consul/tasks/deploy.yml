@@ -19,7 +19,8 @@
 
 - name: create configmap
   shell: "kubectl create configmap consul --from-file={{ consul_conf_dir }}/config.json"
-
+  ignore_errors: yes
+  
 - name: create consul deployment
   shell: "kubectl apply -f {{kube_pod_dir}}/consul.yml"
 
