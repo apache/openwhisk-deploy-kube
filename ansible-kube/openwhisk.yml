@@ -9,6 +9,4 @@
 
 - include: controller.yml
 
-- include: invoker.yml
-
 #- include: routemgmt.yml

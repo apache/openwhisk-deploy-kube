@@ -96,8 +96,9 @@ kubectl -n openwhisk logs configure-openwhisk-XXXXX
 ```
 
 Once the configuration job successfully finishes, you will need
-manually deploy Nginx. To do this, follow the Nginx
-[README](kubernetes/nginx/README.md).
+manually deploy the rest of the OpenWhisk components.
+* [Invoker](kubernetes/invoker/README.md)
+* [Nginx](kubernetes/nginx/README.md)
 
 From here, you will now need to get the publicly available address
 of Nginx.
@@ -139,7 +140,7 @@ replace the `[nginx_ip]` bellow.
 ```
   pushd /tmp
     git clone https://github.com/apache/incubator-openwhisk-catalog
-    cd incubator-openwhisk-catalog
+    cd incubator-openwhisk-catalog/packages
     ./installCatalog.sh 789c46b1-71f6-4ed5-8c54-816aa4f8c502:abczO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP https://[nginx_ip]:$WSK_PORT
   popd
 ```
@@ -174,24 +175,6 @@ error then you probably do not have permissions to create Pods from a Pod runnin
 in the Kube cluster. You will need to create a ClusterRoleBinding with proper
 security settings. For information about the role bindings,
 take a look at the info [here](https://kubernetes.io/docs/admin/authorization/rbac/).
-
-## Kubernetes Host Linux Versions
-
-Unfortunitaly when Deploying OpenWhisk on Kubernetes it currently mounts some
-of the host OS files for the Invoker process and needs to make some assumptions.
-Because of this, some failures are known to happen on certain Linux versions,
-like CoreOs. If you see an error like:
-
-```
-Failed to start container with id 8d9125bf2d3711312a98a8b98de15306e495883cc470a03beb6689b34895791f with error: rpc error: code = 2 desc = failed to start container "8d9125bf2d3711312a98a8b98de15306e495883cc470a03beb6689b34895791f": Error response from daemon: {"message":"mkdir /usr/lib/x86_64-linux-gnu: read-only file system"}
-Error syncing pod, skipping: failed to "StartContainer" for "invoker" with rpc error: code = 2 desc = failed to start container "8d9125bf2d3711312a98a8b98de15306e495883cc470a03beb6689b34895791f": Error response from daemon: {"message":"mkdir /usr/lib/x86_64-linux-gnu: read-only file system"}: "Start Container Failed"
-```
-
-Then you might need to modify some of the volume mounts in the
-[invoker.yml](ansible-kube/environments/kube/files/invoker.yml). For example,
-the error above is trying to find something from the apparmor mount which makes no
-sense to CoreOS. To fix the issue, you will need to remove the mount and rebuild
-the [custom Docker image](#manually-building-custom-docker-files).
 
 # Manually Building Custom Docker Files
 
@@ -266,11 +249,6 @@ During the deployment process, OpenWhisk needs to generate a CA-cert
 for Nginx and currently it has a static dns entry. Because of this, you
 will need to connect to OpenWhisk using the insecure mode (e.g. `wsk -i`).
 There is future work to make this CA-cert configurable.
-
-For now, OpenWhisk relies on part of the underlying infrastructure that Kube
-is running on. When deploying the Invoker for OpenWhisk, it mounts the hosts
-Docker socket. This way OpenWhisk can quickly provision actions and does not
-have to run Docker inside of Docker.
 
 A couple of components for OpenWhisk on Kube deployment strategy requires custom
 built Docker images. One such component is Nginx and currently resides at

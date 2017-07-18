@@ -32,5 +32,4 @@ kubectl -n openwhisk delete service consul
 kubectl -n openwhisk delete service zookeeper
 kubectl -n openwhisk delete service kafka
 kubectl -n openwhisk delete service controller
-kubectl -n openwhisk delete service invoker
 kubectl -n openwhisk delete service nginx

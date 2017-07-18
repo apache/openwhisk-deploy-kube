@@ -2,15 +2,6 @@
 # This task will write whisk.properties to the openwhisk_home.
 # Currently whisk.properties is still needed for consul and tests.
 
-- name: define invoker domains
-  set_fact:
-    invoker_hosts: []
-
-- name: update the invoker domains
-  set_fact:
-    invoker_hosts: "{{ invoker_hosts }} + [ 'invoker-{{item}}.invoker.openwhisk' ]"
-  with_sequence: start=0 count={{ invoker_count }}
-
 - name: write whisk.properties template to openwhisk_home
   template:
     src: whisk.properties.j2

@@ -2,7 +2,6 @@ openwhisk.home={{ openwhisk_home }}
 
 python.27=python
 use.cli.download=false
-nginx.conf.dir={{ nginx_conf_dir }}
 testing.auth={{ openwhisk_home }}/ansible/files/auth.guest
 vcap.services.file=
 
@@ -50,12 +49,9 @@ limits.triggers.fires.perMinute={{ limits.triggers.fires.perMinute }}
 
 # DNS host resolution
 consulserver.host={{ consul_host }}
-invoker.hosts={{ invoker_hosts | join(",") }}
 kafka.host={{ kafka_host }}
 zookeeper.host={{ zookeeper_host }}
-edge.host={{ nginx_host }}
 loadbalancer.host={{ controller_host }}
-router.host={{ nginx_host }}
 
 {#
  # replaced host entries
@@ -104,9 +100,6 @@ invoker.serializeDockerOp={{ invoker.serializeDockerOp }}
 invoker.serializeDockerPull={{ invoker.serializeDockerPull }}
 invoker.useRunc={{ invoker_use_runc | default(invoker.useRunc) }}
 invoker.useReactivePool={{ invoker.useReactivePool }}
-
-invoker.instances={{ invoker_count }}
-#invoker.instances={{ invoker.instances }}
 
 consulserver.docker.endpoint={{ groups["consul_servers"]|first }}:{{ docker.port }}
 edge.docker.endpoint={{ groups["edge"]|first }}:{{ docker.port }}
