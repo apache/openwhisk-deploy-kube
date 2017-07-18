@@ -59,18 +59,3 @@ pushd $SCRIPTDIR/nginx
  rm blackbox-0.1.0.tar.gz
  rm -rf blackbox
 popd
-
-BuildKubeConfigureImage () {
-  pushd $SCRIPTDIR/..
-
-   WHISK_DEPLOY_IMAGE=$(docker build --build-arg KUBE_VERSION="$2" . | grep "Successfully built" | awk '{print $3}')
-   docker tag $WHISK_DEPLOY_IMAGE "$1"/whisk_config:"$2"-dev
-   docker push "$1"/whisk_config:"$2"-dev
-
-  popd
-}
-
-# build the OpenWhisk configure image
-BuildKubeConfigureImage "$1" "v1.5.6"
-BuildKubeConfigureImage "$1" "v1.6.2"
-

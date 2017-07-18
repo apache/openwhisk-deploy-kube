@@ -1,0 +1,26 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: couchdb-setup
+  namespace: openwhisk
+spec:
+  template:
+    metadata:
+      name: couchdb-setup
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: couchdb-setup
+        image: danlavine/whisk_configure_couchdb
+        env:
+        - name: "DB_HOST"
+          value: "couchdb.openwhisk"
+        - name: "DB_PREFIX"
+          value: "test_"
+        - name: "DB_USERNAME"
+          value: "whisk_admin"
+        - name: "DB_PASSWORD"
+          value: "some_passw0rd"
+        - name: "DB_PORT"
+          value: "5984"

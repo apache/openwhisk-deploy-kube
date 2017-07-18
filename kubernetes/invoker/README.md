@@ -40,6 +40,19 @@ To deploy an Invoker to specific Kube nodes, you will need to edit the
 file with Kubernetes [NodeSelectors](https://kubernetes.io/docs/concepts/configuration/assign-pod-node/).
 
 # Troubleshooting
+## Deploying to Minikube
+
+When deploying the Invoker to [Minikube](https://kubernetes.io/docs/getting-started-guides/minikube/)
+you might need to edit the Invoker's Docker Api Version.
+This is because Minikube uses Docker version 1.11.x.
+To do this, you will need to add the following properties
+to the invoker.yml file.
+
+```
+env:
+  - name: "DOCKER_API_VERSION"
+    value: "1.23"
+```
 ## Kubernetes Host Linux Versions
 
 Unfortunitaly when Deploying OpenWhisk on Kubernetes it currently mounts some

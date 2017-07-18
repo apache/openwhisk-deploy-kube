@@ -4,8 +4,8 @@
 
 set -x
 
-# delete OpenWhisk configure job
-kubectl -n openwhisk delete job configure-openwhisk
+# delete jobs
+kubectl -n openwhisk delete job couchdb-setup
 
 # delete deployments
 kubectl -n openwhisk delete deployment couchdb

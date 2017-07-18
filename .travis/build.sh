@@ -7,41 +7,42 @@ ROOTDIR="$SCRIPTDIR/../"
 
 cd $ROOTDIR
 
-# setup the appropriate configuration image
-sed -ie "s/whisk_config:v1.5.6/whisk_config:$TRAVIS_KUBE_VERSION/g" configure/configure_whisk.yml
-
 kubectl apply -f configure/openwhisk_kube_namespace.yml
-kubectl apply -f configure/configure_whisk.yml
 
-sleep 5
-
-CONFIGURE_POD=$(kubectl get pods --all-namespaces -o wide | grep configure | awk '{print $2}')
-
-PASSED=false
-TIMEOUT=0
-until $PASSED || [ $TIMEOUT -eq 25 ]; do
-  KUBE_DEPLOY_STATUS=$(kubectl -n openwhisk get jobs | grep configure-openwhisk | awk '{print $3}')
-  if [ $KUBE_DEPLOY_STATUS -eq 1 ]; then
-    PASSED=true
-    break
+jobHealthCheck () {
+  if [ -z "$1" ]; then
+    echo "Error, component health check called without a component parameter"
+    exit 1
   fi
 
-  kubectl get pods --all-namespaces -o wide --show-all
+  # wait for the pod to be created before getting the job name
+  sleep 5
+  JOB_NAME=$(kubectl -n openwhisk get pods -o wide --show-all | grep "$1" | awk '{print $1}')
 
-  let TIMEOUT=TIMEOUT+1
-  sleep 30
-done
+  PASSED=false
+  TIMEOUT=0
+  until $PASSED || [ $TIMEOUT -eq 25 ]; do
+    KUBE_DEPLOY_STATUS=$(kubectl -n openwhisk get pod $JOB_NAME -o wide --show-all | grep "$1" | awk '{print $3}')
+    if [ "$KUBE_DEPLOY_STATUS" == "Completed" ]; then
+      PASSED=true
+      break
+    fi
 
-if [ "$PASSED" = false ]; then
-  kubectl -n openwhisk logs $CONFIGURE_POD
-  kubectl get jobs --all-namespaces -o wide --show-all
-  kubectl get pods --all-namespaces -o wide --show-all
+    kubectl get pods --all-namespaces -o wide --show-all
 
-  echo "The job to configure OpenWhisk did not finish with an exit code of 1"
-  exit 1
-fi
+    let TIMEOUT=TIMEOUT+1
+    sleep 30
+  done
 
-echo "The job to configure OpenWhisk finished successfully"
+  if [ "$PASSED" = false ]; then
+    echo "Failed to finish deploying $1"
+
+    kubectl -n openwhisk logs $JOB_NAME
+    exit 1
+  fi
+
+  echo "$1 is up and running"
+}
 
 deploymentHealthCheck () {
   if [ -z "$1" ]; then
@@ -105,6 +106,16 @@ statefulsetHealthCheck () {
   echo "$1-0 is up and running"
 
 }
+
+# setup couchdb
+pushd kubernetes/couchdb
+  kubectl apply -f couchdb.yml
+
+  kubectl apply -f couchdb-setup.yml
+
+  jobHealthCheck "couchdb-setup"
+  deploymentHealthCheck "couchdb"
+popd
 
 # setup zookeeper
 pushd kubernetes/zookeeper
@@ -191,10 +202,10 @@ if [ -z "$RESULT" ]; then
   echo "FAILED! Could not invoked custom action"
 
   echo " ----------------------------- controller logs ---------------------------"
-  kubectl -n openwhisk logs $(kubectl get pods --all-namespaces -o wide | grep controller | awk '{print $2}')
+  kubectl -n openwhisk logs controller-0
 
   echo " ----------------------------- invoker logs ---------------------------"
-  kubectl -n openwhisk logs $(kubectl get pods --all-namespaces -o wide | grep invoker | awk '{print $2}')
+  kubectl -n openwhisk logs invoker-0
   exit 1
 fi
 

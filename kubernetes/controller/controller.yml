@@ -38,7 +38,7 @@ spec:
         # Update this image to the publix OpenWhisk Image once this PR is merged.
         # https://github.com/apache/incubator-openwhisk/pull/2452
         image: danlavine/whisk_controller
-        command: ["/bin/bash", "-c", "/controller/bin/controller `hostname | cut -d'-' -f2`"]
+        command: ["/bin/bash", "-c", "COMPONENT_NAME=$(hostname | cut -d'-' -f2) /controller/bin/controller `hostname | cut -d'-' -f2`"]
         ports:
         - name: controller
           containerPort: 8080
@@ -53,16 +53,6 @@ spec:
         env:
         - name: "PORT"
           value: "8080"
-        - name: "COMPONENT_NAME"
-          value: "controller"
-        - name: "KAFKA_NUMPARTITIONS"
-          value: "2"
-        - name: "SERVICE_CHECK_HTTP"
-          value: "/ping"
-        - name: "SERVICE_CHECK_TIMEOUT"
-          value: "2s"
-        - name: "SERVICE_CHECK_INTERVAL"
-          value: "15s"
 
         # Loadbalancer options
         - name: "LOADBALANCER_INVOKERBUSYTHRESHOLD"
@@ -105,9 +95,9 @@ spec:
 
         # properties for DB connection
         - name: "DB_USERNAME"
-          value: "couch_user"
+          value: "whisk_admin"
         - name: "DB_PASSWORD"
-          value: "couch_password"
+          value: "some_passw0rd"
         - name: "DB_PORT"
           value: "5984"
         - name:  "DB_PROTOCOL"
@@ -117,8 +107,8 @@ spec:
         - name: "DB_PROVIDER"
           value: "CouchDB"
         - name: "DB_WHISK_ACTIVATIONS"
-          value: "openwhisk_kube_activations"
+          value: "test_activations"
         - name: "DB_WHISK_ACTIONS"
-          value: "openwhisk_kube_whisks"
+          value: "test_whisks"
         - name: "DB_WHISK_AUTHS"
-          value: "openwhisk_kube_subjects"
+          value: "test_subjects"
