@@ -51,27 +51,10 @@ kubectl apply -f nginx.yml
 
 ## Update Nginx ConfigMap
 
-When updating the nginx ConfigMap, you will need to have the
-actual yaml file. To obtain the generated YAML file run:
+To update the nginx ConfigMap:
 
 ```
-kubectl -n openwhisk get cm nginx -o yaml > nginx_configmap.yml
-```
-
-Then you can manually edit the fields by hand. Please note that you
-will need to remove a couple of fields from the `metadata` section.
-
-```
-  creationTimestamp: 2017-06-21T15:39:56Z
-  resourceVersion: "2156"
-  selfLink: /api/v1/namespaces/openwhisk/configmaps/nginx
-  uid: e0585576-5697-11e7-aef9-080027a9c6c9
-```
-
-When you have finished editing the yaml file, run:
-
-```
-kubectl replace -f nginx_configmap.yml
+kubectl -n openwhisk edit cm nginx -o yaml
 ```
 
 Kubernetes will then go through an update any deployed Nginx
