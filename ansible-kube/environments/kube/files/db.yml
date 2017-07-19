@@ -17,8 +17,12 @@ spec:
 
       volumes:
       - name: couchdbconfig
-        secret:
-          secretName: couchdb-config
+        projected:
+          sources:
+          - secret:
+              name: couchdb-admins
+          - configMap:
+              name: couchdb-config
       - name: couchdbdata
         persistentVolumeClaim:
           claimName: openwhisk-couchdb

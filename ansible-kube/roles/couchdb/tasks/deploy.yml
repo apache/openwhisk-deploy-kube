@@ -12,11 +12,18 @@
 
 - name: copy template from local to remote (which is really local) and fill in templates
   template:
-    src: admins.ini.j2
-    dest: "{{ db_config_dir }}/admins.ini"
+    src: "{{ item }}.j2"
+    dest: "{{ db_config_dir }}/{{ item }}"
+  with_items:
+    - admins.ini
+    - query_server.ini
+
+- name: create configmap
+  shell: "kubectl create configmap couchdb-config --from-file={{ db_config_dir }}/query_server.ini"
+  ignore_errors: yes
 
 - name: create secrets
-  shell: "kubectl create secret generic couchdb-config --from-file={{ db_config_dir }}//admins.ini"
+  shell: "kubectl create secret generic couchdb-admins --from-file={{ db_config_dir }}//admins.ini"
   ignore_errors: yes
 
 - name: create db pod
@@ -28,15 +35,3 @@
     host: "{{ db_host }}"
     port: "{{ db_port }}"
     timeout: 60
-
-- name: disable reduce limit on views
-  uri:
-    url: "{{ db_protocol }}://{{ db_host }}:{{ db_port }}/_config/query_server_config/reduce_limit"
-    method: PUT
-    body: >
-        "false"
-    body_format: json
-    status_code: 200
-    user: "{{ db_username }}"
-    password: "{{ db_password }}"
-    force_basic_auth: yes
