@@ -25,8 +25,6 @@ spec:
       - name: consuldata
         persistentVolumeClaim:
           claimName: openwhisk-consul
-      - name: consulconf2
-        emptyDir: {}
 
       initContainers:
       - name: reset-consul
@@ -36,8 +34,6 @@ spec:
         volumeMounts:
         - name: consuldata
           mountPath: "/consul/data"
-        - name: consulconf2
-          mountPath: "/consul/config2"
         env:
         - name: MY_IP
           valueFrom:
@@ -91,8 +87,6 @@ spec:
           mountPath: "/consul/config/config.json"
         - name: consuldata
           mountPath: "/consul/data"
-        - name: consulconf2
-          mountPath: "/consul/config2"
 
       - name: registrator
         image: gliderlabs/registrator
