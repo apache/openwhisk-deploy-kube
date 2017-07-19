@@ -44,7 +44,7 @@ spec:
       - name: consul
         imagePullPolicy: IfNotPresent
         image: consul:0.7.5
-        args: [ "agent", "-server", "-config-file", "/consul/config/config.json", "-config-file", "/consul/config2/config.json" ]
+        args: [ "agent", "-server", "-config-file", "/consul/config/config.json" ]
         ports:
         - name: server
           protocol: TCP
