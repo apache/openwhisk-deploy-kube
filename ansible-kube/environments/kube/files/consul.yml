@@ -32,7 +32,7 @@ spec:
       - name: reset-consul
         imagePullPolicy: IfNotPresent
         image: busybox
-        command: ['sh', '-c', '[ ! -d /consul/data/raft ] || (echo "[\"$MY_IP:8300\"]" > /consul/data/raft/peers.json && echo "[\"$MY_IP:8300\"]" > /consul/data/raft/peers2.json) && echo "{\"advertise_addr\":\"$MY_IP\", \"retry_join\": [\"[$MY_IP]:8301\"]}" > /consul/config2/config.json']
+        command: ['sh', '-c', '[ ! -d /consul/data/raft ] || echo "[\"$MY_IP:8300\"]" > /consul/data/raft/peers.json']
         volumeMounts:
         - name: consuldata
           mountPath: "/consul/data"
