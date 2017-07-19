@@ -43,7 +43,7 @@ fi
 
 echo "The job to configure OpenWhisk finished successfully"
 
-componentHealthCheck () {
+deploymentHealthCheck () {
   if [ -z "$1" ]; then
     echo "Error, component health check called without a component parameter"
     exit 1
@@ -74,12 +74,51 @@ componentHealthCheck () {
   echo "$1 is up and running"
 }
 
+statefulsetHealthCheck () {
+  if [ -z "$1" ]; then
+    echo "Error, StatefulSet health check called without a parameter"
+    exit 1
+  fi
+
+  PASSED=false
+  TIMEOUT=0
+  until $PASSED || [ $TIMEOUT -eq 25 ]; do
+    KUBE_DEPLOY_STATUS=$(kubectl -n openwhisk get pods -o wide | grep "$1"-0 | awk '{print $3}')
+    if [ "$KUBE_DEPLOY_STATUS" == "Running" ]; then
+      PASSED=true
+      break
+    fi
+
+    kubectl get pods --all-namespaces -o wide --show-all
+
+    let TIMEOUT=TIMEOUT+1
+    sleep 30
+  done
+
+  if [ "$PASSED" = false ]; then
+    echo "Failed to finish deploying $1"
+
+    kubectl -n openwhisk logs $(kubectl -n openwhisk get pods -o wide | grep "$1"-0 | awk '{print $1}')
+    exit 1
+  fi
+
+  echo "$1-0 is up and running"
+
+}
+
+# setup the controller
+pushd kubernetes/controller
+  kubectl apply -f controller.yml
+
+  statefulsetHealthCheck "controller"
+popd
+
 # setup the invoker
 pushd kubernetes/invoker
   kubectl apply -f invoker.yml
 
   # wait until the invoker is ready
-  componentHealthCheck "invoker"
+  statefulsetHealthCheck "invoker"
 popd
 
 # setup nginx
@@ -90,7 +129,7 @@ pushd kubernetes/nginx
   kubectl apply -f nginx.yml
 
   # wait until nginx is ready
-  componentHealthCheck "nginx"
+  deploymentHealthCheck "nginx"
 popd
 
 AUTH_WSK_SECRET=789c46b1-71f6-4ed5-8c54-816aa4f8c502:abczO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP

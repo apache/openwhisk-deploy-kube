@@ -97,6 +97,7 @@ kubectl -n openwhisk logs configure-openwhisk-XXXXX
 
 Once the configuration job successfully finishes, you will need
 manually deploy the rest of the OpenWhisk components.
+* [Controller](kubernetes/controller/README.md)
 * [Invoker](kubernetes/invoker/README.md)
 * [Nginx](kubernetes/nginx/README.md)
 
@@ -280,7 +281,6 @@ We also have experimental support for
 
 ## Enhancements
 
-* Allow users to provide custom certs for Nginx
 * Enable the configuration job to run any number of times. This way it updates an already running
   OpenWhisk deployment on all subsequent runs
 * Use a public Edge Docker image once this [issue](https://github.com/apache/incubator-openwhisk/issues/2152)
