@@ -16,6 +16,6 @@ spec:
       restartPolicy: Never
       containers:
       - name: configure-openwhisk
-        image: danlavine/whisk_config:v1.5.6
+        image: mastermikeyboy/whisk_config:v1.6.2-dev
         imagePullPolicy: Always
         command: [ "/incubator-openwhisk-deploy-kube/configure/configure.sh" ]

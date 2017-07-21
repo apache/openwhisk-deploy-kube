@@ -15,6 +15,18 @@ spec:
     spec:
       restartPolicy: Always
 
+      volumes:
+      - name: couchdbconfig
+        projected:
+          sources:
+          - secret:
+              name: couchdb-admins
+          - configMap:
+              name: couchdb-config
+      - name: couchdbdata
+        persistentVolumeClaim:
+          claimName: openwhisk-couchdb
+
       containers:
       - name: couchdb
         imagePullPolicy: IfNotPresent
@@ -22,3 +34,8 @@ spec:
         ports:
         - name: couchdb
           containerPort: 5984
+        volumeMounts:
+        - name: couchdbconfig
+          mountPath: /usr/local/etc/couchdb/local.d/
+        - name: couchdbdata
+          mountPath: /usr/local/var/lib/couchdb

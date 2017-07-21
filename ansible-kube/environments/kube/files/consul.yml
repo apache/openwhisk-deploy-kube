@@ -12,6 +12,7 @@ spec:
     metadata:
       labels:
         name: consul
+            
     spec:
       restartPolicy: Always
       volumes:
@@ -21,10 +22,29 @@ spec:
       - name: consulconf
         configMap:
           name: consul
+      - name: consuldata
+        persistentVolumeClaim:
+          claimName: openwhisk-consul
+
+      initContainers:
+      - name: reset-consul
+        imagePullPolicy: IfNotPresent
+        image: busybox
+        command: ['sh', '-c', '[ ! -d /consul/data/raft ] || echo "[\"$MY_IP:8300\"]" > /consul/data/raft/peers.json']
+        volumeMounts:
+        - name: consuldata
+          mountPath: "/consul/data"
+        env:
+        - name: MY_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+
       containers:
       - name: consul
         imagePullPolicy: IfNotPresent
-        image: consul:v0.7.0
+        image: consul:0.7.5
+        args: [ "agent", "-server", "-config-file", "/consul/config/config.json" ]
         ports:
         - name: server
           protocol: TCP
@@ -65,9 +85,12 @@ spec:
         volumeMounts:
         - name: consulconf
           mountPath: "/consul/config/config.json"
+        - name: consuldata
+          mountPath: "/consul/data"
 
       - name: registrator
         image: gliderlabs/registrator
+        imagePullPolicy: IfNotPresent
         env:
         - name: MY_POD_IP
           valueFrom:

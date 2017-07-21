@@ -17,12 +17,15 @@ kubectl -n openwhisk delete statefulsets invoker
 kubectl -n openwhisk delete deployment nginx
 
 # delete configmaps
+kubectl -n openwhisk delete cm couchdb-config
 kubectl -n openwhisk delete cm consul
 kubectl -n openwhisk delete cm controller
 kubectl -n openwhisk delete cm nginx
 
 # delete secrets
 kubectl -n openwhisk delete secret nginx
+kubectl -n openwhisk delete secret couchdb-admins
+
 
 # delete services
 kubectl -n openwhisk delete service couchdb
