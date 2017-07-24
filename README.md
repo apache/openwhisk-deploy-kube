@@ -11,9 +11,7 @@ This repo can be used to deploy OpenWhisk to a Kubernetes cluster.
 * [Setting up Kuberentes](#setting-up-kubernetes)
 * [Configuring OpenWhisk](#configure-openwhisk)
 * [Cleanup](#cleanup)
-* [Troubleshooting](#troubleshooting)
-* [Manually Building Custom Docker Files](#manually-building-custom-docker-files)
-* [Limitations and Enhancements](#limitations-and-enhancements)
+* [Limitations](#limitations)
 * [Issues](#issues)
 
 # Requirements
@@ -118,70 +116,7 @@ and whatever else might be there. For this, you can run the following script:
 ```
 ./configure/cleanup.sh
 ```
-# Troubleshooting
-## Kafka
-
-When inspecting kafka logs of various components and they are not able to
-send/receive message then Kafka is the usual problem. If everything is deployed
-on a single machine, then you might need to allow Kube Pods to communicate with
-themselves over a Kube Service. Setting a network to promiscous mode can be the
-solution will enable network traffic to route in a loop back to itself. E.g:
-
-```
-ip link set docker0 promisc on
-```
-
-## Kube RBAC
-
-When deploying the configuration pod, if it fails with a
-`error validating data: the server does not allow access to the requested resource;`
-error then you probably do not have permissions to create Pods from a Pod running
-in the Kube cluster. You will need to create a ClusterRoleBinding with proper
-security settings. For information about the role bindings,
-take a look at the info [here](https://kubernetes.io/docs/admin/authorization/rbac/).
-
-# Manually Building Custom Docker Files
-
-To build these images, there is a helper script that installs all
-required dependencies and the Docker images themselves. For example,
-one the required dependencies is the wsk cli and to build it you will need
-to download the [OpenWhisk repo](https://github.com/openwhisk/openwhisk)
-and setup your invironment to build the docker images via gradle. That
-setup can be found [here](https://github.com/apache/incubator-openwhisk#native-development).
-
-**Important**
-To build custom docker images, you will need to be on a Linux machine.
-During the `wsk` cli build process it mounts a number of files from the
-host machine. Because of this, Golang determines that the `wsk` build
-architecture should be for macOS, but of course this is the wrong version
-when running later. It needs to be built for the Linux architecture.
-
-To use the script, it takes in 2 arguments:
-1. (Required) The first argument is the Docker account to push the built images
-   to. For Nginx, it will tag the image as `account_name/whisk_nginx:latest`
-   and the OpenWhisk configuration image will be tagged
-   `account_name/whisk_config:dev-v1.5.6` and `account_name/whisk_config:dev-v1.6.2`.
-
-   NOTE:  **log into Docker** before running the script or it will
-   fail to properly upload the docker images.
-
-2. (Optional) The second argument is the location of where the
-    repo is installed locally. By default it assumes that this repo exists at
-   `$HOME/workspace/openwhisk`.
-
-If you plan on building your own images and would like to change from `danlavine's`,
-then make sure to update the
-[configure_whisk.yml](configure/configure_whisk.yml) and
-[nginx](ansible-kube/environments/kube/files/nginx.yml) with your images.
-
-To run the script, use the command:
-
-```
-docker/build <Docker username> <(optional) openwhisk dir>
-```
-
-# Limitations and Enhancements
-## Limitations
+# Limitations
 
 A couple of components for OpenWhisk on Kube deployment strategy requires custom
 built Docker images. One such component is Nginx and currently resides at

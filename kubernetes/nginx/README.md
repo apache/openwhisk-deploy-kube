@@ -102,4 +102,21 @@ file has routes for Controller [StatefulSet][StatefulSet] addresses.
 Specifically [these lines](https://github.com/apache/incubator-openwhisk-deploy-kube/tree/master/kubernetes/nginx/nginx.conf#L15-L20).
 will need to be updated with a list of all available routes.
 
+# Create Nginx Docker Image
+
+To build the Nginx docker image for Kubernetes on OpenWhisk,
+you will need to run the build script [build.sh](docker/build.sh).
+This script requires one parameter, which is the repo to bush
+the Docker image to.
+
+E.G
+```
+docker/builds.sh <danlavine>
+```
+
+This script goes through and donwload the OpenWhisk reop under the
+tmp directory, builds the Blackbox image and copies it into the
+Docker image.  Then, each of the published WSK CLIs are download into
+the Docker image so that users are able to download them as usual.
+
 [StatefulSet]: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/
