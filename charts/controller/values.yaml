@@ -1,0 +1,31 @@
+# Default values for controller.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+replicaCount: 1
+namespace: openwhisk
+versionName: kubernetes
+versionDate: "2017-07-21"
+image:
+  repository: openwhisk/controller
+  tag: latest
+  pullPolicy: IfNotPresent
+service:
+  name: controller
+  type: ClusterIP
+  externalPort: 8080
+  internalPort: 8080
+controller:
+  jvm:
+    heap: "2g"
+  arguments: "-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.port=1098"
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #  cpu: 100m
+  #  memory: 128Mi
+  #requests:
+  #  cpu: 100m
+  #  memory: 128Mi

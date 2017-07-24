@@ -1,0 +1,69 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "fullname" . }}
+  namespace: openwhisk
+  labels:
+    name: {{ template "name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+  annotations:
+    pod.beta.kubernetes.io/init-containers: '[
+        {
+            "name": "init-nginx",
+            "image": "berndtj/init-nginx",
+            "command": ["sh", "-c", "certs.sh {{ .Values.domainName }} && (kubectl create secret tls nginx --cert=certs/cert.pem --key=certs/key.pem || true)"]
+        }
+    ]'
+spec:
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      labels:
+        name: {{ template "name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      restartPolicy: Always
+      volumes:
+      - name: nginx-certs
+        secret:
+          secretName: nginx
+      - name: nginx-conf
+        configMap:
+          name: nginx
+      - name: logs
+        emptyDir: {}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.service.ports.http.internalPort }}
+              name: http
+            - containerPort: {{ .Values.service.ports.httpsApi.internalPort }}
+              name: https-api
+            - containerPort: {{ .Values.service.ports.httpsAdmin.internalPort }}
+              name: https-admin
+          livenessProbe:
+            tcpSocket:
+              port: {{ .Values.service.ports.httpsApi.internalPort }}
+            initialDelaySeconds: 5
+          readinessProbe:
+            tcpSocket:
+              port: {{ .Values.service.ports.httpsApi.internalPort }}
+            initialDelaySeconds: 5
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+    {{- if .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.nodeSelector | indent 8 }}
+    {{- end }}
+          volumeMounts:
+          - name: nginx-conf
+            mountPath: "/etc/nginx/nginx.conf"
+            subPath: "nginx.conf"
+          - name: nginx-certs
+            mountPath: "/etc/nginx/certs"
+          - name: logs
+            mountPath: "/logs"
