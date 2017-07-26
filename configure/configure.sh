@@ -37,8 +37,6 @@ pushd /incubator-openwhisk-deploy-kube/ansible
 
   # Create all of the necessary services
   kubectl apply -f environments/kube/files/db-service.yml
-  kubectl apply -f environments/kube/files/zookeeper-service.yml
-  kubectl apply -f environments/kube/files/kafka-service.yml
 
   if deployCouchDB; then
     # Create and configure the CouchDB deployment
@@ -46,7 +44,4 @@ pushd /incubator-openwhisk-deploy-kube/ansible
     ansible-playbook -i environments/kube initdb.yml
     ansible-playbook -i environments/kube wipe.yml
   fi
-
-  # Run through the openwhisk deployment
-  ansible-playbook -i environments/kube openwhisk.yml
 popd

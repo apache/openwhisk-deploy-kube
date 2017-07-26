@@ -16,16 +16,14 @@ kubectl apply -f invoker.yml
 ## Increase Controller Count
 
 If you want to increase the number of controllers deployed,
-then you will also need to update part of the Nginx configuration.
-First, you will need to update the replication count for the
-Controllers [here](https://github.com/apache/incubator-openwhisk-deploy-kube/tree/master/kubernetes/controller/controller.yml#L10).
+you will need to update a number of properties, for Kafka and Nginx.
 
-After updating the controller count, you will need to update
-the available routes for Nginx. This is because the controllers
-are not yet purely HA, but are in a failover mode. To update Nginx
-with the proper routes, take a look at
-[these properties](https://github.com/apache/incubator-openwhisk-deploy-kube/tree/master/kubernetes/nginx/nginx.conf#L15-L20).
-The routes for the controllers and how they are determined can
-be found in the [StatefulSet][StatefulSet] docs.
+* Kafka: Look at the Kafka [README](https://github.com/apache/incubator-openwhisk-deploy-kube/blob/master/kubernetes/kafka/README.md)
+
+* Controller: You will need to update the replication count for the
+  Controllers [here](https://github.com/apache/incubator-openwhisk-deploy-kube/tree/master/kubernetes/controller/controller.yml#L10)
+  and redeploy.
+
+* Nginx: Take a look at the Nginx [README](https://github.com/apache/incubator-openwhisk-deploy-kube/blob/master/kubernetes/nginx/README.md#increase-controller-count)
 
 [StatefulSet]: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/

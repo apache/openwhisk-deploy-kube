@@ -1,0 +1,86 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka
+  namespace: openwhisk
+  labels:
+    name: kafka
+spec:
+  selector:
+    name: kafka
+  ports:
+    - port: 9092
+      targetPort: 9092
+      name: kafka
+
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: kafka
+  namespace: openwhisk
+  labels:
+    name: kafka
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: kafka
+    spec:
+      restartPolicy: Always
+
+      containers:
+      - name: kafka
+        imagePullPolicy: IfNotPresent
+        # custom kafka image. Not sure what we want to do with this.
+        image: danlavine/whisk_kafka
+        ports:
+        - name: kafka
+          containerPort: 9092
+        env:
+        - name: "KAFKA_ADVERTISED_HOST_NAME"
+          value: kafka.openwhisk
+        - name: "KAFKA_PORT"
+          value: "9092"
+
+        # message settings
+        - name: "REPLICATION_FACTOR"
+          value: "1"
+        - name: "PARTITIONS"
+          value: "1"
+
+        # health topic settings
+        - name: "KAFKA_TOPICS_HEALTH_RETENTIONBYTES"
+          value: "536870912"
+        - name: "KAFKA_TOPICS_HEALTH_RETENTIONMS"
+          value: "1073741824"
+        - name: "KAFKA_TOPICS_HEALTH_SEGMENTBYTES"
+          value: "3600000"
+
+        # complete topic settings
+        - name: "CONTROLLER_COUNT"
+          value: "2"
+        - name: "KAFKA_TOPICS_COMPLETED_RETENTIONBYTES"
+          value: "536870912"
+        - name: "KAFKA_TOPICS_COMPLETED_RETENTIONMS"
+          value: "1073741824"
+        - name: "KAFKA_TOPICS_COMPLETED_SEGMENTBYTES"
+          value: "3600000"
+
+        # invoker topic settings
+        - name: "INVOKER_COUNT"
+          value: "1"
+        - name: "KAFKA_TOPICS_INVOKER_RETENTIONBYTES"
+          value: "536870912"
+        - name: "KAFKA_TOPICS_INVOKER_RETENTIONMS"
+          value: "1073741824"
+        - name: "KAFKA_TOPICS_INVOKER_SEGMENTBYTES"
+          value: "3600000"
+
+        # zookeeper info
+        - name: "ZOOKEEPER_HOST"
+          value: "zookeeper.openwhisk"
+        - name: "ZOOKEEPER_PORT"
+          value: "2181"

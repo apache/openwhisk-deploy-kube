@@ -1,6 +1,8 @@
 Nginx
 -----
 
+# Deploy Nginx
+
 The Nginx Pod needs to be configured with custom certificates
 and nginx configuration file. To achieve this, nginx will need
 to create a Kube ConfigMap for the `nginx.conf` file and a
@@ -39,7 +41,7 @@ namespace run the following command:
 kubectl -n openwhisk create secret tls nginx --cert=certs/cert.pem --key=certs/key.pem
 ```
 
-## Deploy Nginx
+## Deploying Nginx
 
 After successfully [creating the nginx ConfigMap](#create-nginx-configmap)
 and [creating the Secrets](#create-nginx-secrets)
@@ -49,6 +51,7 @@ you will be able to create the Nginx Service and Deployment.
 kubectl apply -f nginx.yml
 ```
 
+# Deployment Changes
 ## Update Nginx ConfigMap
 
 To update the nginx ConfigMap:
@@ -90,3 +93,13 @@ kubectl replace -f nginx_secrets.yml
 Kubernetes will then go through an update any deployed Nginx
 instances. Updating all of the keys defined in the nginx
 Secrets.
+
+## Increase Controller Count
+
+If you are updating the number of controllers being deployed with OpenWhiks
+from the default 2, you will need to make a few changes. The Nginx conf
+file has routes for Controller [StatefulSet][StatefulSet] addresses.
+Specifically [these lines](https://github.com/apache/incubator-openwhisk-deploy-kube/tree/master/kubernetes/nginx/nginx.conf#L15-L20).
+will need to be updated with a list of all available routes.
+
+[StatefulSet]: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/
