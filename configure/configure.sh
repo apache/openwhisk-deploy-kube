@@ -37,7 +37,6 @@ pushd /incubator-openwhisk-deploy-kube/ansible
 
   # Create all of the necessary services
   kubectl apply -f environments/kube/files/db-service.yml
-  kubectl apply -f environments/kube/files/consul-service.yml
   kubectl apply -f environments/kube/files/zookeeper-service.yml
   kubectl apply -f environments/kube/files/kafka-service.yml
 
