@@ -9,7 +9,7 @@ instance needs to know which index it is. The Controller
 can be deployed with:
 
 ```
-kubectl apply -f invoker.yml
+kubectl apply -f controller.yml
 ```
 
 # Controller Deployment Changes
