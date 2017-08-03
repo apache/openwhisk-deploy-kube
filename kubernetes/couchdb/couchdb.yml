@@ -33,7 +33,19 @@ spec:
       containers:
       - name: couchdb
         imagePullPolicy: IfNotPresent
-        image: couchdb:1.6
+        image: danlavine/whisk_couchdb
+        command: ["/init.sh"]
         ports:
         - name: couchdb
           containerPort: 5984
+        env:
+        - name: "DB_HOST"
+          value: "couchdb.openwhisk"
+        - name: "DB_PREFIX"
+          value: "test_"
+        - name: "DB_USERNAME"
+          value: "whisk_admin"
+        - name: "DB_PASSWORD"
+          value: "some_passw0rd"
+        - name: "DB_PORT"
+          value: "5984"

@@ -9,39 +9,30 @@ cd $ROOTDIR
 
 kubectl apply -f configure/openwhisk_kube_namespace.yml
 
-jobHealthCheck () {
-  if [ -z "$1" ]; then
-    echo "Error, component health check called without a component parameter"
-    exit 1
-  fi
-
+couchdbHealthCheck () {
   # wait for the pod to be created before getting the job name
   sleep 5
-  JOB_NAME=$(kubectl -n openwhisk get pods -o wide --show-all | grep "$1" | awk '{print $1}')
+  POD_NAME=$(kubectl -n openwhisk get pods -o wide --show-all | grep "couchdb" | awk '{print $1}')
 
   PASSED=false
   TIMEOUT=0
-  until $PASSED || [ $TIMEOUT -eq 25 ]; do
-    KUBE_DEPLOY_STATUS=$(kubectl -n openwhisk get pod $JOB_NAME -o wide --show-all | grep "$1" | awk '{print $3}')
-    if [ "$KUBE_DEPLOY_STATUS" == "Completed" ]; then
-      PASSED=true
+  until [ $TIMEOUT -eq 25 ]; do
+    if [ -n $(kubectl -n openwhisk logs $POD_NAME | grep "Apache CouchDB has started on http://0.0.0.0:5984") ]; then
       break
     fi
-
-    kubectl get pods --all-namespaces -o wide --show-all
 
     let TIMEOUT=TIMEOUT+1
     sleep 30
   done
 
-  if [ "$PASSED" = false ]; then
-    echo "Failed to finish deploying $1"
+  if [ $TIMEOUT -eq 25 ]; then
+    echo "Failed to finish deploying CouchDB"
 
-    kubectl -n openwhisk logs $JOB_NAME
+    kubectl -n openwhisk logs $POD_NAME
     exit 1
   fi
 
-  echo "$1 is up and running"
+  echo "CouchDB is up and running"
 }
 
 deploymentHealthCheck () {
@@ -111,10 +102,7 @@ statefulsetHealthCheck () {
 pushd kubernetes/couchdb
   kubectl apply -f couchdb.yml
 
-  kubectl apply -f couchdb-setup.yml
-
-  jobHealthCheck "couchdb-setup"
-  deploymentHealthCheck "couchdb"
+  couchdbHealthCheck()
 popd
 
 # setup zookeeper
