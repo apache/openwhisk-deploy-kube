@@ -17,7 +17,7 @@ couchdbHealthCheck () {
   PASSED=false
   TIMEOUT=0
   until [ $TIMEOUT -eq 25 ]; do
-    if [ -n $(kubectl -n openwhisk logs $POD_NAME | grep "Apache CouchDB has started on http://0.0.0.0:5984") ]; then
+    if [ -n "$(kubectl -n openwhisk logs $POD_NAME | grep "Apache CouchDB has started on http://0.0.0.0:5984")" ]; then
       break
     fi
 
@@ -102,7 +102,7 @@ statefulsetHealthCheck () {
 pushd kubernetes/couchdb
   kubectl apply -f couchdb.yml
 
-  couchdbHealthCheck()
+  couchdbHealthCheck
 popd
 
 # setup zookeeper
