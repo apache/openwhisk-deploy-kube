@@ -21,7 +21,7 @@ pushd /openwhisk
 
   # if auth whisk system overwrite file
   if [ -n "$AUTH_WHISK_SYSTEM" ]; then
-    echo "$AUTH_WHISK_SYSTEM" > /openwhisk/ansible/files/auth.guest
+    echo "$AUTH_WHISK_SYSTEM" > /openwhisk/ansible/files/auth.whisk.system
   fi
 
   # start couchdb with a background process
