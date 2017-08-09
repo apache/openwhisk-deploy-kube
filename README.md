@@ -128,7 +128,7 @@ Now you should be able to setup the wsk cli like normal and interact with
 Openwhisk.
 
 ```
-wsk property set --auth 789c46b1-71f6-4ed5-8c54-816aa4f8c502:abczO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP --apihost https://[nginx_ip]:$WSK_PORT
+wsk property set --auth 23bc46b1-71f6-4ed5-8c54-816aa4f8c502:123zO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP --apihost https://[nginx_ip]:$WSK_PORT
 ```
 
 Lastly, you will need to install the initial catalog. To do this, you will need
