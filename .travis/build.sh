@@ -7,41 +7,33 @@ ROOTDIR="$SCRIPTDIR/../"
 
 cd $ROOTDIR
 
-# setup the appropriate configuration image
-sed -ie "s/whisk_config:v1.5.6/whisk_config:$TRAVIS_KUBE_VERSION/g" configure/configure_whisk.yml
-
 kubectl apply -f configure/openwhisk_kube_namespace.yml
-kubectl apply -f configure/configure_whisk.yml
 
-sleep 5
+couchdbHealthCheck () {
+  # wait for the pod to be created before getting the job name
+  sleep 5
+  POD_NAME=$(kubectl -n openwhisk get pods -o wide --show-all | grep "couchdb" | awk '{print $1}')
 
-CONFIGURE_POD=$(kubectl get pods --all-namespaces -o wide | grep configure | awk '{print $2}')
+  PASSED=false
+  TIMEOUT=0
+  until [ $TIMEOUT -eq 25 ]; do
+    if [ -n "$(kubectl -n openwhisk logs $POD_NAME | grep "Apache CouchDB has started on http://0.0.0.0:5984")" ]; then
+      break
+    fi
 
-PASSED=false
-TIMEOUT=0
-until $PASSED || [ $TIMEOUT -eq 25 ]; do
-  KUBE_DEPLOY_STATUS=$(kubectl -n openwhisk get jobs | grep configure-openwhisk | awk '{print $3}')
-  if [ $KUBE_DEPLOY_STATUS -eq 1 ]; then
-    PASSED=true
-    break
+    let TIMEOUT=TIMEOUT+1
+    sleep 30
+  done
+
+  if [ $TIMEOUT -eq 25 ]; then
+    echo "Failed to finish deploying CouchDB"
+
+    kubectl -n openwhisk logs $POD_NAME
+    exit 1
   fi
 
-  kubectl get pods --all-namespaces -o wide --show-all
-
-  let TIMEOUT=TIMEOUT+1
-  sleep 30
-done
-
-if [ "$PASSED" = false ]; then
-  kubectl -n openwhisk logs $CONFIGURE_POD
-  kubectl get jobs --all-namespaces -o wide --show-all
-  kubectl get pods --all-namespaces -o wide --show-all
-
-  echo "The job to configure OpenWhisk did not finish with an exit code of 1"
-  exit 1
-fi
-
-echo "The job to configure OpenWhisk finished successfully"
+  echo "CouchDB is up and running"
+}
 
 deploymentHealthCheck () {
   if [ -z "$1" ]; then
@@ -105,6 +97,13 @@ statefulsetHealthCheck () {
   echo "$1-0 is up and running"
 
 }
+
+# setup couchdb
+pushd kubernetes/couchdb
+  kubectl apply -f couchdb.yml
+
+  couchdbHealthCheck
+popd
 
 # setup zookeeper
 pushd kubernetes/zookeeper
@@ -191,10 +190,10 @@ if [ -z "$RESULT" ]; then
   echo "FAILED! Could not invoked custom action"
 
   echo " ----------------------------- controller logs ---------------------------"
-  kubectl -n openwhisk logs $(kubectl get pods --all-namespaces -o wide | grep controller | awk '{print $2}')
+  kubectl -n openwhisk logs controller-0
 
   echo " ----------------------------- invoker logs ---------------------------"
-  kubectl -n openwhisk logs $(kubectl get pods --all-namespaces -o wide | grep invoker | awk '{print $2}')
+  kubectl -n openwhisk logs invoker-0
   exit 1
 fi
 

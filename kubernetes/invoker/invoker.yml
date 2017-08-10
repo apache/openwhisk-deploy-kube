@@ -99,9 +99,9 @@ spec:
 
           # properties for DB connection
           - name: "DB_USERNAME"
-            value: "couch_user"
+            value: "whisk_admin"
           - name: "DB_PASSWORD"
-            value: "couch_password"
+            value: "some_passw0rd"
           - name: "DB_PORT"
             value: "5984"
           - name:  "DB_PROTOCOL"
@@ -111,11 +111,11 @@ spec:
           - name: "DB_PROVIDER"
             value: "CouchDB"
           - name: "DB_WHISK_ACTIVATIONS"
-            value: "openwhisk_kube_activations"
+            value: "test_activations"
           - name: "DB_WHISK_ACTIONS"
-            value: "openwhisk_kube_whisks"
+            value: "test_whisks"
           - name: "DB_WHISK_AUTHS"
-            value: "openwhisk_kube_subjects"
+            value: "test_subjects"
         ports:
         - name: invoker
           containerPort: 8080

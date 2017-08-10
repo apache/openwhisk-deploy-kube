@@ -4,9 +4,6 @@
 
 set -x
 
-# delete OpenWhisk configure job
-kubectl -n openwhisk delete job configure-openwhisk
-
 # delete deployments
 kubectl -n openwhisk delete deployment couchdb
 kubectl -n openwhisk delete deployment zookeeper
