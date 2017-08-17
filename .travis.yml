@@ -13,7 +13,9 @@ services:
   - docker
 
 before_install:
-  - .travis/setup.sh
+  - ./tools/travis/setupscan.sh
+  - ./tools/travis/setup.sh
 
 script:
-  - .travis/build.sh
+  - ./tools/travis/scancode.sh
+  - ./tools/travis/build.sh
