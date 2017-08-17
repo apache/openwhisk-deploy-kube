@@ -14,8 +14,8 @@ services:
 
 before_install:
   - ./tools/travis/setupscan.sh
-  - ./tools/travis/setup.sh
+  - .travis/setup.sh
 
 script:
   - ./tools/travis/scancode.sh
-  - ./tools/travis/build.sh
+  - .travis/build.sh
