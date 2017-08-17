@@ -1,0 +1,15 @@
+kind: Service
+apiVersion: v1
+metadata:
+  namespace: openwhisk
+  name: nginx-service
+  labels:
+    name: nginx
+spec:
+  type: NodePort
+  selector:
+    name: nginx
+  ports:
+    - protocol: TCP
+      port: 443
+      targetPort: 443

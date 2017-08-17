@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "fullname" . }}
+data:
+  whisk.version.name: "{{ .Values.versionName }}"
+  whisk.version.date: "{{ .Values.versionDate }}"
+  whisk.version.buildno: "{{ .Values.image.tag }}"
+  java.opts: "-Xmx{{ .Values.controller.jvm.heap }}"
+  controller.opts: "{{ .Values.controller.arguments }}"

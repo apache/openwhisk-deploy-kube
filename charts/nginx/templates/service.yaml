@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "fullname" . }}
+  namespace: openwhisk
+  labels:
+    name: {{ template "name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: NodePort
+  selector:
+    name: {{ template "name" . }}
+    release: {{ .Release.Name }}
+  ports:
+    - port: {{ .Values.service.ports.http.internalPort }}
+      targetPort: {{ .Values.service.ports.http.externalPort }}
+      name: http
+    - port: {{ .Values.service.ports.httpsApi.internalPort }}
+      targetPort: {{ .Values.service.ports.httpsApi.externalPort }}
+      name: https-api
+    - port: {{ .Values.service.ports.httpsAdmin.internalPort }}
+      targetPort: {{ .Values.service.ports.httpsAdmin.externalPort }}
+      name: https-admin

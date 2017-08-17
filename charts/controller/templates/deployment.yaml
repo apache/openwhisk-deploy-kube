@@ -1,0 +1,83 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "fullname" . }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ template "name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["/bin/bash", "-c", "/controller/bin/controller 0"]
+          ports:
+            - name: controller
+              containerPort: {{ .Values.service.internalPort }}
+          env:
+            - name: "COMPONENT_NAME"
+              value: "controller"
+            - name: "CONSULSERVER_HOST"
+              value: "consul.openwhisk"
+            - name: "CONSUL_HOST_PORT4"
+              value: "8500"
+            - name: "KAFKA_NUMPARTITIONS"
+              value: "2"
+            - name: "SERVICE_CHECK_HTTP"
+              value: "/ping"
+            - name: "SERVICE_CHECK_TIMEOUT"
+              value: "2s"
+            - name: "SERVICE_CHECK_INTERVAL"
+              value: "15s"
+            - name: "PORT"
+              value: "{{ .Values.service.internalPort }}"
+            - name: "WHISK_VERSION_NAME"
+              valueFrom:
+                configMapKeyRef:
+                  name: controller
+                  key: whisk.version.name
+            - name: "WHISK_VERSION_DATE"
+              valueFrom:
+                configMapKeyRef:
+                  name: controller
+                  key: whisk.version.date
+            - name: "WHISK_VERSION_BUILDNO"
+              valueFrom:
+                configMapKeyRef:
+                  name: controller
+                  key: whisk.version.buildno
+            - name: "JAVA_OPTS"
+              valueFrom:
+                configMapKeyRef:
+                  name: controller
+                  key: java.opts
+            - name: "CONTROLLER_OPTS"
+              valueFrom:
+                configMapKeyRef:
+                  name: controller
+                  key: controller.opts
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: {{ .Values.service.internalPort }}
+          readinessProbe:
+            httpGet:
+              path: /ping
+              port: {{ .Values.service.internalPort }}
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+    {{- if .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.nodeSelector | indent 8 }}
+    {{- end }}
