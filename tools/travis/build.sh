@@ -105,6 +105,20 @@ pushd kubernetes/couchdb
   couchdbHealthCheck
 popd
 
+# setup redis
+pushd kubernetes/redis
+  kubectl apply -f redis.yml
+
+  deploymentHealthCheck "redis"
+popd
+
+# setup redis
+pushd kubernetes/apigateway
+  kubectl apply -f apigateway.yml
+
+  deploymentHealthCheck "apigateway"
+popd
+
 # setup zookeeper
 pushd kubernetes/zookeeper
   kubectl apply -f zookeeper.yml

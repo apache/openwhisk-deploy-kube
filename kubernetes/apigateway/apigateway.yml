@@ -1,0 +1,50 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: apigateway
+  namespace: openwhisk
+  labels:
+    name: apigateway
+spec:
+  selector:
+    name: apigateway
+  ports:
+    - port: 8080
+      targetPort: 8080
+      name: mgmt
+    - port: 9000
+      targetPort: 9000
+      name: api
+
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: apigateway
+  namespace: openwhisk
+  labels:
+    name: apigateway
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: apigateway
+    spec:
+      restartPolicy: Always
+
+      containers:
+      - name: apigateway
+        imagePullPolicy: IfNotPresent
+        image: openwhisk/apigateway
+        ports:
+        - name: mgmt
+          containerPort: 8080
+        - name: api
+          containerPort: 9000
+        env:
+        - name: "REDIS_HOST"
+          value: "redis.openwhisk"
+        - name: "REDIS_PORT"
+          value: "6379"
