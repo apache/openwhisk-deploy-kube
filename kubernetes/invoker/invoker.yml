@@ -36,10 +36,7 @@ spec:
       containers:
       - name: invoker
         imagePullPolicy: Always
-        # TODO: change this to the public openwhisk image for nuking Consul.
-        # there is a PR that needs to be merged first.
-        # https://github.com/apache/incubator-openwhisk/pull/2452
-        image: danlavine/whisk_invoker
+        image: openwhisk/invoker
         command: [ "/bin/bash", "-c", "COMPONENT_NAME=$(hostname | cut -d'-' -f2) /invoker/bin/invoker `hostname | cut -d'-' -f2`" ]
         env:
           - name: "PORT"

@@ -22,6 +22,7 @@ you will need to update a number of properties, for Kafka and Nginx.
 
 * Controller: You will need to update the replication count for the
   Controllers [here](https://github.com/apache/incubator-openwhisk-deploy-kube/tree/master/kubernetes/controller/controller.yml#L10)
+  and the value of CONTROLLER_INSTANCES [here](https://github.com/apache/incubator-openwhisk-deploy-kube/tree/master/kubernetes/controller/controller.yml#L84)
   and redeploy.
 
 * Nginx: Take a look at the Nginx [README](https://github.com/apache/incubator-openwhisk-deploy-kube/blob/master/kubernetes/nginx/README.md#increase-controller-count)
