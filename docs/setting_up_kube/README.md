@@ -55,8 +55,8 @@ Luckily you should be able to run the travis setup script and have everything
 be configured for you.
 
 ```
-cd $THIS_REPO_LOCATION/.travis
-TRAVIS_KUBE_VERSION=v1.5.6 TRAVIS_ETCD_VERSION=v3.0.14 ./setup
+cd $THIS_REPO_LOCATION/tools/travis
+TRAVIS_KUBE_VERSION=v1.6.2 TRAVIS_ETCD_VERSION=v3.0.17 ./setup
 ```
 
 This script should download and install a correct version of `etcd`, `kubectl`, and the
