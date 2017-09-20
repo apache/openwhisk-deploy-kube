@@ -54,6 +54,10 @@ spec:
         - name: "PORT"
           value: "8080"
 
+        # Default blackbox fraction setting
+        - name: "CONTROLLER_BLACKBOXFRACTION"
+          value: "0.10"
+
         # Loadbalancer options
         - name: "LOADBALANCER_INVOKERBUSYTHRESHOLD"
           value: "16"
