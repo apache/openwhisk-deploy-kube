@@ -54,10 +54,6 @@ spec:
         - name: "PORT"
           value: "8080"
 
-        # Default blackbox fraction setting
-        - name: "CONTROLLER_BLACKBOXFRACTION"
-          value: "0.10"
-
         # Loadbalancer options
         - name: "LOADBALANCER_INVOKERBUSYTHRESHOLD"
           value: "16"
@@ -108,6 +104,8 @@ spec:
           value: "5000"
         - name: "LIMITS_ACTIONS_INVOKES_CONCURRENT"
           value: "30"
+        - name: "CONTROLLER_BLACKBOXFRACTION"
+          value: "0.10"
 
 
         # properties for DB connection
