@@ -39,13 +39,15 @@ spec:
         - name: couchdb
           containerPort: 5984
         env:
-        - name: "DB_HOST"
-          value: "couchdb.openwhisk"
         - name: "DB_PREFIX"
           value: "test_"
-        - name: "DB_USERNAME"
+        - name: "DB_HOST"
+          value: "couchdb.openwhisk"
+        - name: "COUCHDB_USER"
           value: "whisk_admin"
-        - name: "DB_PASSWORD"
+        - name: "COUCHDB_PASSWORD"
           value: "some_passw0rd"
         - name: "DB_PORT"
           value: "5984"
+        - name: "NODENAME"
+          value: "couchdb0"
