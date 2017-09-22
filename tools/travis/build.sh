@@ -17,7 +17,7 @@ couchdbHealthCheck () {
   PASSED=false
   TIMEOUT=0
   until [ $TIMEOUT -eq 25 ]; do
-    if [ -n "$(kubectl -n openwhisk logs $POD_NAME | grep "Apache CouchDB has started on http://0.0.0.0:5984")" ]; then
+    if [ -n "$(kubectl -n openwhisk logs $POD_NAME | grep "successfully setup and configured CouchDB v2.0")" ]; then
       break
     fi
 

@@ -42,7 +42,7 @@ spec:
         - name: "DB_PREFIX"
           value: "test_"
         - name: "DB_HOST"
-          value: "couchdb.openwhisk"
+          value: "127.0.0.1"
         - name: "COUCHDB_USER"
           value: "whisk_admin"
         - name: "COUCHDB_PASSWORD"
@@ -51,3 +51,11 @@ spec:
           value: "5984"
         - name: "NODENAME"
           value: "couchdb0"
+        readinessProbe:
+          httpGet:
+            port: 5984
+            path: "/test_activations"
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          failureThreshold: 10
+          timeoutSeconds: 1
