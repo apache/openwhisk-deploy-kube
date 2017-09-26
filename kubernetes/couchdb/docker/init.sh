@@ -25,18 +25,13 @@ pushd /openwhisk
   fi
 
   # start couchdb with a background process
-  couchdb -b
+  /docker-entrypoint.sh /opt/couchdb/bin/couchdb &
 
   # wait for couchdb to be up and running
   TIMEOUT=0
   echo "wait for CouchDB to be up and running"
-  until [ $TIMEOUT -eq 25 ]; do
+  until $( curl --output /dev/null --silent http://$DB_HOST:$DB_PORT/_utils ) || [ $TIMEOUT -eq 25 ]; do
     echo "waiting for CouchDB to be available"
-
-    if [ -n $(/etc/init.d/couchdb status | grep 'running') ]; then
-      echo "CouchDB is up and running"
-      break
-    fi
 
     sleep 0.2
     let TIMEOUT=TIMEOUT+1
@@ -51,43 +46,38 @@ pushd /openwhisk
   # setup and initialize DB
   pushd ansible
     ansible-playbook -i environments/local setup.yml \
-      -e db_host=$DB_HOST \
       -e db_prefix=$DB_PREFIX \
-      -e db_username=$DB_USERNAME \
-      -e db_password=$DB_PASSWORD \
+      -e db_host=$DB_HOST \
+      -e db_username=$COUCHDB_USER \
+      -e db_password=$COUCHDB_PASSWORD \
       -e db_port=$DB_PORT \
       -e openwhisk_home=/openwhisk
   popd
 
-  # create the admin user
-  curl -X PUT http://$DB_HOST:$DB_PORT/_config/admins/$DB_USERNAME -d "\"$DB_PASSWORD\""
-
   # disable reduce limits on views
-  curl -X PUT http://$DB_USERNAME:$DB_PASSWORD@$DB_HOST:$DB_PORT/_config/query-server_config/reduce_limit -d '"false"'
+  curl -X PUT http://$COUCHDB_USER:$COUCHDB_PASSWORD@$DB_HOST:$DB_PORT/_node/couchdb@couchdb0/_config/query_server_config/reduce_limit -d '"false"'
 
   pushd ansible
     # initialize the DB
     ansible-playbook -i environments/local initdb.yml \
-      -e db_host=$DB_HOST \
       -e db_prefix=$DB_PREFIX \
-      -e db_username=$DB_USERNAME \
-      -e db_password=$DB_PASSWORD \
+      -e db_host=$DB_HOST \
+      -e db_username=$COUCHDB_USER \
+      -e db_password=$COUCHDB_PASSWORD \
       -e db_port=$DB_PORT \
       -e openwhisk_home=/openwhisk
 
     # wipe the DB
     ansible-playbook -i environments/local wipe.yml \
-      -e db_host=$DB_HOST \
       -e db_prefix=$DB_PREFIX \
-      -e db_username=$DB_USERNAME \
-      -e db_password=$DB_PASSWORD \
+      -e db_host=$DB_HOST \
+      -e db_username=$COUCHDB_USER \
+      -e db_password=$COUCHDB_PASSWORD \
       -e db_port=$DB_PORT \
       -e openwhisk_home=/openwhisk
   popd
-
-  # stop the CouchDB background process
-  couchdb -d
 popd
 
-# start couchdb that has been setup
-tini -s -- couchdb
+echo "successfully setup and configured CouchDB v2.0"
+
+sleep inf

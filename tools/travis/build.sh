@@ -17,7 +17,7 @@ couchdbHealthCheck () {
   PASSED=false
   TIMEOUT=0
   until [ $TIMEOUT -eq 25 ]; do
-    if [ -n "$(kubectl -n openwhisk logs $POD_NAME | grep "Apache CouchDB has started on http://0.0.0.0:5984")" ]; then
+    if [ -n "$(kubectl -n openwhisk logs $POD_NAME | grep "successfully setup and configured CouchDB v2.0")" ]; then
       break
     fi
 
@@ -139,6 +139,11 @@ pushd kubernetes/nginx
   ./certs.sh localhost
   kubectl -n openwhisk create configmap nginx --from-file=nginx.conf
   kubectl -n openwhisk create secret tls nginx --cert=certs/cert.pem --key=certs/key.pem
+
+  # have seen this fail where nginx pod is applied but never created. Hard to know
+  # why that is happening without having access to Kube component logs.
+  sleep 3
+
   kubectl apply -f nginx.yml
 
   # wait until nginx is ready
