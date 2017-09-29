@@ -33,7 +33,7 @@ spec:
       containers:
       - name: couchdb
         imagePullPolicy: IfNotPresent
-        image: danlavine/whisk_couchdb
+        image: dgrove/whisk_couchdb
         command: ["/init.sh"]
         ports:
         - name: couchdb
