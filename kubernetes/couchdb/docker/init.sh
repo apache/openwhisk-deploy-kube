@@ -55,7 +55,7 @@ pushd /openwhisk
   popd
 
   # disable reduce limits on views
-  curl -X PUT http://$COUCHDB_USER:$COUCHDB_PASSWORD@$DB_HOST:$DB_PORT/_node/couchdb@couchdb0/_config/query_server_config/reduce_limit -d '"false"'
+  curl -X PUT http://$COUCHDB_USER:$COUCHDB_PASSWORD@$DB_HOST:$DB_PORT/_node/couchdb@$NODENAME/_config/query_server_config/reduce_limit -d '"false"'
 
   # create the couchdb system databases
   curl -X PUT http://$COUCHDB_USER:$COUCHDB_PASSWORD@$DB_HOST:$DB_PORT/_users
