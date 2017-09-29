@@ -35,8 +35,6 @@ spec:
       containers:
       - name: controller
         imagePullPolicy: Always
-        # Update this image to the publix OpenWhisk Image once this PR is merged.
-        # https://github.com/apache/incubator-openwhisk/pull/2452
         image: openwhisk/controller
         command: ["/bin/bash", "-c", "COMPONENT_NAME=$(hostname | cut -d'-' -f2) /controller/bin/controller `hostname | cut -d'-' -f2`"]
         ports:
