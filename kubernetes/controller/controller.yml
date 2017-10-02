@@ -35,8 +35,6 @@ spec:
       containers:
       - name: controller
         imagePullPolicy: Always
-        # Update this image to the publix OpenWhisk Image once this PR is merged.
-        # https://github.com/apache/incubator-openwhisk/pull/2452
         image: openwhisk/controller
         command: ["/bin/bash", "-c", "COMPONENT_NAME=$(hostname | cut -d'-' -f2) /controller/bin/controller `hostname | cut -d'-' -f2`"]
         ports:
@@ -106,7 +104,10 @@ spec:
           value: "30"
         - name: "CONTROLLER_BLACKBOXFRACTION"
           value: "0.10"
-
+        - name: "CONTROLLER_LOCALBOOKKEEPING"
+          value: "TRUE"
+        - name: "AKKA_CLUSTER_SEED_NODES"
+          value: "controller-0.controller.openwhisk controller-1.controller.openwhisk"
 
         # properties for DB connection
         - name: "DB_USERNAME"
