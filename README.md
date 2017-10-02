@@ -54,6 +54,8 @@ for CouchDB.
 Once CouchDB has been successfully deployed, you will need
 manually deploy the rest of the OpenWhisk components.
 
+* [Redis](kubernetes/redis/README.md)
+* [ApiGateway](kubernetes/apigateway/README.md)
 * [Zookeeper](kubernetes/zookeeper/README.md)
 * [Kafka](kubernetes/kafka/README.md)
 * [Controller](kubernetes/controller/README.md)
