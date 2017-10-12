@@ -8,6 +8,8 @@ pushd /openwhisk
   # Install ansible requirements
   ./tools/ubuntu-setup/pip.sh
 
+  sudo pip install -U pip
+
   # upgrade cffi for ansible error on Debian Jesse
   pip install --upgrade cffi
   sudo pip install markupsafe
