@@ -55,6 +55,8 @@ spec:
             value: "latest"
           - name: "INVOKER_CONTAINER_NETWORK"
             value: "bridge"
+          - name: "INVOKER_USE_RUNC"
+            value: "false"
 
           # Properties for invoker image
           - name: "DOCKER_IMAGE_PREFIX"
