@@ -10,8 +10,17 @@ RUN apt-get -y update && apt-get -y install \
   curl \
   sudo \
   python-dev \
+  python-pip \
   libffi-dev \
   libssl-dev
+
+RUN pip install --upgrade setuptools
+RUN pip install argcomplete
+RUN pip install couchdb
+RUN pip install --upgrade cffi
+RUN pip install markupsafe
+RUN pip install ansible==2.3.0.0
+RUN pip install -U pyopenssl
 
 COPY init.sh /init.sh
 RUN chmod +X /init.sh
