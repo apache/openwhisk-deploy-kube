@@ -32,7 +32,7 @@ spec:
       restartPolicy: Always
       containers:
       - name: couchdb
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         image: dgrove/whisk_couchdb
         command: ["/init.sh"]
         ports:
