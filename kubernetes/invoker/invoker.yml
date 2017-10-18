@@ -74,7 +74,7 @@ spec:
           - name: "INVOKER_NAME"
             valueFrom:
               fieldRef:
-                fieldPath: spec.nodeName
+                fieldPath: metadata.name
 
           # Java options
           - name: "JAVA_OPTS"
