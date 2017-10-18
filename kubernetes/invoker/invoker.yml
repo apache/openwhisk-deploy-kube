@@ -55,6 +55,8 @@ spec:
             value: "latest"
           - name: "INVOKER_CONTAINER_NETWORK"
             value: "bridge"
+          - name: "INVOKER_USE_RUNC"
+            value: "false"
 
           # Properties for invoker image
           - name: "DOCKER_IMAGE_PREFIX"
@@ -67,6 +69,12 @@ spec:
           # Invoker instance count. Needs to match replica count
           - name: "INVOKER_INSTANCES"
             value: "1"
+
+          # Invoker assigned name. Derived from hostname
+          - name: "INVOKER_NAME"
+            valueFrom:
+              fieldRef:
+                fieldPath: spec.nodeName
 
           # Java options
           - name: "JAVA_OPTS"
@@ -81,6 +89,12 @@ spec:
             value: "kafka.openwhisk"
           - name: "KAFKA_HOST_PORT"
             value: "9092"
+
+          # Redis properties
+          - name: "REDIS_HOST"
+            value: "redis.openwhisk"
+          - name: "REDIS_HOST_PORT"
+            value: "6379"
 
           # This property can change since it is generated via Ansible GroupVars
           - name: "RUNTIMES_MANIFEST"
