@@ -1,17 +1,20 @@
 sudo: required
-
 env:
   global:
-    - TRAVIS_KUBE_VERSION=v1.6.2
-    - TRAVIS_ETCD_VERSION=v3.0.17
-
+  - TRAVIS_KUBE_VERSION=v1.6.2
+  - TRAVIS_ETCD_VERSION=v3.0.17
+  - secure: d7CuMXbhT83W2x78qiLwgogX1+3aPicd1PlTwwNNDN6QSkImbxareyKThnsqlHIiNj3o5l5DBuiYjy7wrF/xD1g8BQMmTwm99DRx5q3CI3Im3VCi/ZK8SaNjuOy24d7cf5k2tB/87Gk7zmKsMDYm+fpCl+GpgUmIEeIwthiAxuXSDWZ8eQPIptmxj56DeFRNouvXG+dEUtBfWiwN27UPxNKExCixFnegmdtffLbz6hhst7BHr5Ry9acbycre98PCwWZcu9lxFs+SJ1kvnzX2iue4otmDkF1WkJjxaOFPJVs/D3YItg+neLCSxjwBskPed+Fct8bOjcM/uVROJPNIq5icBmaPX2isH0lvtxOeVw/dmioWYXYPN9ygBOe4eO/vtPllN0bcAUo5xl9jXev8ciAozYrYpHVh9Fplfd81rcYTeYzALmRJBdoiWoc3KQGzwGc9sB1ffmy+KWgG9T0zbnS4fALSR4PSzyNlKSLXw9vuvdNP0OBYtO+6yTJXavIxqmDoj64Lb93n+uGPatnaIGPTKEEBMJTSjsgYVEfxzzZuxUT9Ldkf2lzqvN2PCllGoMqxkgsdb8i4v4QgRaMWBDbKa5Va4k0O4dnhRmtdbJavOSKN6fECJbyfoJlV1VvJGxk5znVLRznBmUPBKbNccyPZJULugKD3QIh4q8Q5jBU=
+  - secure: CJtnU94HTDqd4A6uvhFl8IpnmU+wTdlzb8bPBFUl/lI/VKXiRrYpgJdKUro5xEoxFKuqMprLhbyf66niyWLTIeogjUAEu/h/o2dBVeGgSGKoqC0hQgqvnxKFeGlzFJ0XuEs3vbStJGRnQszGsfnnDrscJtR0x9X+1w4aBKI7iPyyuFtVkDD1UsmBbSi+M8FTeq7G7A0reMDaey7uog3CFCpIMl4geshcohQEcKEGbnXQZoLPFpb7cBOE83VXBJ7Y7Dgf/U4keiLovvnuJThGKZm/SVV2KlELmBmtmbx3rMT6Vb5k9ChSdRWapromNnnzmJBIQ5Scc2mwV3A93/SMha1F3IlYpDKs5djfTw8jZfVnuiou7HhTaRjHkmmcwP12/k30gLe2kw0Vezg1TCY4zgtOpcmCxc8RHEy0ceA74rKvRi8LbexTCwX+iAMQFn/pSrh/OqAq/50JbLyczcoO1zXWS38txUQNLW8i+XllhCg9pjkjyfBeGjOOcWiVIz9rWJd2XufjSXDcj6xoZHtkh1XDt1CnVkpsYKtyyZucQnhUM9ebmaWqbSW2+bpqC/2hI+G+kOyyCesGdB1q+VmN1augMMs6RgWjk4yw5dyLAshATSoUlE8KH2cDcJL19r4ECaQ99PSLwxoB89yfPoJiNc42vwxRdsLmB1BMNyPa81Y=
 services:
-  - docker
-
+- docker
 before_install:
-  - ./tools/travis/setupscan.sh
-  - ./tools/travis/setup.sh
-
+- "./tools/travis/setupscan.sh"
+- "./tools/travis/setup.sh"
 script:
-  - ./tools/travis/scancode.sh
-  - ./tools/travis/build.sh
+- "./tools/travis/scancode.sh"
+- "./tools/travis/build.sh"
+deploy:
+- provider: script
+  script: "./tools/travis/publish.sh openwhisk kube-couchdb latest"
+  on:
+    branch: master
