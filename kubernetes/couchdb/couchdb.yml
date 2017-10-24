@@ -33,7 +33,7 @@ spec:
       containers:
       - name: couchdb
         imagePullPolicy: Always
-        image: dgrove/whisk_couchdb
+        image: openwhisk/kube-couchdb
         command: ["/init.sh"]
         ports:
         - name: couchdb
