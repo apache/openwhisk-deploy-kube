@@ -21,14 +21,14 @@ pushd /openwhisk
   # wait for couchdb to be up and running
   TIMEOUT=0
   echo "wait for CouchDB to be up and running"
-  until $( curl --output /dev/null --silent http://$DB_HOST:$DB_PORT/_utils ) || [ $TIMEOUT -eq 25 ]; do
+  until $( curl --output /dev/null --silent http://$DB_HOST:$DB_PORT/_utils ) || [ $TIMEOUT -eq 30 ]; do
     echo "waiting for CouchDB to be available"
 
-    sleep 0.2
+    sleep 2
     let TIMEOUT=TIMEOUT+1
   done
 
-  if [ $TIMEOUT -eq 25 ]; then
+  if [ $TIMEOUT -eq 30 ]; then
     echo "failed to setup CouchDB"
     exit 1
   fi
