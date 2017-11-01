@@ -138,7 +138,7 @@ spec:
             value: "test_subjects"
 
           # UUID for the pod can be the hostname of the Kube node
-          - name: "INVOKER_ASSIGNED_UUID"
+          - name: "INVOKER_ASSIGNED_NAME"
             valueFrom:
               fieldRef:
                 fieldPath: spec.nodeName
