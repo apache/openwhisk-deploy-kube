@@ -90,11 +90,11 @@ spec:
           - name: "KAFKA_HOST_PORT"
             value: "9092"
 
-          # Redis properties
-          - name: "REDIS_HOST"
-            value: "redis.openwhisk"
-          - name: "REDIS_HOST_PORT"
-            value: "6379"
+          # zookeeper info
+          - name: "ZOOKEEPER_HOST"
+            value: "zookeeper.openwhisk"
+          - name: "ZOOKEEPER_PORT"
+            value: "2181"
 
           # This property can change since it is generated via Ansible GroupVars
           - name: "RUNTIMES_MANIFEST"
