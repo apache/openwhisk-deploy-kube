@@ -20,6 +20,9 @@ kubectl -n openwhisk delete cm nginx
 # delete secrets
 kubectl -n openwhisk delete secret nginx
 
+# delete ingress
+kubectl -n openwhisk delete ingress ow-ingress
+
 # delete services
 kubectl -n openwhisk delete service couchdb
 kubectl -n openwhisk delete service redis

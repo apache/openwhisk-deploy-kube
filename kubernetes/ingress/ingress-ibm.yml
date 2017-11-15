@@ -1,0 +1,20 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ow-ingress
+  namespace: openwhisk
+  annotations:
+    ingress.bluemix.net/rewrite-path: "serviceName=nginx rewrite=/"
+spec:
+  tls:
+  - hosts:
+    - <ibmdomain>
+    secretName: <ibmtlssecret>
+  rules:
+  - host: <ibmdomain>
+    http:
+      paths:
+      - path: /openwhisk/
+        backend:
+          serviceName: nginx
+          servicePort: 80

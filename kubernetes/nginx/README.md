@@ -3,12 +3,23 @@ Nginx
 
 # Deploy Nginx
 
-The Nginx Pod needs to be configured with custom certificates
-and nginx configuration file. To achieve this, nginx will need
-to create a Kube ConfigMap for the `nginx.conf` file and a
-Secrets resource with the certs.
+Depending on how you are deploying OpenWhisk, the Nginx pod
+may or may not need to support handling TLS termination
+for incoming requests. In production deployments, TLS termination
+will be handled by an Ingress placed in front of the Nginx service.
+In dev/test scenarios or when deploying on a single node cluster, it
+is likely that you will use a basic Ingress that does not handle TLS
+termination and therefore will need Nginx to handle it.
 
-To help generate the certs there is a little helper script.
+The instructions below configure Nginx with self-signed certificates
+to enable basic TLS termination for dev/test.  If TLS termination is
+being handled by the Ingress, you can optionally skip generating the
+certificate, chop the ssl configuration and port 443 from nginx.conf,
+and eliminate the secret from nginx.yml.  If you have real
+certificates, you can modify nginx.conf with the proper hostname and
+install them instead of the self-signed ones generated below.
+
+## Generate self-signed certificates
 
 * `certs.sh` can be used to generate self signed certs for OpenWhisk.
    By default, the current `nginx.conf` file expects the server url
@@ -22,6 +33,16 @@ To help generate the certs there is a little helper script.
    If you want to modify the domain name, make sure to update the
    [nginx.conf](nginx.conf) file appropriately.
 
+## Create Nginx Secrets
+
+With the generated certs for Nginx or your own certificates, you
+should now be able to create the nginx Secrets. To create the Secrets
+resource in the OpenWhisk namespace run the following command:
+
+```
+kubectl -n openwhisk create secret tls nginx --cert=certs/cert.pem --key=certs/key.pem
+```
+
 ## Create Nginx ConfigMap
 
 To create the ConfigMap in the OpenWhisk namespace with the `nginx.conf`
@@ -29,16 +50,6 @@ file, run the following command:
 
 ```
 kubectl -n openwhisk create configmap nginx --from-file=nginx.conf
-```
-
-## Create Nginx Secrets
-
-With the generated certs for Nginx, you should now be able to create
-the nginx Secrets. To create the Secrets resource in the OpenWhisk
-namespace run the following command:
-
-```
-kubectl -n openwhisk create secret tls nginx --cert=certs/cert.pem --key=certs/key.pem
 ```
 
 ## Deploying Nginx
@@ -60,7 +71,7 @@ To update the nginx ConfigMap:
 kubectl -n openwhisk edit cm nginx -o yaml
 ```
 
-Kubernetes will then go through an update any deployed Nginx
+Kubernetes will then go through and update any deployed Nginx
 instances. Updating all of the keys defined in the nginx
 ConfigMap.
 
@@ -96,6 +107,13 @@ Secrets.
 
 # Create Nginx Docker Image
 
+We currently deploy a custom Nginx docker image that includes the
+OpenWhisk CLI and other downloadable artifacts. Once there are proper
+releases of these artifacts, we can switch to using a standard Nginx
+image and redirect to the official release archives for the artifacts
+we are currently storing in the custom docker image.  See the GitHub
+[issue](https://github.com/openwhisk/openwhisk/issues/2152).
+
 To build the Nginx docker image for Kubernetes on OpenWhisk,
 you will need to run the build script [build.sh](docker/build.sh).
 This script requires one parameter, which is the repo to bush
@@ -106,7 +124,7 @@ E.G
 docker/builds.sh <danlavine>
 ```
 
-This script goes through and donwload the OpenWhisk reop under the
+This script goes through and donwload the OpenWhisk repo under the
 tmp directory, builds the Blackbox image and copies it into the
 Docker image.  Then, each of the published WSK CLIs are download into
 the Docker image so that users are able to download them as usual.
