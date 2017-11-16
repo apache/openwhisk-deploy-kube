@@ -15,15 +15,15 @@ kubectl apply -f controller.yml
 # Controller Deployment Changes
 ## Increase Controller Count
 
-If you want to increase the number of controllers deployed,
-you will need to update a number of properties, for Kafka and Nginx.
+If you want to change the number of controllers deployed,
+you will also need to update properties for Kafka.
 
 * Kafka: Look at the Kafka [README](https://github.com/apache/incubator-openwhisk-deploy-kube/blob/master/kubernetes/kafka/README.md)
 
 * Controller: You will need to update the replication count for the
-  Controllers [here](https://github.com/apache/incubator-openwhisk-deploy-kube/tree/master/kubernetes/controller/controller.yml#L10)
+  Controllers [here](https://github.com/apache/incubator-openwhisk-deploy-kube/tree/master/kubernetes/controller/controller.yml#L25)
+  and the value of CONTROLLER_INSTANCES [here](https://github.com/apache/incubator-openwhisk-deploy-kube/tree/master/kubernetes/controller/controller.yml#L80)
+  and the value of AKKA_CLUSTER_SEED_NODES [here](https://github.com/apache/incubator-openwhisk-deploy-kube/tree/master/kubernetes/controller/controller.yml#L110)
   and redeploy.
-
-* Nginx: Take a look at the Nginx [README](https://github.com/apache/incubator-openwhisk-deploy-kube/blob/master/kubernetes/nginx/README.md#increase-controller-count)
 
 [StatefulSet]: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/
