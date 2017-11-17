@@ -55,6 +55,8 @@ spec:
             value: "latest"
           - name: "INVOKER_CONTAINER_NETWORK"
             value: "bridge"
+          - name: "INVOKER_CONTAINER_DNS"
+            value: "kube-dns.kube-system"
           - name: "INVOKER_USE_RUNC"
             value: "false"
 
