@@ -105,11 +105,13 @@ spec:
         - name: "CONTROLLER_BLACKBOXFRACTION"
           value: "0.10"
         - name: "CONTROLLER_LOCALBOOKKEEPING"
-          value: "TRUE"
-        - name: "CONTROLLER_HA"
           value: "FALSE"
+        - name: "CONTROLLER_HA"
+          value: "TRUE"
         - name: "AKKA_CLUSTER_SEED_NODES"
           value: "controller-0.controller.openwhisk controller-1.controller.openwhisk"
+        - name: "AKKA_ACTOR_PROVIDER"
+          value: "cluster"
 
         # properties for DB connection
         - name: "DB_USERNAME"
