@@ -145,7 +145,7 @@ pushd kubernetes/invoker
   kubectl apply -f invoker.yml
 
   # wait until the invoker is ready
-  statefulsetHealthCheck "invoker"
+  deploymentHealthCheck "invoker"
 popd
 
 # setup nginx

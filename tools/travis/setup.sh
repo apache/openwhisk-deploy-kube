@@ -64,3 +64,6 @@ sudo chown -R $USER:$USER $HOME/.kube
 # Have seen issues where chown does not instantly change file permissions.
 # When this happens the build.sh cript can have failures.
 sleep 30
+
+# set the invoker label
+kubectl label nodes 127.0.0.1 openwhisk=invoker
