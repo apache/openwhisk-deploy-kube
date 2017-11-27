@@ -28,9 +28,9 @@ section below.
 ## Increase Invoker Count
 
 To increase the number of Invokers, edit the
-[replicas](https://github.com/apache/incubator-openwhisk-deploy-kube/tree/master/kubernetes/invoker/invoker.yml#L27)
+[replicas](https://github.com/apache/incubator-openwhisk-deploy-kube/tree/master/kubernetes/invoker/invoker.yml#L9)
 line. Secondly, you will need to update the
-[INVOKER_COUNT](https://github.com/apache/incubator-openwhisk-deploy-kube/tree/master/kubernetes/invoker/invoker.yml#L63-L64)
+[INVOKER_INSTANCES](https://github.com/apache/incubator-openwhisk-deploy-kube/tree/master/kubernetes/invoker/invoker.yml#L70)
 to with the same replica count.
 
 ## Deploying Invoker to Specific Kube Nodes

@@ -34,8 +34,8 @@ spec:
       containers:
       - name: kafka
         imagePullPolicy: IfNotPresent
-        # custom kafka image. Not sure what we want to do with this.
-        image: danlavine/whisk_kafka
+        # custom kafka image. Should be eliminated soon (see issue #26)
+        image: dgrove/whisk_kafka
         ports:
         - name: kafka
           containerPort: 9092
@@ -57,26 +57,6 @@ spec:
         - name: "KAFKA_TOPICS_HEALTH_RETENTIONMS"
           value: "1073741824"
         - name: "KAFKA_TOPICS_HEALTH_SEGMENTBYTES"
-          value: "3600000"
-
-        # complete topic settings
-        - name: "CONTROLLER_COUNT"
-          value: "2"
-        - name: "KAFKA_TOPICS_COMPLETED_RETENTIONBYTES"
-          value: "536870912"
-        - name: "KAFKA_TOPICS_COMPLETED_RETENTIONMS"
-          value: "1073741824"
-        - name: "KAFKA_TOPICS_COMPLETED_SEGMENTBYTES"
-          value: "3600000"
-
-        # invoker topic settings
-        - name: "INVOKER_COUNT"
-          value: "1"
-        - name: "KAFKA_TOPICS_INVOKER_RETENTIONBYTES"
-          value: "536870912"
-        - name: "KAFKA_TOPICS_INVOKER_RETENTIONMS"
-          value: "1073741824"
-        - name: "KAFKA_TOPICS_INVOKER_SEGMENTBYTES"
           value: "3600000"
 
         # zookeeper info

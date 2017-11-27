@@ -1,4 +1,4 @@
-FROM ches/kafka:0.10.0.1
+FROM ches/kafka:0.10.2.1
 
 COPY init.sh /init.sh
 
