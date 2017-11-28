@@ -68,10 +68,8 @@ spec:
           value: "-Xmx2g"
 
         # Kafka properties
-        - name: "KAFKA_HOST"
-          value: "kafka.openwhisk"
-        - name: "KAFKA_HOST_PORT"
-          value: "9092"
+        - name: "KAFKA_HOSTS"
+          value: "kafka.openwhisk:9092"
 
         # specific controller arguments
         - name: "CONTROLLER_INSTANCES"

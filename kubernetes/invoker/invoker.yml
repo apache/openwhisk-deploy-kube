@@ -85,16 +85,12 @@ spec:
             value: ""
 
           # Kafka properties
-          - name: "KAFKA_HOST"
-            value: "kafka.openwhisk"
-          - name: "KAFKA_HOST_PORT"
-            value: "9092"
+          - name: "KAFKA_HOSTS"
+            value: "kafka.openwhisk:9092"
 
           # zookeeper info
-          - name: "ZOOKEEPER_HOST"
-            value: "zookeeper.openwhisk"
-          - name: "ZOOKEEPER_PORT"
-            value: "2181"
+          - name: "ZOOKEEPER_HOSTS"
+            value: "zookeeper.openwhisk:2181"
 
           # This property can change since it is generated via Ansible GroupVars
           - name: "RUNTIMES_MANIFEST"
