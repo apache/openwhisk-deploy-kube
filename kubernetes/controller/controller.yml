@@ -36,7 +36,7 @@ spec:
       - name: controller
         imagePullPolicy: Always
         image: openwhisk/controller
-        command: ["/bin/bash", "-c", "COMPONENT_NAME=$(hostname | cut -d'-' -f2) /controller/bin/controller `hostname | cut -d'-' -f2`"]
+        command: ["/bin/bash", "-c", "COMPONENT_NAME=$(hostname | cut -d'-' -f2) /init.sh `hostname | cut -d'-' -f2`"]
         ports:
         - name: controller
           containerPort: 8080
@@ -51,10 +51,6 @@ spec:
         env:
         - name: "PORT"
           value: "8080"
-
-        # Loadbalancer options
-        - name: "LOADBALANCER_INVOKERBUSYTHRESHOLD"
-          value: "16"
 
         # This needs to stay up to date with the lates runtime in Ansible Groupvars
         - name: "RUNTIMES_MANIFEST"
@@ -102,15 +98,13 @@ spec:
           value: "5000"
         - name: "LIMITS_ACTIONS_INVOKES_CONCURRENT"
           value: "30"
-        - name: "CONTROLLER_BLACKBOXFRACTION"
-          value: "0.10"
         - name: "CONTROLLER_LOCALBOOKKEEPING"
           value: "FALSE"
         - name: "CONTROLLER_HA"
           value: "TRUE"
         - name: "AKKA_CLUSTER_SEED_NODES"
           value: "controller-0.controller.openwhisk controller-1.controller.openwhisk"
-        - name: "AKKA_ACTOR_PROVIDER"
+        - name: "CONFIG_akka_actor_provider"
           value: "cluster"
 
         # properties for DB connection
@@ -130,6 +124,8 @@ spec:
           value: "whisks"
         - name: "DB_WHISK_ACTIVATIONS_DDOC"
           value: "whisks"
+        - name: "DB_WHISK_ACTIVATIONS_FILTER_DDOC"
+          value: "whisks-filters.v2"
         - name: "DB_WHISK_ACTIVATIONS"
           value: "test_activations"
         - name: "DB_WHISK_ACTIONS"
