@@ -6,61 +6,34 @@ set -x
 # set docker0 to promiscuous mode
 sudo ip link set docker0 promisc on
 
-# install etcd
-wget https://github.com/coreos/etcd/releases/download/$TRAVIS_ETCD_VERSION/etcd-$TRAVIS_ETCD_VERSION-linux-amd64.tar.gz
-tar xzf etcd-$TRAVIS_ETCD_VERSION-linux-amd64.tar.gz
-sudo mv etcd-$TRAVIS_ETCD_VERSION-linux-amd64/etcd /usr/local/bin/etcd
-rm etcd-$TRAVIS_ETCD_VERSION-linux-amd64.tar.gz
-rm -rf etcd-$TRAVIS_ETCD_VERSION-linux-amd64
+# Download and install kubectl and minikube following the recipe in the minikube
+# project README.md for using minikube for Linux Continuous Integration with VM Support
+curl -Lo kubectl https://storage.googleapis.com/kubernetes-release/release/$TRAVIS_KUBE_VERSION/bin/linux/amd64/kubectl && chmod +x kubectl && sudo mv kubectl /usr/local/bin
+curl -Lo minikube https://storage.googleapis.com/minikube/releases/$TRAVIS_MINIKUBE_VERSION/minikube-linux-amd64 && chmod +x minikube && sudo mv minikube /usr/local/bin
 
-# download kubectl
-wget https://storage.googleapis.com/kubernetes-release/release/$TRAVIS_KUBE_VERSION/bin/linux/amd64/kubectl
-chmod +x kubectl
-sudo mv kubectl /usr/local/bin/kubectl
+export MINIKUBE_WANTUPDATENOTIFICATION=false
+export MINIKUBE_WANTREPORTERRORPROMPT=false
+export MINIKUBE_HOME=$HOME
+export CHANGE_MINIKUBE_NONE_USER=true
+mkdir $HOME/.kube || true
+touch $HOME/.kube/config
 
-# download kubernetes
-git clone https://github.com/kubernetes/kubernetes $HOME/kubernetes
+export KUBECONFIG=$HOME/.kube/config
+sudo -E /usr/local/bin/minikube start --vm-driver=none --kubernetes-version=$TRAVIS_KUBE_VERSION
 
-# install cfssl
-go get -u github.com/cloudflare/cfssl/cmd/...
-
-pushd $HOME/kubernetes
-  git checkout $TRAVIS_KUBE_VERSION
-  kubectl config set-credentials myself --username=admin --password=admin
-  kubectl config set-context local --cluster=local --user=myself
-  kubectl config set-cluster local --server=http://localhost:8080
-  kubectl config use-context local
-
-  # start kubernetes in the background
-  sudo PATH=$PATH:/home/travis/.gimme/versions/go1.7.linux.amd64/bin/go \
-       KUBE_ENABLE_CLUSTER_DNS=true \
-       hack/local-up-cluster.sh &
-popd
-
-# Wait until kube is up and running
+# Wait until kubectl can access the api server that Minikube has created
 TIMEOUT=0
-TIMEOUT_COUNT=40
-until $( curl --output /dev/null --silent http://localhost:8080 ) || [ $TIMEOUT -eq $TIMEOUT_COUNT ]; do
-  echo "Kube is not up yet"
+TIMEOUT_COUNT=60
+until $( /usr/local/bin/kubectl get po &> /dev/null ) || [ $TIMEOUT -eq $TIMEOUT_COUNT ]; do
+  echo "minikube is not up yet"
   let TIMEOUT=TIMEOUT+1
-  sleep 20
+  sleep 5
 done
 
 if [ $TIMEOUT -eq $TIMEOUT_COUNT ]; then
-  echo "Kubernetes is not up and running"
+  echo "Failed to start minikube"
   exit 1
 fi
 
-echo "Kubernetes is deployed and reachable"
+echo "minikube is deployed and reachable"
 
-# Try and sleep before issuing chown. Currently, Kubernetes is started by
-# a command that is run in the background. Technically Kubernetes could be
-# up and running, but those files might not exist yet as the previous command
-# could create them after Kube starts successfully.
-sleep 5
-
-sudo chown -R $USER:$USER $HOME/.kube
-
-# Have seen issues where chown does not instantly change file permissions.
-# When this happens the build.sh cript can have failures.
-sleep 30

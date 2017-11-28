@@ -7,6 +7,7 @@ ROOTDIR="$SCRIPTDIR/../../"
 
 cd $ROOTDIR
 
+echo "Creating openwhisk namespace"
 kubectl apply -f configure/openwhisk_kube_namespace.yml
 
 couchdbHealthCheck () {
@@ -16,13 +17,13 @@ couchdbHealthCheck () {
 
   PASSED=false
   TIMEOUT=0
-  until [ $TIMEOUT -eq 25 ]; do
+  until [ $TIMEOUT -eq 30 ]; do
     if [ -n "$(kubectl -n openwhisk logs $POD_NAME | grep "successfully setup and configured CouchDB v2.0")" ]; then
       break
     fi
 
     let TIMEOUT=TIMEOUT+1
-    sleep 30
+    sleep 10
   done
 
   if [ $TIMEOUT -eq 25 ]; then
@@ -43,7 +44,7 @@ deploymentHealthCheck () {
 
   PASSED=false
   TIMEOUT=0
-  until $PASSED || [ $TIMEOUT -eq 25 ]; do
+  until $PASSED || [ $TIMEOUT -eq 30 ]; do
     KUBE_DEPLOY_STATUS=$(kubectl -n openwhisk get pods -o wide | grep "$1" | awk '{print $3}')
     if [ "$KUBE_DEPLOY_STATUS" == "Running" ]; then
       PASSED=true
@@ -53,7 +54,7 @@ deploymentHealthCheck () {
     kubectl get pods --all-namespaces -o wide --show-all
 
     let TIMEOUT=TIMEOUT+1
-    sleep 30
+    sleep 10
   done
 
   if [ "$PASSED" = false ]; then
@@ -74,7 +75,7 @@ statefulsetHealthCheck () {
 
   PASSED=false
   TIMEOUT=0
-  until $PASSED || [ $TIMEOUT -eq 25 ]; do
+  until $PASSED || [ $TIMEOUT -eq 30 ]; do
     KUBE_DEPLOY_STATUS=$(kubectl -n openwhisk get pods -o wide | grep "$1"-0 | awk '{print $3}')
     if [ "$KUBE_DEPLOY_STATUS" == "Running" ]; then
       PASSED=true
@@ -84,7 +85,7 @@ statefulsetHealthCheck () {
     kubectl get pods --all-namespaces -o wide --show-all
 
     let TIMEOUT=TIMEOUT+1
-    sleep 30
+    sleep 10
   done
 
   if [ "$PASSED" = false ]; then
@@ -99,6 +100,7 @@ statefulsetHealthCheck () {
 }
 
 # setup couchdb
+echo "Deploying couchdb"
 pushd kubernetes/couchdb
   kubectl apply -f couchdb.yml
 
@@ -106,13 +108,15 @@ pushd kubernetes/couchdb
 popd
 
 # setup redis
+echo "Deploying redis"
 pushd kubernetes/redis
   kubectl apply -f redis.yml
 
   deploymentHealthCheck "redis"
 popd
 
-# setup redis
+# setup apigateway
+echo "Deploying apigateway"
 pushd kubernetes/apigateway
   kubectl apply -f apigateway.yml
 
@@ -120,6 +124,7 @@ pushd kubernetes/apigateway
 popd
 
 # setup zookeeper
+echo "Deploying zookeeper"
 pushd kubernetes/zookeeper
   kubectl apply -f zookeeper.yml
 
@@ -127,6 +132,7 @@ pushd kubernetes/zookeeper
 popd
 
 # setup kafka
+echo "Deploying kafka"
 pushd kubernetes/kafka
   kubectl apply -f kafka.yml
 
@@ -134,6 +140,7 @@ pushd kubernetes/kafka
 popd
 
 # setup the controller
+echo "Deploying controller"
 pushd kubernetes/controller
   kubectl apply -f controller.yml
 
@@ -141,6 +148,7 @@ pushd kubernetes/controller
 popd
 
 # setup the invoker
+echo "Deploying invoker"
 pushd kubernetes/invoker
   kubectl apply -f invoker.yml
 
@@ -149,6 +157,7 @@ pushd kubernetes/invoker
 popd
 
 # setup nginx
+echo "Deploying nginx"
 pushd kubernetes/nginx
   ./certs.sh localhost
   kubectl -n openwhisk create configmap nginx --from-file=nginx.conf
@@ -156,7 +165,7 @@ pushd kubernetes/nginx
 
   # have seen this fail where nginx pod is applied but never created. Hard to know
   # why that is happening without having access to Kube component logs.
-  sleep 3
+  sleep 5
 
   kubectl apply -f nginx.yml
 
