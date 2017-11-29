@@ -61,51 +61,28 @@ manually deploy the rest of the OpenWhisk components.
 * [Controller](kubernetes/controller/README.md)
 * [Invoker](kubernetes/invoker/README.md)
 * [Nginx](kubernetes/nginx/README.md)
+* [Ingress](kubernetes/ingress/README.md)
 
-From here, you will now need to get the publicly available address
-of Nginx. If you are using the default Nginx image with a NodePort
-Service, then you can obtain the public IP using the following guide:
+In the commands below, replace API_HOST with the URL appropriate for the Ingress you deployed.
 
- 1. Obtain the IP address of the Kubernetes nodes.
-
- ```
- kubectl get nodes
- ```
-
- 2. Obtain the public port for the Kubernetes Nginx Service
-
- ```
- kubectl -n openwhisk describe service nginx
- ```
-
- From here you should note the port used for the api endpoint. E.g:
-
- ```
- export WSK_PORT=$(kubectl -n openwhisk describe service nginx | grep https-api | grep NodePort| awk '{print $3}' | cut -d'/' -f1)
- ```
-
-Now you should be able to setup the wsk cli like normal and interact with
-Openwhisk.
+Configure the wsk cli by setting the auth and apihost properties.
 
 ```
-wsk property set --auth 23bc46b1-71f6-4ed5-8c54-816aa4f8c502:123zO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP --apihost https://[nginx_ip]:$WSK_PORT
+wsk property set --auth 23bc46b1-71f6-4ed5-8c54-816aa4f8c502:123zO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP --apihost https://API_HOST
 ```
 
-Lastly, you will need to install the initial catalog. To do this, you will need
-to set the `OPENWHISK_HOME` environment variable:
+Install the initial catalog. To do this, you will need to set
+the `OPENWHISK_HOME` environment variable:
 
 ```
 export OPENWHISK_HOME [location of the openwhisk repo]
 ```
 
-Then you should be able to run the following commands. Just make sure to
-replace the `[nginx_ip]` bellow.
-
 ```
   pushd /tmp
     git clone https://github.com/apache/incubator-openwhisk-catalog
     cd incubator-openwhisk-catalog/packages
-    ./installCatalog.sh 789c46b1-71f6-4ed5-8c54-816aa4f8c502:abczO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP https://[nginx_ip]:$WSK_PORT
+    ./installCatalog.sh 789c46b1-71f6-4ed5-8c54-816aa4f8c502:abczO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP https://API_HOST
   popd
 ```
 
@@ -131,11 +108,6 @@ to make a public image and once it is resolved, then we can switch to the public
 * Kube 1.6.3 has an issue with volume mount subpaths. See
   [here](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG.md#v163)
   for more information.
-
-## Enhancements
-
-* Use a public Edge Docker image once this [issue](https://github.com/apache/incubator-openwhisk/issues/2152)
-  is resolved
 
 # Issues
 
