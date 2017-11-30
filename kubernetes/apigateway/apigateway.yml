@@ -45,6 +45,6 @@ spec:
           containerPort: 9000
         env:
         - name: "REDIS_HOST"
-          value: "redis.openwhisk"
+          value: "$(REDIS_SERVICE_HOST)"
         - name: "REDIS_PORT"
-          value: "6379"
+          value: "$(REDIS_SERVICE_PORT_REDIS)"
