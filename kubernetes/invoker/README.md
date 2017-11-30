@@ -10,7 +10,7 @@ instance per Kube Node. To set these restrictions, it will be
 up to the Kubernetes deployment operator to properly apply
 the correct labels and taints to each required Kube node.
 
-With the defauts in the current `invoker.yml`, you can setup a
+With the defaults in the current `invoker.yml`, you can setup a
 node to run only Invoker pods with:
 
 ```
@@ -19,7 +19,7 @@ $ kubectl label nodes 127.0.0.1 openwhisk=invoker
 ```
 
 If you would then like to restrict nodes farther so that
-they only run Invoker podes, you can set some taints:
+they only run Invoker pods, you can set some taints:
 
 ```
 kubectl taint nodes [node name] dedicated=invoker:NoSchedule
@@ -75,7 +75,7 @@ env:
 ```
 ## Kubernetes Host Linux Versions
 
-Unfortunitaly when Deploying OpenWhisk on Kubernetes it currently mounts some
+Unfortunately when Deploying OpenWhisk on Kubernetes it currently mounts some
 of the host OS files for the Invoker process and needs to make some assumptions.
 Because of this, some failures are known to happen on certain Linux versions,
 like CoreOs. If you see an error like:

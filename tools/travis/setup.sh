@@ -38,4 +38,4 @@ fi
 echo "minikube is deployed and reachable"
 
 # set the invoker label
-kubectl label nodes 127.0.0.1 openwhisk=invoker
+kubectl label nodes --all openwhisk=invoker

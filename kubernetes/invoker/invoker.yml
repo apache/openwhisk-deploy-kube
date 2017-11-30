@@ -46,7 +46,7 @@ spec:
       - name: invoker
         imagePullPolicy: Always
         image: openwhisk/invoker
-        command: [ "/bin/bash", "-c", "COMPONENT_NAME=$(hostname | cut -d'-' -f2) /init.sh ]
+        command: [ "/bin/bash", "-c", "COMPONENT_NAME=$(hostname | cut -d'-' -f2) /init.sh" ]
         env:
           - name: "PORT"
             value: "8080"
@@ -139,8 +139,8 @@ spec:
           - name: "DB_WHISK_AUTHS"
             value: "test_subjects"
 
-          # UUID for the pod can be the hostname of the Kube node
-          - name: "INVOKER_ASSIGNED_UUID"
+          # Name for the pod can be the hostname of the Kube node
+          - name: "INVOKER_NAME"
             valueFrom:
               fieldRef:
                 fieldPath: spec.nodeName

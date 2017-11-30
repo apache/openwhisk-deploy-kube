@@ -11,7 +11,7 @@ kubectl -n openwhisk delete deployment apigateway
 kubectl -n openwhisk delete deployment zookeeper
 kubectl -n openwhisk delete deployment kafka
 kubectl -n openwhisk delete statefulsets controller
-kubectl -n openwhisk delete statefulsets invoker
+kubectl -n openwhisk delete daemonset invoker
 kubectl -n openwhisk delete deployment nginx
 
 # delete configmaps
