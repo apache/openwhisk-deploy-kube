@@ -61,6 +61,6 @@ spec:
 
         # zookeeper info
         - name: "ZOOKEEPER_HOST"
-          value: "zookeeper.openwhisk"
+          value: "$(ZOOKEEPER_SERVICE_HOST)"
         - name: "ZOOKEEPER_PORT"
-          value: "2181"
+          value: "$(ZOOKEEPER_SERVICE_PORT_ZOOKEEPER)"
