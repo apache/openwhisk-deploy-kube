@@ -4,10 +4,30 @@ Invoker
 # Deploying
 
 When deploying the Invoker, it needs to be deployed via a
-[StatefulSet](https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/).
-This is because each Invoker instance needs to know the instance
-it is for the Kafka topic. The current deployment is a single
-Invoker instance and can be deployed with:
+[DaemonSet](https://kubernetes.io/docs/concepts/workloads/controllers/daemonset/).
+This is because there should only ever be at most 1 Invoker
+instance per Kube Node. To set these restrictions, it will be
+up to the Kubernetes deployment operator to properly apply
+the correct labels and taints to each required Kube node.
+
+With the defaults in the current `invoker.yml`, you can setup a
+node to run only Invoker pods with:
+
+```
+kubectl label nodes [node name] openwhisk=invoker
+$ kubectl label nodes 127.0.0.1 openwhisk=invoker
+```
+
+If you would then like to restrict nodes farther so that
+they only run Invoker pods, you can set some taints:
+
+```
+kubectl taint nodes [node name] dedicated=invoker:NoSchedule
+kubectl taint nodes [node name] dedicated=invoker:NoExecute
+```
+
+The taint nodes are optional, but once the invoker label is applied,
+you can create the invokers with:
 
 ```
 kubectl apply -f invoker.yml
@@ -55,7 +75,7 @@ env:
 ```
 ## Kubernetes Host Linux Versions
 
-Unfortunitaly when Deploying OpenWhisk on Kubernetes it currently mounts some
+Unfortunately when Deploying OpenWhisk on Kubernetes it currently mounts some
 of the host OS files for the Invoker process and needs to make some assumptions.
 Because of this, some failures are known to happen on certain Linux versions,
 like CoreOs. If you see an error like:

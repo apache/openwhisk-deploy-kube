@@ -37,3 +37,5 @@ fi
 
 echo "minikube is deployed and reachable"
 
+# set the invoker label
+kubectl label nodes --all openwhisk=invoker
