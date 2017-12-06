@@ -10,6 +10,10 @@ cd $ROOTDIR
 echo "Creating openwhisk namespace"
 kubectl apply -f configure/openwhisk_kube_namespace.yml
 
+echo "Labeling invoker node"
+kubectl label nodes --all openwhisk=invoker
+kubectl describe nodes
+
 couchdbHealthCheck () {
   # wait for the pod to be created before getting the job name
   sleep 5
