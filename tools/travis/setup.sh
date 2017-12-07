@@ -21,10 +21,14 @@ touch $HOME/.kube/config
 export KUBECONFIG=$HOME/.kube/config
 sudo -E /usr/local/bin/minikube start --vm-driver=none --kubernetes-version=$TRAVIS_KUBE_VERSION
 
-# Wait until kubectl can access the api server that Minikube has created
+# Wait until we have a ready node in minikube
 TIMEOUT=0
 TIMEOUT_COUNT=60
-until $( /usr/local/bin/kubectl get po &> /dev/null ) || [ $TIMEOUT -eq $TIMEOUT_COUNT ]; do
+until [ $TIMEOUT -eq $TIMEOUT_COUNT ]; do
+  if [ -n "$(/usr/local/bin/kubectl get nodes | grep Ready)" ]; then
+    break
+  fi
+
   echo "minikube is not up yet"
   let TIMEOUT=TIMEOUT+1
   sleep 5
@@ -36,6 +40,4 @@ if [ $TIMEOUT -eq $TIMEOUT_COUNT ]; then
 fi
 
 echo "minikube is deployed and reachable"
-
-# set the invoker label
-kubectl label nodes --all openwhisk=invoker
+/usr/local/bin/kubectl describe nodes
