@@ -22,6 +22,7 @@ script:
 
 deploy:
 - provider: script
-  script: "./tools/travis/publish.sh openwhisk kube-couchdb latest"
+  script:
+    - ./tools/travis/publish.sh openwhisk kube-couchdb latest docker/couchdb
   on:
     branch: master
