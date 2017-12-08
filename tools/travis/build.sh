@@ -111,14 +111,6 @@ pushd kubernetes/couchdb
   couchdbHealthCheck
 popd
 
-# setup redis
-echo "Deploying redis"
-pushd kubernetes/redis
-  kubectl apply -f redis.yml
-
-  deploymentHealthCheck "redis"
-popd
-
 # setup apigateway
 echo "Deploying apigateway"
 pushd kubernetes/apigateway

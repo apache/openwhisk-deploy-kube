@@ -55,7 +55,6 @@ the instructions for each step in order.
       within the Kubernetes cluster.
     * For a production level CouchDB instance, take a look at the main
       OpenWhisk [documentation for configuring CouchDB](https://github.com/apache/incubator-openwhisk/blob/master/tools/db/README.md).
-* Deploy [Redis](kubernetes/redis/README.md)
 * Deploy [ApiGateway](kubernetes/apigateway/README.md)
 * Deploy [Zookeeper](kubernetes/zookeeper/README.md)
 * Deploy [Kafka](kubernetes/kafka/README.md)

@@ -35,6 +35,9 @@ spec:
       restartPolicy: Always
 
       containers:
+      - name: redis
+        imagePullPolicy: IfNotPresent
+        image: redis:3.2
       - name: apigateway
         imagePullPolicy: IfNotPresent
         image: openwhisk/apigateway
@@ -45,6 +48,6 @@ spec:
           containerPort: 9000
         env:
         - name: "REDIS_HOST"
-          value: "$(REDIS_SERVICE_HOST)"
+          value: "127.0.0.1"
         - name: "REDIS_PORT"
-          value: "$(REDIS_SERVICE_PORT_REDIS)"
+          value: "6379"
