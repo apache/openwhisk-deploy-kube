@@ -41,9 +41,9 @@ spec:
           containerPort: 9092
         env:
         - name: "KAFKA_ADVERTISED_HOST_NAME"
-          value: kafka.openwhisk
+          value: "$(KAFKA_SERVICE_HOST)"
         - name: "KAFKA_PORT"
-          value: "9092"
+          value: "$(KAFKA_SERVICE_PORT_KAFKA)"
 
         # message settings
         - name: "REPLICATION_FACTOR"
