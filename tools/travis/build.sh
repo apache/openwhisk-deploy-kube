@@ -23,6 +23,7 @@ couchdbHealthCheck () {
   TIMEOUT=0
   until [ $TIMEOUT -eq 30 ]; do
     if [ -n "$(kubectl -n openwhisk logs $POD_NAME | grep "successfully setup and configured CouchDB v2.0")" ]; then
+      PASSED=true
       break
     fi
 
@@ -30,7 +31,7 @@ couchdbHealthCheck () {
     sleep 10
   done
 
-  if [ $TIMEOUT -eq 25 ]; then
+  if [ "$PASSED" = false ]; then
     echo "Failed to finish deploying CouchDB"
 
     kubectl -n openwhisk logs $POD_NAME
