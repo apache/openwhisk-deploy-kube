@@ -34,33 +34,24 @@ spec:
       containers:
       - name: kafka
         imagePullPolicy: IfNotPresent
-        # custom kafka image. Should be eliminated soon (see issue #26)
-        image: dgrove/whisk_kafka
+        image: wurstmeister/kafka:0.11.0.1
         ports:
         - name: kafka
           containerPort: 9092
         env:
+        - name: "KAFKA_BROKER_ID"
+          value: "0"
         - name: "KAFKA_ADVERTISED_HOST_NAME"
           value: "$(KAFKA_SERVICE_HOST)"
+        - name: "KAFKA_ADVERTISED_PORT"
+          value: "$(KAFKA_SERVICE_PORT_KAFKA)"
+        - name: "KAFKA_HOST_NAME"
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
         - name: "KAFKA_PORT"
           value: "$(KAFKA_SERVICE_PORT_KAFKA)"
 
-        # message settings
-        - name: "REPLICATION_FACTOR"
-          value: "1"
-        - name: "PARTITIONS"
-          value: "1"
-
-        # health topic settings
-        - name: "KAFKA_TOPICS_HEALTH_RETENTIONBYTES"
-          value: "536870912"
-        - name: "KAFKA_TOPICS_HEALTH_RETENTIONMS"
-          value: "1073741824"
-        - name: "KAFKA_TOPICS_HEALTH_SEGMENTBYTES"
-          value: "3600000"
-
         # zookeeper info
-        - name: "ZOOKEEPER_HOST"
-          value: "$(ZOOKEEPER_SERVICE_HOST)"
-        - name: "ZOOKEEPER_PORT"
-          value: "$(ZOOKEEPER_SERVICE_PORT_ZOOKEEPER)"
+        - name: "KAFKA_ZOOKEEPER_CONNECT"
+          value: "$(ZOOKEEPER_SERVICE_HOST):$(ZOOKEEPER_SERVICE_PORT_ZOOKEEPER)"
