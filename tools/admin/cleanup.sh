@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# this script is used to cleanup the OpenWhisk deployment
+# this script is used to completely remove the OpenWhisk deployment
 
 set -x
 
@@ -15,9 +15,12 @@ kubectl -n openwhisk delete deployment nginx
 
 # delete configmaps
 kubectl -n openwhisk delete cm nginx
+kubectl -n openwhisk delete cm cluster
 
 # delete secrets
 kubectl -n openwhisk delete secret nginx
+kubectl -n openwhisk delete secret auth.guest
+kubectl -n openwhisk delete secret auth.whisk.system
 
 # delete ingress
 kubectl -n openwhisk delete ingress ow-ingress
@@ -29,3 +32,6 @@ kubectl -n openwhisk delete service zookeeper
 kubectl -n openwhisk delete service kafka
 kubectl -n openwhisk delete service controller
 kubectl -n openwhisk delete service nginx
+
+# delete namespace
+kubectl delete namespace openwhisk
