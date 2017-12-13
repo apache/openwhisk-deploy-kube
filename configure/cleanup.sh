@@ -6,7 +6,6 @@ set -x
 
 # delete deployments
 kubectl -n openwhisk delete deployment couchdb
-kubectl -n openwhisk delete deployment redis
 kubectl -n openwhisk delete deployment apigateway
 kubectl -n openwhisk delete deployment zookeeper
 kubectl -n openwhisk delete deployment kafka
@@ -25,7 +24,6 @@ kubectl -n openwhisk delete ingress ow-ingress
 
 # delete services
 kubectl -n openwhisk delete service couchdb
-kubectl -n openwhisk delete service redis
 kubectl -n openwhisk delete service apigateway
 kubectl -n openwhisk delete service zookeeper
 kubectl -n openwhisk delete service kafka
