@@ -1,4 +1,3 @@
----
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -26,3 +25,33 @@ spec:
           containerPort: 2888
         - name: leader-election
           containerPort: 3888
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: zookeeper-netpol
+  namespace: openwhisk
+spec:
+  podSelector:
+    matchLabels:
+      name: zookeeper
+  ingress:
+  # Allow kafka and invoker to connect to zookeeper
+  - from:
+    - podSelector:
+        matchLabels:
+          name: kafka
+    - podSelector:
+        matchLabels:
+          name: invoker
+    ports:
+     - port: 2181
+  # zookeepers can connect to each other
+  - from:
+    - podSelector:
+        matchLabels:
+          name: zookeeper
+    ports:
+     - port: 2181
+     - port: 2888
+     - port: 3888

@@ -160,3 +160,30 @@ spec:
           initialDelaySeconds: 5
           periodSeconds: 10
           timeoutSeconds: 1
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: controller-netpol
+  namespace: openwhisk
+spec:
+  podSelector:
+    matchLabels:
+      name: controller
+  ingress:
+  # Allow nginx to connect to controller
+  - from:
+    - podSelector:
+        matchLabels:
+          name: nginx
+    ports:
+     - port: 8080
+  # Controllers can connect to each other
+  - from:
+    - podSelector:
+        matchLabels:
+          name: controller
+    ports:
+     - port: 8080
+     - port: 2552
