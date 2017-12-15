@@ -59,7 +59,10 @@ spec:
           - name: "SERVICE_CHECK_INTERVAL"
             value: "15s"
           - name: "WHISK_API_HOST_NAME"
-            value: "nginx.openwhisk"
+            valueFrom:
+              configMapKeyRef:
+                name: whisk
+                key: whisk_api_host_name
           - name: "WHISK_VERSION_BUILDNO"
             value: "latest"
           - name: "INVOKER_CONTAINER_NETWORK"
@@ -74,16 +77,6 @@ spec:
             value: "latest"
           - name: "DOCKER_REGISTRY"
             value: ""
-
-          # Invoker instance count. Needs to match replica count
-          - name: "INVOKER_INSTANCES"
-            value: "1"
-
-          # Invoker assigned name. Derived from hostname
-          - name: "INVOKER_NAME"
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.name
 
           # Java options
           - name: "JAVA_OPTS"
@@ -105,7 +98,7 @@ spec:
           - name: "RUNTIMES_MANIFEST"
             value: '{ "defaultImagePrefix": "openwhisk", "defaultImageTag": "latest", "runtimes": { "nodejs": [ { "kind": "nodejs", "image": { "name": "nodejsaction" }, "deprecated": true }, { "kind": "nodejs:6", "default": true, "image": { "name": "nodejs6action" }, "deprecated": false } ], "python": [ { "kind": "python", "image": { "name": "python2action" }, "deprecated": false }, { "kind": "python:2", "default": true, "image": { "name": "python2action" }, "deprecated": false }, { "kind": "python:3", "image": { "name": "python3action" }, "deprecated": false } ], "swift": [ { "kind": "swift", "image": { "name": "swiftaction" }, "deprecated": true }, { "kind": "swift:3", "image": { "name": "swift3action" }, "deprecated": true }, { "kind": "swift:3.1.1", "default": true, "image": { "name": "action-swift-v3.1.1" }, "deprecated": false } ], "java": [ { "kind": "java", "default": true, "image": { "name": "java8action" }, "deprecated": false, "attached": { "attachmentName": "jarfile", "attachmentType": "application/java-archive" }, "sentinelledLogs": false, "requireMain": true } ] }, "blackboxes": [ { "name": "dockerskeleton" } ] }'
 
-          # Default to empty logs dir. This is because logs should go to stdout
+          # Default to empty logs dir. This is because logs should go to stdout on kube
           - name: "WHISK_LOGS_DIR"
             value: ""
 

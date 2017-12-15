@@ -18,16 +18,7 @@ kubectl label nodes [node name] openwhisk=invoker
 $ kubectl label nodes 127.0.0.1 openwhisk=invoker
 ```
 
-If you would then like to restrict nodes farther so that
-they only run Invoker pods, you can set some taints:
-
-```
-kubectl taint nodes [node name] dedicated=invoker:NoSchedule
-kubectl taint nodes [node name] dedicated=invoker:NoExecute
-```
-
-The taint nodes are optional, but once the invoker label is applied,
-you can create the invokers with:
+Once the invoker label is applied, you can create the invokers with:
 
 ```
 kubectl apply -f invoker.yml
@@ -44,35 +35,11 @@ that the Kubernetes host image is Ubuntu. During the deploy there could be an
 issue and if the Invoker fails to deploy, see the [Troubleshooting](#troubleshooting)
 section below.
 
-# Invoker Deployment Changes
-## Increase Invoker Count
-
-To increase the number of Invokers, edit the
-[replicas](https://github.com/apache/incubator-openwhisk-deploy-kube/tree/master/kubernetes/invoker/invoker.yml#L9)
-line. Secondly, you will need to update the
-[INVOKER_INSTANCES](https://github.com/apache/incubator-openwhisk-deploy-kube/tree/master/kubernetes/invoker/invoker.yml#L70)
-to with the same replica count.
-
-## Deploying Invoker to Specific Kube Nodes
-
-To deploy an Invoker to specific Kube nodes, you will need to edit the
-[invoker.yml](https://github.com/apache/incubator-openwhisk-deploy-kube/tree/master/kubernetes/invoker/invoker.yml)
-file with Kubernetes [NodeSelectors](https://kubernetes.io/docs/concepts/configuration/assign-pod-node/).
-
 # Troubleshooting
-## Deploying to Minikube
+## No invokers are deployed
 
-When deploying the Invoker to [Minikube](https://kubernetes.io/docs/getting-started-guides/minikube/)
-you might need to edit the Invoker's Docker Api Version.
-This is because Minikube uses Docker version 1.11.x.
-To do this, you will need to add the following properties
-to the invoker.yml file.
+Verify that you actually have nodes with the label openwhisk=invoker.
 
-```
-env:
-  - name: "DOCKER_API_VERSION"
-    value: "1.23"
-```
 ## Kubernetes Host Linux Versions
 
 Unfortunately when Deploying OpenWhisk on Kubernetes it currently mounts some

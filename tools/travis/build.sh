@@ -1,18 +1,8 @@
 #!/bin/bash
 
-set -x
-
-SCRIPTDIR=$(cd $(dirname "$0") && pwd)
-ROOTDIR="$SCRIPTDIR/../../"
-
-cd $ROOTDIR
-
-echo "Creating openwhisk namespace"
-kubectl apply -f configure/openwhisk_kube_namespace.yml
-
-echo "Labeling invoker node"
-kubectl label nodes --all openwhisk=invoker
-kubectl describe nodes
+#################
+# Helper functions for verifying pod creation
+#################
 
 couchdbHealthCheck () {
   # wait for the pod to be created before getting the job name
@@ -103,6 +93,31 @@ statefulsetHealthCheck () {
   echo "$1-0 is up and running"
 
 }
+
+#################
+# Main body of script -- deploy OpenWhisk
+#################
+
+set -x
+
+SCRIPTDIR=$(cd $(dirname "$0") && pwd)
+ROOTDIR="$SCRIPTDIR/../../"
+
+cd $ROOTDIR
+
+# Label invoker nodes (needed for daemonset-based invoker deployment)
+echo "Labeling invoker node"
+kubectl label nodes --all openwhisk=invoker
+kubectl describe nodes
+
+# Initial cluster setup
+echo "Performing steps from cluster-setup"
+pushd kubernetes/cluster-setup
+  kubectl apply -f namespace.yml
+  kubectl -n openwhisk create configmap whisk --from-env-file=whisk.env
+  kubectl -n openwhisk create secret generic auth.guest --from-file=auth.guest
+  kubectl -n openwhisk create secret generic auth.whisk.system --from-file=auth.whisk.system
+popd
 
 # setup couchdb
 echo "Deploying couchdb"

@@ -18,7 +18,7 @@ Several requirements must be met for OpenWhisk to deploy on Kubernetes.
 
 **Kubernetes**
 * [Kubernetes](https://github.com/kubernetes/kubernetes) version 1.6+. However, avoid Kubernetes 1.6.3 due to an [issue with volume mount subpaths](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG-1.6.md#known-issues-for-v163).  Our Travis CI testing uses Kubernetes version 1.7.4.
-* The ability to create Ingresses to expose a Kubernetes service to the outside of a cluster so you can actually use OpenWhisk.
+* The ability to create Ingresses to make a Kubernetes service available outside of the cluster so you can actually use OpenWhisk.
 * Endpoints of Kubernetes services must be able to loopback to themselves ("hairpin mode").
 
 **OpenWhisk**
@@ -40,14 +40,14 @@ You can also provision a Kubernetes cluster from a cloud provider, subject to th
 
 ## Initial Configuration
 
-* Create the openwhisk namespace: `kubectl apply -f configure/openwhisk_kube_namespace.yml`
+* Follow the steps for initial [Cluster Setup](kubernetes/cluster-setup/README.md)
 
 ## Deploy Components
 
 To deploy OpenWhisk on Kubernetes, you must deploy its components in
-the proper order. Detailed instructions and the supporting .yml files
-can be found in the kubernetes directory tree. You will need to follow
-the instructions for each step in order.
+the proper order. Detailed instructions and the supporting configuration
+files can be found in the kubernetes directory tree. You will need to
+follow the instructions for each step in order.
 
 * Configure or deploy CouchDB.
     * For development and testing purposes, this repo includes a configuration
@@ -70,7 +70,7 @@ If you don't already have the wsk cli, follow the instructions [here](https://gi
 Configure the wsk cli by setting the auth and apihost properties (replace API_HOST with the URL appropriate for the Ingress you deployed).
 
 ```
-wsk property set --auth 23bc46b1-71f6-4ed5-8c54-816aa4f8c502:123zO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP --apihost https://API_HOST
+wsk property set --auth `cat kubernetes/cluster-setup/auth.guest` --apihost https://API_HOST
 ```
 
 ## Install the initial catalog
@@ -101,7 +101,7 @@ For this, we want to delete all the OpenWhisk deployments, services, jobs
 and whatever else might be there. We provide a script to do this:
 
 ```
-./configure/cleanup.sh
+./tools/admin/cleanup.sh
 ```
 
 # Issues
