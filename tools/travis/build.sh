@@ -189,9 +189,9 @@ AUTH_WSK_SECRET=789c46b1-71f6-4ed5-8c54-816aa4f8c502:abczO3xZCLrMN6v2BKK1dXYFpXl
 AUTH_GUEST=23bc46b1-71f6-4ed5-8c54-816aa4f8c502:123zO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP
 WSK_PORT=$(kubectl -n openwhisk describe service nginx | grep https-api | grep NodePort| awk '{print $3}' | cut -d'/' -f1)
 
-# download and setup the wsk cli from nginx
-wget --no-check-certificate https://localhost:$WSK_PORT/cli/go/download/linux/amd64/wsk
-chmod +x wsk
+# download and setup the wsk cli
+wget -q https://github.com/apache/incubator-openwhisk-cli/releases/download/latest/OpenWhisk_CLI-latest-linux-amd64.tgz
+tar xzf OpenWhisk_CLI-latest-linux-amd64.tgz
 sudo cp wsk /usr/local/bin/wsk
 
 ./wsk property set --auth $AUTH_GUEST --apihost https://localhost:$WSK_PORT
