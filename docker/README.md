@@ -8,6 +8,8 @@ The built images are:
   * couchdb - creates and initializes a CouchDB instance for
     dev/testing of OpenWhisk.  This image is not intended for
     production usage.
+  * routemgmt - installs OpenWhisk's route management package
+    in the system namespace of the OpenWhisk deployment.
 
 The nginx and kafka images are not officially built and published
 because they are considered to be temporary.  We are working on

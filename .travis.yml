@@ -24,5 +24,6 @@ deploy:
 - provider: script
   script:
     - ./tools/travis/publish.sh openwhisk kube-couchdb latest docker/couchdb
+    - ./tools/travis/publish.sh openwhisk kube-routemgmt latest docker/routemgmt
   on:
     branch: master
