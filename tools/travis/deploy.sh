@@ -12,3 +12,6 @@ echo "Publishing kube-couchdb image"
 
 echo "Publishing kube-routemgmt image"
 ./tools/travis/publish.sh openwhisk kube-routemgmt latest docker/routemgmt
+
+echo "Publishing kube-openwhisk-catalog image"
+./tools/travis/publish.sh openwhisk kube-openwhisk-catalog latest docker/openwhisk-catalog
