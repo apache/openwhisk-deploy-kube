@@ -2,6 +2,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: install-routemgmt
+  namespace: openwhisk
 spec:
   activeDeadlineSeconds: 600
   template:
@@ -17,13 +18,13 @@ spec:
           - name: "WHISK_AUTH"
             valueFrom:
               secretKeyRef:
-                name: auth.whisk.system
-                key: auth.whisk.system
+                name: whisk.auth
+                key: system
           - name: "WHISK_API_HOST_NAME"
             valueFrom:
               configMapKeyRef:
-                name: whisk
-                key: whisk_api_host_name
+                name: whisk.ingress
+                key: api_host
           - name: "WHISK_NAMESPACE"
             value: "/whisk.system"
           - name: "WHISK_API_GATEWAY_HOST_V2"

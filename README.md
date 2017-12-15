@@ -38,55 +38,35 @@ You can also provision a Kubernetes cluster from a cloud provider, subject to th
 
 # Configuring OpenWhisk
 
-## Initial Configuration
+## Initial Cluster Configuration
 
 * Follow the steps for initial [Cluster Setup](kubernetes/cluster-setup/README.md)
 
-## Deploy Components
+## Configure or Deploy CouchDB
+
+Do one of the following:
+* For development and testing purposes, this repo includes a configuration
+  for deploying a [simple non-persistent CouchDB instance](kubernetes/couchdb/README.md)
+  within the Kubernetes cluster.
+* For a production level CouchDB instance, take a look at the main
+  OpenWhisk [documentation for configuring CouchDB](https://github.com/apache/incubator-openwhisk/blob/master/tools/db/README.md).
+
+## Deploy Remaining Components
 
 To deploy OpenWhisk on Kubernetes, you must deploy its components in
-the proper order. Detailed instructions and the supporting configuration
-files can be found in the kubernetes directory tree. You will need to
-follow the instructions for each step in order.
+an order that respects their dependencies.  Detailed instructions and
+the supporting configuration files can be found in the kubernetes
+directory tree. Follow the instructions for each step in order.
 
-* Configure or deploy CouchDB.
-    * For development and testing purposes, this repo includes a configuration
-      for deploying a [simple non-persistent CouchDB instance](kubernetes/couchdb/README.md)
-      within the Kubernetes cluster.
-    * For a production level CouchDB instance, take a look at the main
-      OpenWhisk [documentation for configuring CouchDB](https://github.com/apache/incubator-openwhisk/blob/master/tools/db/README.md).
 * Deploy [ApiGateway](kubernetes/apigateway/README.md)
 * Deploy [Zookeeper](kubernetes/zookeeper/README.md)
 * Deploy [Kafka](kubernetes/kafka/README.md)
 * Deploy [Controller](kubernetes/controller/README.md)
-* Deploy [Invoker](kubernetes/invoker/README.md)
 * Deploy [Nginx](kubernetes/nginx/README.md)
-* Deploy [Ingress](kubernetes/ingress/README.md)
-
-## Configure the OpenWhisk CLI
-
-If you don't already have the wsk cli, follow the instructions [here](https://github.com/apache/incubator-openwhisk-cli) to get it.
-
-Configure the wsk cli by setting the auth and apihost properties (replace API_HOST with the URL appropriate for the Ingress you deployed).
-
-```
-wsk property set --auth `cat kubernetes/cluster-setup/auth.guest` --apihost https://API_HOST
-```
-
-## Install the initial catalog
-
-To do this, you will need to set the `OPENWHISK_HOME` environment variable to a git clone of the main OpenWhisk repository and
-replace API_HOST with the URL appropriate for the Ingress you deployed:
-
-```
-export OPENWHISK_HOME [location of your OpenWhisk clone]
-
-pushd /tmp
-  git clone https://github.com/apache/incubator-openwhisk-catalog
-  cd incubator-openwhisk-catalog/packages
-  ./installCatalog.sh 789c46b1-71f6-4ed5-8c54-816aa4f8c502:abczO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP https://API_HOST
-popd
-```
+* Deploy [Ingress](kubernetes/ingress/README.md), including configuring the wsk CLI.
+* Deploy [Invoker](kubernetes/invoker/README.md)
+* Deploy [RouteMgmt](kubernetes/routemgmt/README.md)
+* Deploy [Package Catalog](kubernetes/openwhisk-catalog/README.md)
 
 ## Verify
 
