@@ -18,7 +18,7 @@ script:
   - ./tools/travis/scancode.sh
   - ./tools/travis/build.sh
   - ./tools/travis/collect-logs.sh
-  - ./tools/travis/box-upload.py "$TRAVIS_BUILD_DIR/logs" "deploy-kube-$TRAVIS_BUILD_ID-$TRAVIS_BRANCH.tar.gz"
+  - ./tools/travis/box-upload.py "logs" "deploy-kube-$TRAVIS_BUILD_ID-$TRAVIS_BRANCH.tar.gz"
 
 deploy:
 - provider: script
