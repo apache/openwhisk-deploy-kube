@@ -10,6 +10,9 @@ The built images are:
     production usage.
   * routemgmt - installs OpenWhisk's route management package
     in the system namespace of the OpenWhisk deployment.
+  * openwhisk-catalog - installs the catalog from the project
+    incubator-openwhisk-calalog to the system namespace of the
+    OpenWhisk deployment.
 
 The nginx and kafka images are not officially built and published
 because they are considered to be temporary.  We are working on
