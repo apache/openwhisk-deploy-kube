@@ -36,7 +36,8 @@ pushd /openwhisk
 
   # setup and initialize DB
   pushd ansible
-    ansible-playbook -i environments/local setup.yml \
+    ansible-playbook -i environments/local setup.yml
+    ansible-playbook -i environments/local couchdb.yml --tags ini \
       -e db_prefix=$DB_PREFIX \
       -e db_host=$DB_HOST \
       -e db_username=$COUCHDB_USER \
