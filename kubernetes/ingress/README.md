@@ -1,15 +1,40 @@
 Ingress
 -------
 
-To make your OpenWhisk deployment available outside of Kubernetes, you
-need to configure an Ingress to expose the nginx service.
-Unfortunately, the exact details of configuring an Ingress vary across
-cloud providers.  The instructions below describe multiple possible
-Ingress configurations.  We welcome contributions from the community
-to describe how to configure ingress for all the major cloud provider
-providers.
+The goal of this step is to define a Kubernetes Ingress that will make
+OpenWhisk available outside of your Kubernetes cluster. In the
+commands given in the Configuration Steps, replace API_HOST with the
+actual value for your Ingress as determined by the detailed
+instructions in the appropriate subsection of Possible Ingress Types.
 
-# NodePort
+# Configuration Steps
+
+1. Create an Ingress, thus determining a value you should use for
+API_HOST.  Unfortunately, the exact details of configuring an Ingress
+vary across cloud providers.  The detailed instructions
+[below](#possible-ingress-types) describe multiple possible Ingress
+configurations.  We welcome contributions from the community to
+describe how to configure Ingress for additional cloud providers.
+
+2. Record the value of API_HOST in a Kubernetes configmap for later
+use within the OpenWhisk deployment:
+```
+kubectl -n openwhisk create configmap whisk.ingress --from-literal=api_host=API_HOST
+```
+
+3. Configure the OpenWhisk CLI, wsk, by setting the auth and apihost
+properties (if you don't already have the wsk cli, follow the
+instructions [here](https://github.com/apache/incubator-openwhisk-cli)
+to get it).
+
+```
+wsk property set --auth `cat ../cluster-setup/auth.guest` --apihost API_HOST
+```
+
+# Possible Ingress Types
+
+
+## NodePort
 
 When it was deployed, the nginx service was configured to expose
 itself via a NodePort [see](https://github.com/apache/incubator-openwhisk-deploy-kube/tree/master/kubernetes/nginx/nginx.yml#L10)
@@ -32,7 +57,7 @@ kubectl -n openwhisk describe service nginx | grep https-api | grep NodePort| aw
 Use IP_ADDR:PUBLIC_PORT as your API_HOST
 
 
-# Simple Service Ingress
+## Simple Service Ingress
 
 A basic ingress that simply connects through to the nginx
 service. With this ingress, TLS termination will be handled by the
@@ -45,9 +70,9 @@ kubectl apply -f ingress-simple.yml
 Use `kubectl get ingress` to determine the IP address and port to use
 to define API_HOST for a simple service ingress.
 
-# IBM Cloud
+## IBM Cloud
 
-## IBM Cloud Lite cluster
+### IBM Cloud Lite cluster
 
 The only available ingress method for a Lite cluster is to use a
 NodePort (see above).  By determining the IP address of a worker node
@@ -68,7 +93,7 @@ kubectl -n openwhisk describe service nginx | grep https-api | grep NodePort| aw
  ```
 Use PublicIP:PORT as your API_HOST
 
-## IBM Cloud standard cluster
+### IBM Cloud standard cluster
 
 A template file ingress-ibm.yml is provided.  You will need to edit
 this file to replace <ibmdomain> and <ibmtlssecret> with the correct
@@ -104,6 +129,6 @@ kubectl apply -f ingress-ibm.yml
 Your OpenWhisk API_HOST will be <ibmdomain>/openwhisk
 
 
-# Other cloud providers
+## Other cloud providers
 
 Please submit Pull Requests with instructions for other cloud providers.

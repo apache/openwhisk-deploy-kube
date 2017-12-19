@@ -15,12 +15,11 @@ kubectl -n openwhisk delete deployment nginx
 
 # delete configmaps
 kubectl -n openwhisk delete cm nginx
-kubectl -n openwhisk delete cm cluster
+kubectl -n openwhisk delete cm whisk.ingress
 
 # delete secrets
 kubectl -n openwhisk delete secret nginx
-kubectl -n openwhisk delete secret auth.guest
-kubectl -n openwhisk delete secret auth.whisk.system
+kubectl -n openwhisk delete secret auth
 
 # delete ingress
 kubectl -n openwhisk delete ingress ow-ingress

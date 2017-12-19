@@ -19,6 +19,8 @@ kubectl -n openwhisk logs controller-0 >& logs/controller-0.log
 kubectl -n openwhisk logs controller-1 >& logs/controller-1.log
 kubectl -n openwhisk logs -lname=invoker >& logs/invoker.log
 kubectl -n openwhisk logs -lname=nginx >& logs/nginx.log
+kubectl -n openwhisk logs jobs/install-routemgmt >& logs/routemgmt.log
+kubectl -n openwhisk logs jobs/install-catalog >& logs/catalog.log
 kubectl get pods --all-namespaces -o wide --show-all >& logs/all-pods.txt
 
 # System level logs from minikube

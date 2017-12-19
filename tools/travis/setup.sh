@@ -3,6 +3,11 @@
 
 set -x
 
+# download and install the wsk cli
+wget -q https://github.com/apache/incubator-openwhisk-cli/releases/download/latest/OpenWhisk_CLI-latest-linux-amd64.tgz
+tar xzf OpenWhisk_CLI-latest-linux-amd64.tgz
+sudo cp wsk /usr/local/bin/wsk
+
 # set docker0 to promiscuous mode
 sudo ip link set docker0 promisc on
 

@@ -61,8 +61,8 @@ spec:
           - name: "WHISK_API_HOST_NAME"
             valueFrom:
               configMapKeyRef:
-                name: whisk
-                key: whisk_api_host_name
+                name: whisk.ingress
+                key: api_host
           - name: "WHISK_VERSION_BUILDNO"
             value: "latest"
           - name: "INVOKER_CONTAINER_NETWORK"

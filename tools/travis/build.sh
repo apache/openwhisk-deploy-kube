@@ -94,6 +94,38 @@ statefulsetHealthCheck () {
 
 }
 
+jobHealthCheck () {
+  if [ -z "$1" ]; then
+    echo "Error, job health check called without a component parameter"
+    exit 1
+  fi
+
+  PASSED=false
+  TIMEOUT=0
+  until $PASSED || [ $TIMEOUT -eq 30 ]; do
+    KUBE_SUCCESSFUL_JOB=$(kubectl -n openwhisk get jobs -o wide | grep "$1" | awk '{print $3}')
+    if [ "$KUBE_SUCCESSFUL_JOB" == "1" ]; then
+      PASSED=true
+      break
+    fi
+
+    kubectl get jobs --all-namespaces -o wide --show-all
+
+    let TIMEOUT=TIMEOUT+1
+    sleep 10
+  done
+
+  if [ "$PASSED" = false ]; then
+    echo "Failed to finish running $1"
+
+    kubectl -n openwhisk logs jobs/$1
+    exit 1
+  fi
+
+  echo "$1 completed"
+}
+
+
 #################
 # Main body of script -- deploy OpenWhisk
 #################
@@ -114,9 +146,7 @@ kubectl describe nodes
 echo "Performing steps from cluster-setup"
 pushd kubernetes/cluster-setup
   kubectl apply -f namespace.yml
-  kubectl -n openwhisk create configmap whisk --from-env-file=whisk.env
-  kubectl -n openwhisk create secret generic auth.guest --from-file=auth.guest
-  kubectl -n openwhisk create secret generic auth.whisk.system --from-file=auth.whisk.system
+  kubectl -n openwhisk create secret generic whisk.auth --from-file=system=auth.whisk.system --from-file=guest=auth.guest
 popd
 
 # setup couchdb
@@ -159,15 +189,6 @@ pushd kubernetes/controller
   statefulsetHealthCheck "controller"
 popd
 
-# setup the invoker
-echo "Deploying invoker"
-pushd kubernetes/invoker
-  kubectl apply -f invoker.yml
-
-  # wait until the invoker is ready
-  deploymentHealthCheck "invoker"
-popd
-
 # setup nginx
 echo "Deploying nginx"
 pushd kubernetes/nginx
@@ -185,32 +206,46 @@ pushd kubernetes/nginx
   deploymentHealthCheck "nginx"
 popd
 
-AUTH_WSK_SECRET=789c46b1-71f6-4ed5-8c54-816aa4f8c502:abczO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP
-AUTH_GUEST=23bc46b1-71f6-4ed5-8c54-816aa4f8c502:123zO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP
-WSK_PORT=$(kubectl -n openwhisk describe service nginx | grep https-api | grep NodePort| awk '{print $3}' | cut -d'/' -f1)
-
-# download and setup the wsk cli
-wget -q https://github.com/apache/incubator-openwhisk-cli/releases/download/latest/OpenWhisk_CLI-latest-linux-amd64.tgz
-tar xzf OpenWhisk_CLI-latest-linux-amd64.tgz
-sudo cp wsk /usr/local/bin/wsk
-
-./wsk property set --auth $AUTH_GUEST --apihost https://localhost:$WSK_PORT
-
-
-# setup the catalog
-pushd /tmp
-  git clone https://github.com/apache/incubator-openwhisk
-  export OPENWHISK_HOME=$PWD/incubator-openwhisk
-
-  git clone https://github.com/apache/incubator-openwhisk-catalog
-
-  pushd incubator-openwhisk-catalog/packages
-    export WHISK_CLI_PATH=/usr/local/bin/wsk
-
-    # This script currently has an issue where the cli path is the 4th argument
-    ./installCatalog.sh $AUTH_WSK_SECRET https://localhost:$WSK_PORT $WHISK_CLI_PATH
-  popd
+# configure Ingress and wsk CLI
+# We use a NodePort for Travis CI testing
+pushd kubernetes/ingress
+  WSK_PORT=$(kubectl -n openwhisk describe service nginx | grep https-api | grep NodePort| awk '{print $3}' | cut -d'/' -f1)
+  WSK_HOST=$(kubectl describe nodes | grep Hostname: | awk '{print $2}')
+  kubectl -n openwhisk create configmap whisk.ingress --from-literal=api_host=$WSK_HOST:$WSK_PORT
+  wsk property set --auth `cat ../cluster-setup/auth.guest` --apihost $WSK_HOST:$WSK_PORT
 popd
+
+# setup the invoker
+echo "Deploying invoker"
+pushd kubernetes/invoker
+  kubectl apply -f invoker.yml
+
+  # wait until the invoker is ready
+  deploymentHealthCheck "invoker"
+popd
+
+# install routemgmt
+echo "Installing routemgmt"
+pushd kubernetes/routemgmt
+  kubectl apply -f install-routemgmt.yml
+  jobHealthCheck "install-routemgmt"
+popd
+
+# install openwhisk-catalog
+echo "Installing catalog"
+pushd kubernetes/openwhisk-catalog
+  kubectl apply -f install-catalog.yml
+  jobHealthCheck "install-catalog"
+popd
+
+# list packages and actions now installed in /whisk.system
+wsk -i --auth `cat kubernetes/cluster-setup/auth.whisk.system` package list
+wsk -i --auth `cat kubernetes/cluster-setup/auth.whisk.system` action list
+
+
+#################
+# Sniff test: create and invoke a simple Hello world action
+#################
 
 # create wsk action
 cat > hello.js << EOL
@@ -219,12 +254,12 @@ function main() {
 }
 EOL
 
-./wsk -i action create hello hello.js
+wsk -i action create hello hello.js
 
 sleep 5
 
 # run the new hello world action
-RESULT=$(./wsk -i action invoke --blocking hello | grep "\"status\": \"success\"")
+RESULT=$(wsk -i action invoke --blocking hello | grep "\"status\": \"success\"")
 
 if [ -z "$RESULT" ]; then
   echo "FAILED! Could not invoked custom action"
@@ -237,4 +272,4 @@ if [ -z "$RESULT" ]; then
   exit 1
 fi
 
-echo "PASSED! Deployed openwhisk and invoked custom action"
+echo "PASSED! Deployed openwhisk and invoked Hello action"
