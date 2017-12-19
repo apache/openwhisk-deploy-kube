@@ -6,4 +6,7 @@ metadata:
 spec:
   backend:
     serviceName: nginx
-    servicePort: 443
+    servicePort: https-api
+  backend:
+    serviceName: apigateway
+    servicePort: mgmt

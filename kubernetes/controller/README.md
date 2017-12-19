@@ -15,10 +15,10 @@ kubectl apply -f controller.yml
 # Controller Deployment Changes
 ## Increase Controller Count
 
-You will need to update the replication count for the
-Controllers [here](https://github.com/apache/incubator-openwhisk-deploy-kube/tree/master/kubernetes/controller/controller.yml#L26)
-and the value of CONTROLLER_INSTANCES [here](https://github.com/apache/incubator-openwhisk-deploy-kube/tree/master/kubernetes/controller/controller.yml#L82)
-and the value of AKKA_CLUSTER_SEED_NODES [here](https://github.com/apache/incubator-openwhisk-deploy-kube/tree/master/kubernetes/controller/controller.yml#L112)
+You will need to update the number of replicas for the
+Controllers [here](https://github.com/apache/incubator-openwhisk-deploy-kube/tree/master/kubernetes/controller/controller.yml#L10)
+and the value of CONTROLLER_INSTANCES [here](https://github.com/apache/incubator-openwhisk-deploy-kube/tree/master/kubernetes/controller/controller.yml#L60)
+and the value of AKKA_CLUSTER_SEED_NODES [here](https://github.com/apache/incubator-openwhisk-deploy-kube/tree/master/kubernetes/controller/controller.yml#L88)
 and redeploy.
 
 [StatefulSet]: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/

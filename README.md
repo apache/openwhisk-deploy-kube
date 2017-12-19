@@ -38,9 +38,17 @@ You can also provision a Kubernetes cluster from a cloud provider, subject to th
 
 # Configuring OpenWhisk
 
+The first time you deploy OpenWhisk on Kubernetes, we recommend
+following the steps below manually so you can inspect the results and
+debug your setup.  After you are confident that OpenWhisk deploys
+smoothly on your cluster, you might find it useful to drive your
+deployments using the script [build.sh](tools/travis/build.sh) that we
+use to deploy OpenWhisk on Kubernetes for our Travis CI testing.
+
 ## Initial Cluster Configuration
 
 * Follow the steps for initial [Cluster Setup](kubernetes/cluster-setup/README.md)
+* Configure your [Ingresses](kubernetes/ingress/README.md), including configuring the wsk CLI.
 
 ## Configure or Deploy CouchDB
 
@@ -62,11 +70,13 @@ directory tree. Follow the instructions for each step in order.
 * Deploy [Zookeeper](kubernetes/zookeeper/README.md)
 * Deploy [Kafka](kubernetes/kafka/README.md)
 * Deploy [Controller](kubernetes/controller/README.md)
-* Deploy [Nginx](kubernetes/nginx/README.md)
-* Deploy [Ingress](kubernetes/ingress/README.md), including configuring the wsk CLI.
 * Deploy [Invoker](kubernetes/invoker/README.md)
-* Deploy [RouteMgmt](kubernetes/routemgmt/README.md)
-* Deploy [Package Catalog](kubernetes/openwhisk-catalog/README.md)
+* Deploy [Nginx](kubernetes/nginx/README.md)
+
+## Install system actions and the openwhisk catalog
+
+* Install [RouteMgmt](kubernetes/routemgmt/README.md)
+* Install [Package Catalog](kubernetes/openwhisk-catalog/README.md)
 
 ## Verify
 

@@ -14,6 +14,12 @@ Perform the following steps to prepare your cluster for OpenWhisk.
 kubectl apply -f namespace.yml
 ```
 
+### Create services
+
+```
+kubectl apply -f services.yml
+```
+
 ### Create authorization secrets
 
 The command below installs the default guest and system authorization

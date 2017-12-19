@@ -4,7 +4,7 @@ metadata:
   name: ow-ingress
   namespace: openwhisk
   annotations:
-    ingress.bluemix.net/rewrite-path: "serviceName=nginx rewrite=/"
+    ingress.bluemix.net/rewrite-path: "serviceName=nginx rewrite=/;serviceName=apigateway rewrite=/"
 spec:
   tls:
   - hosts:
@@ -17,4 +17,8 @@ spec:
       - path: /openwhisk/
         backend:
           serviceName: nginx
-          servicePort: 80
+          servicePort: http
+      - path: /apigateway/
+        backend:
+          serviceName: apigateway
+          servicePort: mgmt
