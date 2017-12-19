@@ -48,8 +48,8 @@ spec:
         emptyDir: {}
       containers:
       - name: nginx
-        imagePullPolicy: Always
-        image: danlavine/whisk_nginx
+        imagePullPolicy: IfNotPresent
+        image: nginx:1.11
         ports:
         - name: http
           containerPort: 80
