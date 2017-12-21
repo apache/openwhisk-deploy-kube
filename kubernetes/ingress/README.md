@@ -16,10 +16,13 @@ vary across cloud providers.  The detailed instructions
 configurations.  We welcome contributions from the community to
 describe how to configure Ingress for additional cloud providers.
 
-2. Record the value of API_HOST and APIGW_HOST in a Kubernetes configmap
-for later use within the OpenWhisk deployment:
+2. Record the value of API_HOST and APIGW_URL in a Kubernetes configmap
+for later use within the OpenWhisk deployment. Note that API_HOST is
+expected to be either a host or host:port pair, but APIGW_URL is
+expected to be a URL, including protocol (http or https depending on
+your ingress):
 ```
-kubectl -n openwhisk create configmap whisk.ingress --from-literal=api_host=API_HOST --from-literal=apigw_host=APIGW_HOST
+kubectl -n openwhisk create configmap whisk.ingress --from-literal=api_host=API_HOST --from-literal=apigw_url=APIGW_URL
 ```
 
 3. Configure the OpenWhisk CLI, wsk, by setting the auth and apihost
@@ -40,7 +43,7 @@ When it was deployed, the apigateway and nginx services were
 configured to expose themselves via a NodePort
 [see](https://github.com/apache/incubator-openwhisk-deploy-kube/tree/master/kubernetes/cluster-setup/services.yml#L13)
 By determining the IP address of a worker node and the exposed port
-numbers, you can determine your API_HOST and APIGW_HOST. There are no
+numbers, you can determine your API_HOST and APIGW_URL. There are no
 additional files to apply. TLS termination is handled by the nginx
 service.
 
@@ -61,7 +64,7 @@ Use IP_ADDR:PUBLIC_PORT as your API_HOST
 kubectl -n openwhisk describe service apigateway | grep mgmt | grep NodePort| awk '{print $3}' | cut -d'/' -f1
  ```
 
-Use IP_ADDR:PUBLIC_PORT as your APIGW_HOST
+Use http://IP_ADDR:PUBLIC_PORT as your APIGW_URL
 
 
 ## Simple Service Ingress
@@ -106,7 +109,7 @@ Use PublicIP:PORT as your API_HOST
 kubectl -n openwhisk describe service apigateway | grep mgmt | grep NodePort| awk '{print $3}' | cut -d'/' -f1
  ```
 
-Use IP_ADDR:PUBLIC_PORT as your APIGW_HOST
+Use http://IP_ADDR:PUBLIC_PORT as your APIGW_URL
 
 ### IBM Cloud standard cluster
 
@@ -142,7 +145,7 @@ kubectl apply -f ingress-ibm.yml
 ```
 
 Your API_HOST will be <ibmdomain>/openwhisk
-Your APIGW_HOST will be <ibmdomain>/apigateway
+Your APIGW_URL will be https://<ibmdomain>/apigateway
 
 ## Other cloud providers
 

@@ -20,7 +20,7 @@ spec:
         imagePullPolicy: IfNotPresent
         image: redis:3.2
       - name: apigateway
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         image: openwhisk/apigateway
         ports:
         - name: mgmt
@@ -32,8 +32,8 @@ spec:
           value: "127.0.0.1"
         - name: "REDIS_PORT"
           value: "6379"
-        - name: "PUBLIC_MANAGEDURL_HOST"
+        - name: "PUBLIC_GATEWAY_URL"
           valueFrom:
             configMapKeyRef:
               name: whisk.ingress
-              key: apigw_host
+              key: apigw_url
