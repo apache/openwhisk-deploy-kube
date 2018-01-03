@@ -1,0 +1,100 @@
+########
+# First define services that are exposed via Ingresses to the outside world
+########
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx
+  namespace: openwhisk
+  labels:
+    name: nginx
+spec:
+  type: NodePort
+  selector:
+    name: nginx
+  ports:
+    - port: 80
+      targetPort: 80
+      name: http
+    - port: 443
+      targetPort: 443
+      name: https-api
+    - port: 8443
+      targetPort: 8443
+      name: https-admin
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: apigateway
+  namespace: openwhisk
+  labels:
+    name: apigateway
+spec:
+  type: NodePort
+  selector:
+    name: apigateway
+  ports:
+    - port: 8080
+      targetPort: 8080
+      name: mgmt
+    - port: 9000
+      targetPort: 9000
+      name: api
+
+########
+# Second define internal services used by the OpenWhisk implementation
+########
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: controller
+  namespace: openwhisk
+  labels:
+    name: controller
+spec:
+  selector:
+    name: controller
+  clusterIP: None
+  ports:
+    - port: 8080
+      targetPort: 8080
+      name: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka
+  namespace: openwhisk
+  labels:
+    name: kafka
+spec:
+  selector:
+    name: kafka
+  ports:
+    - port: 9092
+      targetPort: 9092
+      name: kafka
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zookeeper
+  namespace: openwhisk
+  labels:
+    name: zookeeper
+spec:
+  selector:
+    name: zookeeper
+  ports:
+    - port: 2181
+      targetPort: 2181
+      name: zookeeper
+    - port: 2888
+      targetPort: 2888
+      name: server
+    - port: 3888
+      targetPort: 3888
+      name: leader-election

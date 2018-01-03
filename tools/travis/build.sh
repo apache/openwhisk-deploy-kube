@@ -146,7 +146,18 @@ kubectl describe nodes
 echo "Performing steps from cluster-setup"
 pushd kubernetes/cluster-setup
   kubectl apply -f namespace.yml
+  kubectl apply -f services.yml
   kubectl -n openwhisk create secret generic whisk.auth --from-file=system=auth.whisk.system --from-file=guest=auth.guest
+popd
+
+# configure Ingress and wsk CLI
+# We use the NodePorts for nginx and apigateway services for Travis CI testing
+pushd kubernetes/ingress
+  WSK_PORT=$(kubectl -n openwhisk describe service nginx | grep https-api | grep NodePort| awk '{print $3}' | cut -d'/' -f1)
+  APIGW_PORT=$(kubectl -n openwhisk describe service apigateway | grep mgmt | grep NodePort| awk '{print $3}' | cut -d'/' -f1)
+  WSK_HOST=$(kubectl describe nodes | grep Hostname: | awk '{print $2}')
+  kubectl -n openwhisk create configmap whisk.ingress --from-literal=api_host=$WSK_HOST:$WSK_PORT --from-literal=apigw_url=http://$WSK_HOST:$APIGW_PORT
+  wsk property set --auth `cat ../cluster-setup/auth.guest` --apihost $WSK_HOST:$WSK_PORT
 popd
 
 # setup couchdb
@@ -189,6 +200,15 @@ pushd kubernetes/controller
   statefulsetHealthCheck "controller"
 popd
 
+# setup the invoker
+echo "Deploying invoker"
+pushd kubernetes/invoker
+  kubectl apply -f invoker.yml
+
+  # wait until the invoker is ready
+  deploymentHealthCheck "invoker"
+popd
+
 # setup nginx
 echo "Deploying nginx"
 pushd kubernetes/nginx
@@ -204,24 +224,6 @@ pushd kubernetes/nginx
 
   # wait until nginx is ready
   deploymentHealthCheck "nginx"
-popd
-
-# configure Ingress and wsk CLI
-# We use a NodePort for Travis CI testing
-pushd kubernetes/ingress
-  WSK_PORT=$(kubectl -n openwhisk describe service nginx | grep https-api | grep NodePort| awk '{print $3}' | cut -d'/' -f1)
-  WSK_HOST=$(kubectl describe nodes | grep Hostname: | awk '{print $2}')
-  kubectl -n openwhisk create configmap whisk.ingress --from-literal=api_host=$WSK_HOST:$WSK_PORT
-  wsk property set --auth `cat ../cluster-setup/auth.guest` --apihost $WSK_HOST:$WSK_PORT
-popd
-
-# setup the invoker
-echo "Deploying invoker"
-pushd kubernetes/invoker
-  kubectl apply -f invoker.yml
-
-  # wait until the invoker is ready
-  deploymentHealthCheck "invoker"
 popd
 
 # install routemgmt

@@ -1,3 +1,5 @@
+# The couchdb service is defined here instead of in cluster-config/services
+# because some deployments will not put the database within the kube cluster.
 ---
 apiVersion: v1
 kind: Service

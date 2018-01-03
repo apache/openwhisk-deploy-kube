@@ -1,23 +1,4 @@
 ---
-apiVersion: v1
-kind: Service
-metadata:
-  name: apigateway
-  namespace: openwhisk
-  labels:
-    name: apigateway
-spec:
-  selector:
-    name: apigateway
-  ports:
-    - port: 8080
-      targetPort: 8080
-      name: mgmt
-    - port: 9000
-      targetPort: 9000
-      name: api
-
----
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -39,7 +20,7 @@ spec:
         imagePullPolicy: IfNotPresent
         image: redis:3.2
       - name: apigateway
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         image: openwhisk/apigateway
         ports:
         - name: mgmt
@@ -51,3 +32,8 @@ spec:
           value: "127.0.0.1"
         - name: "REDIS_PORT"
           value: "6379"
+        - name: "PUBLIC_GATEWAY_URL"
+          valueFrom:
+            configMapKeyRef:
+              name: whisk.ingress
+              key: apigw_url
