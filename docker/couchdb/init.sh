@@ -75,6 +75,6 @@ pushd /openwhisk
   popd
 popd
 
-echo "successfully setup and configured CouchDB v2.0"
+echo "successfully setup and configured CouchDB for OpenWhisk"
 
 sleep inf
