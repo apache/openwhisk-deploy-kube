@@ -14,7 +14,10 @@ spec:
         image: openwhisk/kube-routemgmt
         env:
           - name: "WHISK_CLI_VERSION"
-            value: "latest"
+            valueFrom:
+              configMapKeyRef:
+                name: whisk.config
+                key: whisk_cli_version_tag
           - name: "WHISK_AUTH"
             valueFrom:
               secretKeyRef:
@@ -26,7 +29,10 @@ spec:
                 name: whisk.ingress
                 key: api_host
           - name: "WHISK_NAMESPACE"
-            value: "/whisk.system"
+            valueFrom:
+              configMapKeyRef:
+                name: whisk.config
+                key: whisk_system_namespace
           - name: "WHISK_API_GATEWAY_HOST_V2"
             value: "http://$(APIGATEWAY_SERVICE_HOST):$(APIGATEWAY_SERVICE_PORT_API)/v2"
 

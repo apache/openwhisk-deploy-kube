@@ -147,6 +147,9 @@ echo "Performing steps from cluster-setup"
 pushd kubernetes/cluster-setup
   kubectl apply -f namespace.yml
   kubectl apply -f services.yml
+  kubectl -n openwhisk create cm whisk.config --from-env-file=config.env
+  kubectl -n openwhisk create cm whisk.runtimes --from-file=runtimes=runtimes.json
+  kubectl -n openwhisk create cm whisk.limits --from-env-file=limits.env
   kubectl -n openwhisk create secret generic whisk.auth --from-file=system=auth.whisk.system --from-file=guest=auth.guest
 popd
 
@@ -197,6 +200,7 @@ popd
 # setup the controller
 echo "Deploying controller"
 pushd kubernetes/controller
+  kubectl -n openwhisk create cm controller.config --from-env-file=controller.env
   kubectl apply -f controller.yml
 
   statefulsetHealthCheck "controller"
@@ -205,6 +209,7 @@ popd
 # setup the invoker
 echo "Deploying invoker"
 pushd kubernetes/invoker
+  kubectl -n openwhisk create cm invoker.config --from-env-file=invoker.env
   kubectl apply -f invoker.yml
 
   # wait until the invoker is ready
