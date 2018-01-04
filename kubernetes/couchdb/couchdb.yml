@@ -42,13 +42,22 @@ spec:
           containerPort: 5984
         env:
         - name: "DB_PREFIX"
-          value: "test_"
+          valueFrom:
+            configMapKeyRef:
+              name: db.config
+              key: db_prefix
         - name: "DB_HOST"
           value: "127.0.0.1"
         - name: "COUCHDB_USER"
-          value: "whisk_admin"
+          valueFrom:
+            secretKeyRef:
+              name: db.auth
+              key: db_username
         - name: "COUCHDB_PASSWORD"
-          value: "some_passw0rd"
+          valueFrom:
+            secretKeyRef:
+              name: db.auth
+              key: db_password
         - name: "DB_PORT"
           value: "5984"
         - name: "NODENAME"
@@ -56,6 +65,8 @@ spec:
         readinessProbe:
           httpGet:
             port: 5984
+            # Tempting to say "/$(DB_PREFIX)_activations", but probe runs
+            # externally, therefore can't access the container environment...
             path: "/test_activations"
           initialDelaySeconds: 60
           periodSeconds: 10

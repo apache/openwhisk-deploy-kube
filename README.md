@@ -58,6 +58,8 @@ Do one of the following:
   within the Kubernetes cluster.
 * For a production level CouchDB instance, take a look at the main
   OpenWhisk [documentation for configuring CouchDB](https://github.com/apache/incubator-openwhisk/blob/master/tools/db/README.md).
+  You will need to define the db.auth secret and db.config configmap as described in the [CouchDB README.md](kubernetes/couchdb/README.md)
+  to match your database deployment.
 
 ## Deploy Remaining Components
 

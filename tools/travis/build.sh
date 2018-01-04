@@ -12,7 +12,7 @@ couchdbHealthCheck () {
   PASSED=false
   TIMEOUT=0
   until [ $TIMEOUT -eq 30 ]; do
-    if [ -n "$(kubectl -n openwhisk logs $POD_NAME | grep "successfully setup and configured CouchDB v2.0")" ]; then
+    if [ -n "$(kubectl -n openwhisk logs $POD_NAME | grep "successfully setup and configured CouchDB")" ]; then
       PASSED=true
       break
     fi
@@ -163,6 +163,8 @@ popd
 # setup couchdb
 echo "Deploying couchdb"
 pushd kubernetes/couchdb
+  kubectl -n openwhisk create secret generic db.auth --from-literal=db_username=whisk_admin --from-literal=db_password=some_passw0rd
+  kubectl -n openwhisk create configmap db.config --from-literal=db_protocol=http --from-literal=db_provider=CouchDB --from-literal=db_whisk_activations=test_activations --from-literal=db_whisk_actions=test_whisks --from-literal=db_whisk_auths=test_subjects --from-literal=db_prefix=test_
   kubectl apply -f couchdb.yml
 
   couchdbHealthCheck
