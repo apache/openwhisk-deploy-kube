@@ -1,4 +1,4 @@
-FROM klaemo/couchdb:2.0
+FROM apache/couchdb:2.1
 
 ADD http://ftp.us.debian.org/debian/pool/main/a/apt/apt-transport-https_1.0.9.8.4_amd64.deb /tmp/apt-transport-https_1.0.9.8.4_amd64.deb
 ADD http://ftp.us.debian.org/debian/pool/main/c/curl/libcurl3-gnutls_7.38.0-4+deb8u8_amd64.deb /tmp/libcurl3-gnutls_7.38.0-4+deb8u58_amd64.deb
