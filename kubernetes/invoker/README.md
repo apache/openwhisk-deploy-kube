@@ -3,6 +3,17 @@ Invoker
 
 # Deploying
 
+## Create config map
+
+Edit invoker.env as needed to set the appropriate values for your
+deployment, then create the configmap invoker.config:
+
+```
+kubectl -n openwhisk create cm invoker.config --from-env-file=invoker.env
+```
+
+## Deploy Invoker
+
 When deploying the Invoker, it needs to be deployed via a
 [DaemonSet](https://kubernetes.io/docs/concepts/workloads/controllers/daemonset/).
 This is because there should only ever be at most 1 Invoker
@@ -53,6 +64,6 @@ Error syncing pod, skipping: failed to "StartContainer" for "Invoker" with rpc e
 ```
 
 Then you might need to modify some of the volume mounts in the
-[invoker.yml](invoker.yml). For example,
-the error above is trying to find something from the apparmor mount which makes no
-sense to CoreOS. To fix the issue, you just need to remove the mount.
+[invoker.yml](invoker.yml). For example, the error above is trying to
+find something from the apparmor mount which makes no sense to
+CoreOS. To fix the issue, you just need to remove the mount.

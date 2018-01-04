@@ -14,7 +14,10 @@ spec:
         image: openwhisk/kube-openwhisk-catalog
         env:
           - name: "WHISK_CLI_VERSION"
-            value: "latest"
+            valueFrom:
+              configMapKeyRef:
+                name: whisk.config
+                key: whisk_cli_version_tag
           - name: "WHISK_AUTH"
             valueFrom:
               secretKeyRef:

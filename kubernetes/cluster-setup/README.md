@@ -20,6 +20,35 @@ kubectl apply -f namespace.yml
 kubectl apply -f services.yml
 ```
 
+### Configure system-wide version information and settings
+
+Edit whisk.env as needed to set the appropriate values for your
+deployment, then create the configmap whisk.config:
+
+```
+kubectl -n openwhisk create cm whisk.config --from-env-file=config.env
+```
+
+### Configure the set of supported runtimes
+
+The file runtimes.json describes the supported action runtimes for
+this installation of OpenWhisk.  The default file is identical to the
+one found in the upstream ansible/files/runtime.json.  After making
+any desired changes, install it in a configmap with
+
+```
+kubectl -n openwhisk create cm whisk.runtimes --from-file=runtimes=runtimes.json
+```
+
+### Configure limits for actions and triggers
+
+Edit limits.env as needed to set the appropriate values for your
+deployment, then create the configmap whisk.limits:
+
+```
+kubectl -n openwhisk create cm whisk.limits --from-env-file=limits.env
+```
+
 ### Create authorization secrets
 
 The command below installs the default guest and system authorization

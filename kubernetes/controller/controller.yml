@@ -24,70 +24,88 @@ spec:
         ports:
         - name: controller
           containerPort: 8080
-        livenessProbe:
-          httpGet:
-            path: "/ping"
-            port: 8080
-            scheme: "HTTP"
-          initialDelaySeconds: 5
-          periodSeconds: 10
-          timeoutSeconds: 1
         env:
-        - name: "PORT"
-          value: "8080"
-
-        # This needs to stay up to date with the lates runtime in Ansible Groupvars
-        - name: "RUNTIMES_MANIFEST"
-          value: '{ "defaultImagePrefix": "openwhisk", "defaultImageTag": "latest", "runtimes": { "nodejs": [ { "kind": "nodejs", "image": { "name": "nodejsaction" }, "deprecated": true }, { "kind": "nodejs:6", "default": true, "image": { "name": "nodejs6action" }, "deprecated": false } ], "python": [ { "kind": "python", "image": { "name": "python2action" }, "deprecated": false }, { "kind": "python:2", "default": true, "image": { "name": "python2action" }, "deprecated": false }, { "kind": "python:3", "image": { "name": "python3action" }, "deprecated": false } ], "swift": [ { "kind": "swift", "image": { "name": "swiftaction" }, "deprecated": true }, { "kind": "swift:3", "image": { "name": "swift3action" }, "deprecated": true }, { "kind": "swift:3.1.1", "default": true, "image": { "name": "action-swift-v3.1.1" }, "deprecated": false } ], "java": [ { "kind": "java", "default": true, "image": { "name": "java8action" }, "deprecated": false, "attached": { "attachmentName": "jarfile", "attachmentType": "application/java-archive" }, "sentinelledLogs": false, "requireMain": true } ] }, "blackboxes": [ { "name": "dockerskeleton" } ] }'
-
-        # this version is the day it is deployed and should be configured every time
-        - name:  "WHISK_VERSION_DATE"
-          value: "2017-01-01T00:00:00Z"
-        # the buildno should be the docker image tag to use
-        - name: "WHISK_VERSION_BUILDNO"
-          value: "latest"
-
-        # Java options
-        - name: "JAVA_OPTS"
-          value: "-Xmx2g"
-
-        # Kafka properties
-        - name: "KAFKA_HOSTS"
-          value: "$(KAFKA_SERVICE_HOST):$(KAFKA_SERVICE_PORT_KAFKA)"
-
-        # specific controller arguments
-        - name: "CONTROLLER_INSTANCES"
-          value: "2"
-        - name: "CONTROLLER_OPTS"
-          value: ""
-        - name: "DEFAULTLIMITS_ACTIONS_INVOKES_PERMINUTE"
-          value: "120"
-        - name: "DEFAULTLIMITS_ACTIONS_INVOKES_CONCURRENT"
-          value: "100"
-        - name: "DEFAULTLIMITS_ACTIONS_INVOKES_CONCURRENTINSYSTEM"
-          value: "500"
-        - name: "DEFAULTLIMITS_ACTIONS_SEQUENCE_MAXLENGTH"
-          value: "50"
-        - name: "DEFAULTLIMITS_TRIGGERS_FIRES_PERMINUTE"
-          value: "60"
-        - name: "LIMITS_ACTIONS_SEQUENCE_MAXLENGTH"
-          value: "50"
-        - name: "LIMITS_TRIGGERS_FIRES_PERMINUTE"
-          value: "60"
-        - name: "LIMITS_ACTIONS_INVOKES_PERMINUTE"
-          value: "60"
-        - name: "LIMITS_ACTIONS_INVOKES_CONCURRENTINSYSTEM"
-          value: "5000"
-        - name: "LIMITS_ACTIONS_INVOKES_CONCURRENT"
-          value: "30"
+        # Properties for controller HA configuration
+        # Must change these if changing number of replicas
         - name: "CONTROLLER_LOCALBOOKKEEPING"
           value: "FALSE"
         - name: "CONTROLLER_HA"
           value: "TRUE"
+        - name: "CONTROLLER_INSTANCES"
+          value: "2"
         - name: "AKKA_CLUSTER_SEED_NODES"
           value: "controller-0.controller.openwhisk controller-1.controller.openwhisk"
         - name: "CONFIG_akka_actor_provider"
           value: "cluster"
+
+        # extra JVM arguments
+        - name: "JAVA_OPTS"
+          valueFrom:
+            configMapKeyRef:
+              name: controller.config
+              key: java_opts
+
+        # extra controller arguments
+        - name: "CONTROLLER_OPTS"
+          valueFrom:
+            configMapKeyRef:
+              name: controller.config
+              key: controller_opts
+
+        # action runtimes
+        - name: "RUNTIMES_MANIFEST"
+          valueFrom:
+            configMapKeyRef:
+              name: whisk.runtimes
+              key: runtimes
+
+        # deployment version information
+        - name:  "WHISK_VERSION_NAME"
+          valueFrom:
+            configMapKeyRef:
+              name: whisk.config
+              key: whisk_version_name
+        - name:  "WHISK_VERSION_DATE"
+          valueFrom:
+            configMapKeyRef:
+              name: whisk.config
+              key: whisk_version_date
+        - name: "WHISK_VERSION_BUILDNO"
+          valueFrom:
+            configMapKeyRef:
+              name: whisk.config
+              key: whisk_version_tag
+
+        # specify limits
+        - name: "LIMITS_ACTIONS_INVOKES_PERMINUTE"
+          valueFrom:
+            configMapKeyRef:
+              name: whisk.limits
+              key: actions_invokes_perMinute
+        - name: "LIMITS_ACTIONS_INVOKES_CONCURRENT"
+          valueFrom:
+            configMapKeyRef:
+              name: whisk.limits
+              key: actions_invokes_concurrent
+        - name: "LIMITS_ACTIONS_INVOKES_CONCURRENTINSYSTEM"
+          valueFrom:
+            configMapKeyRef:
+              name: whisk.limits
+              key: actions_invokes_concurrentInSystem
+        - name: "LIMITS_TRIGGERS_FIRES_PERMINUTE"
+          valueFrom:
+            configMapKeyRef:
+              name: whisk.limits
+              key: triggers_fires_perMinute
+        - name: "LIMITS_ACTIONS_SEQUENCE_MAXLENGTH"
+          valueFrom:
+            configMapKeyRef:
+              name: whisk.limits
+              key: actions_sequence_maxLength
+
+        # properties for Kafka connection
+        - name: "KAFKA_HOSTS"
+          value: "$(KAFKA_SERVICE_HOST):$(KAFKA_SERVICE_PORT_KAFKA)"
 
         # properties for DB connection
         - name: "DB_USERNAME"
@@ -114,12 +132,6 @@ spec:
             configMapKeyRef:
               name: db.config
               key: db_provider
-        - name: "DB_WHISK_ACTIONS_DDOC"
-          value: "whisks.v2"
-        - name: "DB_WHISK_ACTIVATIONS_DDOC"
-          value: "whisks.v2"
-        - name: "DB_WHISK_ACTIVATIONS_FILTER_DDOC"
-          value: "whisks-filters.v2"
         - name: "DB_WHISK_ACTIVATIONS"
           valueFrom:
             configMapKeyRef:
@@ -135,3 +147,16 @@ spec:
             configMapKeyRef:
               name: db.config
               key: db_whisk_auths
+
+        # must match port used in livenessProbe below
+        - name: "PORT"
+          value: "8080"
+
+        livenessProbe:
+          httpGet:
+            path: "/ping"
+            port: 8080
+            scheme: "HTTP"
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 1
