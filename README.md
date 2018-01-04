@@ -29,7 +29,7 @@ Several requirements must be met for OpenWhisk to deploy on Kubernetes.
 ## Using Minikube
 
 For local development and testing, we recommend using Minikube version 0.23+
-with the docker network in promiscuous mode. Our Travis CI testing using Minikube 0.23.0.
+with the docker network in promiscuous mode. Our Travis CI testing using Minikube 0.24.1.
 Take a look at these [instructions](/docs/setting_up_minikube/README.md).
 
 ## Using a Kubernetes cluster from a cloud provider
