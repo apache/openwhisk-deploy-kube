@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -x
+set -e
 
 # Clone openwhisk-catalog
 # TODO: when openwhisk-catalog has releases, download release instead!
@@ -21,4 +22,3 @@ popd
 pushd openwhisk-catalog/packages
   ./installCatalog.sh $WHISK_AUTH $WHISK_API_HOST_NAME $OPENWHISK_HOME/bin/wsk
 popd
-

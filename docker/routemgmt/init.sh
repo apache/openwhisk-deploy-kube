@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -x
+set -e
 
 export OPENWHISK_HOME=/openwhisk
 
@@ -38,4 +39,3 @@ fi
 pushd ansible/roles/routemgmt/files
   ./installRouteMgmt.sh $WHISK_AUTH $WHISK_API_HOST_NAME $WHISK_NAMESPACE $OPENWHISK_HOME/bin/wsk
 popd
-
