@@ -8,8 +8,11 @@ The built images are:
   * couchdb - creates and initializes a CouchDB instance for
     dev/testing of OpenWhisk.  This image is not intended for
     production usage.
-  * routemgmt - installs OpenWhisk's route management package
-    in the system namespace of the OpenWhisk deployment.
+  * docker-pull - performs a 'docker pull' for action runtimes
+    specified in runtimesManifest format -- used to prefetch
+    action runtime images for invoker nodes
   * openwhisk-catalog - installs the catalog from the project
     incubator-openwhisk-calalog to the system namespace of the
     OpenWhisk deployment.
+  * routemgmt - installs OpenWhisk's route management package
+    in the system namespace of the OpenWhisk deployment.

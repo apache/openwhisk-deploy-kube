@@ -1,0 +1,33 @@
+---
+
+# Playbook to prefetch runtime action images from a docker registry for an invoker node.
+
+- hosts: localhost
+  vars:
+    docker_pull_retries: 10
+    docker_pull_delay: 10
+    docker_registry:
+    runtimesManifest: "{{ lookup('env', 'RUNTIMES_MANIFEST') | from_json }}"
+
+  tasks:
+    - name: docker login
+      docker_login:
+        registry: "{{ docker_registry }}"
+        username: "{{ docker_registry_username }}"
+        password: "{{ docker_registry_password }}"
+      when: docker_registry != "" and docker_registry_password is defined
+
+    - name: "pull runtime action images with tag {{runtimesManifest.defaultImageTag}}"
+      shell: "docker pull {{docker_registry}}{{runtimesManifest.defaultImagePrefix}}/{{item}}:{{runtimesManifest.defaultImageTag}}"
+      with_items: "{{ runtimesManifest.runtimes.values() | sum(start=[]) | selectattr('deprecated', 'equalto',false)  | map(attribute='image.name') | list | unique }}"
+      when: docker_registry != ""
+      retries: "{{ docker_pull_retries }}"
+      delay: "{{ docker_pull_delay }}"
+
+    - name: "pull blackboxes action images with tag {{runtimesManifest.defaultImageTag}}"
+      shell: "docker pull {{docker_registry}}{{runtimesManifest.defaultImagePrefix}}/{{item.name}}:{{runtimesManifest.defaultImageTag}}"
+      with_items:
+        - "{{ runtimesManifest.blackboxes }}"
+      when: docker_registry != ""
+      retries: "{{ docker_pull_retries }}"
+      delay: "{{ docker_pull_delay }}"
