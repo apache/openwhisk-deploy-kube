@@ -7,13 +7,12 @@ If you have a larger machine, you may want to provision more (especially more me
 
 Start Minikube with:
 ```
-minikube start --cpus 2 --memory 4096 --kubernetes-version v1.7.4
+minikube start --cpus 2 --memory 4096 --kubernetes-version=v1.7.4
 ```
 
 Put the docker network in promiscuous mode.
 ```
-minikube ssh
-(%) sudo ip link set docker0 promisc on
+minikube ssh -- sudo ip link set docker0 promisc on
 ```
 
 Your Minikube cluster should now be ready to deploy OpenWhisk.

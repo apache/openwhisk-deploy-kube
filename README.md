@@ -90,10 +90,11 @@ to define and invoke a sample OpenWhisk action in your favorite programming lang
 
 At some point there might be a need to cleanup the Kubernetes environment.
 For this, we want to delete all the OpenWhisk deployments, services, jobs
-and whatever else might be there. We provide a script to do this:
+and whatever else might be there. This is easily accomplished by
+deleting the `openwhisk` namespace:
 
 ```
-./tools/admin/cleanup.sh
+kubectl delete namespace openwhisk
 ```
 
 # Issues
