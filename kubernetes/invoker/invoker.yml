@@ -33,6 +33,21 @@ spec:
         hostPath:
           path: "/usr/lib/x86_64-linux-gnu/libapparmor.so.1"
 
+      initContainers:
+      - name: docker-pull-runtimes
+        imagePullPolicy: Always
+        image: openwhisk/kube-docker-pull
+        volumeMounts:
+        - name: dockersock
+          mountPath: "/var/run/docker.sock"
+        env:
+          # action runtimes
+          - name: "RUNTIMES_MANIFEST"
+            valueFrom:
+              configMapKeyRef:
+                name: whisk.runtimes
+                key: runtimes
+
       containers:
       - name: invoker
         imagePullPolicy: Always
@@ -52,13 +67,6 @@ spec:
           mountPath: "/containers"
         - name: apparmor
           mountPath: "/usr/lib/x86_64-linux-gnu/libapparmor.so.1"
-        lifecycle:
-          postStart:
-            exec:
-              command:
-              - "/bin/bash"
-              - "-c"
-              - "docker pull openwhisk/nodejsactionbase && docker pull openwhisk/nodejs6action && docker pull openwhisk/dockerskeleton && docker pull openwhisk/python2action && docker pull openwhisk/python3action && docker pull openwhisk/action-swift-v3.1.1 && docker pull openwhisk/swift3action && docker pull openwhisk/java8action"
         env:
           - name: "PORT"
             value: "8080"
