@@ -250,6 +250,15 @@ pushd kubernetes/openwhisk-catalog
   jobHealthCheck "install-catalog"
 popd
 
+# install package-kafka
+echo "Installing kafka package"
+pushd kubernetes/package-kafka
+  kubectl -n openwhisk create cm packages.kafkaprovider --from-literal=kafkapkg_db_prefix=mq
+  kubectl apply -f kafkaprovider.yml
+  kubectl apply -f kafkapkginstaller.yml
+  jobHealthCheck "kafkapkginstaller"
+popd
+
 # list packages and actions now installed in /whisk.system
 wsk -i --auth `cat kubernetes/cluster-setup/auth.whisk.system` package list
 wsk -i --auth `cat kubernetes/cluster-setup/auth.whisk.system` action list

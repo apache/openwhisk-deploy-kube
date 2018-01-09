@@ -1,0 +1,54 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: kafkaprovider
+  namespace: openwhisk
+  labels:
+    name: kafkaprovider
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: kafkaprovider
+        access: db
+    spec:
+      restartPolicy: Always
+      containers:
+      - name: kafkaprovider
+        imagePullPolicy: IfNotPresent
+        image: openwhisk/kafkaprovider
+        ports:
+        - name: kafkaprovider
+          containerPort: 8080
+        env:
+        - name: "DB_URL"
+          value: "http://$(COUCHDB_SERVICE_HOST):$(COUCHDB_SERVICE_PORT_COUCHDB)"
+        - name: "DB_USER"
+          valueFrom:
+            secretKeyRef:
+              name: db.auth
+              key: db_username
+        - name: "DB_PASS"
+          valueFrom:
+            secretKeyRef:
+              name: db.auth
+              key: db_password
+        - name: "DB_PREFIX"
+          valueFrom:
+            configMapKeyRef:
+              name: packages.kafkaprovider
+              key: kafkapkg_db_prefix
+        - name: "LOCAL_DEV"
+          value: "true"
+        - name: "ROUTER_HOST"
+          valueFrom:
+            configMapKeyRef:
+              name: whisk.ingress
+              key: api_host
+        - name: "ENDPOINT_AUTH"
+          valueFrom:
+            secretKeyRef:
+              name: whisk.auth
+              key: system
