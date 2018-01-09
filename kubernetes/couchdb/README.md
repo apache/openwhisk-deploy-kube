@@ -52,8 +52,8 @@ successfully setup and configured CouchDB
 
 This indicates that the CouchDB instance is fully configured and ready to use.
 
-## Persistance
+## Persistence
 
-To create a persistant CouchDB instance, you will need
+To create a persistent CouchDB instance, you will need
 to create a [persistent volume](https://kubernetes.io/docs/concepts/storage/persistent-volumes/)
 for the [couchdb.yml](couchdb.yml).
