@@ -89,6 +89,11 @@ spec:
               configMapKeyRef:
                 name: invoker.config
                 key: invoker_container_network
+          - name: "INVOKER_CONTAINER_DNS"
+            valueFrom:
+              configMapKeyRef:
+                name: invoker.config
+                key: invoker_container_dns
           - name: "INVOKER_USE_RUNC"
             valueFrom:
               configMapKeyRef:
