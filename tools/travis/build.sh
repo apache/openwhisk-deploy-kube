@@ -11,7 +11,7 @@ couchdbHealthCheck () {
 
   PASSED=false
   TIMEOUT=0
-  until [ $TIMEOUT -eq 30 ]; do
+  until [ $TIMEOUT -eq 60 ]; do
     if [ -n "$(kubectl -n openwhisk logs $POD_NAME | grep "successfully setup and configured CouchDB")" ]; then
       PASSED=true
       break
@@ -39,7 +39,7 @@ deploymentHealthCheck () {
 
   PASSED=false
   TIMEOUT=0
-  until $PASSED || [ $TIMEOUT -eq 30 ]; do
+  until $PASSED || [ $TIMEOUT -eq 60 ]; do
     KUBE_DEPLOY_STATUS=$(kubectl -n openwhisk get pods -o wide | grep "$1" | awk '{print $3}')
     if [ "$KUBE_DEPLOY_STATUS" == "Running" ]; then
       PASSED=true
@@ -70,7 +70,7 @@ statefulsetHealthCheck () {
 
   PASSED=false
   TIMEOUT=0
-  until $PASSED || [ $TIMEOUT -eq 30 ]; do
+  until $PASSED || [ $TIMEOUT -eq 60 ]; do
     KUBE_DEPLOY_STATUS=$(kubectl -n openwhisk get pods -o wide | grep "$1"-0 | awk '{print $3}')
     if [ "$KUBE_DEPLOY_STATUS" == "Running" ]; then
       PASSED=true
@@ -102,7 +102,7 @@ jobHealthCheck () {
 
   PASSED=false
   TIMEOUT=0
-  until $PASSED || [ $TIMEOUT -eq 30 ]; do
+  until $PASSED || [ $TIMEOUT -eq 60 ]; do
     KUBE_SUCCESSFUL_JOB=$(kubectl -n openwhisk get jobs -o wide | grep "$1" | awk '{print $3}')
     if [ "$KUBE_SUCCESSFUL_JOB" == "1" ]; then
       PASSED=true
