@@ -158,7 +158,10 @@ popd
 pushd kubernetes/ingress
   WSK_PORT=$(kubectl -n openwhisk describe service nginx | grep https-api | grep NodePort| awk '{print $3}' | cut -d'/' -f1)
   APIGW_PORT=$(kubectl -n openwhisk describe service apigateway | grep mgmt | grep NodePort| awk '{print $3}' | cut -d'/' -f1)
-  WSK_HOST=$(minikube ip)
+  WSK_HOST=$(kubectl describe nodes | grep Hostname: | awk '{print $2}')
+  if [ "$WSK_HOST" = "minikube" ]; then
+      WSK_HOST=$(minikube ip)
+  fi
   kubectl -n openwhisk create configmap whisk.ingress --from-literal=api_host=$WSK_HOST:$WSK_PORT --from-literal=apigw_url=http://$WSK_HOST:$APIGW_PORT
   wsk property set --auth `cat ../cluster-setup/auth.guest` --apihost $WSK_HOST:$WSK_PORT
 popd
