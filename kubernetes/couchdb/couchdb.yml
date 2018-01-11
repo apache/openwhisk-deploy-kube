@@ -72,3 +72,28 @@ spec:
           periodSeconds: 10
           failureThreshold: 10
           timeoutSeconds: 1
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: couchdb-netpol
+  namespace: openwhisk
+spec:
+  podSelector:
+    matchLabels:
+      name: couchdb
+  ingress:
+  # Allow controller, invoker, and any pod with access=db to connect to couchdb
+  - from:
+    - podSelector:
+        matchLabels:
+          name: controller
+    - podSelector:
+        matchLabels:
+          name: invoker
+    - podSelector:
+        matchLabels:
+          access: db
+    ports:
+     - port: 5984

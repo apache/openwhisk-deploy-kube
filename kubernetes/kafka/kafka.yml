@@ -39,3 +39,32 @@ spec:
         # zookeeper info
         - name: "KAFKA_ZOOKEEPER_CONNECT"
           value: "$(ZOOKEEPER_SERVICE_HOST):$(ZOOKEEPER_SERVICE_PORT_ZOOKEEPER)"
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: kafka-netpol
+  namespace: openwhisk
+spec:
+  podSelector:
+    matchLabels:
+      name: kafka
+  ingress:
+  # Allow invoker and controller to connect to kafka
+  - from:
+    - podSelector:
+        matchLabels:
+          name: controller
+    - podSelector:
+        matchLabels:
+          name: invoker
+    ports:
+     - port: 9092
+  # kafkas can connect to each other
+  - from:
+    - podSelector:
+        matchLabels:
+          name: kafka
+    ports:
+     - port: 9092
