@@ -22,7 +22,7 @@ kubectl apply -f services.yml
 
 ### Configure system-wide version information and settings
 
-Edit whisk.env as needed to set the appropriate values for your
+Edit config.env as needed to set the appropriate values for your
 deployment, then create the configmap whisk.config:
 
 ```

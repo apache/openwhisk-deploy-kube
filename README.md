@@ -47,14 +47,14 @@ use to deploy OpenWhisk on Kubernetes for our Travis CI testing.
 
 ## Initial Cluster Configuration
 
-* Follow the steps for initial [Cluster Setup](kubernetes/cluster-setup/README.md)
-* Configure your [Ingresses](kubernetes/ingress/README.md), including configuring the wsk CLI.
+* Follow the steps for initial [Cluster Setup](kubernetes/cluster-setup)
+* Configure your [Ingresses](kubernetes/ingress), including configuring the wsk CLI.
 
 ## Configure or Deploy CouchDB
 
 Do one of the following:
 * For development and testing purposes, this repo includes a configuration
-  for deploying a [simple non-persistent CouchDB instance](kubernetes/couchdb/README.md)
+  for deploying a [simple non-persistent CouchDB instance](kubernetes/couchdb)
   within the Kubernetes cluster.
 * For a production level CouchDB instance, take a look at the main
   OpenWhisk [documentation for configuring CouchDB](https://github.com/apache/incubator-openwhisk/blob/master/tools/db/README.md).
@@ -68,23 +68,25 @@ an order that respects their dependencies.  Detailed instructions and
 the supporting configuration files can be found in the kubernetes
 directory tree. Follow the instructions for each step in order.
 
-* Deploy [ApiGateway](kubernetes/apigateway/README.md)
-* Deploy [Zookeeper](kubernetes/zookeeper/README.md)
-* Deploy [Kafka](kubernetes/kafka/README.md)
-* Deploy [Controller](kubernetes/controller/README.md)
-* Deploy [Invoker](kubernetes/invoker/README.md)
-* Deploy [Nginx](kubernetes/nginx/README.md)
+* Deploy [ApiGateway](kubernetes/apigateway)
+* Deploy [Zookeeper](kubernetes/zookeeper)
+* Deploy [Kafka](kubernetes/kafka)
+* Deploy [Controller](kubernetes/controller)
+* Deploy [Invoker](kubernetes/invoker)
+* Deploy [Nginx](kubernetes/nginx)
 
 ## Install system actions and the openwhisk catalog
 
-* Install [RouteMgmt](kubernetes/routemgmt/README.md)
-* Install [Package Catalog](kubernetes/openwhisk-catalog/README.md)
+* Install [RouteMgmt](kubernetes/routemgmt)
+* Install [Package Catalog](kubernetes/openwhisk-catalog)
 
 ## Verify
 
 Your OpenWhisk installation should now be usable.  You can test it by following
 [these instructions](https://github.com/apache/incubator-openwhisk/blob/master/docs/actions.md)
 to define and invoke a sample OpenWhisk action in your favorite programming language.
+
+Note: if you installed self-signed certificates when you configured Nginx, you will need to use `wsk -i` to suppress certificate checking.  This works around `cannot validate certificate` errors from the `wsk` CLI.
 
 # Cleanup
 

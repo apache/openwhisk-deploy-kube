@@ -10,8 +10,9 @@ instructions in the appropriate subsection of Possible Ingress Types.
 # Configuration Steps
 
 1. Create an Ingress, thus determining a value you should use for
-API_HOST.  Unfortunately, the exact details of configuring an Ingress
-vary across cloud providers.  The detailed instructions
+API_HOST.  If you are deploying on minikube, follow the instructions for
+the NodePort ingress. Unfortunately, the exact details of configuring
+an Ingress vary across cloud providers.  The detailed instructions
 [below](#possible-ingress-types) describe multiple possible Ingress
 configurations.  We welcome contributions from the community to
 describe how to configure Ingress for additional cloud providers.
@@ -47,7 +48,11 @@ numbers, you can determine your API_HOST and APIGW_URL. There are no
 additional files to apply. TLS termination is handled by the nginx
 service.
 
- 1. Obtain the IP address of the Kubernetes nodes.
+ 1. Obtain the IP address of the Kubernetes nodes. If you are using minikube, use the command
+```
+ minikube ip
+ ```
+ otherwise use
  ```
  kubectl get nodes
  ```
