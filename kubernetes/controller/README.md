@@ -25,7 +25,9 @@ kubectl apply -f controller.yml
 # Controller Deployment Changes
 ## Changing the Controller Count
 
-Changing the number of controllers currently requires a complete
+By default, only a single controller is deployed (HA disabled).
+
+Changing the number of controllers and/or enabling HA currently requires a complete
 redeployment of the controller stateful set. You will need to update
 the number of replicas
 [here](https://github.com/apache/incubator-openwhisk-deploy-kube/tree/master/kubernetes/controller/controller.yml#L10)
