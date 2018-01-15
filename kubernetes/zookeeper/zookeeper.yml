@@ -14,6 +14,28 @@ spec:
     spec:
       restartPolicy: Always
 
+      affinity:
+        # prefer to not run on an invoker node (only prefer because of single node clusters)
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
+              - key: openwhisk-role
+                operator: NotIn
+                values:
+                - invoker
+        # do not allow more than 1 zookeeper instance to run on a given node
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+                - key: name
+                  operator: In
+                  values:
+                  - zookeeper
+            topologyKey: "kubernetes.io/hostname"
+
       containers:
       - name: zookeeper
         image: zookeeper:3.4
