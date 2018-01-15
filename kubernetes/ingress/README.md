@@ -42,7 +42,10 @@ wsk property set --auth `cat ../cluster-setup/auth.guest` --apihost API_HOST
 
 When it was deployed, the apigateway and nginx services were
 configured to expose themselves via a NodePort
-[see](https://github.com/apache/incubator-openwhisk-deploy-kube/tree/master/kubernetes/cluster-setup/services.yml#L13)
+[see](https://github.com/apache/incubator-openwhisk-deploy-kube/tree/master/kubernetes/cluster-setup/services.yml#L13) with a dynamically assigned port number. If you want
+a specific port number to be assigned to these services, you can cause
+this to happen by adding a `nodePort:` field to some or all of the [`port:`
+stanzas](https://github.com/apache/incubator-openwhisk-deploy-kube/tree/master/kubernetes/cluster-setup/services.yml#L17-L25) and redeploying the service.
 By determining the IP address of a worker node and the exposed port
 numbers, you can determine your API_HOST and APIGW_URL. There are no
 additional files to apply. TLS termination is handled by the nginx
