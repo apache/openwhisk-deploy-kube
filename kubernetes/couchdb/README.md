@@ -31,13 +31,17 @@ Pod. This can be done by running:
 kubectl apply -f couchdb.yml
 ```
 
-This pod goes through the process of pulling the OpenWhisk
-repo and running through some of the ansible playbooks for
-configuring CouchDB.
+If the persistent volume mounted as /opt/couchdb/data in the
+pod already has been initialized with an OpenWhisk CouchDB
+database, then the pod will simply use it.  If an initialized
+database is not found, then the pod will go through the
+process of pulling the OpenWhisk git repo and running some of the
+ansible playbooks for configuring CouchDB.
 
 **NOTE** the pod will say running as soon as the start command runs,
 but that does not mean that CouchDB is really running and ready to
-use. It typically takes about a minute until setup has completed and
+use. If a new database actually needs to be created and initialized,
+it typically takes about a minute until setup has completed and
 the database is actually usable. Examine the pods logs with
 
 ```
@@ -47,13 +51,8 @@ kubectl -n openwhisk logs -lname=couchdb
 and look for the line:
 
 ```
-successfully setup and configured CouchDB
+successfully setup and configured CouchDB for OpenWhisk
 ```
 
 This indicates that the CouchDB instance is fully configured and ready to use.
 
-## Persistence
-
-To create a persistent CouchDB instance, you will need
-to create a [persistent volume](https://kubernetes.io/docs/concepts/storage/persistent-volumes/)
-for the [couchdb.yml](couchdb.yml).
