@@ -139,7 +139,7 @@ cd $ROOTDIR
 
 # Label invoker nodes (needed for daemonset-based invoker deployment)
 echo "Labeling invoker node"
-kubectl label nodes --all openwhisk=invoker
+kubectl label nodes --all openwhisk-role=invoker
 kubectl describe nodes
 
 # Initial cluster setup

@@ -14,6 +14,29 @@ spec:
         name: nginx
     spec:
       restartPolicy: Always
+
+      affinity:
+        # prefer to not run on an invoker node (only prefer because of single node clusters)
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
+              - key: openwhisk-role
+                operator: NotIn
+                values:
+                - invoker
+        # do not allow more than 1 nginx instance to run on a given node
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+                - key: name
+                  operator: In
+                  values:
+                  - nginx
+            topologyKey: "kubernetes.io/hostname"
+
       volumes:
       - name: nginx-certs
         secret:
@@ -23,6 +46,7 @@ spec:
           name: nginx
       - name: logs
         emptyDir: {}
+
       containers:
       - name: nginx
         imagePullPolicy: IfNotPresent

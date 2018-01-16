@@ -25,8 +25,8 @@ With the defaults in the current `invoker.yml`, you can setup a
 node to run only Invoker pods with:
 
 ```
-kubectl label nodes [node name] openwhisk=invoker
-$ kubectl label nodes 127.0.0.1 openwhisk=invoker
+kubectl label nodes [node name] openwhisk-role=invoker
+$ kubectl label nodes 127.0.0.1 openwhisk-role=invoker
 ```
 
 Once the invoker label is applied, you can create the invokers with:
@@ -49,7 +49,7 @@ section below.
 # Troubleshooting
 ## No invokers are deployed
 
-Verify that you actually have nodes with the label openwhisk=invoker.
+Verify that you actually have at least one node with the label openwhisk-role=invoker.
 
 ## Kubernetes Host Linux Versions
 

@@ -13,8 +13,17 @@ spec:
         name: invoker
     spec:
       restartPolicy: Always
-      nodeSelector:
-        openwhisk: "invoker"
+
+      # run only on nodes labeled with openwhisk-role=invoker
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: openwhisk-role
+                operator: In
+                values:
+                - invoker
 
       volumes:
       - name: cgroup
