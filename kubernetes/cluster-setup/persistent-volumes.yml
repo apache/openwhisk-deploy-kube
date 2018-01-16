@@ -1,0 +1,154 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-apigateway-01
+  labels:
+    pv-owner: openwhisk
+    pv-usage: pv-apigateway
+spec:
+  accessModes:
+    - ReadWriteOnce
+  capacity:
+    storage: 1Gi
+  hostPath:
+    path: /data/pv-apigateway-01/
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pv-apigateway-01
+  namespace: openwhisk
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  selector:
+    matchLabels:
+      pv-usage: pv-apigateway
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-couchdb-01
+  labels:
+    pv-owner: openwhisk
+    pv-usage: pv-couchdb
+spec:
+  accessModes:
+    - ReadWriteOnce
+  capacity:
+    storage: 2Gi
+  hostPath:
+    path: /data/pv-couchdb-01/
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pv-couchdb-01
+  namespace: openwhisk
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  selector:
+    matchLabels:
+      pv-usage: pv-couchdb
+
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-kafka-01
+  labels:
+    pv-owner: openwhisk
+    pv-usage: pv-kafka
+spec:
+  accessModes:
+    - ReadWriteOnce
+  capacity:
+    storage: 2Gi
+  hostPath:
+    path: /data/pv-kafka-01/
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pv-kafka-01
+  namespace: openwhisk
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  selector:
+    matchLabels:
+      pv-usage: pv-kafka
+
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-zookeeper-data-01
+  labels:
+    pv-owner: openwhisk
+    pv-usage: pv-zookeeper-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  capacity:
+    storage: 1Gi
+  hostPath:
+    path: /data/pv-zookeeper-01/
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pv-zookeeper-data-01
+  namespace: openwhisk
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  selector:
+    matchLabels:
+      pv-usage: pv-zookeeper-data
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-zookeeper-datalog-01
+  labels:
+    pv-owner: openwhisk
+    pv-usage: pv-zookeeper-datalog
+spec:
+  accessModes:
+    - ReadWriteOnce
+  capacity:
+    storage: 1Gi
+  hostPath:
+    path: /data/pv-zookeeper-01/
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pv-zookeeper-datalog-01
+  namespace: openwhisk
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  selector:
+    matchLabels:
+      pv-usage: pv-zookeeper-datalog

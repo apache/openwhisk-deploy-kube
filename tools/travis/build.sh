@@ -162,6 +162,7 @@ pushd kubernetes/cluster-setup
   fi
   kubectl -n openwhisk create cm whisk.limits --from-env-file=limits.env
   kubectl -n openwhisk create secret generic whisk.auth --from-file=system=auth.whisk.system --from-file=guest=auth.guest
+  kubectl apply -f persistent-volumes.yml
 popd
 
 # configure Ingress and wsk CLI

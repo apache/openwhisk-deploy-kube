@@ -13,6 +13,13 @@ spec:
         name: zookeeper
     spec:
       restartPolicy: Always
+      volumes:
+      - name: zk-data
+        persistentVolumeClaim:
+          claimName: pv-zookeeper-data-01
+      - name: zk-datalog
+        persistentVolumeClaim:
+          claimName: pv-zookeeper-datalog-01
 
       affinity:
         # prefer to not run on an invoker node (only prefer because of single node clusters)
@@ -57,6 +64,16 @@ spec:
           containerPort: 2888
         - name: leader-election
           containerPort: 3888
+        volumeMounts:
+        - mountPath: /data
+          name: zk-data
+        - mountPath: /datalog
+          name: zk-data
+        env:
+        - name: "ZOO_DATA_DIR"
+          value: /data
+        - name: "ZOO_DATA_LOG_DIR"
+          value: /datalog
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy

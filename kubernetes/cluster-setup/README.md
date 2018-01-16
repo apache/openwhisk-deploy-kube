@@ -62,3 +62,22 @@ deployed OpenWhisk. If it is not defined those steps will fail.
 kubectl -n openwhisk create secret generic whisk.auth --from-file=system=auth.whisk.system --from-file=guest=auth.guest
 
 ```
+
+### Create persistent volumes
+
+Several of the OpenWhisk implementation components you will deploy in
+subsequent steps require persistent storage to maintain their state
+across crashes and restarts. The general mechanism in Kubernetes for
+specifying storage needs and binding available storage to pods is
+to match Persistent Volumes to Persistent Volume Claims.
+
+The file persistent-volumes.yml file lists the PersistentVolume
+resources you will need to create and defines them in a manner
+appropriate for running OpenWhisk on minikube.  If you are not
+deploying on minikube, you may need to edit this file to select
+PersistentVolume types provided by your cloud provider. After
+optionally editing the file, apply it with:
+
+```
+kubectl apply -f persistent-volumes.yml
+```
