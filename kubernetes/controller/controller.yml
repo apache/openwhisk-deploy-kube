@@ -27,6 +27,16 @@ spec:
                 operator: NotIn
                 values:
                 - invoker
+        # prefer to run on a control-plane node
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 50
+            preference:
+              matchExpressions:
+              - key: openwhisk-role
+                operator: In
+                values:
+                - control-plane
         # do not allow more than 1 controller instance to run on a node
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -194,11 +204,14 @@ spec:
     matchLabels:
       name: controller
   ingress:
-  # Allow nginx to connect to controller
+  # Allow nginx and any pod with access=controller to connect to controller
   - from:
     - podSelector:
         matchLabels:
           name: nginx
+    - podSelector:
+        matchLabels:
+          access: controller
     ports:
      - port: 8080
   # Controllers can connect to each other

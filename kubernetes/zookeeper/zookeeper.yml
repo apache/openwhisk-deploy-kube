@@ -25,6 +25,16 @@ spec:
                 operator: NotIn
                 values:
                 - invoker
+        # prefer to run on a control-plane node
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 50
+            preference:
+              matchExpressions:
+              - key: openwhisk-role
+                operator: In
+                values:
+                - control-plane
         # do not allow more than 1 zookeeper instance to run on a given node
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:

@@ -1,0 +1,58 @@
+# This Job measures throughput obtainable by hitting the public ingress.
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: loadtest-throughput-512x1024x300sec
+  namespace: openwhisk
+spec:
+  activeDeadlineSeconds: 3600
+  template:
+    metadata:
+      name: loadtest-throughput-512x1024x300sec
+    spec:
+      affinity:
+        # do not run on a node that openwhisk is actually using
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
+              - key: openwhisk-role
+                operator: NotIn
+                values:
+                - invoker
+                - control-plane
+                - edge
+        # prefer to run on a loadtest node
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 50
+            preference:
+              matchExpressions:
+              - key: openwhisk-role
+                operator: In
+                values:
+                - loadtest
+      containers:
+      - name: loadtest
+        image: williamyeh/wrk
+        env:
+          # number of samples to gather
+          - name: "DURATION"
+            value: "300"
+          - name: "CONCURRENCY"
+            value: "1024"
+          - name: "NUM_CORES"
+            value: "512"
+          # base64 encoding of default auth.guest credentials
+          - name: "ENCODED_AUTH"
+            value: "MjNiYzQ2YjEtNzFmNi00ZWQ1LThjNTQtODE2YWE0ZjhjNTAyOjEyM3pPM3haQ0xyTU42djJCS0sxZFhZRnBYbFBrY2NPRnFtMTJDZEFzTWdSVTRWck5aOWx5R1ZDR3VNREdJd1A="
+          - name: "WHISK_API_HOST_NAME"
+            valueFrom:
+              configMapKeyRef:
+                name: whisk.ingress
+                key: api_host
+        command: ["/bin/sh"]
+        args: ["-c", "echo wrk.method = \\\"POST\\\" > post.lua; wrk --threads $(NUM_CORES) --connections $(CONCURRENCY) --duration $(DURATION) --header \"Authorization: basic $(ENCODED_AUTH)\" $(WHISK_API_HOST_NAME)/api/v1/namespaces/_/actions/noopThroughput?blocking=true --latency --timeout 10s --script post.lua"]
+      restartPolicy: Never

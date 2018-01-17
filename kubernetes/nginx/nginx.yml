@@ -26,6 +26,16 @@ spec:
                 operator: NotIn
                 values:
                 - invoker
+        # prefer to run on an edge node
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 50
+            preference:
+              matchExpressions:
+              - key: openwhisk-role
+                operator: In
+                values:
+                - edge
         # do not allow more than 1 nginx instance to run on a given node
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
