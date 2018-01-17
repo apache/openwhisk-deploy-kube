@@ -1,0 +1,48 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kafkapkginstaller
+  namespace: openwhisk
+  labels:
+    name: kafkapkginstaller
+spec:
+  template:
+    metadata:
+      labels:
+        name: kafkapkginstaller
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: kafkapkginstaller
+        imagePullPolicy: IfNotPresent 
+        image: openwhisk/kube-kafkapkginstaller
+        env:
+        - name: "APIHOST"
+          valueFrom:
+            configMapKeyRef:
+              name: whisk.ingress
+              key: api_host
+        - name: "DB_HOST"
+          value: "$(COUCHDB_SERVICE_HOST)"
+        - name: "DB_PORT"
+          value: "$(COUCHDB_SERVICE_PORT_COUCHDB)"
+        - name: "DB_USERNAME"
+          valueFrom:
+            secretKeyRef:
+              name: db.auth
+              key: db_username
+        - name: "DB_PASSWORD"
+          valueFrom:
+            secretKeyRef:
+              name: db.auth
+              key: db_password
+        - name: "DB_PREFIX"
+          valueFrom:
+            configMapKeyRef:
+              name: packages.kafkaprovider
+              key: kafkapkg_db_prefix
+        - name: "AUTH"
+          valueFrom:
+            secretKeyRef:
+              name: whisk.auth
+              key: system
