@@ -93,12 +93,12 @@ spec:
                 key: api_host
 
           # Docker-related options
-          - name: "INVOKER_CONTAINER_NETWORK"
+          - name: "CONFIG_whisk_containerFactory_containerArgs_network"
             valueFrom:
               configMapKeyRef:
                 name: invoker.config
                 key: invoker_container_network
-          - name: "INVOKER_CONTAINER_DNS"
+          - name: "CONFIG_whisk_containerFactory_containerArgs_dnsServers"
             valueFrom:
               configMapKeyRef:
                 name: invoker.config
