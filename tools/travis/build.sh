@@ -137,7 +137,7 @@ ROOTDIR="$SCRIPTDIR/../../"
 
 cd $ROOTDIR
 
-# Label invoker nodes (needed for daemonset-based invoker deployment)
+# Label invoker nodes (needed for DockerContainerFactory-based invoker deployment)
 echo "Labeling invoker node"
 kubectl label nodes --all openwhisk-role=invoker
 kubectl describe nodes
@@ -210,10 +210,10 @@ pushd kubernetes/controller
 popd
 
 # setup the invoker
-echo "Deploying invoker"
+echo "Deploying invoker using DockerContainerFactory"
 pushd kubernetes/invoker
-  kubectl -n openwhisk create cm invoker.config --from-env-file=invoker.env
-  kubectl apply -f invoker.yml
+  kubectl -n openwhisk create cm invoker.config --from-env-file=invoker-dcf.env
+  kubectl apply -f invoker-dcf.yml
 
   # wait until the invoker is ready
   deploymentHealthCheck "invoker"

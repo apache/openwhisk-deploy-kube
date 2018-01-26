@@ -13,6 +13,9 @@ echo "Publishing kube-couchdb image"
 echo "Publishing kube-docker-pull image"
 ./tools/travis/publish.sh openwhisk kube-docker-pull latest docker/docker-pull
 
+echo "Publishing kube-invoker-agent image"
+./tools/travis/publish.sh openwhisk kube-invoker-agent latest docker/invoker-agent
+
 echo "Publishing kube-openwhisk-catalog image"
 ./tools/travis/publish.sh openwhisk kube-openwhisk-catalog latest docker/openwhisk-catalog
 

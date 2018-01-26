@@ -11,6 +11,8 @@ The built images are:
   * docker-pull - performs a 'docker pull' for action runtimes
     specified in runtimesManifest format -- used to prefetch
     action runtime images for invoker nodes
+  * invoker-agent - worker node invoker agent -- used to implement
+    suspend/resume and log consolidation ops for a remote invoker
   * openwhisk-catalog - installs the catalog from the project
     incubator-openwhisk-calalog to the system namespace of the
     OpenWhisk deployment.

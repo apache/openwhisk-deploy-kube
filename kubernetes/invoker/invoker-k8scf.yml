@@ -1,0 +1,201 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: invoker
+
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  namespace: openwhisk
+  name: invoker
+rules:
+- apiGroups: ["extensions"]
+  resources: ["deployments"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+- apiGroups: [""]
+  resources: ["pods/log"]
+  verbs: ["get", "list"]
+
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: invoker-rbac
+  namespace: openwhisk
+subjects:
+- kind: ServiceAccount
+  name: invoker
+  namespace: openwhisk
+roleRef:
+  kind: Role
+  name: invoker
+  apiGroup: rbac.authorization.k8s.io
+
+---
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: invoker
+  namespace: openwhisk
+  labels:
+    name: invoker
+spec:
+  replicas: 1
+  serviceName: invoker
+  template:
+    metadata:
+      labels:
+        name: invoker
+    spec:
+      serviceAccountName: invoker
+      restartPolicy: Always
+
+      affinity:
+        # prefer to run on an invoker node (only prefer because of single node clusters)
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
+              - key: openwhisk-role
+                operator: In
+                values:
+                - invoker
+        # do not allow more than 1 invoker instance to run on a node
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+                - key: name
+                  operator: In
+                  values:
+                  - invoker
+            topologyKey: "kubernetes.io/hostname"
+
+      containers:
+      - name: invoker
+        imagePullPolicy: Always
+        image: openwhisk/invoker
+        command: [ "/bin/bash", "-c", "COMPONENT_NAME=$(hostname | cut -d'-' -f2) /init.sh" ]
+        ports:
+        - name: invoker
+          containerPort: 8080
+        env:
+          - name: "PORT"
+            value: "8080"
+
+          # Invoker name is name of pod (invoker-0, invoker-1, etc).
+          - name: "INVOKER_NAME"
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+
+          - name: "WHISK_API_HOST_NAME"
+            valueFrom:
+              configMapKeyRef:
+                name: whisk.ingress
+                key: api_host
+
+          # Enable invoker-agent
+          - name: "CONFIG_whisk_kubernetes_invokerAgent_enabled"
+            value: "TRUE"
+
+          # Docker-related options
+          - name: "INVOKER_USE_RUNC"
+            value: "FALSE"
+          - name: "DOCKER_IMAGE_PREFIX"
+            valueFrom:
+              configMapKeyRef:
+                name: invoker.config
+                key: docker_image_prefix
+          - name: "DOCKER_IMAGE_TAG"
+            valueFrom:
+              configMapKeyRef:
+                name: invoker.config
+                key: docker_image_tag
+          - name: "DOCKER_REGISTRY"
+            valueFrom:
+              configMapKeyRef:
+                name: invoker.config
+                key: docker_registry
+
+          # action runtimes
+          - name: "RUNTIMES_MANIFEST"
+            valueFrom:
+              configMapKeyRef:
+                name: whisk.runtimes
+                key: runtimes
+
+          # extra JVM arguments
+          - name: "JAVA_OPTS"
+            valueFrom:
+              configMapKeyRef:
+                name: invoker.config
+                key: java_opts
+
+          # extra Invoker arguments
+          - name: "INVOKER_OPTS"
+            valueFrom:
+              configMapKeyRef:
+                name: invoker.config
+                key: invoker_opts
+
+          # Recommend using "" because logs should go to stdout on kube
+          - name: "WHISK_LOGS_DIR"
+            valueFrom:
+              configMapKeyRef:
+                name: invoker.config
+                key: invoker_logs_dir
+
+          # properties for Kafka connection
+          - name: "KAFKA_HOSTS"
+            value: "$(KAFKA_SERVICE_HOST):$(KAFKA_SERVICE_PORT_KAFKA)"
+
+          # properties for zookeeper connection
+          - name: "ZOOKEEPER_HOSTS"
+            value: "$(ZOOKEEPER_SERVICE_HOST):$(ZOOKEEPER_SERVICE_PORT_ZOOKEEPER)"
+
+          # properties for DB connection
+          - name: "CONFIG_whisk_couchdb_username"
+            valueFrom:
+              secretKeyRef:
+                name: db.auth
+                key: db_username
+          - name: "CONFIG_whisk_couchdb_password"
+            valueFrom:
+              secretKeyRef:
+                name: db.auth
+                key: db_password
+          - name:  "CONFIG_whisk_couchdb_protocol"
+            valueFrom:
+              configMapKeyRef:
+                name: db.config
+                key: db_protocol
+          - name: "CONFIG_whisk_couchdb_host"
+            value: "$(COUCHDB_SERVICE_HOST)"
+          - name: "CONFIG_whisk_couchdb_port"
+            value: "$(COUCHDB_SERVICE_PORT_COUCHDB)"
+          - name: "CONFIG_whisk_couchdb_provider"
+            valueFrom:
+              configMapKeyRef:
+                name: db.config
+                key: db_provider
+          - name: "CONFIG_whisk_couchdb_databases_WhiskActivation"
+            valueFrom:
+              configMapKeyRef:
+                name: db.config
+                key: db_whisk_activations
+          - name: "CONFIG_whisk_couchdb_databases_WhiskEntity"
+            valueFrom:
+              configMapKeyRef:
+                name: db.config
+                key: db_whisk_actions
+          - name: "CONFIG_whisk_couchdb_databases_WhiskAuth"
+            valueFrom:
+              configMapKeyRef:
+                name: db.config
+                key: db_whisk_auths
