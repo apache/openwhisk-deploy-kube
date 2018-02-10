@@ -20,4 +20,4 @@ echo "Publishing kube-routemgmt image"
 ./tools/travis/publish.sh openwhisk kube-routemgmt latest docker/routemgmt
 
 echo "Publishing kube-kafkapkginstaller image"
-./tools/travis/publish.sh openwhisk kube-kafkapkginstaller latest docker/kafapkg-installer
+./tools/travis/publish.sh openwhisk kube-kafkapkginstaller latest docker/kafkapkg-installer
