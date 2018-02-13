@@ -1,0 +1,57 @@
+# This Job measures internal latency (no ingress, no TLS termination) by
+# hitting the controller service directly.
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: loadtest-latency-internal
+  namespace: openwhisk
+spec:
+  activeDeadlineSeconds: 3600
+  template:
+    metadata:
+      name: loadtest-latency-internal
+      labels:
+        access: controller
+    spec:
+      affinity:
+        # do not run on a node that openwhisk is actually using
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
+              - key: openwhisk-role
+                operator: NotIn
+                values:
+                - invoker
+                - control-plane
+                - edge
+        # prefer to run on a loadtest node
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 50
+            preference:
+              matchExpressions:
+              - key: openwhisk-role
+                operator: In
+                values:
+                - loadtest
+      containers:
+      - name: loadtest
+        image: markusthoemmes/loadtest
+        env:
+          # number of samples to gather
+          - name: "NUM_SAMPLES"
+            value: "10000"
+          # base64 encoding of default auth.guest credentials
+          - name: "ENCODED_AUTH"
+            value: "MjNiYzQ2YjEtNzFmNi00ZWQ1LThjNTQtODE2YWE0ZjhjNTAyOjEyM3pPM3haQ0xyTU42djJCS0sxZFhZRnBYbFBrY2NPRnFtMTJDZEFzTWdSVTRWck5aOWx5R1ZDR3VNREdJd1A="
+          - name: "WHISK_API_HOST_NAME"
+            valueFrom:
+              configMapKeyRef:
+                name: whisk.ingress
+                key: api_host
+        command: ["loadtest"]
+        args: ["-n", "$(NUM_SAMPLES)", "-k", "-m", "POST", "-H", "Authorization: basic $(ENCODED_AUTH)", "http://$(CONTROLLER_SERVICE_HOST):$(CONTROLLER_SERVICE_PORT)/api/v1/namespaces/_/actions/noopLatency?blocking=true"]
+      restartPolicy: Never

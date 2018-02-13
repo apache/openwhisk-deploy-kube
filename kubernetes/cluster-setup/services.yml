@@ -57,7 +57,6 @@ metadata:
 spec:
   selector:
     name: controller
-  clusterIP: None
   ports:
     - port: 8080
       targetPort: 8080
