@@ -8,6 +8,10 @@
     docker_pull_delay: 10
     docker_registry:
     runtimesManifest: "{{ lookup('env', 'RUNTIMES_MANIFEST') | from_json }}"
+    dip: "{{ lookup('env', 'DEFAULT_IMAGE_PREFIX') }}"
+    defaultImagePrefix: "{{ dip if dip != '' else 'openwhisk'}}"
+    dit: "{{ lookup('env', 'DEFAULT_IMAGE_TAG') }}"
+    defaultImageTag: "{{ dit if dit != '' else 'latest' }}"
 
   tasks:
     - name: docker login
@@ -17,15 +21,15 @@
         password: "{{ docker_registry_password }}"
       when: docker_registry != "" and docker_registry_password is defined
 
-    - name: "pull runtime action images with tag {{runtimesManifest.defaultImageTag}}"
-      shell: "docker pull {{docker_registry}}{{runtimesManifest.defaultImagePrefix}}/{{item}}:{{runtimesManifest.defaultImageTag}}"
+    - name: "pull runtime action images with tag {{defaultImageTag}}"
+      shell: "docker pull {{docker_registry}}{{defaultImagePrefix}}/{{item}}:{{defaultImageTag}}"
       with_items: "{{ runtimesManifest.runtimes.values() | sum(start=[]) | selectattr('deprecated', 'equalto',false)  | map(attribute='image.name') | list | unique }}"
       when: docker_registry != ""
       retries: "{{ docker_pull_retries }}"
       delay: "{{ docker_pull_delay }}"
 
-    - name: "pull blackboxes action images with tag {{runtimesManifest.defaultImageTag}}"
-      shell: "docker pull {{docker_registry}}{{runtimesManifest.defaultImagePrefix}}/{{item.name}}:{{runtimesManifest.defaultImageTag}}"
+    - name: "pull blackboxes action images with tag {{defaultImageTag}}"
+      shell: "docker pull {{docker_registry}}{{defaultImagePrefix}}/{{item.name}}:{{defaultImageTag}}"
       with_items:
         - "{{ runtimesManifest.blackboxes }}"
       when: docker_registry != ""
