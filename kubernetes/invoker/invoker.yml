@@ -161,41 +161,41 @@ spec:
             value: "$(ZOOKEEPER_SERVICE_HOST):$(ZOOKEEPER_SERVICE_PORT_ZOOKEEPER)"
 
           # properties for DB connection
-          - name: "DB_USERNAME"
+          - name: "CONFIG_whisk_couchdb_username"
             valueFrom:
               secretKeyRef:
                 name: db.auth
                 key: db_username
-          - name: "DB_PASSWORD"
+          - name: "CONFIG_whisk_couchdb_password"
             valueFrom:
               secretKeyRef:
                 name: db.auth
                 key: db_password
-          - name:  "DB_PROTOCOL"
+          - name:  "CONFIG_whisk_couchdb_protocol"
             valueFrom:
               configMapKeyRef:
                 name: db.config
                 key: db_protocol
-          - name: "DB_HOST"
+          - name: "CONFIG_whisk_couchdb_host"
             value: "$(COUCHDB_SERVICE_HOST)"
-          - name: "DB_PORT"
+          - name: "CONFIG_whisk_couchdb_port"
             value: "$(COUCHDB_SERVICE_PORT_COUCHDB)"
-          - name: "DB_PROVIDER"
+          - name: "CONFIG_whisk_couchdb_provider"
             valueFrom:
               configMapKeyRef:
                 name: db.config
                 key: db_provider
-          - name: "DB_WHISK_ACTIVATIONS"
+          - name: "CONFIG_whisk_couchdb_databases_WhiskActivation"
             valueFrom:
               configMapKeyRef:
                 name: db.config
                 key: db_whisk_activations
-          - name: "DB_WHISK_ACTIONS"
+          - name: "CONFIG_whisk_couchdb_databases_WhiskEntity"
             valueFrom:
               configMapKeyRef:
                 name: db.config
                 key: db_whisk_actions
-          - name: "DB_WHISK_AUTHS"
+          - name: "CONFIG_whisk_couchdb_databases_WhiskAuth"
             valueFrom:
               configMapKeyRef:
                 name: db.config
