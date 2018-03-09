@@ -37,33 +37,22 @@ kubectl apply -f invoker.yml
 
 **Important**
 
-OpenWhisk relies on part of the underlying infrastructure that Kube
-is running on. When deploying the Invoker for OpenWhisk, it mounts the hosts
-Docker socket and a number of other components. This way OpenWhisk can
-quickly provision actions and does not have to run Docker inside of Docker.
-However, this also means that a number of the default mount options assume
-that the Kubernetes host image is Ubuntu. During the deploy there could be an
-issue and if the Invoker fails to deploy, see the [Troubleshooting](#troubleshooting)
-section below.
 
 # Troubleshooting
 ## No invokers are deployed
 
 Verify that you actually have at least one node with the label openwhisk-role=invoker.
 
-## Kubernetes Host Linux Versions
+## Invokers containers fail to start with volume mounting problems
 
-Unfortunately when Deploying OpenWhisk on Kubernetes it currently mounts some
-of the host OS files for the Invoker process and needs to make some assumptions.
-Because of this, some failures are known to happen on certain Linux versions,
-like CoreOs. If you see an error like:
-
-```
-Failed to start container with id 8d9125bf2d3711312a98a8b98de15306e495883cc470a03beb6689b34895791f with error: rpc error: code = 2 desc = failed to start container "8d9125bf2d3711312a98a8b98de15306e495883cc470a03beb6689b34895791f": Error response from daemon: {"message":"mkdir /usr/lib/x86_64-linux-gnu: read-only file system"}
-Error syncing pod, skipping: failed to "StartContainer" for "Invoker" with rpc error: code = 2 desc = failed to start container "8d9125bf2d3711312a98a8b98de15306e495883cc470a03beb6689b34895791f": Error response from daemon: {"message":"mkdir /usr/lib/x86_64-linux-gnu: read-only file system"}: "Start Container Failed"
-```
-
-Then you might need to modify some of the volume mounts in the
-[invoker.yml](invoker.yml). For example, the error above is trying to
-find something from the apparmor mount which makes no sense to
-CoreOS. To fix the issue, you just need to remove the mount.
+To execute the containers for user actions, OpenWhisk relies on part
+of the underlying infrastructure that Kubernetes is running on. When
+deploying the Invoker for OpenWhisk, it mounts the host's Docker
+socket and several other system-specific directories related to
+Docker. This enables efficient container management, but it also also
+means that the default volume hostPath values assume that the Kubernetes worker
+node image is Ubuntu. If containers fail to start with errors related
+mounting`/sys/fs/cgroup`, `/run/runc`,`/var/lib/docker/containers`, or
+`/var/run/docker.sock`, then you will need to change the corresponding
+value in [invoker.yml](invoker.yml) to match the host operating system
+running on your Kubernetes worker node.

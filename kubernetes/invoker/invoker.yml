@@ -38,9 +38,6 @@ spec:
       - name: dockersock
         hostPath:
           path: "/var/run/docker.sock"
-      - name: apparmor
-        hostPath:
-          path: "/usr/lib/x86_64-linux-gnu/libapparmor.so.1"
 
       initContainers:
       - name: docker-pull-runtimes
@@ -74,8 +71,6 @@ spec:
           mountPath: "/var/run/docker.sock"
         - name: dockerrootdir
           mountPath: "/containers"
-        - name: apparmor
-          mountPath: "/usr/lib/x86_64-linux-gnu/libapparmor.so.1"
         env:
           - name: "PORT"
             value: "8080"
