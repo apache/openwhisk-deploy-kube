@@ -47,10 +47,18 @@ spec:
                   - apigateway
             topologyKey: "kubernetes.io/hostname"
 
+      volumes:
+      - name: redis-data
+        persistentVolumeClaim:
+          claimName: pv-apigateway-01
+
       containers:
       - name: redis
         imagePullPolicy: IfNotPresent
         image: redis:3.2
+        volumeMounts:
+        - mountPath: /data
+          name: redis-data
       - name: apigateway
         imagePullPolicy: Always
         image: openwhisk/apigateway

@@ -1,5 +1,4 @@
 sudo: required
-
 env:
   global:
   - TRAVIS_KUBE_VERSION=v1.7.4
@@ -9,6 +8,12 @@ env:
 
 services:
   - docker
+
+notifications:
+  email: false
+  webhooks:
+    urls:
+      secure: "esaYS4UvOELWzWFMvTui2vuhp3I5R0vPtJapfzaE7sn9wUcCupJ9Hz7RpG+WXpYStZpQJBnp+tBrl6N3+T2wn+GFxi838/jZX+1+ixV7+Cwhx0n01ae3PV6SIa9+a7oYxj9LPyX0gBzqWwxpmfKBKZyLutckf/jWGT1QdKKPzM7t6gJjmqFRhBRBmwxih97RXqbHQNtJ1BB2oW1R2jjw2j0af/ZjsbmrHy1Ar/ETjfTe89gh2gfhwYLwmrCScfssOMl72vwZXXanGyj+fXEIPq48O/JEGMgQVEYSts1gQz99v419WpsbaSFmcrLVQCY6HmJvA3bjmBm3XKnEZjmjbipYJJhdoryX3cs9FvLzsFuNK+069qJN6naCUOv1KmCiYTenjssDmJobtbVGvNxxLJHD4yfIjPKs61nt3EI3i7Cxq1gV4jtnvgpwZ9Pkjj2jo+gmgSwWQzvdmdajsDyRR24DakCgohaSQ4Zp/jvzA/BN4HqFT2xqhnDuzZxbfbAdmNncjZhkBgmNwCTOnhxwcknCMNuAL7FADR5v1Ide3XI5Dnd2bov56hZHAWzYl8046fwh+8+4KTtnb9+J/wwDQXUXxoa7XOuIcKthiwmVuSlHwgKvOJqvRTb7mLy5rKd87c1zCFT6n29eHoxBah2VCHnhi4VSUlGHHp470QipKnY="
 
 before_install:
   - ./tools/travis/setupscan.sh
