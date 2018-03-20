@@ -38,13 +38,14 @@ component on Kubernetes (selected by picking a
 
 In either approach, it is desirable to indicate which worker nodes
 should be used to execute user containers.  Do this by labeling each
-node with `openwhisk-role=invoker`.  For example,
-```
-$ kubectl label nodes 127.0.0.1 openwhisk-role=invoker
-```
-or for a single node cluster
+node with `openwhisk-role=invoker`.  For a single node cluster, simply do
 ```
 kubectl label nodes --all openwhisk-role=invoker
+```
+If you have a multi-node cluster, for each node <INVOKER_NODE_NAME>
+you want to be an invoker, execute
+```
+$ kubectl label nodes <INVOKER_NODE_NAME> openwhisk-role=invoker
 ```
 
 ## Deploying using the DockerContainerFactory
