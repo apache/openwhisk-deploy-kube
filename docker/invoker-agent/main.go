@@ -34,11 +34,11 @@ import (
 
 /* JSON structure expected as request body on /logs route */
 type LogForwardInfo struct {
-	LastOffset             int64  `json:"lastOffset"`
-	SizeLimit              int    `json:"sizeLimit"`
-	SentinelledLogs        bool   `json:"sentinelledLogs"`
-	EncodedLogLineMetadata string `json:"encodedLogLineMetadata"`
-	EncodedActivation      string `json:"encodedActivation"`
+	LastOffset             int64  `json:"lastOffset"`               // last offset read from this container's log
+	SizeLimit              int    `json:"sizeLimit"`                // size limit on logs read in bytes
+	SentinelledLogs        bool   `json:"sentinelledLogs"`          // does an action's log end with sentinel lines?
+	EncodedLogLineMetadata string `json:"encodedLogLineMetadata"`   // string to be injected in every log line
+	EncodedActivation      string `json:"encodedActivation"`        // extra line to injected after all log lines are read
 }
 
 /* Size threshold for individual output files written by the logWriter */
@@ -121,7 +121,12 @@ func reportLoggingError(w http.ResponseWriter, code int, msg string, metadata st
 	}
 }
 
-// Request handler for /logs route
+// Request handler for /logs/<container> route
+// The container was given as part of the URL; gorilla makes it available in vars["container"]
+// The JSON body of the request is expected to contain the fields specified by the
+// LogForwardInfo struct defined above.
+// If logs are successfully forwarded, the ending offset of the log file is returned
+// to be used in a subsequent call to the /logs/<container> route.
 func forwardLogsFromUserAction(w http.ResponseWriter, r *http.Request) {
 	var start time.Time
 	if timeOps {
@@ -211,7 +216,8 @@ func forwardLogsFromUserAction(w http.ResponseWriter, r *http.Request) {
  * Suppout for suspend/resume operations
  */
 
-// handler for /resume route
+// handler for /resume/<container> route
+// The container was given as part of the URL; gorilla makes it available in vars["container"]
 func resumeUserAction(w http.ResponseWriter, r *http.Request) {
 	var start time.Time
 	if timeOps {
@@ -226,7 +232,7 @@ func resumeUserAction(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(500)
 		fmt.Fprintf(w, "Unpausing %s failed with error: %v\n", container, err)
 	} else if resp.StatusCode < 200 || resp.StatusCode > 299 {
-		w.WriteHeader(resp.StatusCode)
+		w.WriteHeader(500)
 		fmt.Fprint(w, "Unpausing %s failed with status code: %d\n", container, resp.StatusCode)
 	} else {
 		w.WriteHeader(204) // success!
@@ -239,7 +245,8 @@ func resumeUserAction(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// handler for /resume route
+// handler for /resume/<container> route
+// The container was given as part of the URL; gorilla makes it available in vars["container"]
 func suspendUserAction(w http.ResponseWriter, r *http.Request) {
 	var start time.Time
 	if timeOps {
@@ -254,7 +261,7 @@ func suspendUserAction(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(500)
 		fmt.Fprintf(w, "Pausing %s failed with error: %v\n", container, err)
 	} else if resp.StatusCode < 200 || resp.StatusCode > 299 {
-		w.WriteHeader(resp.StatusCode)
+		w.WriteHeader(500)
 		fmt.Fprint(w, "Pausing %s failed with status code: %d\n", container, resp.StatusCode)
 	} else {
 		w.WriteHeader(204) // success!
