@@ -1,0 +1,104 @@
+---
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: invoker-agent
+  namespace: openwhisk
+  labels:
+    name: invoker-agent
+spec:
+  template:
+    metadata:
+      labels:
+        name: invoker-agent
+    spec:
+      restartPolicy: Always
+      hostNetwork: true
+
+      # run only on nodes labeled with openwhisk-role=invoker
+      # TODO: disabled affinity until user-action pods are
+      #       created with the same affinity rules.
+      #       Requires extension to upstream kube java client
+      # affinity:
+      #   nodeAffinity:
+      #     requiredDuringSchedulingIgnoredDuringExecution:
+      #       nodeSelectorTerms:
+      #       - matchExpressions:
+      #         - key: openwhisk-role
+      #           operator: In
+      #           values:
+      #           - invoker
+
+      volumes:
+      - name: cgroup
+        hostPath:
+          path: "/sys/fs/cgroup"
+      - name: runc
+        hostPath:
+          path: "/run/runc"
+      - name: dockerrootdir
+        hostPath:
+          path: "/var/lib/docker/containers"
+      - name: dockersock
+        hostPath:
+          path: "/var/run/docker.sock"
+      - name: userlogs
+        emptyDir: {}
+
+      initContainers:
+      - name: docker-pull-runtimes
+        imagePullPolicy: Always
+        image: openwhisk/kube-docker-pull
+        volumeMounts:
+        - name: dockersock
+          mountPath: "/var/run/docker.sock"
+        env:
+          # action runtimes
+          - name: "RUNTIMES_MANIFEST"
+            valueFrom:
+              configMapKeyRef:
+                name: whisk.runtimes
+                key: runtimes
+
+      containers:
+      - name: invoker-agent
+        imagePullPolicy: Always
+        image: openwhisk/kube-invoker-agent
+        securityContext:
+          privileged: true
+        ports:
+         # IANA port 3233 "whisker" for "WhiskerControl"  ;)
+        - name: agent
+          containerPort: 3233
+          hostPort: 3233
+        volumeMounts:
+        - name: cgroup
+          mountPath: "/sys/fs/cgroup"
+        - name: runc
+          mountPath: "/run/runc"
+        - name: dockersock
+          mountPath: "/var/run/docker.sock"
+        - name: dockerrootdir
+          mountPath: "/containers"
+        - name: userlogs
+          mountPath: "/action-logs"
+        env:
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: invoker-agent-netpol
+  namespace: openwhisk
+spec:
+  podSelector:
+    matchLabels:
+      name: invoker-agent
+  ingress:
+  # Allow invoker to connect to invoker-agent
+  - from:
+    - podSelector:
+        matchLabels:
+          name: invoker
+    ports:
+     - port: 3233
