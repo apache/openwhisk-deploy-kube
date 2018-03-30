@@ -210,13 +210,23 @@ pushd kubernetes/controller
 popd
 
 # setup the invoker
-echo "Deploying invoker using DockerContainerFactory"
 pushd kubernetes/invoker
-  kubectl -n openwhisk create cm invoker.config --from-env-file=invoker-dcf.env
-  kubectl apply -f invoker-dcf.yml
-
-  # wait until the invoker is ready
-  deploymentHealthCheck "invoker"
+    if [ "$OW_CONTAINER_FACTORY" = "docker" ]; then
+        echo "Deploying invoker using DockerContainerFactory"
+        kubectl -n openwhisk create cm invoker.config --from-env-file=invoker-dcf.env
+        kubectl apply -f invoker-dcf.yml
+        deploymentHealthCheck "invoker"
+    elif [ "$OW_CONTAINER_FACTORY" = "kube" ]; then
+        echo "Deploying invoker using KubernetesContainerFactory"
+        kubectl -n openwhisk create cm invoker.config --from-env-file=invoker-k8scf.env
+        kubectl apply -f invoker-agent.yml
+        deploymentHealthCheck "invoker-agent"
+        kubectl apply -f invoker-k8scf.yml
+        deploymentHealthCheck "invoker-0"
+    else
+        echo "Unknown container factory $OW_CONTAINER_FACTORY"
+        exit 1
+    fi
 popd
 
 # setup nginx
