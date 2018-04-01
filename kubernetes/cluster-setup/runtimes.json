@@ -51,24 +51,17 @@
         ],
         "swift": [
             {
-                "kind": "swift",
-                "image": {
-                    "name": "swiftaction"
-                },
-                "deprecated": true
-            },
-            {
-                "kind": "swift:3",
-                "image": {
-                    "name": "swift3action"
-                },
-                "deprecated": true
-            },
-            {
                 "kind": "swift:3.1.1",
-                "default": true,
                 "image": {
                     "name": "action-swift-v3.1.1"
+                },
+                "deprecated": false
+            },
+            {
+                "kind": "swift:4.1",
+                "default": true,
+                "image": {
+                    "name": "action-swift-v4.1"
                 },
                 "deprecated": false
             }
