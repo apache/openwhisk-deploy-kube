@@ -17,20 +17,28 @@ This repository can be used to deploy OpenWhisk to a Kubernetes cluster.
 Several requirements must be met for OpenWhisk to deploy on Kubernetes.
 
 **Kubernetes**
-* [Kubernetes](https://github.com/kubernetes/kubernetes) version 1.6+. However, avoid Kubernetes 1.6.3 due to an [issue with volume mount subpaths](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG-1.6.md#known-issues-for-v163).  Our Travis CI testing uses Kubernetes version 1.7.4.
+* [Kubernetes](https://github.com/kubernetes/kubernetes) version 1.6+. However, multiple minor releases of Kubernetes, including 1.6.3, 1.7.14, 1.8.9 and 1.9.4 will not work for OpenWhisk due to bugs with volume mount subpaths (see[[1](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG-1.6.md#known-issues-for-v163), [2](https://github.com/kubernetes/kubernetes/issues/61076)]. This bug will surface as a failure when deploying the nginx container.
 * The ability to create Ingresses to make a Kubernetes service available outside of the cluster so you can actually use OpenWhisk.
-* Endpoints of Kubernetes services must be able to loopback to themselves ("hairpin mode").
-
-**OpenWhisk**
-* Docker version 1.12+
+* Endpoints of Kubernetes services must be able to loopback to themselves (the kubelet's `hairpin-mode` must not be `none`).
 
 # Setting up Kubernetes
 
 ## Using Minikube
 
-For local development and testing, we recommend using Minikube version 0.23+
-with the docker network in promiscuous mode. Our Travis CI testing uses Minikube 0.23.0.
-Take a look at these [instructions](/docs/setting_up_minikube/README.md).
+For local development and testing, we recommend using Minikube with
+the docker network in promiscuous mode.  Not all combinations of
+Minikube and Kubernetes versions will work for running OpenWhisk.
+Although other combinations may work, we recommend at least initially
+using a combination from the table below that is verified by our
+Travis CI testing.
+
+| Kubernetes Version | Minikube Version |
+--- | --- |
+1.7.4 | 0.23.0 |
+1.8.0 | 0.25.2 |
+1.9.0 | 0.25.2 |
+
+For details on setting up Minikube, see these [instructions](/docs/setting_up_minikube/README.md).
 
 ## Using a Kubernetes cluster from a cloud provider
 

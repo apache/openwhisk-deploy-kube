@@ -7,7 +7,7 @@
 couchdbHealthCheck () {
   # wait for the pod to be created before getting the job name
   sleep 5
-  POD_NAME=$(kubectl -n openwhisk get pods -o wide --show-all | grep "couchdb" | awk '{print $1}')
+  POD_NAME=$(kubectl -n openwhisk get pods -l name=couchdb -o wide --show-all | grep "couchdb" | awk '{print $1}')
 
   PASSED=false
   TIMEOUT=0
@@ -40,7 +40,7 @@ deploymentHealthCheck () {
   PASSED=false
   TIMEOUT=0
   until $PASSED || [ $TIMEOUT -eq 60 ]; do
-    KUBE_DEPLOY_STATUS=$(kubectl -n openwhisk get pods -o wide | grep "$1" | awk '{print $3}')
+    KUBE_DEPLOY_STATUS=$(kubectl -n openwhisk get pods -l name="$1" -o wide | grep "$1" | awk '{print $3}')
     if [ "$KUBE_DEPLOY_STATUS" == "Running" ]; then
       PASSED=true
       break
@@ -55,7 +55,7 @@ deploymentHealthCheck () {
   if [ "$PASSED" = false ]; then
     echo "Failed to finish deploying $1"
 
-    kubectl -n openwhisk logs $(kubectl -n openwhisk get pods -o wide | grep "$1" | awk '{print $1}')
+    kubectl -n openwhisk logs $(kubectl -n openwhisk get pods -l name="$1" -o wide | grep "$1" | awk '{print $1}')
     exit 1
   fi
 
@@ -71,7 +71,7 @@ statefulsetHealthCheck () {
   PASSED=false
   TIMEOUT=0
   until $PASSED || [ $TIMEOUT -eq 60 ]; do
-    KUBE_DEPLOY_STATUS=$(kubectl -n openwhisk get pods -o wide | grep "$1"-0 | awk '{print $3}')
+    KUBE_DEPLOY_STATUS=$(kubectl -n openwhisk get pods -l name="$1" -o wide | grep "$1"-0 | awk '{print $3}')
     if [ "$KUBE_DEPLOY_STATUS" == "Running" ]; then
       PASSED=true
       break
@@ -134,6 +134,9 @@ set -x
 
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 ROOTDIR="$SCRIPTDIR/../../"
+
+# Default to docker container factory if not specified
+OW_CONTAINER_FACTORY=${OW_CONTAINER_FACTORY:="docker"}
 
 cd $ROOTDIR
 
@@ -220,18 +223,19 @@ pushd kubernetes/invoker
         echo "Deploying invoker using DockerContainerFactory"
         kubectl -n openwhisk create cm invoker.config --from-env-file=invoker-dcf.env
         kubectl apply -f invoker-dcf.yml
-        deploymentHealthCheck "invoker"
     elif [ "$OW_CONTAINER_FACTORY" = "kube" ]; then
         echo "Deploying invoker using KubernetesContainerFactory"
         kubectl -n openwhisk create cm invoker.config --from-env-file=invoker-k8scf.env
         kubectl apply -f invoker-agent.yml
         deploymentHealthCheck "invoker-agent"
         kubectl apply -f invoker-k8scf.yml
-        deploymentHealthCheck "invoker-0"
     else
         echo "Unknown container factory $OW_CONTAINER_FACTORY"
         exit 1
     fi
+
+    # wait until invoker is ready
+    deploymentHealthCheck "invoker"
 popd
 
 # setup nginx

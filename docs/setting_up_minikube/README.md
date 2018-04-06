@@ -45,3 +45,7 @@ minikube ssh -- sudo ip link set docker0 promisc on
 ```
 
 Your Minikube cluster should now be ready to deploy OpenWhisk.
+
+# Troubleshooting
+
+For some combinations of Minikube and Kubernetes versions, you may need to workaround a [Minikube DNS issue](https://github.com/kubernetes/minikube/issues/2240#issuecomment-348319371). A common symptom of this issue is that the OpenWhisk couchdb pod will fail to start with the error that it is unable to resolve `github.com` when cloning the openwhisk git repo. A work around is to delete the minikube cluster, issue the command `minikube config set bootstrapper kubeadm` and then redo the `minikube start` command above.
