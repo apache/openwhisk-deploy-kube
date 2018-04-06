@@ -9,9 +9,9 @@ The db.auth secret and db.config configmap contain authorization and
 configuration information for the CouchDB instance being used for this
 OpenWhisk deployment.  The db.auth secret is expected to define two
 keys: db_username and db_password. The db.config configmap is expected
-to define five keys: db_protocol, db_provider, db_prefix,
-db_whisk_activations, db_whisk_actions, and db_whisk_auths. The
-commands below create them with default values; adjust as needed for
+to define the following keys: db_protocol, db_provider, db_host, db_port,
+db_prefix, db_whisk_activations, db_whisk_actions, and db_whisk_auths.
+The commands below create them with default values; adjust as needed for
 your deployment.
 
 ```
@@ -19,7 +19,7 @@ kubectl -n openwhisk create secret generic db.auth --from-literal=db_username=wh
 ```
 
 ```
-kubectl -n openwhisk create configmap db.config --from-literal=db_protocol=http --from-literal=db_provider=CouchDB --from-literal=db_whisk_activations=test_activations --from-literal=db_whisk_actions=test_whisks --from-literal=db_whisk_auths=test_subjects --from-literal=db_prefix=test_
+kubectl -n openwhisk create configmap db.config --from-literal=db_protocol=http --from-literal=db_provider=CouchDB --from-literal=db_host=couchdb.openwhisk.svc.cluster.local --from-literal=db_port=5984 --from-literal=db_whisk_activations=test_activations --from-literal=db_whisk_actions=test_whisks --from-literal=db_whisk_auths=test_subjects --from-literal=db_prefix=test_
 ```
 
 ## Deploy the CouchDB pod

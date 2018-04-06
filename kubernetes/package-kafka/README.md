@@ -11,6 +11,8 @@ kubectl -n openwhisk create cm packages.kafkaprovider --from-literal=kafkapkg_db
 The deployment also has dependencies to secret `whisk.auth` and `db.auth`, and configmap `whisk.ingress`. Make sure you have these settings before you start the deployment.
 
 ## Step 1. Install kafka provider
+Note, if you are using an external CouchDB or Cloudant database for your deployment, you will need to edit the definition of DB_URL in kafkaprovider.yml.
+
 ```
 kubectl apply -f kafkaprovider.yml
 ```

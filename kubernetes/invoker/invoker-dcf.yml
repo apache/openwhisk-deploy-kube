@@ -172,9 +172,15 @@ spec:
                 name: db.config
                 key: db_protocol
           - name: "CONFIG_whisk_couchdb_host"
-            value: "$(COUCHDB_SERVICE_HOST)"
+            valueFrom:
+              configMapKeyRef:
+                name: db.config
+                key: db_host
           - name: "CONFIG_whisk_couchdb_port"
-            value: "$(COUCHDB_SERVICE_PORT_COUCHDB)"
+            valueFrom:
+              configMapKeyRef:
+                name: db.config
+                key: db_port
           - name: "CONFIG_whisk_couchdb_provider"
             valueFrom:
               configMapKeyRef:

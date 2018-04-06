@@ -23,9 +23,15 @@ spec:
               name: whisk.ingress
               key: api_host
         - name: "DB_HOST"
-          value: "$(COUCHDB_SERVICE_HOST)"
+          valueFrom:
+            configMapKeyRef:
+              name: db.config
+              key: db_host
         - name: "DB_PORT"
-          value: "$(COUCHDB_SERVICE_PORT_COUCHDB)"
+          valueFrom:
+            configMapKeyRef:
+              name: db.config
+              key: db_port
         - name: "DB_USERNAME"
           valueFrom:
             secretKeyRef:
