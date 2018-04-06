@@ -9,9 +9,9 @@ The db.auth secret and db.config configmap contain authorization and
 configuration information for the CouchDB instance being used for this
 OpenWhisk deployment.  The db.auth secret is expected to define two
 keys: db_username and db_password. The db.config configmap is expected
-to define seven keys: db_protocol, db_provider, db_host, db_port, db_prefix,
-db_whisk_activations, db_whisk_actions, and db_whisk_auths. The
-commands below create them with default values; adjust as needed for
+to define the following keys: db_protocol, db_provider, db_host, db_port,
+db_prefix, db_whisk_activations, db_whisk_actions, and db_whisk_auths.
+The commands below create them with default values; adjust as needed for
 your deployment.
 
 ```
