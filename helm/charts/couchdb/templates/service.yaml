@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "couchdb_service_name" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    name: {{ template "couchdb_service_name" . }}
+spec:
+  selector:
+    name: {{ template "couchdb_service_name" . }}
+  ports:
+    - port: {{ template "couchdb_port" . }}
+      targetPort: {{ template "couchdb_port" . }}
+      name: couchdb

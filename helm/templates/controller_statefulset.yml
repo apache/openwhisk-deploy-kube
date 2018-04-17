@@ -1,0 +1,153 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "controller_service_name" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    name: {{ template "controller_service_name" . }}
+spec:
+  selector:
+    name: {{ template "controller_statefulset_name" . }}
+  clusterIP: None
+  ports:
+    - port: {{ template "controller_port" . }}
+      targetPort: {{ template "controller_port" . }}
+      name: http
+---
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: {{ template "controller_statefulset_name" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    name: {{ template "controller_statefulset_name" . }} 
+spec:
+  replicas: {{ .Values.global.controllerReplicaCount | default 2 }}
+  serviceName: {{ template "controller_service_name" . }}
+  template:
+    metadata:
+      labels:
+        name: {{ template "controller_statefulset_name" . }}
+    spec:
+      restartPolicy: Always
+
+      {{- if .Values.global.affinity.enabled }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: nodeType
+                operator: In
+                values:
+                - {{ .Values.global.affinity.controllerNodeLabel }}
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: name
+                operator: In
+                values:
+                - {{ template "controller_statefulset_name" . }}
+            topologyKey: "kubernetes.io/hostname"
+      {{- end }}
+
+      initContainers:
+      - name: "wait-for-kafka"
+        image: "busybox"
+        imagePullPolicy: "IfNotPresent"
+        command: ["sh", "-c", "result=1; until [ $result -eq 0 ]; do nslookup {{ .Values.global.kafkaServiceName}}.{{ .Release.Namespace }}; result=$?; echo waiting for {{ .Values.global.kafkaServiceName}}.{{ .Release.Namespace }}; sleep 1; done;"]
+
+      containers:
+      - name: {{ template "controller_statefulset_name" . }}
+        imagePullPolicy: {{ .Values.controllerImagePullPolicy | default "IfNotPresent" | quote }}
+        image: {{ .Values.controllerImage | default "openwhisk/controller" | quote }}
+        command: ["/bin/bash", "-c", "COMPONENT_NAME=$(hostname | cut -d'-' -f2) /init.sh `hostname | cut -d'-' -f2`"]
+        ports:
+        - name: controller
+          containerPort: {{ template "controller_port" . }}
+        livenessProbe:
+          httpGet:
+            path: "/ping"
+            port: {{ template "controller_port" . }}
+            scheme: "HTTP"
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 1
+        env:
+        - name: "PORT"
+          value: {{ include "controller_port" . | quote }}
+
+        # Loadbalancer options
+        - name: "LOADBALANCER_INVOKERBUSYTHRESHOLD"
+          value: "16"
+
+        # This needs to stay up to date with the lates runtime in Ansible Groupvars
+        - name: "RUNTIMES_MANIFEST"
+          value: '{ "defaultImagePrefix": "openwhisk", "defaultImageTag": "latest", "runtimes": { "nodejs": [ { "kind": "nodejs", "image": { "name": "nodejsaction" }, "deprecated": true }, { "kind": "nodejs:6", "default": true, "image": { "name": "nodejs6action" }, "deprecated": false } ], "python": [ { "kind": "python", "image": { "name": "python2action" }, "deprecated": false }, { "kind": "python:2", "default": true, "image": { "name": "python2action" }, "deprecated": false }, { "kind": "python:3", "image": { "name": "python3action" }, "deprecated": false } ], "swift": [ { "kind": "swift", "image": { "name": "swiftaction" }, "deprecated": true }, { "kind": "swift:3", "image": { "name": "swift3action" }, "deprecated": false }, { "kind": "swift:3.1.1", "default": true, "image": { "name": "action-swift-v3.1.1" }, "deprecated": false } ], "java": [ { "kind": "java", "default": true, "image": { "name": "java8action" }, "deprecated": false, "attached": { "attachmentName": "jarfile", "attachmentType": "application/java-archive" }, "sentinelledLogs": false, "requireMain": true } ] }, "blackboxes": [ { "name": "dockerskeleton" } ] }'
+
+        # this version is the day it is deployed and should be configured every time
+        - name:  "WHISK_VERSION_DATE"
+          value: "2017-01-01T00:00:00Z"
+        # the buildno should be the docker image tag to use
+        - name: "WHISK_VERSION_BUILDNO"
+          value: "latest"
+        - name: "WHISK_VERSION_NAME"
+          value: ""
+
+        # Java options
+        - name: "JAVA_OPTS"
+          value: "-Xmx2g"
+
+        # Kafka properties
+        - name: "KAFKA_HOSTS"
+          value: {{ include "kafka_url_without_port" . }}:{{ .Values.global.kafkaPort | default 9092 }}
+        - name: "KAFKA_HOST_PORT"
+          value: {{ .Values.global.kafkaPort | default 9092 | quote }}
+
+        # specific controller arguments
+        - name: "CONTROLLER_OPTS"
+          value: ""
+
+        # properties for DB connection
+        - name: "CONFIG_whisk_couchdb_username"
+          value: {{ template "couchdb_username" . }}
+        - name: "CONFIG_whisk_couchdb_password"
+          value: {{ template "couchdb_password" . }}
+        - name: "CONFIG_whisk_couchdb_port"
+          value: {{ include "couchdb_port" . | quote}}
+        - name: "CONFIG_whisk_couchdb_protocol"
+          value: "http"
+        - name: "CONFIG_whisk_couchdb_host"
+          value: {{ include "couchdb_url_without_port" . | quote }} 
+        - name: "CONFIG_whisk_couchdb_provider"
+          value: "CouchDB"
+        - name: "CONFIG_whisk_couchdb_databases_WhiskActivation"
+          value: {{ template "activations_table" . }}
+        - name: "CONFIG_whisk_couchdb_databases_WhiskEntity"
+          value: {{ template "actions_table" . }}
+        - name: "CONFIG_whisk_couchdb_databases_WhiskAuth"
+          value: {{ template "auths_table" . }}
+
+        - name: "LIMITS_ACTIONS_SEQUENCE_MAXLENGTH"
+          value: {{ .Values.controllerLimitsActionsSequenceMaxlength | default 1000 | quote }}
+        - name: "LIMITS_TRIGGERS_FIRES_PERMINUTE"
+          value: {{ .Values.controllerLimitsTriggersFiresPerminute | default 100 | quote }}
+        - name: "LIMITS_ACTIONS_INVOKES_PERMINUTE"
+          value: {{ .Values.controllerLimitsActionsInvokesPerminute | default 100 | quote }}
+        - name: "LIMITS_ACTIONS_INVOKES_CONCURRENTINSYSTEM"
+          value: {{ .Values.controllerLimitsActionsInvokesConcurrentinsystem | default 100 | quote }}
+        - name: "LIMITS_ACTIONS_INVOKES_CONCURRENT"
+          value: {{ .Values.controllerLimitsActionsInvokesConcurrent | default 100 | quote }}
+
+        - name: "CONTROLLER_INSTANCES"
+          value: {{ .Values.global.controllerReplicaCount | default 2 | quote }}
+        - name: "CONTROLLER_LOCALBOOKKEEPING"
+          value: {{ .Values.controllerLocalbookkeeping | default false | quote }}
+        - name: "AKKA_CLUSTER_SEED_NODES"
+          value: {{ .Values.controllerSeedNodes | default "[]" | quote }}
+        - name: "CONTROLLER_HA"
+          value: {{ .Values.controllerHA | default false | quote }}
+        - name: "CONFIG_akka_actor_provider"
+          value: "cluster"

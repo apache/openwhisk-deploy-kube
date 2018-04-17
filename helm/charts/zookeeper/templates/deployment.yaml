@@ -1,0 +1,39 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "zookeeper_deployment_name" . }}
+  namespace: {{ .Release.Namespace | default "openwhisk" | quote}}
+  labels:
+    name: {{ template "zookeeper_deployment_name" . }}
+spec:
+  replicas: {{ .Values.replicaCount | default 1}}
+  template:
+    metadata:
+      labels:
+        name: {{ template "zookeeper_deployment_name" . }}
+    spec:
+      restartPolicy: {{ .Values.restartPolicy | default "Always" | quote }}
+
+      {{- if .Values.global.affinity.enabled }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: nodeType
+                operator: In
+                values:
+                - {{ .Values.global.affinity.kafkaNodeLabel }}
+      {{- end }}
+
+      containers:
+      - name: {{ .Values.containerName | default "zookeeper" | quote }}
+        image: {{ .Values.image | default "zookeeper:3.4" | quote }}
+        imagePullPolicy: {{ .Values.imagePullPolicy | default "IfNotPresent" | quote }}
+        ports:
+        - name: zookeeper
+          containerPort: {{ template "zookeeper_port" . }}
+        - name: server
+          containerPort: {{ template "zookeeper_server_port" . }}
+        - name: leader-election
+          containerPort: {{ template "zookeeper_leader_election_port" . }}

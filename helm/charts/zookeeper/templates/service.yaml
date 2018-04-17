@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "zookeeper_service_name" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    name: {{ template "zookeeper_service_name" . }}
+spec:
+  selector:
+    name: {{ template "zookeeper_deployment_name" . }}
+  ports:
+    - port: {{ template "zookeeper_port" . }}
+      targetPort: {{ template "zookeeper_port" . }}
+      name: "zookeeper"
+    - port: {{ template "zookeeper_server_port" .}}
+      targetPort: {{ template "zookeeper_server_port" . }}
+      name: "server"
+    - port: {{ template "zookeeper_leader_election_port" . }}
+      targetPort: {{ template "zookeeper_leader_election_port" . }}
+      name: "leader-election"

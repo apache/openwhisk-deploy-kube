@@ -1,0 +1,52 @@
+{{- if .Values.apigatwayEnabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "apigateway_service_name" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    name: {{ template "apigateway_service_name" . }}
+spec:
+  selector:
+    name: {{ template "apigateway_deployment_name" . }}
+  ports:
+    - port: {{ template "apigateway_mgmt_port" . }}
+      targetPort: {{ template "apigateway_mgmt_port" . }}
+      name: mgmt
+    - port: {{ template "apigateway_api_port" . }}
+      targetPort: {{ template "apigateway_api_port" . }}
+      name: api
+
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "apigateway_deployment_name" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    name: {{ template "apigateway_deployment_name" . }}
+spec:
+  replicas: {{ .Values.apigatewayReplicaCount | default 1 }}
+  template:
+    metadata:
+      labels:
+        name: {{ template "apigateway_deployment_name" . }}
+    spec:
+      restartPolicy: Always
+
+      containers:
+      - name: apigateway
+        imagePullPolicy: {{ .Values.apigatewayImagePullPolicy | default "IfNotPresent" | quote }}
+        image: {{ .Values.apigatewayImage | default "openwhisk/apigateway" | quote }}
+        ports:
+        - name: mgmt
+          containerPort: {{ template "apigateway_mgmt_port" . }}
+        - name: api
+          containerPort: {{ template "apigateway_api_port" . }}
+        env:
+        - name: "REDIS_HOST"
+          value: {{ include "redis_url" . | quote }}
+        - name: "REDIS_PORT"
+          value: {{ .Values.global.redisPort | default "6379" | quote }}
+{{ end }}
