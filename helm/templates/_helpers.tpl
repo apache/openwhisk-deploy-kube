@@ -83,3 +83,12 @@
 {{- define "redis_url" -}}
 {{ .Values.global.redisServiceName | default "redis" }}.{{ .Release.Namespace }}
 {{- end -}}
+
+{{/* Runtimes manifest */}}
+{{- define "runtimes_manifest" -}}
+{{- if .Values.global.travis -}}
+{{ .Files.Get "runtimes-minimal-travis.json" | quote }}
+{{- else -}}
+{{ .Files.Get "runtimes.json" | quote }}
+{{- end -}}
+{{- end -}}
