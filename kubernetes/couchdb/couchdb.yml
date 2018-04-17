@@ -65,6 +65,11 @@ spec:
                   - couchdb
             topologyKey: "kubernetes.io/hostname"
 
+      volumes:
+      - name: couchdb-data
+        persistentVolumeClaim:
+          claimName: pv-couchdb-01
+
       containers:
       - name: couchdb
         imagePullPolicy: Always
@@ -73,6 +78,9 @@ spec:
         ports:
         - name: couchdb
           containerPort: 5984
+        volumeMounts:
+        - mountPath: /opt/couchdb/data
+          name: couchdb-data
         env:
         - name: "DB_PREFIX"
           valueFrom:

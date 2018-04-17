@@ -62,12 +62,13 @@ use to deploy OpenWhisk on Kubernetes for our Travis CI testing.
 
 Do one of the following:
 * For development and testing purposes, this repo includes a configuration
-  for deploying a [simple non-persistent CouchDB instance](kubernetes/couchdb)
+  for deploying a [non-replicated CouchDB instance](kubernetes/couchdb)
   within the Kubernetes cluster.
 * For a production level CouchDB instance, take a look at the main
   OpenWhisk [documentation for configuring CouchDB](https://github.com/apache/incubator-openwhisk/blob/master/tools/db/README.md).
   You will need to define the db.auth secret and db.config configmap as described in the [CouchDB README.md](kubernetes/couchdb/README.md)
-  to match your database deployment.
+  to match your database deployment and create a CouchDB service instance
+  that forwards connections to your external database.
 
 ## Deploy Remaining Components
 
@@ -101,10 +102,12 @@ Note: if you installed self-signed certificates when you configured Nginx, you w
 At some point there might be a need to cleanup the Kubernetes environment.
 For this, we want to delete all the OpenWhisk deployments, services, jobs
 and whatever else might be there. This is easily accomplished by
-deleting the `openwhisk` namespace:
+deleting the `openwhisk` namespace and all persistent volumes labeled with
+pv-owner=openwhisk:
 
 ```
 kubectl delete namespace openwhisk
+kubectl delete persistentvolume -lpv-owner=openwhisk
 ```
 
 # Issues

@@ -14,6 +14,10 @@ spec:
         name: kafka
     spec:
       restartPolicy: Always
+      volumes:
+      - name: kafka-data
+        persistentVolumeClaim:
+          claimName: pv-kafka-01
 
       affinity:
         # prefer to not run on an invoker node (only prefer because of single node clusters)
@@ -63,6 +67,9 @@ spec:
       - name: kafka
         imagePullPolicy: IfNotPresent
         image: wurstmeister/kafka:0.11.0.1
+        volumeMounts:
+        - mountPath: /kafka
+          name: kafka-data
         ports:
         - name: kafka
           containerPort: 9092
