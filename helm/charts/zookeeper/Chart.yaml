@@ -1,0 +1,9 @@
+apiVersion: v1
+description: A Helm chart to deploy zookeeper service for Kubernetes
+name: zookeeper
+version: 0.1.0
+keywords:
+  - zookeeper
+maintainers:
+  - name: Tom Xing
+    email: xingzhou@cn.ibm.com

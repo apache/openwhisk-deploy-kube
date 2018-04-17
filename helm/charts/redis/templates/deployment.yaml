@@ -1,0 +1,23 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "redis_deployment_name" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    name: {{ template "redis_deployment_name" . }}
+spec:
+  replicas: {{ .Values.replicaCount | default 1 }}
+  template:
+    metadata:
+      labels:
+        name: {{ template "redis_deployment_name" . }}
+    spec:
+      restartPolicy: Always
+
+      containers:
+      - name: redis
+        imagePullPolicy: {{ .Values.imagePullPolicy | default "IfNotPresent" | quote }}
+        image: {{ .Values.image | default "redis:3.2" | quote }}
+        ports:
+        - name: redis-port
+          containerPort: {{ template "redis_port" . }}

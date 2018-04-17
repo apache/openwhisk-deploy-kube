@@ -1,0 +1,52 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "nginx_deployment_name" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    name: nginx
+spec:
+  replicas: {{ .Values.replicaCount | default 1 }}
+  template:
+    metadata:
+      labels:
+        name: {{ template "nginx_deployment_name" . }}
+      annotations:
+        pod.beta.kubernetes.io/init-containers: '[
+            {
+                "name": "wait-for-controller",
+                "image": "busybox",
+                "imagePullPolicy": "IfNotPresent",
+                "command": ["sh", "-c", "until nslookup {{ template "controller_url_without_port" . }}; do echo waiting for {{ template "controller_url_without_port" . }}; sleep 1; done;"]
+            }
+        ]'
+    spec:
+      restartPolicy: Always
+      volumes:
+      - name: nginx-certs
+        secret:
+          secretName: {{ template "nginx_secret_name" . }}
+      - name: nginx-conf
+        configMap:
+          name: {{ template "nginx_configmap_name" . }}
+      - name: logs
+        emptyDir: {}
+      containers:
+      - name: {{ template "nginx_deployment_name" . }}
+        imagePullPolicy: {{ .Values.imagePullPolicy | default "IfNotPresent" | quote }}
+        image: {{ .Values.image | default "nginx:1.11" | quote }}
+        ports:
+        - name: http
+          containerPort: {{ template "nginx_http_port" . }}
+        - name: http-api
+          containerPort: {{ template "nginx_https_port" . }}
+        - name: https-admin
+          containerPort: {{ template "nginx_https_admin_port" . }}
+        volumeMounts:
+        - name: nginx-conf
+          mountPath: "/etc/nginx/nginx.conf"
+          subPath: "nginx.conf"
+        - name: nginx-certs
+          mountPath: "/etc/nginx/certs"
+        - name: logs
+          mountPath: "/logs"

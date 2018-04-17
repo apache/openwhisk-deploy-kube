@@ -1,0 +1,151 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "invoker_statefulset_name" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    name: {{ template "invoker_statefulset_name" . }} 
+spec:
+  replicas: {{ .Values.invokerReplicasetCount | default 2 }}
+  #serviceName: {{ template "invoker_statefulset_name" . }}
+  template:
+    metadata:
+      labels:
+        name: {{ template "invoker_statefulset_name" . }}
+    spec:
+      restartPolicy: Always
+
+      volumes:
+      - name: cgroup
+        hostPath:
+          path: "/sys/fs/cgroup"
+      - name: runc
+        hostPath:
+          path: "/run/runc"
+      - name: dockerrootdir
+        hostPath:
+          path: "/var/lib/docker/containers"
+      - name: dockersock
+        hostPath:
+          path: "/var/run/docker.sock"
+      - name: apparmor
+        hostPath:
+          path: "/usr/lib/x86_64-linux-gnu/libapparmor.so.1"
+
+      {{- if .Values.global.affinity.enabled }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: nodeType
+                operator: In
+                values:
+                - {{ .Values.global.affinity.invokerNodeLabel }}
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: name
+                  operator: In
+                  values:
+                  - {{ template "invoker_statefulset_name" . }}
+              topologyKey: "kubernetes.io/hostname"
+      {{- end }}
+     
+      initContainers: 
+      - name: "wait-for-kafka"
+        image: "busybox"
+        imagePullPolicy: "IfNotPresent"
+        command: ["sh", "-c", "result=1; until [ $result -eq 0 ]; do nslookup {{ .Values.global.kafkaServiceName}}.{{ .Release.Namespace }}; result=$?; echo waiting for {{ .Values.global.kafkaServiceName}}.{{ .Release.Namespace }}; sleep 1; done;"]
+
+      containers:
+      - name: {{ template "invoker_statefulset_name" . }}
+        imagePullPolicy: {{ .Values.invokerImagePullPolicy | default "IfNotPresent" | quote }}
+        image: {{ .Values.invokerImage | default "openwhisk/invoker" | quote }}
+        command: [ "/bin/bash", "-c", "COMPONENT_NAME=$(hostname | cut -d'-' -f2) /init.sh"]
+        resources:
+          requests:
+            memory: "100Mi"
+            cpu: "0.1"
+        env:
+          - name: "PORT"
+            value: "8080"
+          - name: "WHISK_API_HOST_NAME"
+            value: "nginx.openwhisk"
+          - name: "INVOKER_CONTAINER_NETWORK"
+            value: "bridge"
+          - name: "INVOKER_USE_RUNC"
+            value: "false"
+
+          # Properties for invoker image
+          - name: "DOCKER_IMAGE_PREFIX"
+            value: "openwhisk"
+          - name: "DOCKER_IMAGE_TAG"
+            value: "latest"
+          - name: "DOCKER_REGISTRY"
+            value: ""
+
+          - name: "INVOKER_NAME"
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+
+          # Java options
+          - name: "JAVA_OPTS"
+            value: "-Xmx2g"
+
+          # Invoker options
+          - name: "INVOKER_OPTS"
+            value: {{ .Values.invokerOptions | quote }}
+
+          # This property can change since it is generated via Ansible GroupVars
+          - name: "RUNTIMES_MANIFEST"
+            value: '{ "defaultImagePrefix": "openwhisk", "defaultImageTag": "latest", "runtimes": { "nodejs": [ { "kind": "nodejs", "image": { "name": "nodejsaction" }, "deprecated": true }, { "kind": "nodejs:6", "default": true, "image": { "name": "nodejs6action" }, "deprecated": false } ], "python": [ { "kind": "python", "image": { "name": "python2action" }, "deprecated": false }, { "kind": "python:2", "default": true, "image": { "name": "python2action" }, "deprecated": false }, { "kind": "python:3", "image": { "name": "python3action" }, "deprecated": false } ], "swift": [ { "kind": "swift", "image": { "name": "swiftaction" }, "deprecated": true }, { "kind": "swift:3", "image": { "name": "swift3action" }, "deprecated": false }, { "kind": "swift:3.1.1", "default": true, "image": { "name": "action-swift-v3.1.1" }, "deprecated": false } ], "java": [ { "kind": "java", "default": true, "image": { "name": "java8action" }, "deprecated": false, "attached": { "attachmentName": "jarfile", "attachmentType": "application/java-archive" }, "sentinelledLogs": false, "requireMain": true } ] }, "blackboxes": [ { "name": "dockerskeleton" } ] }'
+
+          # Default to empty logs dir. This is because logs should go to stdout
+          - name: "WHISK_LOGS_DIR"
+            value: ""
+
+          # this version is the day it is deployed,
+          - name:  "WHISK_VERSION_DATE"
+            value: "2017-01-01T00:00:00Z"
+
+          # properties for DB connection
+          - name: "CONFIG_whisk_couchdb_username"
+            value: {{ template "couchdb_username" . }}
+          - name: "CONFIG_whisk_couchdb_password"
+            value: {{ template "couchdb_password" . }} 
+          - name: "CONFIG_whisk_couchdb_port"
+            value: {{ include "couchdb_port" . | quote }}
+          - name:  "CONFIG_whisk_couchdb_protocol"
+            value: "http"
+          - name: "CONFIG_whisk_couchdb_host"
+            value: {{ include "couchdb_url_without_port" . | quote }}
+          - name: "CONFIG_whisk_couchdb_provider"
+            value: "CouchDB"
+          - name: "CONFIG_whisk_couchdb_databases_WhiskActivation"
+            value: {{ template "activations_table" . }}
+          - name: "CONFIG_whisk_couchdb_databases_WhiskEntity"
+            value: {{ template "actions_table" . }}
+          - name: "CONFIG_whisk_couchdb_databases_WhiskAuth"
+            value: {{ template "auths_table" . }}
+          - name: "KAFKA_HOSTS"
+            value: "{{ .Values.global.kafkaServiceName }}.{{ .Release.Namespace }}:{{ .Values.global.kafkaPort | default 9092 }}"
+          - name: "ZOOKEEPER_HOSTS"
+            value: "{{ .Values.global.zookeeperServiceName }}.{{ .Release.Namespace }}:{{ .Values.global.zookeeperPort | default 2181 }}"
+
+        ports:
+        - name: invoker
+          containerPort: 8080
+        volumeMounts:
+        - name: cgroup
+          mountPath: "/sys/fs/cgroup"
+        - name: runc
+          mountPath: "/run/runc"
+        - name: dockersock
+          mountPath: "/var/run/docker.sock"
+        - name: dockerrootdir
+          mountPath: "/containers"
+        - name: apparmor
+          mountPath: "/usr/lib/x86_64-linux-gnu/libapparmor.so.1"

@@ -1,0 +1,71 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "couchdb_deployment_name" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    name: {{ template "couchdb_deployment_name" . }}
+spec:
+  replicas: {{ .Values.replicaCount | default 1 }}
+  template:
+    metadata:
+      labels:
+        name: {{ template "couchdb_deployment_name" . }}
+    spec:
+      restartPolicy: Always
+
+      {{- if .Values.global.affinity.enabled }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: nodeType
+                operator: In
+                values:
+                - {{ .Values.global.affinity.kafkaNodeLabel }}
+      {{- end }}
+
+      containers:
+      - name: {{ template "couchdb_deployment_name" . }}
+        imagePullPolicy: {{ .Values.imagePullPolicy | default "IfNotPresent" | quote }}
+        image: {{ .Values.image | default "openwhisk/kube-couchdb" | quote }}
+        command: ["/init.sh"]
+        ports:
+        - name: couchdb
+          containerPort: {{ template "couchdb_port" .}}
+        env:
+        - name: "DB_HOST"
+          value: "127.0.0.1"
+        - name: "DB_PREFIX"
+          value: {{ .Values.dbPrefix | default "test_" | quote }}
+        - name: "COUCHDB_USER"
+          value: {{ .Values.global.couchdbUserName | default "whisk_admin" | quote }}
+        - name: "COUCHDB_PASSWORD"
+          value: {{ .Values.global.couchdbPassword | default "some_passw0rd" | quote }}
+        - name: "DB_PORT"
+          value: {{ include "couchdb_port" . | quote }}
+        - name: "NODENAME"
+          value: "couchdb0"
+        readinessProbe:
+          httpGet:
+            port: {{ template "couchdb_port" . }}
+            # Tempting to say "/$(DB_PREFIX)_activations", but probe runs
+            # externally, therefore can't access the container environment...
+            path: "/test_activations"
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          failureThreshold: 10
+          timeoutSeconds: 1
+        {{- if .Values.persistence.enabled }}
+        volumeMounts:
+          - name: database-storage
+            mountPath: /usr/local/var/lib/couchdb
+        {{- end }}
+      {{- if .Values.persistence.enabled }}
+      volumes:
+        - name: database-storage
+          persistentVolumeClaim:
+            claimName: couchdb-pvc
+      {{- end }}
+

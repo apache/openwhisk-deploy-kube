@@ -1,0 +1,10 @@
+apiVersion: v1
+description: A Helm chart to deploy kafka service for Kubernetes
+name: kafka
+version: 0.1.0
+keywords:
+  - zookeeper
+  - kafka
+maintainers:
+  - name: Tom Xing
+    email: xingzhou@cn.ibm.com

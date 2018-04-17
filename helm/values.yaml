@@ -1,0 +1,113 @@
+# Default values for OpenWhisk.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# zookeeper configurations
+zookeeper:
+  deploymentName: "zookeeper"
+  replicaCount: 1
+  restartPolicy: "Always"
+  containerName: "zookeeper"
+  image: "zookeeper:3.4"
+  imagePullPolicy: "IfNotPresent"
+  serverPort: 2888
+  leaderElectionPort: 3888
+
+# kafka configurations
+kafka:
+  statefulsetName: "kafka"
+  replicaCount: 1
+  image: "wurstmeister/kafka:0.11.0.1"
+  imagePullPolicy: "IfNotPresent"
+
+# Couchdb configurations
+couchdb:
+  deploymentName: "couchdb"
+  replicaCount: 1  
+  imagePullPolicy: "IfNotPresent"
+  image: "openwhisk/kube-couchdb"
+  dbPrefix: "test_"
+  persistence:
+    enabled: false
+    pvcName: couchdb-pvc
+    size: 8Gi
+    storageClass: CouchDBSC 
+    accessMode: ReadWriteOnce
+    # nfs_path: /home/nfs
+    # nfs_server: 172.20.5.175
+
+
+# Nginx configurations
+nginx:
+  secretName: "nginx"
+  configmapName: "nginx"
+  deploymentName: "nginx"
+  replicaCount: 1
+  image: "nginx:1.11"
+  imagePullPolicy: "IfNotPresent"
+  httpPort: 80
+  httpNodePort: 30000
+  httpsPort: 443
+  httpsNodePort: 30001
+  httpsAdminPort: 8443
+  httpsAdminNodePort: 30002
+  serviceName: "nginx"
+
+
+# Redis configurations
+redis:
+  deploymentName: "redis"
+  replicaCount: 1
+  image: redis:3.2
+  imagePullPolicy: "IfNotPresent"
+
+# Controller configurations
+controllerImagePullPolicy: "IfNotPresent"
+controllerImage: "openwhisk/controller" 
+controllerLimitsActionsInvokesConcurrentinsystem: 100
+controllerLimitsTriggersFiresPerminute: 100
+controllerLimitsActionsSequenceMaxlength: 1000
+controllerLimitsActionsInvokesConcurrent: 100
+controllerLimitsActionsInvokesConcurrentinsystem: 100
+controllerLocalbookkeeping: true
+controllerSeedNodes: "[]"
+controllerHA: false
+
+# Invoker configurations
+invokerStatefulsetName: "invoker"
+invokerReplicasetCount: 1
+invokerImagePullPolicy: "IfNotPresent"
+invokerImage: "openwhisk/invoker"
+invokerOptions: ""
+
+# API Gateway configurations
+apigatewayEnabled: false
+apigatewayReplicaCount: 1
+
+activationsTable: "test_activations"
+actionsTable: "test_whisks"
+authsTable: "test_subjects"
+
+# Global configurations
+global:
+  zookeeperServiceName: "zookeeper"
+  kafkaServiceName: "kafka"
+  zookeeperPort: 2181
+  kafkaPort: 9092
+  couchdbServiceName: "couchdb"
+  couchdbInstances: 1
+  couchdbPort: 5984
+  controllerStatefulSetName: "controller"
+  controllerServiceName: "controller"
+  controllerPort: 8080
+  controllerReplicaCount: 1
+  couchdbUserName: "whisk_admin"
+  couchdbPassword: "some_passw0rd"
+  redisServiceName: "redis"
+  redisServicePort: 6379
+  # Resolve the pod/node affinity for invoker, controller and other components.
+  affinity:
+    enabled: false
+    invokerNodeLabel: invoker
+    controllerNodeLabel: controller
+    kafkaNodeLabel: kafka

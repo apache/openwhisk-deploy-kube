@@ -1,0 +1,102 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "nginx_configmap_name" . }}
+  namespace: {{ .Release.Namespace | quote }}
+data:
+  nginx.conf: |
+    events {
+      worker_connections  4096;
+    }
+
+    http {
+      client_max_body_size 50M;
+
+      rewrite_log on;
+      log_format combined-upstream '$remote_addr - $remote_user [$time_local] '
+          '$request $status $body_bytes_sent '
+          '$http_referer $http_user_agent $upstream_addr';
+      access_log /logs/nginx_access.log combined-upstream;
+
+      server {
+          listen 80;
+          listen 443 default ssl;
+
+          # match namespace, note while OpenWhisk allows a richer character set for a
+          # namespace, not all those characters are permitted in the (sub)domain name;
+          # if namespace does not match, no vanity URL rewriting takes place.
+          server_name ~^(?<namespace>[0-9a-zA-Z-]+)\.localhost$;
+
+          ssl_session_cache    shared:SSL:1m;
+          ssl_session_timeout  10m;
+          ssl_certificate      /etc/nginx/certs/tls.crt;
+          ssl_certificate_key  /etc/nginx/certs/tls.key;
+          ssl_verify_client off;
+          ssl_protocols        TLSv1 TLSv1.1 TLSv1.2;
+          ssl_ciphers RC4:HIGH:!aNULL:!MD5;
+          ssl_prefer_server_ciphers on;
+          proxy_ssl_session_reuse on;
+          proxy_ssl_verify off;
+
+          # Hack to convince nginx to dynamically resolve the dns entry.
+          resolver kube-dns.kube-system;
+          set $controllers controller.openwhisk.svc.cluster.local;
+
+          # proxy to the web action path
+          location / {
+              if ($namespace) {
+                rewrite    /(.*) /api/v1/web/${namespace}/$1 break;
+              }
+
+              proxy_pass http://$controllers:8080;
+              proxy_read_timeout 70s; # 60+10 additional seconds to allow controller to terminate request
+          }
+
+          # proxy to 'public/html' web action by convention
+          location = / {
+              if ($namespace) {
+                rewrite    ^ /api/v1/web/${namespace}/public/index.html break;
+              }
+
+              proxy_pass http://$controllers:8080;
+              proxy_read_timeout 70s; # 60+10 additional seconds to allow controller to terminate request
+          }
+
+                  location /blackbox.tar.gz {
+            return 301 https://github.com/apache/incubator-openwhisk-runtime-docker/releases/download/sdk%400.1.0/blackbox-0.1.0.tar.gz;
+        }
+        # leaving this for a while for clients out there to update to the new endpoint
+        location /blackbox-0.1.0.tar.gz {
+            return 301 /blackbox.tar.gz;
+        }
+
+        location /OpenWhiskIOSStarterApp.zip {
+            return 301 https://github.com/openwhisk/openwhisk-client-swift/releases/download/0.2.3/starterapp-0.2.3.zip;
+        }
+
+        # redirect requests for specific binaries to the matching one from the latest openwhisk-cli release.
+        location /cli/go/download/linux/amd64 {
+            return 301 https://github.com/apache/incubator-openwhisk-cli/releases/download/latest/OpenWhisk_CLI-latest-linux-amd64.tgz;
+        }
+        location /cli/go/download/linux/386 {
+            return 301 https://github.com/apache/incubator-openwhisk-cli/releases/download/latest/OpenWhisk_CLI-latest-linux-386.tgz;
+        }
+        location /cli/go/download/mac/amd64 {
+            return 301 https://github.com/apache/incubator-openwhisk-cli/releases/download/latest/OpenWhisk_CLI-latest-mac-amd64.zip;
+        }
+        location /cli/go/download/mac/386 {
+            return 301 https://github.com/apache/incubator-openwhisk-cli/releases/download/latest/OpenWhisk_CLI-latest-mac-386.zip;
+        }
+        location /cli/go/download/windows/amd64 {
+            return 301 https://github.com/apache/incubator-openwhisk-cli/releases/download/latest/OpenWhisk_CLI-latest-windows-amd64.zip;
+        }
+        location /cli/go/download/windows/386 {
+            return 301 https://github.com/apache/incubator-openwhisk-cli/releases/download/latest/OpenWhisk_CLI-latest-windows-386.zip;
+        }
+
+        # redirect top-level cli downloads to the latest openwhisk-cli release.
+        location /cli/go/download {
+            return 301 https://github.com/apache/incubator-openwhisk-cli/releases/latest;
+        }
+      }
+    }
