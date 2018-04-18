@@ -22,7 +22,7 @@ asdf plugin-add minikube
 ```
 
 ### Install asdf plugin minikube and kubectl
-For example this will setup versions 1.10.1 and 0.26.0, check the versions that are supported in the Travis matric config [../.travis.yml](../.travis.yml#L7)
+For example this will setup versions 0.26.0 and 1.10.1, check the versions that are supported in the Travis matric config [../.travis.yml](../.travis.yml#L7)
 ```
 asdf install minikube 0.26.0
 asdf global minikube 0.26.0
