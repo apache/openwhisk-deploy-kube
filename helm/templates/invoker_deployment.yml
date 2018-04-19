@@ -53,7 +53,18 @@ spec:
               topologyKey: "kubernetes.io/hostname"
       {{- end }}
      
-      initContainers: 
+      initContainers:
+      - name: docker-pull-runtimes
+        imagePullPolicy: "IfNotPresent"
+        image: openwhisk/kube-docker-pull
+        volumeMounts:
+        - name: dockersock
+          mountPath: "/var/run/docker.sock"
+        env:
+          # action runtimes
+          - name: "RUNTIMES_MANIFEST"
+            value: {{ template "runtimes_manifest" . }}
+
       - name: "wait-for-kafka"
         image: "busybox"
         imagePullPolicy: "IfNotPresent"
@@ -99,9 +110,9 @@ spec:
           - name: "INVOKER_OPTS"
             value: {{ .Values.invokerOptions | quote }}
 
-          # This property can change since it is generated via Ansible GroupVars
+          # action runtimes
           - name: "RUNTIMES_MANIFEST"
-            value: '{ "defaultImagePrefix": "openwhisk", "defaultImageTag": "latest", "runtimes": { "nodejs": [ { "kind": "nodejs", "image": { "name": "nodejsaction" }, "deprecated": true }, { "kind": "nodejs:6", "default": true, "image": { "name": "nodejs6action" }, "deprecated": false } ], "python": [ { "kind": "python", "image": { "name": "python2action" }, "deprecated": false }, { "kind": "python:2", "default": true, "image": { "name": "python2action" }, "deprecated": false }, { "kind": "python:3", "image": { "name": "python3action" }, "deprecated": false } ], "swift": [ { "kind": "swift", "image": { "name": "swiftaction" }, "deprecated": true }, { "kind": "swift:3", "image": { "name": "swift3action" }, "deprecated": false }, { "kind": "swift:3.1.1", "default": true, "image": { "name": "action-swift-v3.1.1" }, "deprecated": false } ], "java": [ { "kind": "java", "default": true, "image": { "name": "java8action" }, "deprecated": false, "attached": { "attachmentName": "jarfile", "attachmentType": "application/java-archive" }, "sentinelledLogs": false, "requireMain": true } ] }, "blackboxes": [ { "name": "dockerskeleton" } ] }'
+            value: {{ template "runtimes_manifest" . }}
 
           # Default to empty logs dir. This is because logs should go to stdout
           - name: "WHISK_LOGS_DIR"

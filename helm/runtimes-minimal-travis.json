@@ -1,0 +1,28 @@
+{
+    "runtimes": {
+        "nodejs": [
+            {
+                "kind": "nodejs:6",
+                "default": true,
+                "image": {
+                    "name": "nodejs6action"
+                },
+                "deprecated": false
+            }
+        ],
+        "python": [
+            {
+                "kind": "python:3",
+                "image": {
+                    "name": "python3action"
+                },
+                "deprecated": false
+            }
+        ]
+    },
+    "blackboxes": [
+        {
+            "name": "dockerskeleton"
+        }
+    ]
+}
