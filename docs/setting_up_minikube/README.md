@@ -34,7 +34,7 @@ asdf global kubectl 1.10.1
 You will want at least 4GB of memory and 2 CPUs for Minikube to run OpenWhisk.
 If you have a larger machine, you may want to provision more (especially more memory).
 
-Configure minikube and persiste config:
+Configure minikube and persist config:
 ```
 minikube config set kubernetes-version v1.10.1
 minikube config set cpus 2
