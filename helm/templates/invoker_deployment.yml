@@ -75,7 +75,7 @@ spec:
             value: "nginx.openwhisk"
           - name: "INVOKER_CONTAINER_NETWORK"
             value: "bridge"
-          - name: "INVOKER_USE_RUNC"
+          - name: "CONFIG_whisk_docker_containerFactory_useRunc"
             value: "false"
 
           # Properties for invoker image

@@ -106,7 +106,7 @@ spec:
             value: "TRUE"
 
           # Docker-related options
-          - name: "INVOKER_USE_RUNC"
+          - name: "CONFIG_whisk_docker_containerFactory_useRunc"
             value: "FALSE"
           - name: "DOCKER_IMAGE_PREFIX"
             valueFrom:
