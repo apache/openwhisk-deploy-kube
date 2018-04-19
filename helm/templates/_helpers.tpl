@@ -18,6 +18,11 @@
 {{ .Values.activationsTable | default "test_activations" | quote }}
 {{- end -}}
 
+{{/* Set activations table */}}
+{{- define "activations_table_unquoted" -}}
+{{ .Values.activationsTable | default "test_activations" }}
+{{- end -}}
+
 {{/* Set actions table */}}
 {{- define "actions_table" -}}
 {{ .Values.actionsTable | default "test_whisks" | quote }}
@@ -28,9 +33,9 @@
 {{ .Values.authTable | default "test_subjects" | quote }}
 {{- end -}}
 
-{{/* Set invoker statefulset name */}}
-{{- define "invoker_statefulset_name" -}}
-{{ .Values.invokerStatefulsetName | default "invoker" | quote }}
+{{/* Set invoker "deployment" name */}}
+{{- define "invoker_deployment_name" -}}
+{{ .Values.invokerDeploymentName | default "invoker" | quote }}
 {{- end -}}
 
 {{/* Generate kafka url without port */}}
@@ -79,11 +84,6 @@
 {{ .Values.deploymentName | default "apigateway" | quote }}
 {{- end -}}
 
-{{/* Generate redis service url */}}
-{{- define "redis_url" -}}
-{{ .Values.global.redisServiceName | default "redis" }}.{{ .Release.Namespace }}
-{{- end -}}
-
 {{/* Runtimes manifest */}}
 {{- define "runtimes_manifest" -}}
 {{- if .Values.global.travis -}}
@@ -91,4 +91,26 @@
 {{- else -}}
 {{ .Files.Get "runtimes.json" | quote }}
 {{- end -}}
+{{- end -}}
+
+{{/* Environment variables required for accessing CouchDB */}}
+{{- define "whisk.dbEnvVars" -}}
+- name: "CONFIG_whisk_couchdb_username"
+  value: {{ template "couchdb_username" . }}
+- name: "CONFIG_whisk_couchdb_password"
+  value: {{ template "couchdb_password" . }}
+- name: "CONFIG_whisk_couchdb_port"
+  value: {{ include "couchdb_port" . | quote}}
+- name: "CONFIG_whisk_couchdb_protocol"
+  value: "http"
+- name: "CONFIG_whisk_couchdb_host"
+  value: {{ include "couchdb_url_without_port" . | quote }}
+- name: "CONFIG_whisk_couchdb_provider"
+  value: "CouchDB"
+- name: "CONFIG_whisk_couchdb_databases_WhiskActivation"
+  value: {{ template "activations_table" . }}
+- name: "CONFIG_whisk_couchdb_databases_WhiskEntity"
+  value: {{ template "actions_table" . }}
+- name: "CONFIG_whisk_couchdb_databases_WhiskAuth"
+  value: {{ template "auths_table" . }}
 {{- end -}}

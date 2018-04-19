@@ -16,14 +16,8 @@ spec:
 
       {{- if .Values.global.affinity.enabled }}
       affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: nodeType
-                operator: In
-                values:
-                - {{ .Values.global.affinity.kafkaNodeLabel }}
+{{ include "affinity.controlPlane" . | indent 8 }}
+{{ include "affinity.selfAntiAffinity" ( include "couchdb_deployment_name" . ) | indent 8 }}
       {{- end }}
 
       containers:
@@ -50,9 +44,7 @@ spec:
         readinessProbe:
           httpGet:
             port: {{ template "couchdb_port" . }}
-            # Tempting to say "/$(DB_PREFIX)_activations", but probe runs
-            # externally, therefore can't access the container environment...
-            path: "/test_activations"
+            path: /{{ template "activations_table_unquoted" . }}
           initialDelaySeconds: 60
           periodSeconds: 10
           failureThreshold: 10

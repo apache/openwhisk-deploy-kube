@@ -11,17 +11,15 @@ spec:
     metadata:
       labels:
         name: {{ template "nginx_deployment_name" . }}
-      annotations:
-        pod.beta.kubernetes.io/init-containers: '[
-            {
-                "name": "wait-for-controller",
-                "image": "busybox",
-                "imagePullPolicy": "IfNotPresent",
-                "command": ["sh", "-c", "until nslookup {{ template "controller_url_without_port" . }}; do echo waiting for {{ template "controller_url_without_port" . }}; sleep 1; done;"]
-            }
-        ]'
     spec:
       restartPolicy: Always
+
+      {{- if .Values.global.affinity.enabled }}
+      affinity:
+{{ include "affinity.controlPlane" . | indent 8 }}
+{{ include "affinity.selfAntiAffinity" ( include "nginx_deployment_name" . ) | indent 8 }}
+      {{- end }}
+
       volumes:
       - name: nginx-certs
         secret:
@@ -31,6 +29,7 @@ spec:
           name: {{ template "nginx_configmap_name" . }}
       - name: logs
         emptyDir: {}
+
       containers:
       - name: {{ template "nginx_deployment_name" . }}
         imagePullPolicy: {{ .Values.imagePullPolicy | default "IfNotPresent" | quote }}

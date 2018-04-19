@@ -9,7 +9,6 @@ metadata:
 spec:
   selector:
     name: {{ template "controller_statefulset_name" . }}
-  clusterIP: None
   ports:
     - port: {{ template "controller_port" . }}
       targetPort: {{ template "controller_port" . }}
@@ -34,30 +33,14 @@ spec:
 
       {{- if .Values.global.affinity.enabled }}
       affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: nodeType
-                operator: In
-                values:
-                - {{ .Values.global.affinity.controllerNodeLabel }}
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-          - labelSelector:
-              matchExpressions:
-              - key: name
-                operator: In
-                values:
-                - {{ template "controller_statefulset_name" . }}
-            topologyKey: "kubernetes.io/hostname"
+{{ include "affinity.controlPlane" . | indent 8 }}
+{{ include "affinity.selfAntiAffinity" ( include "controller_statefulset_name" . ) | indent 8 }}
       {{- end }}
 
       initContainers:
-      - name: "wait-for-kafka"
-        image: "busybox"
-        imagePullPolicy: "IfNotPresent"
-        command: ["sh", "-c", "result=1; until [ $result -eq 0 ]; do nslookup {{ .Values.global.kafkaServiceName}}.{{ .Release.Namespace }}; result=$?; echo waiting for {{ .Values.global.kafkaServiceName}}.{{ .Release.Namespace }}; sleep 1; done;"]
+      # The controller must wait for kafka and couchdb to be ready before it starts
+{{ include "readiness.waitForKafka" . | indent 6 }}
+{{ include "readiness.waitForCouchDB" . | indent 6 }}
 
       containers:
       - name: {{ template "controller_statefulset_name" . }}
@@ -111,24 +94,7 @@ spec:
           value: ""
 
         # properties for DB connection
-        - name: "CONFIG_whisk_couchdb_username"
-          value: {{ template "couchdb_username" . }}
-        - name: "CONFIG_whisk_couchdb_password"
-          value: {{ template "couchdb_password" . }}
-        - name: "CONFIG_whisk_couchdb_port"
-          value: {{ include "couchdb_port" . | quote}}
-        - name: "CONFIG_whisk_couchdb_protocol"
-          value: "http"
-        - name: "CONFIG_whisk_couchdb_host"
-          value: {{ include "couchdb_url_without_port" . | quote }} 
-        - name: "CONFIG_whisk_couchdb_provider"
-          value: "CouchDB"
-        - name: "CONFIG_whisk_couchdb_databases_WhiskActivation"
-          value: {{ template "activations_table" . }}
-        - name: "CONFIG_whisk_couchdb_databases_WhiskEntity"
-          value: {{ template "actions_table" . }}
-        - name: "CONFIG_whisk_couchdb_databases_WhiskAuth"
-          value: {{ template "auths_table" . }}
+{{ include "whisk.dbEnvVars" . | indent 8 }}
 
         - name: "LIMITS_ACTIONS_SEQUENCE_MAXLENGTH"
           value: {{ .Values.controllerLimitsActionsSequenceMaxlength | default 1000 | quote }}

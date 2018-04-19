@@ -7,6 +7,5 @@ spec:
   ports:
   - name: broker
     port: {{ template "kafka_port" . }} 
-  clusterIP: None
   selector:
     app: {{ template "kafka_statefulset_name" . }}
