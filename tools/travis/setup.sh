@@ -24,7 +24,9 @@ mkdir $HOME/.kube || true
 touch $HOME/.kube/config
 
 export KUBECONFIG=$HOME/.kube/config
-sudo -E /usr/local/bin/minikube start --vm-driver=none --kubernetes-version=$TRAVIS_KUBE_VERSION
+# --vm-driver=none, use host docker (avoid docker-in-docker)
+# --bootstrapper=localkube, works around https://github.com/kubernetes/minikube/issues/2704
+sudo -E /usr/local/bin/minikube start --vm-driver=none --bootstrapper=localkube --kubernetes-version=$TRAVIS_KUBE_VERSION
 
 # Wait until we have a ready node in minikube
 TIMEOUT=0
