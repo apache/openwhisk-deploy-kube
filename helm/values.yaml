@@ -33,8 +33,6 @@ couchdb:
     size: 8Gi
     storageClass: CouchDBSC 
     accessMode: ReadWriteOnce
-    # nfs_path: /home/nfs
-    # nfs_server: 172.20.5.175
 
 
 # Nginx configurations
@@ -46,20 +44,12 @@ nginx:
   image: "nginx:1.11"
   imagePullPolicy: "IfNotPresent"
   httpPort: 80
-  httpNodePort: 30000
+  httpNodePort: 31000
   httpsPort: 443
-  httpsNodePort: 30001
+  httpsNodePort: 31001
   httpsAdminPort: 8443
-  httpsAdminNodePort: 30002
+  httpsAdminNodePort: 31002
   serviceName: "nginx"
-
-
-# Redis configurations
-redis:
-  deploymentName: "redis"
-  replicaCount: 1
-  image: redis:3.2
-  imagePullPolicy: "IfNotPresent"
 
 # Controller configurations
 controllerImagePullPolicy: "IfNotPresent"
@@ -81,7 +71,6 @@ invokerImage: "openwhisk/invoker"
 invokerOptions: ""
 
 # API Gateway configurations
-apigatewayEnabled: false
 apigatewayReplicaCount: 1
 
 activationsTable: "test_activations"
@@ -107,7 +96,6 @@ global:
   redisServicePort: 6379
   # Resolve the pod/node affinity for invoker, controller and other components.
   affinity:
-    enabled: false
+    enabled: true
     invokerNodeLabel: invoker
-    controllerNodeLabel: controller
-    kafkaNodeLabel: kafka
+    controlPlaneNodeLabel: control-plane

@@ -16,14 +16,8 @@ spec:
 
       {{- if .Values.global.affinity.enabled }}
       affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: nodeType
-                operator: In
-                values:
-                - {{ .Values.global.affinity.kafkaNodeLabel }}
+{{ include "affinity.controlPlane" . | indent 8 }}
+{{ include "affinity.selfAntiAffinity" ( include "zookeeper_deployment_name" . ) | indent 8 }}
       {{- end }}
 
       containers:

@@ -1,4 +1,3 @@
-{{- if .Values.apigatwayEnabled }}
 ---
 apiVersion: v1
 kind: Service
@@ -35,18 +34,27 @@ spec:
     spec:
       restartPolicy: Always
 
+      {{- if .Values.global.affinity.enabled }}
+      affinity:
+{{ include "affinity.controlPlane" . | indent 8 }}
+{{ include "affinity.selfAntiAffinity" ( include "apigateway_deployment_name" . ) | indent 8 }}
+      {{- end }}
+
       containers:
-      - name: apigateway
-        imagePullPolicy: {{ .Values.apigatewayImagePullPolicy | default "IfNotPresent" | quote }}
-        image: {{ .Values.apigatewayImage | default "openwhisk/apigateway" | quote }}
-        ports:
-        - name: mgmt
-          containerPort: {{ template "apigateway_mgmt_port" . }}
-        - name: api
-          containerPort: {{ template "apigateway_api_port" . }}
-        env:
-        - name: "REDIS_HOST"
-          value: {{ include "redis_url" . | quote }}
-        - name: "REDIS_PORT"
-          value: {{ .Values.global.redisPort | default "6379" | quote }}
-{{ end }}
+        - name: redis
+          imagePullPolicy: {{ .Values.apigatewayImagePullPolicy | default "IfNotPresent" | quote }}
+          image: redis:3.2
+
+        - name: apigateway
+          imagePullPolicy: {{ .Values.apigatewayImagePullPolicy | default "IfNotPresent" | quote }}
+          image: {{ .Values.apigatewayImage | default "openwhisk/apigateway" | quote }}
+          ports:
+          - name: mgmt
+            containerPort: {{ template "apigateway_mgmt_port" . }}
+          - name: api
+            containerPort: {{ template "apigateway_api_port" . }}
+          env:
+          - name: "REDIS_HOST"
+            value: "127.0.0.1"
+          - name: "REDIS_PORT"
+            value: "6379"

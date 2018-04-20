@@ -13,21 +13,12 @@ spec:
     spec:
       {{- if .Values.global.affinity.enabled }}
       affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: nodeType
-                operator: In
-                values:
-                - {{ .Values.global.affinity.kafkaNodeLabel }}
+{{ include "affinity.controlPlane" . | indent 8 }}
+{{ include "affinity.selfAntiAffinity" ( include "kafka_statefulset_name" . ) | indent 8 }}
       {{- end }}
 
       initContainers:
-      - name: "wait-for-zookeeper"
-        image: "busybox"
-        imagePullPolicy: "IfNotPresent"
-        command: ["sh", "-c", "result=1; until [ $result -eq 0 ]; do nslookup {{ .Values.global.zookeeperServiceName}}.{{ .Release.Namespace }}; result=$?; echo waiting for {{ .Values.global.zookeeperServiceName}}.{{ .Release.Namespace }}; sleep 1; done;"]
+{{ include "readiness.waitForZookeeper" . | indent 6 }}
 
       containers:
       - name: {{ template "kafka_statefulset_name" . }}

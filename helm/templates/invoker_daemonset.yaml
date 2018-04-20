@@ -1,19 +1,20 @@
 apiVersion: extensions/v1beta1
-kind: Deployment
+kind: DaemonSet
 metadata:
-  name: {{ template "invoker_statefulset_name" . }}
+  name: {{ template "invoker_deployment_name" . }}
   namespace: {{ .Release.Namespace | quote }}
   labels:
-    name: {{ template "invoker_statefulset_name" . }} 
+    name: {{ template "invoker_deployment_name" . }}
 spec:
-  replicas: {{ .Values.invokerReplicasetCount | default 2 }}
-  #serviceName: {{ template "invoker_statefulset_name" . }}
   template:
     metadata:
       labels:
-        name: {{ template "invoker_statefulset_name" . }}
+        name: {{ template "invoker_deployment_name" . }}
     spec:
       restartPolicy: Always
+
+      affinity:
+{{ include "affinity.invoker" . | indent 8 }}
 
       volumes:
       - name: cgroup
@@ -28,32 +29,12 @@ spec:
       - name: dockersock
         hostPath:
           path: "/var/run/docker.sock"
-      - name: apparmor
-        hostPath:
-          path: "/usr/lib/x86_64-linux-gnu/libapparmor.so.1"
 
-      {{- if .Values.global.affinity.enabled }}
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: nodeType
-                operator: In
-                values:
-                - {{ .Values.global.affinity.invokerNodeLabel }}
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
-                matchExpressions:
-                - key: name
-                  operator: In
-                  values:
-                  - {{ template "invoker_statefulset_name" . }}
-              topologyKey: "kubernetes.io/hostname"
-      {{- end }}
-     
       initContainers:
+      # Wait for a controller to be up (which implies kafka, zookeeper, couchdb are all up as well).
+{{ include "readiness.waitForController" . | indent 6 }}
+
+      # Pull images for all default runtimes before starting invoker
       - name: docker-pull-runtimes
         imagePullPolicy: "IfNotPresent"
         image: openwhisk/kube-docker-pull
@@ -65,13 +46,8 @@ spec:
           - name: "RUNTIMES_MANIFEST"
             value: {{ template "runtimes_manifest" . }}
 
-      - name: "wait-for-kafka"
-        image: "busybox"
-        imagePullPolicy: "IfNotPresent"
-        command: ["sh", "-c", "result=1; until [ $result -eq 0 ]; do nslookup {{ .Values.global.kafkaServiceName}}.{{ .Release.Namespace }}; result=$?; echo waiting for {{ .Values.global.kafkaServiceName}}.{{ .Release.Namespace }}; sleep 1; done;"]
-
       containers:
-      - name: {{ template "invoker_statefulset_name" . }}
+      - name: {{ template "invoker_deployment_name" . }}
         imagePullPolicy: {{ .Values.invokerImagePullPolicy | default "IfNotPresent" | quote }}
         image: {{ .Values.invokerImage | default "openwhisk/invoker" | quote }}
         command: [ "/bin/bash", "-c", "COMPONENT_NAME=$(hostname | cut -d'-' -f2) /init.sh"]
@@ -97,10 +73,11 @@ spec:
           - name: "DOCKER_REGISTRY"
             value: ""
 
+          # Invoker name is name of the Kube node when using DaemonSet
           - name: "INVOKER_NAME"
             valueFrom:
               fieldRef:
-                fieldPath: metadata.name
+                fieldPath: spec.nodeName
 
           # Java options
           - name: "JAVA_OPTS"
@@ -123,26 +100,13 @@ spec:
             value: "2017-01-01T00:00:00Z"
 
           # properties for DB connection
-          - name: "CONFIG_whisk_couchdb_username"
-            value: {{ template "couchdb_username" . }}
-          - name: "CONFIG_whisk_couchdb_password"
-            value: {{ template "couchdb_password" . }} 
-          - name: "CONFIG_whisk_couchdb_port"
-            value: {{ include "couchdb_port" . | quote }}
-          - name:  "CONFIG_whisk_couchdb_protocol"
-            value: "http"
-          - name: "CONFIG_whisk_couchdb_host"
-            value: {{ include "couchdb_url_without_port" . | quote }}
-          - name: "CONFIG_whisk_couchdb_provider"
-            value: "CouchDB"
-          - name: "CONFIG_whisk_couchdb_databases_WhiskActivation"
-            value: {{ template "activations_table" . }}
-          - name: "CONFIG_whisk_couchdb_databases_WhiskEntity"
-            value: {{ template "actions_table" . }}
-          - name: "CONFIG_whisk_couchdb_databases_WhiskAuth"
-            value: {{ template "auths_table" . }}
+{{ include "whisk.dbEnvVars" . | indent 10 }}
+
+          # properties for kafka connection
           - name: "KAFKA_HOSTS"
             value: "{{ .Values.global.kafkaServiceName }}.{{ .Release.Namespace }}:{{ .Values.global.kafkaPort | default 9092 }}"
+
+          # properties for zookeeper connection
           - name: "ZOOKEEPER_HOSTS"
             value: "{{ .Values.global.zookeeperServiceName }}.{{ .Release.Namespace }}:{{ .Values.global.zookeeperPort | default 2181 }}"
 
@@ -158,5 +122,3 @@ spec:
           mountPath: "/var/run/docker.sock"
         - name: dockerrootdir
           mountPath: "/containers"
-        - name: apparmor
-          mountPath: "/usr/lib/x86_64-linux-gnu/libapparmor.so.1"
