@@ -135,6 +135,11 @@ set -x
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 ROOTDIR="$SCRIPTDIR/../../"
 
+# If TRAVIS and TRAVIS_USE_HELM, just exit (don't test non-HELM deploy)
+if [[ "$TRAVIS" = "true" ]] && [[ "$TRAVIS_USE_HELM" = "true" ]]; then
+    exit 0
+fi
+
 # Default to docker container factory if not specified
 OW_CONTAINER_FACTORY=${OW_CONTAINER_FACTORY:="docker"}
 
