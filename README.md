@@ -37,6 +37,7 @@ Travis CI testing.
 1.7.4 | 0.23.0 |
 1.8.0 | 0.25.2 |
 1.9.0 | 0.25.2 |
+1.10.1 | 0.26.1 |
 
 For details on setting up Minikube, see these [instructions](/docs/setting_up_minikube/README.md).
 
