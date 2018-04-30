@@ -59,7 +59,10 @@ spec:
           - name: "PORT"
             value: "8080"
           - name: "WHISK_API_HOST_NAME"
-            value: "nginx.openwhisk"
+            valueFrom:
+              configMapKeyRef:
+                name: whisk.ingress
+                key: api_host
           - name: "INVOKER_CONTAINER_NETWORK"
             value: "bridge"
           - name: "CONFIG_whisk_docker_containerFactory_useRunc"

@@ -58,3 +58,8 @@ spec:
             value: "127.0.0.1"
           - name: "REDIS_PORT"
             value: "6379"
+          - name: "PUBLIC_GATEWAY_URL"
+            valueFrom:
+              configMapKeyRef:
+                name: whisk.ingress
+                key: apigw_url
