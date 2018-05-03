@@ -110,6 +110,14 @@ kubectl delete namespace openwhisk
 kubectl delete persistentvolume -lpv-owner=openwhisk
 ```
 
+# Deploying OpenWhisk using Helm
+
+We are also working on developing Helm charts to deploy OpenWhisk on
+Kubernetes. Currently, the Helm charts do not support all of the
+configuration options of the more manual deployment process described
+above. However, they are sufficient for deploying the core OpenWhisk
+system on Minikube. Please see [helm/README.md](helm/README.md) for more details.
+
 # Issues
 
 Report bugs, ask questions and request features [here on GitHub](../../issues).
