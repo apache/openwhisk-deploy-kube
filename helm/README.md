@@ -59,10 +59,22 @@ $ kubectl label nodes <INVOKER_NODE_NAME> openwhisk-role=invoker
 ```
 
 ### Step 4. Deploy Charts
+You will need to create a mycluster.yaml file that specifies the host
+and port information that will be used to access your cluster.  See
+the [ingress discussion](../kubernetes/ingress/README.md) for
+details. Below is a sample file appropriate for a minikube cluster
+where `minikube ip` returns `192.168.99.100`.
+
+```yaml
+whisk:
+  ingress:
+    api_host: 192.168.99.100:31001
+    apigw_url: 192.168.99.100:31004
+```
 
 Deployment can be done by using the following single command:
 ```shell
-helm install . --namespace=openwhisk --name=your_release_name
+helm install . --namespace=openwhisk --name=your_release_name -f mycluster.yaml
 ```
 
 After a while, if you can see all the pods listed by the following command are in `Running` state, congratulations, you have finished OpenWhisk deployment:
