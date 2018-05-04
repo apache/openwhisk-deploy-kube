@@ -13,7 +13,7 @@ rm -f docker-${DOCKER_VERSION}.tgz && \
 chmod +x /usr/bin/docker
 
 RUN pip install --upgrade setuptools
-RUN pip install ansible==2.4.2.0
+RUN pip install ansible==2.5.0
 RUN pip install jinja2==2.9.6
 
 COPY pull_images.yml /pull_images.yml
