@@ -19,7 +19,7 @@ RUN pip install argcomplete
 RUN pip install couchdb
 RUN pip install --upgrade cffi
 RUN pip install markupsafe
-RUN pip install ansible==2.4.2.0
+RUN pip install ansible==2.5.0
 RUN pip install -U pyopenssl
 
 COPY init.sh /init.sh
