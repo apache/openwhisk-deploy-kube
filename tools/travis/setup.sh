@@ -3,6 +3,33 @@
 
 set -x
 
+#check_or_build_nsenter derived from https://github.com/bitnami/kubernetes-travis/blob/master/scripts/cluster-up-minikube.sh (Apache 2.0 License)
+check_or_build_nsenter() {
+    which nsenter >/dev/null && return 0
+    echo "INFO: Building 'nsenter' ..."
+cat <<-EOF | docker run -i --rm -v "$(pwd):/build" ubuntu:14.04 >& nsenter.build.log
+        apt-get update
+        apt-get install -qy git bison build-essential autopoint libtool automake autoconf gettext pkg-config
+        git clone --depth 1 git://git.kernel.org/pub/scm/utils/util-linux/util-linux.git /tmp/util-linux
+        cd /tmp/util-linux
+        ./autogen.sh
+        ./configure --without-python --disable-all-programs --enable-nsenter
+        make nsenter
+        cp -pfv nsenter /build
+EOF
+    if [ ! -f ./nsenter ]; then
+        echo "ERROR: nsenter build failed, log:"
+        cat nsenter.build.log
+        return 1
+    fi
+    echo "INFO: nsenter build OK, installing ..."
+    sudo install -v nsenter /usr/local/bin
+}
+
+# helm on minikube's vm-driver=none requires nsenter
+check_or_build_nsenter
+
+
 # download and install the wsk cli
 wget -q https://github.com/apache/incubator-openwhisk-cli/releases/download/latest/OpenWhisk_CLI-latest-linux-amd64.tgz
 tar xzf OpenWhisk_CLI-latest-linux-amd64.tgz
@@ -46,3 +73,35 @@ fi
 
 echo "minikube is deployed and reachable"
 /usr/local/bin/kubectl describe nodes
+
+minikube update-context
+
+# Download and install helm
+curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get > get_helm.sh
+chmod +x get_helm.sh
+./get_helm.sh
+
+# Install tiller
+/usr/local/bin/helm init --service-account default
+
+# Wait for tiller to be ready
+TIMEOUT=0
+TIMEOUT_COUNT=20
+until [ $TIMEOUT -eq $TIMEOUT_COUNT ]; do
+  TILLER_STATUS=$(/usr/local/bin/kubectl -n kube-system get pods -o wide | grep tiller-deploy | awk '{print $3}')
+  if [ "$TILLER_STATUS" == "Running" ]; then
+    break
+  fi
+  echo "Waiting for tiller to be ready"
+  /usr/local/bin/kubectl -n kube-system get pods -o wide
+  let TIMEOUT=TIMEOUT+1
+  sleep 5
+done
+
+if [ $TIMEOUT -eq $TIMEOUT_COUNT ]; then
+  echo "Failed to install tiller"
+  exit 1
+fi
+
+# Create privileged RBAC for tiller
+/usr/local/bin/kubectl create clusterrolebinding tiller-cluster-admin --clusterrole=cluster-admin --serviceaccount=kube-system:default
