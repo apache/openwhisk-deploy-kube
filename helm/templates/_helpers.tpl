@@ -1,92 +1,96 @@
 {{/* Set controller service name */}}
 {{- define "controller_service_name" -}}
-{{ .Values.global.controllerServiceName | default "controller" | quote }}
+{{ .Values.controller.serviceName | quote }}
 {{- end -}}
 
 {{/* Set controller statefulset name */}}
 {{- define "controller_statefulset_name" -}}
-{{ .Values.global.controllerStatefulSetName | default "controller" | quote }}
+{{ .Values.controller.statefulSetName | quote }}
 {{- end -}}
 
 {{/* Set controller port */}}
 {{- define "controller_port" -}}
-{{ .Values.global.controllerPort | default 8080 }}
+{{ .Values.controller.port }}
 {{- end -}}
 
 {{/* Set activations table */}}
 {{- define "activations_table" -}}
-{{ .Values.activationsTable | default "test_activations" | quote }}
+{{ .Values.db.activationsTable | quote }}
 {{- end -}}
 
 {{/* Set activations table */}}
 {{- define "activations_table_unquoted" -}}
-{{ .Values.activationsTable | default "test_activations" }}
+{{ .Values.db.activationsTable }}
 {{- end -}}
 
 {{/* Set actions table */}}
 {{- define "actions_table" -}}
-{{ .Values.actionsTable | default "test_whisks" | quote }}
+{{ .Values.db.actionsTable | quote }}
 {{- end -}}
 
 {{/* Set auths table */}}
 {{- define "auths_table" -}}
-{{ .Values.authTable | default "test_subjects" | quote }}
+{{ .Values.db.authsTable | quote }}
 {{- end -}}
 
 {{/* Set invoker "deployment" name */}}
 {{- define "invoker_deployment_name" -}}
-{{ .Values.invokerDeploymentName | default "invoker" | quote }}
+{{ .Values.invokerDeploymentName | quote }}
 {{- end -}}
 
 {{/* Generate kafka url without port */}}
 {{- define "kafka_url_without_port" -}}
-{{ .Values.global.kafkaServiceName | default "kafka" }}.{{ .Release.Namespace }}
+{{ .Values.kafka.serviceName }}.{{ .Release.Namespace }}
 {{- end -}}
 
+{{/* Generate Zookeeper service address */}}
+{{- define "zookeeper_service_address" -}}
+{{ .Values.zookeeper.serviceName }}.{{ .Release.Namespace }}:{{ .Values.zookeeper.port }}
+{{- end -}}
 
 {{/* Set Couchdb user name */}}
 {{- define "couchdb_username" -}}
-{{ .Values.global.couchdbUserName | default "whisk_admin" | quote }}
+{{ .Values.db.auth.username | quote }}
 {{- end -}}
 
 {{/* Set Couchdb password */}}
 {{- define "couchdb_password" -}}
-{{ .Values.global.couchdbPassword | default "some_passw0rd" | quote }}
+{{ .Values.db.auth.password | quote }}
 {{- end -}}
 
 {{/* Generate Couchdb url without port */}}
 {{- define "couchdb_url_without_port" -}}
-{{ .Values.global.couchdbServiceName | default "couchdb" }}.{{ .Release.Namespace }}
+{{ .Values.db.serviceName }}.{{ .Release.Namespace }}
 {{- end -}}
 
 {{/* Set Couchdb port */}}
 {{- define "couchdb_port" -}}
-{{ .Values.global.couchdb_port | default 5984 }}
+{{ .Values.db.port }}
 {{- end -}}
 
 {{/* Set API Gateway service name */}}
 {{- define "apigateway_service_name" -}}
-{{ .Values.serviceName | default "apigateway" | quote }}
+{{ .Values.apigw.serviceName | quote }}
 {{- end -}}
 
 {{/* Set API Gateway management port */}}
 {{- define "apigateway_mgmt_port" -}}
-{{ .Values.mgmtPort | default 8080 }}
+{{ .Values.apigw.mgmtPort }}
 {{- end -}}
 
 {{/* Set API Gateway API port */}}
 {{- define "apigateway_api_port" -}}
-{{ .Values.apiPort | default 9000 }}
+{{ .Values.apigw.apiPort }}
 {{- end -}}
 
 {{/* Set API Gateway deployment name */}}
 {{- define "apigateway_deployment_name" -}}
-{{ .Values.deploymentName | default "apigateway" | quote }}
+{{ .Values.apigw.deploymentName | quote }}
 {{- end -}}
 
 {{/* Runtimes manifest */}}
 {{- define "runtimes_manifest" -}}
-{{- if .Values.global.travis -}}
+{{- if .Values.travis -}}
 {{ .Files.Get "runtimes-minimal-travis.json" | quote }}
 {{- else -}}
 {{ .Files.Get "runtimes.json" | quote }}

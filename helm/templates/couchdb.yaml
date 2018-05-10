@@ -1,0 +1,122 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.db.serviceName | quote }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    name: {{ .Values.db.serviceName | quote }}
+spec:
+  selector:
+    name: {{ .Values.db.serviceName | quote }}
+  ports:
+    - port: {{ .Values.db.port }}
+      targetPort: {{ .Values.db.port }}
+      name: couchdb
+
+{{- if and .Values.db.persistence.enabled (not .Values.db.persistence.existingClaim) }}
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: couchdb-pv
+  labels:
+    type: couchdb
+  namespace: openwhisk
+spec:
+  accessModes:
+    - {{ .Values.db.persistence.accessMode | quote }}
+  capacity:
+    storage: {{ .Values.db.persistence.size | quote }}
+  nfs:
+    path: {{ .Values.db.persistence.nfs_path }}
+    server: {{ .Values.db.persistence.nfs_server }}
+{{- end }}
+
+
+{{- if and .Values.db.persistence.enabled (not .Values.db.persistence.existingClaim) }}
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ .Values.db.pvcName | quote }}
+  labels:
+    type: couchdb
+  namespace: {{ .Release.Namespace | quote }}
+spec:
+  accessModes:
+    - {{ .Values.db.persistence.accessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.db.persistence.size | quote }}
+{{- if .Values.db.persistence.storageClass }}
+{{- if (eq "-" .Values.db.persistence.storageClass) }}
+  storageClassName: ""
+{{- else }}
+  storageClassName: "{{ .Values.db.persistence.storageClass }}"
+{{- end }}
+{{- end }}
+{{- end }}
+
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ .Values.db.deploymentName | quote }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    name: {{ .Values.db.deploymentName | quote }}
+spec:
+  replicas: {{ .Values.db.replicaCount }}
+  template:
+    metadata:
+      labels:
+        name: {{ .Values.db.deploymentName | quote }}
+    spec:
+      restartPolicy: Always
+
+      {{- if .Values.affinity.enabled }}
+      affinity:
+{{ include "affinity.controlPlane" . | indent 8 }}
+{{ include "affinity.selfAntiAffinity" ( .Values.db.deploymentName ) | indent 8 }}
+      {{- end }}
+
+      containers:
+      - name: {{ .Values.db.deploymentName | quote }}
+        imagePullPolicy: {{ .Values.db.imagePullPolicy | quote }}
+        image: {{ .Values.db.image | quote }}
+        command: ["/init.sh"]
+        ports:
+        - name: couchdb
+          containerPort: {{ .Values.db.port }}
+        env:
+        - name: "DB_HOST"
+          value: "127.0.0.1"
+        - name: "DB_PREFIX"
+          value: {{ .Values.db.dbPrefix | quote }}
+        - name: "COUCHDB_USER"
+          value: {{ .Values.db.auth.username | quote }}
+        - name: "COUCHDB_PASSWORD"
+          value: {{ .Values.db.auth.password | quote }}
+        - name: "DB_PORT"
+          value: {{ .Values.db.port | quote }}
+        - name: "NODENAME"
+          value: "couchdb0"
+        readinessProbe:
+          httpGet:
+            port: {{ .Values.db.port }}
+            path: /{{ template "activations_table_unquoted" . }}
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          failureThreshold: 10
+          timeoutSeconds: 1
+        {{- if .Values.db.persistence.enabled }}
+        volumeMounts:
+          - name: database-storage
+            mountPath: /usr/local/var/lib/couchdb
+        {{- end }}
+      {{- if .Values.db.persistence.enabled }}
+      volumes:
+        - name: database-storage
+          persistentVolumeClaim:
+            claimName: couchdb-pvc
+      {{- end }}

@@ -48,8 +48,8 @@ spec:
 
       containers:
       - name: {{ template "invoker_deployment_name" . }}
-        imagePullPolicy: {{ .Values.invokerImagePullPolicy | default "IfNotPresent" | quote }}
-        image: {{ .Values.invokerImage | default "openwhisk/invoker" | quote }}
+        imagePullPolicy: {{ .Values.invokerImagePullPolicy | quote }}
+        image: {{ .Values.invokerImage | quote }}
         command: [ "/bin/bash", "-c", "COMPONENT_NAME=$(hostname | cut -d'-' -f2) /init.sh"]
         resources:
           requests:
@@ -107,11 +107,11 @@ spec:
 
           # properties for kafka connection
           - name: "KAFKA_HOSTS"
-            value: "{{ .Values.global.kafkaServiceName }}.{{ .Release.Namespace }}:{{ .Values.global.kafkaPort | default 9092 }}"
+            value: "{{ .Values.kafka.serviceName }}.{{ .Release.Namespace }}:{{ .Values.kafka.port }}"
 
           # properties for zookeeper connection
           - name: "ZOOKEEPER_HOSTS"
-            value: "{{ .Values.global.zookeeperServiceName }}.{{ .Release.Namespace }}:{{ .Values.global.zookeeperPort | default 2181 }}"
+            value: "{{ .Values.zookeeper.serviceName }}.{{ .Release.Namespace }}:{{ .Values.zookeeper.port  }}"
 
         ports:
         - name: invoker

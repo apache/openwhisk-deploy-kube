@@ -2,8 +2,12 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-# cluster configuration
+# Overall system configuration
 whisk:
+  # You must provide these ingress values when deploying the chart
+  ingress:
+    api_host: nil
+    apigw_url: nil
   # Production deployments _MUST_ override these default auth values
   auth:
     system: "789c46b1-71f6-4ed5-8c54-816aa4f8c502:abczO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP"
@@ -11,40 +15,52 @@ whisk:
   versions:
     cli: "latest"
   systemNameSpace: "/whisk.system"
-  ingress:
+
+travis: false
 
 # zookeeper configurations
 zookeeper:
   deploymentName: "zookeeper"
+  serviceName: "zookeeper"
   replicaCount: 1
   restartPolicy: "Always"
   containerName: "zookeeper"
   image: "zookeeper:3.4"
   imagePullPolicy: "IfNotPresent"
+  port: 2181
   serverPort: 2888
   leaderElectionPort: 3888
 
 # kafka configurations
 kafka:
+  serviceName: "kafka"
   statefulsetName: "kafka"
   replicaCount: 1
   image: "wurstmeister/kafka:0.11.0.1"
   imagePullPolicy: "IfNotPresent"
+  port: 9092
 
-# Couchdb configurations
-couchdb:
+# Database configuration
+db:
   deploymentName: "couchdb"
-  replicaCount: 1  
+  serviceName: "couchdb"
+  replicaCount: 1
   imagePullPolicy: "IfNotPresent"
   image: "openwhisk/kube-couchdb"
+  port: 5984
+  auth:
+    username: "whisk_admin"
+    password: "some_passw0rd"
   dbPrefix: "test_"
+  activationsTable: "test_activations"
+  actionsTable: "test_whisks"
+  authsTable: "test_subjects"
   persistence:
     enabled: false
     pvcName: couchdb-pvc
     size: 8Gi
     storageClass: CouchDBSC 
     accessMode: ReadWriteOnce
-
 
 # Nginx configurations
 nginx:
@@ -63,48 +79,42 @@ nginx:
   serviceName: "nginx"
 
 # Controller configurations
-controllerImagePullPolicy: "IfNotPresent"
-controllerImage: "openwhisk/controller" 
-controllerLimitsActionsInvokesConcurrentinsystem: 100
-controllerLimitsTriggersFiresPerminute: 100
-controllerLimitsActionsSequenceMaxlength: 1000
-controllerLimitsActionsInvokesConcurrent: 100
-controllerLimitsActionsInvokesConcurrentinsystem: 100
-controllerLocalbookkeeping: true
-controllerSeedNodes: "[]"
-controllerHA: false
+controller:
+  serviceName: "controller"
+  statefulSetName: "controller"
+  replicaCount: 1
+  imagePullPolicy: "IfNotPresent"
+  image: "openwhisk/controller"
+  port: 8080
+  limits:
+    actionsSequenceMaxlength: 50
+    triggersFiresPerminute: 60
+    actionsInvokesPerminute: 60
+    actionsInvokesConcurrentinsystem: 5000
+    actionsInvokesConcurrent: 30
+  localbookkeeping: true
+  seedNodes: "[]"
+  HA: false
 
 # Invoker configurations
-invokerStatefulsetName: "invoker"
+invokerDeploymentName: "invoker"
 invokerReplicasetCount: 1
 invokerImagePullPolicy: "IfNotPresent"
 invokerImage: "openwhisk/invoker"
 invokerOptions: ""
 
 # API Gateway configurations
+apigatewayImagePullPolicy: "IfNotPresent"
+apigatewayImage: "openwhisk/apigateway"
 apigatewayReplicaCount: 1
+apigw:
+  deploymentName: "apigateway"
+  serviceName: "apigateway"
+  apiPort: 9000
+  mgmtPort: 8080
 
-activationsTable: "test_activations"
-actionsTable: "test_whisks"
-authsTable: "test_subjects"
-
-# Global configurations
-global:
-  zookeeperServiceName: "zookeeper"
-  kafkaServiceName: "kafka"
-  zookeeperPort: 2181
-  kafkaPort: 9092
-  couchdbServiceName: "couchdb"
-  couchdbInstances: 1
-  couchdbPort: 5984
-  controllerStatefulSetName: "controller"
-  controllerServiceName: "controller"
-  controllerPort: 8080
-  controllerReplicaCount: 1
-  couchdbUserName: "whisk_admin"
-  couchdbPassword: "some_passw0rd"
-  # Resolve the pod/node affinity for invoker, controller and other components.
-  affinity:
-    enabled: true
-    invokerNodeLabel: invoker
-    controlPlaneNodeLabel: control-plane
+# Resolve the pod/node affinity for invoker, controller and other components.
+affinity:
+  enabled: true
+  invokerNodeLabel: invoker
+  controlPlaneNodeLabel: control-plane

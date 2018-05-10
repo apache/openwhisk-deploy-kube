@@ -5,5 +5,7 @@ version: 0.1.0
 keywords:
   - Apache OpenWhisk
 maintainers:
+  - name: Dave Grove
+    email: dgrove@apache.org
   - name: Tom Xing
     email: xingzhou@cn.ibm.com

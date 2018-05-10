@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "nginx_configmap_name" . }}
+  name: {{ .Values.nginx.configmapName | quote }}
   namespace: {{ .Release.Namespace | quote }}
 data:
   nginx.conf: |
