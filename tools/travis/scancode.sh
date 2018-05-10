@@ -13,5 +13,5 @@ UTIL_DIR="$ROOTDIR/../incubator-openwhisk-utilities"
 cd $UTIL_DIR
 
 #TEST
-less -FX filename $ROOTDIR/README.md
+cat $ROOTDIR/README.md
 scancode/scanCode.py --config scancode/ASF-Release.cfg $ROOTDIR
