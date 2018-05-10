@@ -77,9 +77,11 @@ echo "minikube is deployed and reachable"
 minikube update-context
 
 # Download and install helm
-curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get > get_helm.sh
-chmod +x get_helm.sh
-./get_helm.sh
+pushd /tmp
+  curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get > get_helm.sh
+  chmod +x get_helm.sh
+  ./get_helm.sh
+popd
 
 # Install tiller
 /usr/local/bin/helm init --service-account default
