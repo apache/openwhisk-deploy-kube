@@ -26,22 +26,28 @@ EOF
     sudo install -v nsenter /usr/local/bin
 }
 
-# helm on minikube's vm-driver=none requires nsenter
-check_or_build_nsenter
+# Download and install misc packages and utilities
+pushd /tmp
+  # helm on minikube's vm-driver=none requires nsenter
+  check_or_build_nsenter
 
+  # download and install the wsk cli
+  wget -q https://github.com/apache/incubator-openwhisk-cli/releases/download/latest/OpenWhisk_CLI-latest-linux-amd64.tgz
+  tar xzf OpenWhisk_CLI-latest-linux-amd64.tgz
+  sudo cp wsk /usr/local/bin/wsk
 
-# download and install the wsk cli
-wget -q https://github.com/apache/incubator-openwhisk-cli/releases/download/latest/OpenWhisk_CLI-latest-linux-amd64.tgz
-tar xzf OpenWhisk_CLI-latest-linux-amd64.tgz
-sudo cp wsk /usr/local/bin/wsk
+  # Download and install kubectl and minikube following the recipe in the minikube
+  # project README.md for using minikube for Linux Continuous Integration with VM Support
+    curl -Lo kubectl https://storage.googleapis.com/kubernetes-release/release/$TRAVIS_KUBE_VERSION/bin/linux/amd64/kubectl && chmod +x kubectl && sudo mv kubectl /usr/local/bin
+  curl -Lo minikube https://storage.googleapis.com/minikube/releases/$TRAVIS_MINIKUBE_VERSION/minikube-linux-amd64 && chmod +x minikube && sudo mv minikube /usr/local/bin
+
+  # Download and install helm
+  curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get > get_helm.sh && chmod +x get_helm.sh && ./get_helm.sh
+
+popd
 
 # set docker0 to promiscuous mode
 sudo ip link set docker0 promisc on
-
-# Download and install kubectl and minikube following the recipe in the minikube
-# project README.md for using minikube for Linux Continuous Integration with VM Support
-curl -Lo kubectl https://storage.googleapis.com/kubernetes-release/release/$TRAVIS_KUBE_VERSION/bin/linux/amd64/kubectl && chmod +x kubectl && sudo mv kubectl /usr/local/bin
-curl -Lo minikube https://storage.googleapis.com/minikube/releases/$TRAVIS_MINIKUBE_VERSION/minikube-linux-amd64 && chmod +x minikube && sudo mv minikube /usr/local/bin
 
 export MINIKUBE_WANTUPDATENOTIFICATION=false
 export MINIKUBE_WANTREPORTERRORPROMPT=false
@@ -71,19 +77,12 @@ if [ $TIMEOUT -eq $TIMEOUT_COUNT ]; then
   exit 1
 fi
 
+minikube update-context
+
 echo "minikube is deployed and reachable"
 /usr/local/bin/kubectl describe nodes
 
-minikube update-context
-
-# Download and install helm
-pushd /tmp
-  curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get > get_helm.sh
-  chmod +x get_helm.sh
-  ./get_helm.sh
-popd
-
-# Install tiller
+# Install tiller into the minikube cluster
 /usr/local/bin/helm init --service-account default
 
 # Wait for tiller to be ready
