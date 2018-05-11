@@ -26,7 +26,7 @@ metadata:
   labels:
     name: {{ template "apigateway_deployment_name" . }}
 spec:
-  replicas: {{ .Values.apigatewayReplicaCount | default 1 }}
+  replicas: {{ .Values.apigatewayReplicaCount }}
   template:
     metadata:
       labels:
@@ -34,7 +34,7 @@ spec:
     spec:
       restartPolicy: Always
 
-      {{- if .Values.global.affinity.enabled }}
+      {{- if .Values.affinity.enabled }}
       affinity:
 {{ include "affinity.controlPlane" . | indent 8 }}
 {{ include "affinity.selfAntiAffinity" ( include "apigateway_deployment_name" . ) | indent 8 }}
@@ -42,12 +42,12 @@ spec:
 
       containers:
         - name: redis
-          imagePullPolicy: {{ .Values.apigatewayImagePullPolicy | default "IfNotPresent" | quote }}
+          imagePullPolicy: {{ .Values.apigatewayImagePullPolicy | quote }}
           image: redis:3.2
 
         - name: apigateway
-          imagePullPolicy: {{ .Values.apigatewayImagePullPolicy | default "IfNotPresent" | quote }}
-          image: {{ .Values.apigatewayImage | default "openwhisk/apigateway" | quote }}
+          imagePullPolicy: {{ .Values.apigatewayImagePullPolicy | quote }}
+          image: {{ .Values.apigatewayImage | quote }}
           ports:
           - name: mgmt
             containerPort: {{ template "apigateway_mgmt_port" . }}

@@ -143,6 +143,8 @@ wsk property set --auth `cat $ROOTDIR/kubernetes/cluster-setup/auth.guest` --api
 cd $ROOTDIR/helm
 
 cat > mycluster.yaml <<EOF
+travis: true
+
 whisk:
   ingress:
     api_host: $WSK_HOST:$WSK_PORT

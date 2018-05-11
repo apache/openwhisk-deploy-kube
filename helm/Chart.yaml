@@ -5,5 +5,5 @@ version: 0.1.0
 keywords:
   - Apache OpenWhisk
 maintainers:
-  - name: Tom Xing
-    email: xingzhou@cn.ibm.com
+  - name: Apache OpenWhisk committers
+    email: dev@openwhisk.apache.org

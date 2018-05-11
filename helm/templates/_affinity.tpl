@@ -11,7 +11,7 @@ nodeAffinity:
       - key: openwhisk-role
         operator: NotIn
         values:
-        - {{ .Values.global.affinity.invokerNodeLabel }}
+        - {{ .Values.affinity.invokerNodeLabel }}
 # prefer to run on a control-plane node
 nodeAffinity:
   preferredDuringSchedulingIgnoredDuringExecution:
@@ -21,13 +21,13 @@ nodeAffinity:
       - key: openwhisk-role
         operator: In
         values:
-        - {{ .Values.global.affinity.controlPlaneNodeLabel }}
+        - {{ .Values.affinity.controlPlaneNodeLabel }}
 {{- end -}}
 
 
 {{/* Invoker node affinity */}}
 {{- define "affinity.invoker" -}}
-# run only on nodes labeled with openwhisk-role={{ .Values.global.affinity.invokerNodeLabel }}
+# run only on nodes labeled with openwhisk-role={{ .Values.affinity.invokerNodeLabel }}
 nodeAffinity:
   requiredDuringSchedulingIgnoredDuringExecution:
     nodeSelectorTerms:
@@ -35,7 +35,7 @@ nodeAffinity:
       - key: openwhisk-role
         operator: In
         values:
-        - {{ .Values.global.affinity.invokerNodeLabel }}
+        - {{ .Values.affinity.invokerNodeLabel }}
 {{- end -}}
 
 
