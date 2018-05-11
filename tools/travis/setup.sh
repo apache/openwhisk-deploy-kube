@@ -90,7 +90,8 @@ TIMEOUT=0
 TIMEOUT_COUNT=20
 until [ $TIMEOUT -eq $TIMEOUT_COUNT ]; do
   TILLER_STATUS=$(/usr/local/bin/kubectl -n kube-system get pods -o wide | grep tiller-deploy | awk '{print $3}')
-  if [ "$TILLER_STATUS" == "Running" ]; then
+  TILLER_READY_COUNT=$(/usr/local/bin/kubectl -n kube-system get pods -o wide | grep tiller-deploy | awk '{print $2}')
+  if [[ "$TILLER_STATUS" == "Running" ]] && [[ "$TILLER_READY_COUNT" == "1/1" ]]; then
     break
   fi
   echo "Waiting for tiller to be ready"
