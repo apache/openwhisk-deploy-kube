@@ -1,17 +1,17 @@
 apiVersion: extensions/v1beta1
 kind: DaemonSet
 metadata:
-  name: {{ template "invoker_deployment_name" . }}
+  name: {{ .Values.invoker.name | quote }}
   namespace: {{ .Release.Namespace | quote }}
   labels:
-    name: {{ template "invoker_deployment_name" . }}
+    name: {{ .Values.invoker.name | quote }}
 spec:
   template:
     metadata:
       labels:
-        name: {{ template "invoker_deployment_name" . }}
+        name: {{ .Values.invoker.name | quote }}
     spec:
-      restartPolicy: Always
+      restartPolicy: {{ .Values.invoker.restartPolicy }}
 
       affinity:
 {{ include "affinity.invoker" . | indent 8 }}
@@ -36,7 +36,7 @@ spec:
 
       # Pull images for all default runtimes before starting invoker
       - name: docker-pull-runtimes
-        imagePullPolicy: "IfNotPresent"
+        imagePullPolicy: {{ .Values.invoker.imagePullPolicy | quote }}
         image: openwhisk/kube-docker-pull
         volumeMounts:
         - name: dockersock
@@ -47,14 +47,10 @@ spec:
             value: {{ template "runtimes_manifest" . }}
 
       containers:
-      - name: {{ template "invoker_deployment_name" . }}
-        imagePullPolicy: {{ .Values.invokerImagePullPolicy | quote }}
-        image: {{ .Values.invokerImage | quote }}
+      - name: {{ .Values.invoker.name | quote }}
+        imagePullPolicy: {{ .Values.invoker.imagePullPolicy | quote }}
+        image: {{ .Values.invoker.image | quote }}
         command: [ "/bin/bash", "-c", "COMPONENT_NAME=$(hostname | cut -d'-' -f2) /init.sh"]
-        resources:
-          requests:
-            memory: "100Mi"
-            cpu: "0.1"
         env:
           - name: "PORT"
             value: "8080"
@@ -88,7 +84,7 @@ spec:
 
           # Invoker options
           - name: "INVOKER_OPTS"
-            value: {{ .Values.invokerOptions | quote }}
+            value: {{ .Values.invoker.options | quote }}
 
           # action runtimes
           - name: "RUNTIMES_MANIFEST"
@@ -107,11 +103,11 @@ spec:
 
           # properties for kafka connection
           - name: "KAFKA_HOSTS"
-            value: "{{ .Values.kafka.serviceName }}.{{ .Release.Namespace }}:{{ .Values.kafka.port }}"
+            value: "{{ .Values.kafka.name }}.{{ .Release.Namespace }}:{{ .Values.kafka.port }}"
 
           # properties for zookeeper connection
           - name: "ZOOKEEPER_HOSTS"
-            value: "{{ .Values.zookeeper.serviceName }}.{{ .Release.Namespace }}:{{ .Values.zookeeper.port  }}"
+            value: "{{ .Values.zookeeper.name }}.{{ .Release.Namespace }}:{{ .Values.zookeeper.port  }}"
 
         ports:
         - name: invoker

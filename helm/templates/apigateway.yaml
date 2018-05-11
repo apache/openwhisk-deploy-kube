@@ -2,57 +2,58 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "apigateway_service_name" . }}
+  name: {{ .Values.apigw.name | quote }}
   namespace: {{ .Release.Namespace | quote }}
   labels:
-    name: {{ template "apigateway_service_name" . }}
+    name: {{ .Values.apigw.name | quote }}
 spec:
   selector:
-    name: {{ template "apigateway_deployment_name" . }}
+    name: {{ .Values.apigw.name | quote }}
   ports:
-    - port: {{ template "apigateway_mgmt_port" . }}
-      targetPort: {{ template "apigateway_mgmt_port" . }}
+    - port: {{ .Values.apigw.mgmtPort }}
       name: mgmt
-    - port: {{ template "apigateway_api_port" . }}
-      targetPort: {{ template "apigateway_api_port" . }}
+    - port: {{ .Values.apigw.apiPort }}
+      {{- if .Values.apigw.apiNodePorthttpsNodePort }}
+      nodePort: {{ .Values.apigw.apiNodePort }}
+      {{- end }}
       name: api
 
 ---
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: {{ template "apigateway_deployment_name" . }}
+  name: {{ .Values.apigw.name | quote }}
   namespace: {{ .Release.Namespace | quote }}
   labels:
-    name: {{ template "apigateway_deployment_name" . }}
+    name: {{ .Values.apigw.name | quote }}
 spec:
-  replicas: {{ .Values.apigatewayReplicaCount }}
+  replicas: {{ .Values.apigw.replicaCount }}
   template:
     metadata:
       labels:
-        name: {{ template "apigateway_deployment_name" . }}
+        name: {{ .Values.apigw.name | quote }}
     spec:
-      restartPolicy: Always
+      restartPolicy: {{ .Values.apigw.restartPolicy }}
 
       {{- if .Values.affinity.enabled }}
       affinity:
 {{ include "affinity.controlPlane" . | indent 8 }}
-{{ include "affinity.selfAntiAffinity" ( include "apigateway_deployment_name" . ) | indent 8 }}
+{{ include "affinity.selfAntiAffinity" ( .Values.apigw.name | quote ) | indent 8 }}
       {{- end }}
 
       containers:
         - name: redis
-          imagePullPolicy: {{ .Values.apigatewayImagePullPolicy | quote }}
+          imagePullPolicy: {{ .Values.apigw.imagePullPolicy | quote }}
           image: redis:3.2
 
         - name: apigateway
-          imagePullPolicy: {{ .Values.apigatewayImagePullPolicy | quote }}
-          image: {{ .Values.apigatewayImage | quote }}
+          imagePullPolicy: {{ .Values.apigw.imagePullPolicy | quote }}
+          image: {{ .Values.apigw.image | quote }}
           ports:
           - name: mgmt
-            containerPort: {{ template "apigateway_mgmt_port" . }}
+            containerPort: {{ .Values.apigw.mgmtPort }}
           - name: api
-            containerPort: {{ template "apigateway_api_port" . }}
+            containerPort: {{ .Values.apigw.apiPort }}
           env:
           - name: "REDIS_HOST"
             value: "127.0.0.1"

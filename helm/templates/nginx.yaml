@@ -1,39 +1,30 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Values.nginx.serviceName | quote }}
+  name: {{ .Values.nginx.name | quote }}
   namespace: {{ .Release.Namespace | quote }}
   labels:
-    name: {{ .Values.nginx.serviceName | quote }}
+    name: {{ .Values.nginx.name | quote }}
 spec:
   type: NodePort
   selector:
-    name: {{ .Values.nginx.deploymentName | quote }}
+    name: {{ .Values.nginx.name | quote }}
   ports:
     - port: {{ .Values.nginx.httpPort }}
-      targetPort: {{ .Values.nginx.httpPort }}
-      {{- if .Values.nginx.httpNodePort }}
-      nodePort: {{ .Values.nginx.httpNodePort }}
-      {{- end }}
       name: http
     - port: {{ .Values.nginx.httpsPort }}
-      targetPort: {{ .Values.nginx.httpsPort }}
       {{- if .Values.nginx.httpsNodePort }}
       nodePort: {{ .Values.nginx.httpsNodePort }}
       {{- end }}
       name: https-api
     - port: {{ .Values.nginx.httpsAdminPort }}
-      targetPort: {{ .Values.nginx.httpsAdminPort }}
-      {{- if .Values.nginx.httpsAdminNodePort }}
-      nodePort: {{ .Values.nginx.httpsAdminNodePort }}
-      {{- end }}
       name: https-admin
 
 ---
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: {{ .Values.nginx.deploymentName | quote }}
+  name: {{ .Values.nginx.name | quote }}
   namespace: {{ .Release.Namespace | quote }}
   labels:
     name: nginx
@@ -42,28 +33,28 @@ spec:
   template:
     metadata:
       labels:
-        name: {{ .Values.nginx.deploymentName | quote }}
+        name: {{ .Values.nginx.name | quote }}
     spec:
-      restartPolicy: Always
+      restartPolicy: {{ .Values.nginx.restartPolicy }}
 
       {{- if .Values.affinity.enabled }}
       affinity:
 {{ include "affinity.controlPlane" . | indent 8 }}
-{{ include "affinity.selfAntiAffinity" ( .Values.nginx.deploymentName | quote ) | indent 8 }}
+{{ include "affinity.selfAntiAffinity" ( .Values.nginx.name | quote ) | indent 8 }}
       {{- end }}
 
       volumes:
       - name: nginx-certs
         secret:
-          secretName: {{ .Values.nginx.secretName | quote }}
+          secretName: {{ .Values.nginx.name | quote }}
       - name: nginx-conf
         configMap:
-          name: {{ .Values.nginx.configmapName | quote }}
+          name: {{ .Values.nginx.name | quote }}
       - name: logs
         emptyDir: {}
 
       containers:
-      - name: {{ .Values.nginx.deploymentName | quote }}
+      - name: {{ .Values.nginx.name | quote }}
         imagePullPolicy: {{ .Values.nginx.imagePullPolicy | quote }}
         image: {{ .Values.nginx.image | quote }}
         ports:

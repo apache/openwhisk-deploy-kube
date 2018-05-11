@@ -1,16 +1,15 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Values.db.serviceName | quote }}
+  name: {{ .Values.db.name | quote }}
   namespace: {{ .Release.Namespace | quote }}
   labels:
-    name: {{ .Values.db.serviceName | quote }}
+    name: {{ .Values.db.name | quote }}
 spec:
   selector:
-    name: {{ .Values.db.serviceName | quote }}
+    name: {{ .Values.db.name | quote }}
   ports:
     - port: {{ .Values.db.port }}
-      targetPort: {{ .Values.db.port }}
       name: couchdb
 
 {{- if and .Values.db.persistence.enabled (not .Values.db.persistence.existingClaim) }}
@@ -61,27 +60,27 @@ spec:
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: {{ .Values.db.deploymentName | quote }}
+  name: {{ .Values.db.name | quote }}
   namespace: {{ .Release.Namespace | quote }}
   labels:
-    name: {{ .Values.db.deploymentName | quote }}
+    name: {{ .Values.db.name | quote }}
 spec:
   replicas: {{ .Values.db.replicaCount }}
   template:
     metadata:
       labels:
-        name: {{ .Values.db.deploymentName | quote }}
+        name: {{ .Values.db.name | quote }}
     spec:
-      restartPolicy: Always
+      restartPolicy: {{ .Values.db.restartPolicy }}
 
       {{- if .Values.affinity.enabled }}
       affinity:
 {{ include "affinity.controlPlane" . | indent 8 }}
-{{ include "affinity.selfAntiAffinity" ( .Values.db.deploymentName ) | indent 8 }}
+{{ include "affinity.selfAntiAffinity" ( .Values.db.name ) | indent 8 }}
       {{- end }}
 
       containers:
-      - name: {{ .Values.db.deploymentName | quote }}
+      - name: {{ .Values.db.name | quote }}
         imagePullPolicy: {{ .Values.db.imagePullPolicy | quote }}
         image: {{ .Values.db.image | quote }}
         command: ["/init.sh"]
@@ -104,7 +103,7 @@ spec:
         readinessProbe:
           httpGet:
             port: {{ .Values.db.port }}
-            path: /{{ template "activations_table_unquoted" . }}
+            path: /{{ .Values.db.activationsTable }}
           initialDelaySeconds: 60
           periodSeconds: 10
           failureThreshold: 10
