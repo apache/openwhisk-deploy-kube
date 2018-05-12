@@ -2,39 +2,38 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "controller_service_name" . }}
+  name: {{ .Values.controller.name | quote }}
   namespace: {{ .Release.Namespace | quote }}
   labels:
-    name: {{ template "controller_service_name" . }}
+    name: {{ .Values.controller.name | quote }}
 spec:
   selector:
-    name: {{ template "controller_statefulset_name" . }}
+    name: {{ .Values.controller.name | quote }}
   ports:
-    - port: {{ template "controller_port" . }}
-      targetPort: {{ template "controller_port" . }}
+    - port: {{ .Values.controller.port }}
       name: http
 ---
 apiVersion: apps/v1beta1
 kind: StatefulSet
 metadata:
-  name: {{ template "controller_statefulset_name" . }}
+  name: {{ .Values.controller.name | quote }}
   namespace: {{ .Release.Namespace | quote }}
   labels:
-    name: {{ template "controller_statefulset_name" . }} 
+    name: {{ .Values.controller.name | quote }}
 spec:
-  replicas: {{ .Values.controllerReplicaCount }}
-  serviceName: {{ template "controller_service_name" . }}
+  replicas: {{ .Values.controller.replicaCount }}
+  name: {{ .Values.controller.name | quote }}
   template:
     metadata:
       labels:
-        name: {{ template "controller_statefulset_name" . }}
+        name: {{ .Values.controller.name | quote }}
     spec:
-      restartPolicy: Always
+      restartPolicy: {{ .Values.controller.restartPolicy }}
 
       {{- if .Values.affinity.enabled }}
       affinity:
 {{ include "affinity.controlPlane" . | indent 8 }}
-{{ include "affinity.selfAntiAffinity" ( include "controller_statefulset_name" . ) | indent 8 }}
+{{ include "affinity.selfAntiAffinity" ( .Values.controller.name | quote ) | indent 8 }}
       {{- end }}
 
       initContainers:
@@ -43,24 +42,24 @@ spec:
 {{ include "readiness.waitForCouchDB" . | indent 6 }}
 
       containers:
-      - name: {{ template "controller_statefulset_name" . }}
+      - name: {{ .Values.controller.name | quote }}
         imagePullPolicy: {{ .Values.controller.imagePullPolicy | quote }}
         image: {{ .Values.controller.image | quote }}
         command: ["/bin/bash", "-c", "COMPONENT_NAME=$(hostname | cut -d'-' -f2) /init.sh `hostname | cut -d'-' -f2`"]
         ports:
         - name: controller
-          containerPort: {{ template "controller_port" . }}
+          containerPort: {{ .Values.controller.port }}
         livenessProbe:
           httpGet:
             path: "/ping"
-            port: {{ template "controller_port" . }}
+            port: {{ .Values.controller.port }}
             scheme: "HTTP"
           initialDelaySeconds: 5
           periodSeconds: 10
           timeoutSeconds: 1
         env:
         - name: "PORT"
-          value: {{ include "controller_port" . | quote }}
+          value: {{ .Values.controller.port | quote }}
 
         # Loadbalancer options
         - name: "LOADBALANCER_INVOKERBUSYTHRESHOLD"

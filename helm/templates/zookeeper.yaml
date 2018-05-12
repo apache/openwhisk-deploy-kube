@@ -1,49 +1,46 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Values.zookeeper.serviceName | quote }}
+  name: {{ .Values.zookeeper.name | quote }}
   namespace: {{ .Release.Namespace | quote }}
   labels:
-    name: {{ .Values.zookeeper.serviceName | quote }}
+    name: {{ .Values.zookeeper.name | quote }}
 spec:
   selector:
-    name: {{ .Values.zookeeper.deploymentName | quote }}
+    name: {{ .Values.zookeeper.name | quote }}
   ports:
     - port: {{ .Values.zookeeper.port }}
-      targetPort: {{ .Values.zookeeper.port }}
       name: "zookeeper"
     - port: {{ .Values.zookeeper.serverPort }}
-      targetPort: {{ .Values.zookeeper.serverPort }}
       name: "server"
     - port: {{ .Values.zookeeper.leaderElectionPort }}
-      targetPort: {{ .Values.zookeeper.leaderElectionPort }}
       name: "leader-election"
 
 ---
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: {{ .Values.zookeeper.deploymentName | quote }}
+  name: {{ .Values.zookeeper.name | quote }}
   namespace: {{ .Release.Namespace | quote}}
   labels:
-    name: {{ .Values.zookeeper.deploymentName | quote }}
+    name: {{ .Values.zookeeper.name | quote }}
 spec:
   replicas: {{ .Values.zookeeper.replicaCount }}
   template:
     metadata:
       labels:
-        name: {{ .Values.zookeeper.deploymentName | quote }}
+        name: {{ .Values.zookeeper.name | quote }}
     spec:
       restartPolicy: {{ .Values.zookeeper.restartPolicy | quote }}
 
       {{- if .Values.affinity.enabled }}
       affinity:
 {{ include "affinity.controlPlane" . | indent 8 }}
-{{ include "affinity.selfAntiAffinity" ( .Values.zookeeper.deploymentName | quote ) | indent 8 }}
+{{ include "affinity.selfAntiAffinity" ( .Values.zookeeper.name | quote ) | indent 8 }}
       {{- end }}
 
       containers:
-      - name: {{ .Values.zookeeper.containerName | quote }}
+      - name: {{ .Values.zookeeper.name | quote }}
         image: {{ .Values.zookeeper.image | quote }}
         imagePullPolicy: {{ .Values.zookeeper.imagePullPolicy | quote }}
         ports:

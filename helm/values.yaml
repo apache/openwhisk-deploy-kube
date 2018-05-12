@@ -1,6 +1,4 @@
 # Default values for OpenWhisk.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
 
 # Overall system configuration
 whisk:
@@ -20,33 +18,31 @@ travis: false
 
 # zookeeper configurations
 zookeeper:
-  deploymentName: "zookeeper"
-  serviceName: "zookeeper"
-  replicaCount: 1
-  restartPolicy: "Always"
-  containerName: "zookeeper"
+  name: "zookeeper"
   image: "zookeeper:3.4"
+  replicaCount: 1
   imagePullPolicy: "IfNotPresent"
+  restartPolicy: "Always"
   port: 2181
   serverPort: 2888
   leaderElectionPort: 3888
 
 # kafka configurations
 kafka:
-  serviceName: "kafka"
-  statefulsetName: "kafka"
-  replicaCount: 1
+  name: "kafka"
   image: "wurstmeister/kafka:0.11.0.1"
+  replicaCount: 1
   imagePullPolicy: "IfNotPresent"
+  restartPolicy: "Always"
   port: 9092
 
 # Database configuration
 db:
-  deploymentName: "couchdb"
-  serviceName: "couchdb"
+  name: "couchdb"
+  image: "openwhisk/kube-couchdb"
   replicaCount: 1
   imagePullPolicy: "IfNotPresent"
-  image: "openwhisk/kube-couchdb"
+  restartPolicy: "Always"
   port: 5984
   auth:
     username: "whisk_admin"
@@ -64,27 +60,23 @@ db:
 
 # Nginx configurations
 nginx:
-  secretName: "nginx"
-  configmapName: "nginx"
-  deploymentName: "nginx"
-  replicaCount: 1
+  name: "nginx"
   image: "nginx:1.11"
+  replicaCount: 1
   imagePullPolicy: "IfNotPresent"
+  restartPolicy: "Always"
   httpPort: 80
-  httpNodePort: 31000
   httpsPort: 443
   httpsNodePort: 31001
   httpsAdminPort: 8443
-  httpsAdminNodePort: 31002
-  serviceName: "nginx"
 
 # Controller configurations
 controller:
-  serviceName: "controller"
-  statefulSetName: "controller"
+  name: "controller"
+  image: "openwhisk/controller"
   replicaCount: 1
   imagePullPolicy: "IfNotPresent"
-  image: "openwhisk/controller"
+  restartPolicy: "Always"
   port: 8080
   limits:
     actionsSequenceMaxlength: 50
@@ -97,20 +89,22 @@ controller:
   HA: false
 
 # Invoker configurations
-invokerDeploymentName: "invoker"
-invokerReplicasetCount: 1
-invokerImagePullPolicy: "IfNotPresent"
-invokerImage: "openwhisk/invoker"
-invokerOptions: ""
+invoker:
+  name: "invoker"
+  image: "openwhisk/invoker"
+  imagePullPolicy: "IfNotPresent"
+  restartPolicy: "Always"
+  options: ""
 
 # API Gateway configurations
-apigatewayImagePullPolicy: "IfNotPresent"
-apigatewayImage: "openwhisk/apigateway"
-apigatewayReplicaCount: 1
 apigw:
-  deploymentName: "apigateway"
-  serviceName: "apigateway"
+  name: "apigateway"
+  image: "openwhisk/apigateway"
+  replicaCount: 1
+  imagePullPolicy: "IfNotPresent"
+  restartPolicy: "Always"
   apiPort: 9000
+  apiNodePort: 31004
   mgmtPort: 8080
 
 # Resolve the pod/node affinity for invoker, controller and other components.
