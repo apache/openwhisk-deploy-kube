@@ -7,13 +7,16 @@ metadata:
   labels:
     name: {{ .Values.apigw.name | quote }}
 spec:
+  {{- if .Values.apigw.apiNodePort }}
+  type: NodePort
+  {{- end }}
   selector:
     name: {{ .Values.apigw.name | quote }}
   ports:
     - port: {{ .Values.apigw.mgmtPort }}
       name: mgmt
     - port: {{ .Values.apigw.apiPort }}
-      {{- if .Values.apigw.apiNodePorthttpsNodePort }}
+      {{- if .Values.apigw.apiNodePort }}
       nodePort: {{ .Values.apigw.apiNodePort }}
       {{- end }}
       name: api
@@ -37,7 +40,7 @@ spec:
 
       {{- if .Values.affinity.enabled }}
       affinity:
-{{ include "affinity.controlPlane" . | indent 8 }}
+{{ include "affinity.core" . | indent 8 }}
 {{ include "affinity.selfAntiAffinity" ( .Values.apigw.name | quote ) | indent 8 }}
       {{- end }}
 

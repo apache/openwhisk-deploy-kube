@@ -13,8 +13,7 @@ whisk:
   versions:
     cli: "latest"
   systemNameSpace: "/whisk.system"
-
-travis: false
+  runtimes: "runtimes.json"
 
 # zookeeper configurations
 zookeeper:
@@ -44,6 +43,8 @@ db:
   imagePullPolicy: "IfNotPresent"
   restartPolicy: "Always"
   port: 5984
+  provider: "CouchDB"
+  protocol: "http"
   auth:
     username: "whisk_admin"
     password: "some_passw0rd"
@@ -67,7 +68,6 @@ nginx:
   restartPolicy: "Always"
   httpPort: 80
   httpsPort: 443
-  httpsNodePort: 31001
   httpsAdminPort: 8443
 
 # Controller configurations
@@ -104,11 +104,12 @@ apigw:
   imagePullPolicy: "IfNotPresent"
   restartPolicy: "Always"
   apiPort: 9000
-  apiNodePort: 31004
   mgmtPort: 8080
 
 # Resolve the pod/node affinity for invoker, controller and other components.
 affinity:
   enabled: true
+  coreNodeLabel: core
+  edgeNodeLabel: edge
   invokerNodeLabel: invoker
-  controlPlaneNodeLabel: control-plane
+  providerNodeLabel: provider

@@ -1,28 +1,34 @@
-{{/* Generate kafka url without port */}}
-{{- define "kafka_url_without_port" -}}
-{{ .Values.kafka.name }}.{{ .Release.Namespace }}
+{{/* hostname for apigateway */}}
+{{- define "apigw_host" -}}
+{{ .Values.apigw.name }}.{{ .Release.Namespace }}.svc.cluster.local
 {{- end -}}
 
-{{/* Generate Zookeeper service address */}}
-{{- define "zookeeper_service_address" -}}
-{{ .Values.zookeeper.name }}.{{ .Release.Namespace }}:{{ .Values.zookeeper.port }}
+{{/* hostname for controller */}}
+{{- define "controller_host" -}}
+{{ .Values.controller.name }}.{{ .Release.Namespace }}.svc.cluster.local
 {{- end -}}
 
-{{/* Generate Couchdb url without port */}}
-{{- define "couchdb_url_without_port" -}}
-{{ .Values.db.name }}.{{ .Release.Namespace }}
+{{/* hostname for database */}}
+{{- define "db_host" -}}
+{{ .Values.db.name }}.{{ .Release.Namespace }}.svc.cluster.local
+{{- end -}}
+
+{{/* hostname for kafka */}}
+{{- define "kafka_host" -}}
+{{ .Values.kafka.name }}.{{ .Release.Namespace }}.svc.cluster.local
+{{- end -}}
+
+{{/* hostname for zookeeper */}}
+{{- define "zookeeper_host" -}}
+{{ .Values.zookeeper.name }}.{{ .Release.Namespace }}.svc.cluster.local
 {{- end -}}
 
 {{/* Runtimes manifest */}}
 {{- define "runtimes_manifest" -}}
-{{- if .Values.travis -}}
-{{ .Files.Get "runtimes-minimal-travis.json" | quote }}
-{{- else -}}
-{{ .Files.Get "runtimes.json" | quote }}
-{{- end -}}
+{{ .Files.Get .Values.whisk.runtimes | quote }}
 {{- end -}}
 
-{{/* Environment variables required for accessing CouchDB */}}
+{{/* Environment variables required for accessing CouchDB from a pod */}}
 {{- define "whisk.dbEnvVars" -}}
 - name: "CONFIG_whisk_couchdb_username"
   value: {{ .Values.db.auth.username | quote }}
@@ -31,11 +37,11 @@
 - name: "CONFIG_whisk_couchdb_port"
   value: {{ .Values.db.port | quote}}
 - name: "CONFIG_whisk_couchdb_protocol"
-  value: "http"
+  value: {{ .Values.db.protocol | quote }}
 - name: "CONFIG_whisk_couchdb_host"
-  value: {{ include "couchdb_url_without_port" . | quote }}
+  value: {{ include "db_host" . | quote }}
 - name: "CONFIG_whisk_couchdb_provider"
-  value: "CouchDB"
+  value: {{ .Values.db.provider | quote }}
 - name: "CONFIG_whisk_couchdb_databases_WhiskActivation"
   value: {{ .Values.db.activationsTable | quote }}
 - name: "CONFIG_whisk_couchdb_databases_WhiskEntity"

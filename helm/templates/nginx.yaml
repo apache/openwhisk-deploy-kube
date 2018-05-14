@@ -6,7 +6,9 @@ metadata:
   labels:
     name: {{ .Values.nginx.name | quote }}
 spec:
+  {{- if .Values.nginx.httpsNodePort }}
   type: NodePort
+  {{- end }}
   selector:
     name: {{ .Values.nginx.name | quote }}
   ports:
@@ -39,7 +41,7 @@ spec:
 
       {{- if .Values.affinity.enabled }}
       affinity:
-{{ include "affinity.controlPlane" . | indent 8 }}
+{{ include "affinity.edge" . | indent 8 }}
 {{ include "affinity.selfAntiAffinity" ( .Values.nginx.name | quote ) | indent 8 }}
       {{- end }}
 

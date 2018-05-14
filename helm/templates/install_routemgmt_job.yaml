@@ -1,21 +1,21 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: install-catalog
+  name: install-routemgmt
   namespace: {{ .Release.Namespace | quote }}
 spec:
   activeDeadlineSeconds: 600
   template:
     metadata:
-      name: install-catalog
+      name: install-routemgmt
     spec:
       restartPolicy: Never
       initContainers:
       # Wait for a controller to be up so we can perfom our CRUD actions with the CLI
 {{ include "readiness.waitForController" . | indent 6 }}
       containers:
-      - name: catalog
-        image: openwhisk/kube-openwhisk-catalog
+      - name: routemgmt
+        image: openwhisk/kube-routemgmt
         env:
           - name: "WHISK_CLI_VERSION"
             value: {{ .Values.whisk.versions.cli | quote }}
@@ -29,3 +29,7 @@ spec:
               configMapKeyRef:
                 name: whisk.ingress
                 key: api_host
+          - name: "WHISK_NAMESPACE"
+            value: {{ .Values.whisk.systemNameSpace | quote }}
+          - name: "WHISK_API_GATEWAY_HOST_V2"
+            value: "http://$(APIGATEWAY_SERVICE_HOST):$(APIGATEWAY_SERVICE_PORT_API)/v2"

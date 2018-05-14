@@ -16,7 +16,8 @@ deploymentHealthCheck () {
   TIMEOUT=0
   until $PASSED || [ $TIMEOUT -eq $TIMEOUT_STEP_LIMIT ]; do
     KUBE_DEPLOY_STATUS=$(kubectl -n openwhisk get pods -l name="$1" -o wide | grep "$1" | awk '{print $3}')
-    if [ "$KUBE_DEPLOY_STATUS" == "Running" ]; then
+    KUBE_READY_COUNT=$(kubectl -n openwhisk get pods -l name="$1" -o wide | grep "$1" | awk '{print $2}' | awk -F / '${print $1}')
+    if [[ "$KUBE_DEPLOY_STATUS" == "Running" ]] && [[ "$KUBE_READY_COUNT" != "0" ]]; then
       PASSED=true
       break
     fi
@@ -47,7 +48,8 @@ statefulsetHealthCheck () {
   TIMEOUT=0
   until $PASSED || [ $TIMEOUT -eq $TIMEOUT_STEP_LIMIT ]; do
     KUBE_DEPLOY_STATUS=$(kubectl -n openwhisk get pods -l name="$1" -o wide | grep "$1"-0 | awk '{print $3}')
-    if [ "$KUBE_DEPLOY_STATUS" == "Running" ]; then
+    KUBE_READY_COUNT=$(kubectl -n openwhisk get pods -l name="$1" -o wide | grep "$1"-0 | awk '{print $2}' | awk -F / '${print $1}')
+    if [[ "$KUBE_DEPLOY_STATUS" == "Running" ]] && [[ "$KUBE_READY_COUNT" != "0" ]]; then
       PASSED=true
       break
     fi
@@ -132,7 +134,6 @@ kubectl create namespace openwhisk
 
 # configure Ingress and wsk CLI
 #
-# FIXME: Helm deploy hardwires ports to specific values -- need to make this less fragile!
 WSK_PORT=31001
 APIGW_PORT=31004
 WSK_HOST=$(kubectl describe nodes | grep Hostname: | awk '{print $2}')
@@ -150,7 +151,14 @@ travis: true
 whisk:
   ingress:
     api_host: $WSK_HOST:$WSK_PORT
-    apigw_url: $WSK_HOST:$APIGW_PORT
+    apigw_url: http://$WSK_HOST:$APIGW_PORT
+  runtimes: "runtimes-minimal-travis.json"
+
+nginx:
+  httpsNodePort: $WSK_PORT
+
+apigw:
+  apiNodePort: $APIGW_PORT
 EOF
 
 cat mycluster.yaml
@@ -160,6 +168,10 @@ helm install . --namespace=openwhisk --name=ow4travis -f mycluster.yaml
 # Wait for controller and invoker to be up
 statefulsetHealthCheck "controller"
 deploymentHealthCheck "invoker"
+
+# Wait for catalog and routemgmt jobs to complete successfully
+jobHealthCheck "install-catalog"
+jobHealthCheck "install-routemgmt"
 
 #################
 # Sniff test: create and invoke a simple Hello world action

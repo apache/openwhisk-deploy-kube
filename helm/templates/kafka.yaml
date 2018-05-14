@@ -26,7 +26,7 @@ spec:
     spec:
       {{- if .Values.affinity.enabled }}
       affinity:
-{{ include "affinity.controlPlane" . | indent 8 }}
+{{ include "affinity.core" . | indent 8 }}
 {{ include "affinity.selfAntiAffinity" ( .Values.kafka.name | quote ) | indent 8 }}
       {{- end }}
 
@@ -56,4 +56,4 @@ spec:
 
         # zookeeper info
         - name: "KAFKA_ZOOKEEPER_CONNECT"
-          value: {{ include "zookeeper_service_address" . | quote }}
+          value: "{{ include "zookeeper_host" . }}:{{ .Values.zookeeper.port }}"
