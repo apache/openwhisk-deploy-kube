@@ -88,7 +88,13 @@ where `minikube ip` returns `192.168.99.100`.
 whisk:
   ingress:
     api_host: 192.168.99.100:31001
-    apigw_url: 192.168.99.100:31004
+    apigw_url: http://192.168.99.100:31004
+
+nginx:
+  httpsNodePort: 31001
+
+apigw:
+  apiNodePort: 31004
 ```
 
 Deployment can be done by using the following single command:

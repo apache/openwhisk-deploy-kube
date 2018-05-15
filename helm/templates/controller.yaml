@@ -32,7 +32,7 @@ spec:
 
       {{- if .Values.affinity.enabled }}
       affinity:
-{{ include "affinity.controlPlane" . | indent 8 }}
+{{ include "affinity.core" . | indent 8 }}
 {{ include "affinity.selfAntiAffinity" ( .Values.controller.name | quote ) | indent 8 }}
       {{- end }}
 
@@ -84,7 +84,7 @@ spec:
 
         # Kafka properties
         - name: "KAFKA_HOSTS"
-          value: {{ include "kafka_url_without_port" . }}:{{ .Values.kafka.port }}
+          value: "{{ include "kafka_host" . }}:{{ .Values.kafka.port }}"
         - name: "KAFKA_HOST_PORT"
           value: {{ .Values.kafka.port | quote }}
 

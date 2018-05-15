@@ -35,7 +35,7 @@ spec:
 
       {{- if .Values.affinity.enabled }}
       affinity:
-{{ include "affinity.controlPlane" . | indent 8 }}
+{{ include "affinity.core" . | indent 8 }}
 {{ include "affinity.selfAntiAffinity" ( .Values.zookeeper.name | quote ) | indent 8 }}
       {{- end }}
 

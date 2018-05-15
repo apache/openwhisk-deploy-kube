@@ -103,11 +103,11 @@ spec:
 
           # properties for kafka connection
           - name: "KAFKA_HOSTS"
-            value: "{{ .Values.kafka.name }}.{{ .Release.Namespace }}:{{ .Values.kafka.port }}"
+            value: "{{ include "kafka_host" . }}:{{ .Values.kafka.port }}"
 
           # properties for zookeeper connection
           - name: "ZOOKEEPER_HOSTS"
-            value: "{{ .Values.zookeeper.name }}.{{ .Release.Namespace }}:{{ .Values.zookeeper.port  }}"
+            value: "{{ include "zookeeper_host" . }}:{{ .Values.zookeeper.port }}"
 
         ports:
         - name: invoker

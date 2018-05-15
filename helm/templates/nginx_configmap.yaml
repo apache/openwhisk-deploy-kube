@@ -40,7 +40,7 @@ data:
 
           # Hack to convince nginx to dynamically resolve the dns entry.
           resolver kube-dns.kube-system;
-          set $controllers controller.openwhisk.svc.cluster.local;
+          set $controllers {{ include "controller_host" . }};
 
           # proxy to the web action path
           location / {

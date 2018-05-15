@@ -1,7 +1,7 @@
 # This file defines template snippets for scheduler affinity and anti-affinity
 
-{{/* Generic control-plane affinity */}}
-{{- define "affinity.controlPlane" -}}
+{{/* Generic core affinity */}}
+{{- define "affinity.core" -}}
 # prefer to not run on an invoker node (only prefer because of single node clusters)
 nodeAffinity:
   preferredDuringSchedulingIgnoredDuringExecution:
@@ -12,7 +12,7 @@ nodeAffinity:
         operator: NotIn
         values:
         - {{ .Values.affinity.invokerNodeLabel }}
-# prefer to run on a control-plane node
+# prefer to run on a core node
 nodeAffinity:
   preferredDuringSchedulingIgnoredDuringExecution:
   - weight: 80
@@ -21,7 +21,32 @@ nodeAffinity:
       - key: openwhisk-role
         operator: In
         values:
-        - {{ .Values.affinity.controlPlaneNodeLabel }}
+        - {{ .Values.affinity.coreNodeLabel }}
+{{- end -}}
+
+
+{{/* Generic edge affinity */}}
+{{- define "affinity.edge" -}}
+# prefer to not run on an invoker node (only prefer because of single node clusters)
+nodeAffinity:
+  preferredDuringSchedulingIgnoredDuringExecution:
+  - weight: 100
+    preference:
+      matchExpressions:
+      - key: openwhisk-role
+        operator: NotIn
+        values:
+        - {{ .Values.affinity.invokerNodeLabel }}
+# prefer to run on a edge node
+nodeAffinity:
+  preferredDuringSchedulingIgnoredDuringExecution:
+  - weight: 80
+    preference:
+      matchExpressions:
+      - key: openwhisk-role
+        operator: In
+        values:
+        - {{ .Values.affinity.edgeNodeLabel }}
 {{- end -}}
 
 
