@@ -1,0 +1,27 @@
+{{- if eq .Values.whisk.ingress.type "ibm.standard" }}
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ow-ingress
+  namespace: {{ .Release.Namespace | quote }}
+  annotations:
+    ingress.bluemix.net/rewrite-path: "serviceName=nginx rewrite=/;serviceName=apigateway rewrite=/"
+spec:
+  tls:
+  - hosts:
+    - {{ .Values.whisk.ingress.ibmdomain }}
+    secretName: {{ .Values.whisk.ingress.ibmtlssecret }}
+  rules:
+  - host: {{ .Values.whisk.ingress.ibmdomain }}
+    http:
+      paths:
+      - path: /openwhisk/
+        backend:
+          serviceName: {{ .Values.nginx.name }}
+          servicePort: http
+      - path: /apigateway/
+        backend:
+          serviceName: {{ .Values.apigw.name }}
+          servicePort: mgmt
+{{- end }}
