@@ -83,20 +83,16 @@ You will need to create a mycluster.yaml file that records how the
 OpenWhisk deployment on your cluster will be accessed by clients.  See
 the [ingress discussion](./ingress.md) for details. Below is a sample
 file appropriate for a minikube cluster where `minikube ip` returns
-`192.168.99.100` and ports 31001 and 31004 are available to be used.
+`192.168.99.100` and port 31001 is available to be used.
 
 ```yaml
 whisk:
   ingress:
     type: NodePort
     api_host: 192.168.99.100:31001
-    apigw_url: http://192.168.99.100:31004
 
 nginx:
   httpsNodePort: 31001
-
-apigw:
-  apiNodePort: 31004
 ```
 
 ### Step 5. Deploy Charts

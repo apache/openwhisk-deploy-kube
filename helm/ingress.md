@@ -25,8 +25,7 @@ are going to deploy available outside of your Kubernetes cluster. When
 you select an ingress method, you are determining what values to use
 for the `whisk.ingress` stanza of your `mycluster.yaml` file that you
 will use in the `helm install` command.  You will need to define
-values for at least `whisk.ingress.type`, `whisk.ingress.api_host`,
-and `whisk.ingress.apigw_url`.
+values for at least `whisk.ingress.type` and `whisk.ingress.api_host`.
 
 Unfortunately, the exact details of configuring an Ingress vary across
 cloud providers.  The detailed instructions
@@ -42,8 +41,8 @@ If you are deploying on minikube, use the NodePort instructions below.
 
 NodePort is the simplest type of Ingress and is suitable for use with
 minikube and single node clusters that do not support more advanced
-ingress options.  Deploying a NodePort ingress will expose ports on
-each Kubernetes worker node for OpenWhisk's api and apigw services.
+ingress options.  Deploying a NodePort ingress will expose a port on
+each Kubernetes worker node for OpenWhisk's nginx service.
 In this Ingress, TLS termination will be handled by OpenWhisk's
 `nginx` service and will use self-signed certificates.  You will need
 to invoke `wsk` with the `-i` command line argument to bypass
@@ -59,19 +58,15 @@ otherwise use
 kubectl get nodes
 ```
 
-Next pick two unassigned ports and define mycluster.yaml as
+Next pick an unassigned port (eg 31001) and define mycluster.yaml as
 ```yaml
 whisk:
   ingress:
     type: NodePort
     api_host: 192.168.99.100:31001
-    apigw_url: http://192.168.99.100:31004
 
 nginx:
   httpsNodePort: 31001
-
-apigw:
-  apiNodePort: 31004
 ```
 
 ## IBM Cloud
@@ -91,13 +86,9 @@ whisk:
   ingress:
     type: NodePort
     api_host: YOUR_WORKERS_PUBLIC_IP_ADDR:31001
-    apigw_url: http://YOUR_WORKERS_PUBLIC_IP_ADDR:31004
 
 nginx:
   httpsNodePort: 31001
-
-apigw:
-  apiNodePort: 31004
 ```
 
 ### IBM Cloud standard cluster
@@ -132,8 +123,7 @@ whisk:
     type: ibm.standard
     ibmdomain: <ibmdomain>
     ibmtlssecret: <ibmtlssecret>
-    api_host: <ibmdomain>/openwhisk
-    apigw_url: https://<ibmdomain>/apigateway
+    api_host: <ibmdomain>
 ```
 
 ## Other cloud providers
