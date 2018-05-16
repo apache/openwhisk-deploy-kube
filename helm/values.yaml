@@ -5,10 +5,10 @@
 
 # Overall system configuration
 whisk:
-  # You must provide these ingress values when deploying the chart
   ingress:
+    name: "ow-ingress"
+    # You _MUST_ provide a value for whisk.ingress.api_host when deploying the chart
     api_host: nil
-    apigw_url: nil
   # Production deployments _MUST_ override these default auth values
   auth:
     system: "789c46b1-71f6-4ed5-8c54-816aa4f8c502:abczO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP"

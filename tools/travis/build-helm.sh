@@ -150,15 +150,12 @@ travis: true
 
 whisk:
   ingress:
+    type: NodePort
     api_host: $WSK_HOST:$WSK_PORT
-    apigw_url: http://$WSK_HOST:$APIGW_PORT
   runtimes: "runtimes-minimal-travis.json"
 
 nginx:
   httpsNodePort: $WSK_PORT
-
-apigw:
-  apiNodePort: $APIGW_PORT
 EOF
 
 cat mycluster.yaml

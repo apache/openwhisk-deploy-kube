@@ -10,18 +10,12 @@ metadata:
   labels:
     name: {{ .Values.apigw.name | quote }}
 spec:
-  {{- if .Values.apigw.apiNodePort }}
-  type: NodePort
-  {{- end }}
   selector:
     name: {{ .Values.apigw.name | quote }}
   ports:
     - port: {{ .Values.apigw.mgmtPort }}
       name: mgmt
     - port: {{ .Values.apigw.apiPort }}
-      {{- if .Values.apigw.apiNodePort }}
-      nodePort: {{ .Values.apigw.apiNodePort }}
-      {{- end }}
       name: api
 
 ---
@@ -66,7 +60,4 @@ spec:
           - name: "REDIS_PORT"
             value: "6379"
           - name: "PUBLIC_GATEWAY_URL"
-            valueFrom:
-              configMapKeyRef:
-                name: whisk.ingress
-                key: apigw_url
+            value: "https://{{ .Values.whisk.ingress.api_host }}"

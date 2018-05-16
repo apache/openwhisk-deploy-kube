@@ -9,7 +9,6 @@ metadata:
   namespace: {{ .Release.Namespace | quote }}
 data:
   api_host: {{ required "A valid api_host is required" .Values.whisk.ingress.api_host }}
-  apigw_url: {{ required "A valid apigw_url is required" .Values.whisk.ingress.apigw_url }}
 
 ---
 apiVersion: v1

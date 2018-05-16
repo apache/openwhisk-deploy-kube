@@ -77,25 +77,25 @@ you want to be an invoker, execute
 $ kubectl label nodes <INVOKER_NODE_NAME> openwhisk-role=invoker
 ```
 
-### Step 4. Deploy Charts
-You will need to create a mycluster.yaml file that specifies the host
-and port information that will be used to access your cluster.  See
-the [ingress discussion](../kubernetes/ingress/README.md) for
-details. Below is a sample file appropriate for a minikube cluster
-where `minikube ip` returns `192.168.99.100`.
+### Step 4. Define `mycluster.yaml`
+
+You will need to create a mycluster.yaml file that records how the
+OpenWhisk deployment on your cluster will be accessed by clients.  See
+the [ingress discussion](./ingress.md) for details. Below is a sample
+file appropriate for a minikube cluster where `minikube ip` returns
+`192.168.99.100` and port 31001 is available to be used.
 
 ```yaml
 whisk:
   ingress:
+    type: NodePort
     api_host: 192.168.99.100:31001
-    apigw_url: http://192.168.99.100:31004
 
 nginx:
   httpsNodePort: 31001
-
-apigw:
-  apiNodePort: 31004
 ```
+
+### Step 5. Deploy Charts
 
 Deployment can be done by using the following single command:
 ```shell
@@ -107,17 +107,18 @@ After a while, if you can see all the pods listed by the following command are i
 kubectl get pods -n openwhisk
 ```
 
-### Test Deployment
+### Step 6. Configure the `wsk` CLI
 
-Install an [OpenWhisk client](https://github.com/apache/incubator-openwhisk/tree/master/docs) to test the deployed OpenWhisk environment.
-
-For now, we are using nginx to provide web access for OpenWhisk client. By default, the nginx service is configured to run at port 31000 for HTTP connection and 31001 for HTTPS connection.
-
-As a result, please run the following command to config your OpenWhisk client:
+Configure the OpenWhisk CLI, wsk, by setting the auth and apihost
+properties (if you don't already have the wsk cli, follow the
+instructions [here](https://github.com/apache/incubator-openwhisk-cli)
+to get it).
 ```shell
-wsk property set --apihost http://<nginx_node_IP>:31000
+wsk property set --apihost <Value of whisk.ingress.api_host from mycluster.yaml>
 wsk property set --auth 23bc46b1-71f6-4ed5-8c54-816aa4f8c502:123zO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP
 ```
+
+### Step 7. Test your Deployment
 
 Prepare a small js function like the following and save it to `greeting.js`:
 ```js
