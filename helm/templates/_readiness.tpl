@@ -1,3 +1,6 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more contributor
+# license agreements; and to You under the Apache License, Version 2.0.
+
 {{/* Init container that waits for couchdb to be ready */}}
 {{- define "readiness.waitForCouchDB" -}}
 - name: "wait-for-couchdb"

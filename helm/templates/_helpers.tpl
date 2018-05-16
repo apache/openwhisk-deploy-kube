@@ -1,3 +1,6 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more contributor
+# license agreements; and to You under the Apache License, Version 2.0.
+
 {{/* hostname for apigateway */}}
 {{- define "apigw_host" -}}
 {{ .Values.apigw.name }}.{{ .Release.Namespace }}.svc.cluster.local
