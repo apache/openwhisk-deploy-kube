@@ -16,9 +16,10 @@ deploymentHealthCheck () {
   TIMEOUT=0
   until $PASSED || [ $TIMEOUT -eq $TIMEOUT_STEP_LIMIT ]; do
     KUBE_DEPLOY_STATUS=$(kubectl -n openwhisk get pods -l name="$1" -o wide | grep "$1" | awk '{print $3}')
-    KUBE_READY_COUNT=$(kubectl -n openwhisk get pods -l name="$1" -o wide | grep "$1" | awk '{print $2}' | awk -F / '${print $1}')
+    KUBE_READY_COUNT=$(kubectl -n openwhisk get pods -l name="$1" -o wide | grep "$1" | awk '{print $2}' | awk -F / '{print $1}')
     if [[ "$KUBE_DEPLOY_STATUS" == "Running" ]] && [[ "$KUBE_READY_COUNT" != "0" ]]; then
       PASSED=true
+      echo "The deployment $1 is ready"
       break
     fi
 
@@ -48,9 +49,10 @@ statefulsetHealthCheck () {
   TIMEOUT=0
   until $PASSED || [ $TIMEOUT -eq $TIMEOUT_STEP_LIMIT ]; do
     KUBE_DEPLOY_STATUS=$(kubectl -n openwhisk get pods -l name="$1" -o wide | grep "$1"-0 | awk '{print $3}')
-    KUBE_READY_COUNT=$(kubectl -n openwhisk get pods -l name="$1" -o wide | grep "$1"-0 | awk '{print $2}' | awk -F / '${print $1}')
+    KUBE_READY_COUNT=$(kubectl -n openwhisk get pods -l name="$1" -o wide | grep "$1"-0 | awk '{print $2}' | awk -F / '{print $1}')
     if [[ "$KUBE_DEPLOY_STATUS" == "Running" ]] && [[ "$KUBE_READY_COUNT" != "0" ]]; then
       PASSED=true
+      echo "The statefulset $1 is ready"
       break
     fi
 
@@ -83,6 +85,7 @@ jobHealthCheck () {
     KUBE_SUCCESSFUL_JOB=$(kubectl -n openwhisk get jobs -o wide | grep "$1" | awk '{print $3}')
     if [ "$KUBE_SUCCESSFUL_JOB" == "1" ]; then
       PASSED=true
+      echo "The job $1 has completed"
       break
     fi
 
@@ -135,7 +138,6 @@ kubectl create namespace openwhisk
 # configure Ingress and wsk CLI
 #
 WSK_PORT=31001
-APIGW_PORT=31004
 WSK_HOST=$(kubectl describe nodes | grep Hostname: | awk '{print $2}')
 if [ "$WSK_HOST" = "minikube" ]; then
     WSK_HOST=$(minikube ip)
@@ -146,8 +148,6 @@ wsk property set --auth `cat $ROOTDIR/kubernetes/cluster-setup/auth.guest` --api
 cd $ROOTDIR/helm
 
 cat > mycluster.yaml <<EOF
-travis: true
-
 whisk:
   ingress:
     type: NodePort
@@ -158,13 +158,18 @@ nginx:
   httpsNodePort: $WSK_PORT
 EOF
 
+echo "Contents of mycluster.yaml are:"
 cat mycluster.yaml
 
 helm install . --namespace=openwhisk --name=ow4travis -f mycluster.yaml
 
-# Wait for controller and invoker to be up
+# Wait for controller to be up
 statefulsetHealthCheck "controller"
+
+# Wait for invoker to be up and considered healthy
 deploymentHealthCheck "invoker"
+echo "Sleeping for 10 seconds to allow controller to consider invoker healthy"
+sleep 10
 
 # Wait for catalog and routemgmt jobs to complete successfully
 jobHealthCheck "install-catalog"
@@ -175,28 +180,55 @@ jobHealthCheck "install-routemgmt"
 #################
 
 # create wsk action
-cat > hello.js << EOL
+cat > /tmp/hello.js << EOL
 function main() {
-  return {payload: 'Hello world'};
+  return {body: 'Hello world'}
 }
 EOL
+wsk -i action create hello /tmp/hello.js --web true
 
-wsk -i action create hello hello.js
-
-sleep 5
-
-# run the new hello world action
-RESULT=$(wsk -i action invoke --blocking hello | grep "\"status\": \"success\"")
-
+# first list the actions and expect to see hello
+RESULT=$(wsk -i action list | grep hello)
 if [ -z "$RESULT" ]; then
-  echo "FAILED! Could not invoked custom action"
-
-  echo " ----------------------------- controller logs ---------------------------"
-  kubectl -n openwhisk logs controller-0
-
-  echo " ----------------------------- invoker logs ---------------------------"
-  kubectl -n openwhisk logs -l name=invoker
+  echo "FAILED! Could not list hello action via CLI"
   exit 1
 fi
+
+# next invoke the new hello world action via the CLI
+RESULT=$(wsk -i action invoke --blocking hello | grep "\"status\": \"success\"")
+if [ -z "$RESULT" ]; then
+  echo "FAILED! Could not invoke hello action via CLI"
+  exit 1
+fi
+
+# now run it as a web action
+HELLO_URL=$(wsk -i action get hello --url | grep "https://")
+RESULT=$(wget --no-check-certificate -qO- $HELLO_URL | grep 'Hello world')
+if [ -z "$RESULT" ]; then
+  echo "FAILED! Could not invoke hello as a web action"
+  exit 1
+fi
+
+# wait a few seconds
+sleep 3
+
+# now define it as an api and invoke it that way
+
+# TEMP: test is not working yet in travis environment.
+#       disable for now to allow rest of PR to be merged...
+# wsk -v -i api create /demo /hello get hello
+#
+# API_URL=$(wsk -i api list | grep hello | awk '{print $4}')
+# echo "API URL is $API_URL"
+# wget --no-check-certificate -O sayHello.txt "$API_URL"
+# echo "AJA!"
+# cat sayHello.txt
+# echo "AJA!"
+#
+# RESULT=$(wget --no-check-certificate -qO- "$API_URL" | grep 'Hello world')
+# if [ -z "$RESULT" ]; then
+#   echo "FAILED! Could not invoke hello via apigateway"
+#   exit 1
+# fi
 
 echo "PASSED! Deployed openwhisk and invoked Hello action"

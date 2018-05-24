@@ -299,27 +299,32 @@ wsk -i --auth `cat kubernetes/cluster-setup/auth.whisk.system` action list
 #################
 
 # create wsk action
-cat > hello.js << EOL
+cat > /tmp/hello.js << EOL
 function main() {
-  return {payload: 'Hello world'};
+  return {body: 'Hello world'};
 }
 EOL
+wsk -i action create hello /tmp/hello.js --web true
 
-wsk -i action create hello hello.js
-
-sleep 5
-
-# run the new hello world action
-RESULT=$(wsk -i action invoke --blocking hello | grep "\"status\": \"success\"")
-
+# first list the actions and expect to see hello
+RESULT=$(wsk -i action list | grep hello)
 if [ -z "$RESULT" ]; then
-  echo "FAILED! Could not invoked custom action"
+  echo "FAILED! Could not list hello action via CLI"
+  exit 1
+fi
 
-  echo " ----------------------------- controller logs ---------------------------"
-  kubectl -n openwhisk logs controller-0
+# next invoke the new hello world action via the CLI
+RESULT=$(wsk -i action invoke --blocking hello | grep "\"status\": \"success\"")
+if [ -z "$RESULT" ]; then
+  echo "FAILED! Could not invoke hello action via CLI"
+  exit 1
+fi
 
-  echo " ----------------------------- invoker logs ---------------------------"
-  kubectl -n openwhisk logs -l name=invoker
+# now run it as a web action
+HELLO_URL=$(wsk -i action get hello --url | grep "https://")
+RESULT=$(wget --no-check-certificate -qO- $HELLO_URL | grep 'Hello world')
+if [ -z "$RESULT" ]; then
+  echo "FAILED! Could not invoke hello as a web action"
   exit 1
 fi
 
