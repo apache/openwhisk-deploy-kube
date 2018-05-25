@@ -17,7 +17,7 @@ spec:
       restartPolicy: Never
       containers:
       - name: kafkapkginstaller
-        imagePullPolicy: IfNotPresent 
+        imagePullPolicy: IfNotPresent
         image: openwhisk/kube-kafkapkginstaller
         env:
         - name: "APIHOST"

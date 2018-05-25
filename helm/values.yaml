@@ -59,7 +59,7 @@ db:
     enabled: false
     pvcName: couchdb-pvc
     size: 8Gi
-    storageClass: CouchDBSC 
+    storageClass: CouchDBSC
     accessMode: ReadWriteOnce
 
 # Nginx configurations
