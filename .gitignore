@@ -1,2 +1,3 @@
 kubernetes/nginx/certs
 helm/mycluster.yaml
+*~
