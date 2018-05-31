@@ -53,7 +53,6 @@ Travis CI testing.
 
 | Kubernetes Version | Minikube Version |
 --- | --- |
-1.7.4 | 0.23.0 |
 1.8.0 | 0.25.2 |
 1.9.0 | 0.25.2 |
 

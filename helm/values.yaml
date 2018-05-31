@@ -94,7 +94,19 @@ invoker:
   image: "openwhisk/invoker"
   imagePullPolicy: "IfNotPresent"
   restartPolicy: "Always"
+  port: 8080
+  pullRuntimesImage: "openwhisk/kube-docker-pull"
   options: ""
+  jvmOptions: "-Xmx512M"
+  containerFactory:
+    impl: "docker"
+    kubernetes:
+      replicaCount: 1
+      agent:
+        name: "invoker-agent"
+        image: "openwhisk/kube-invoker-agent"
+        enabled: false
+        port: 3233
 
 # API Gateway configurations
 apigw:

@@ -154,6 +154,13 @@ whisk:
     api_host: $WSK_HOST:$WSK_PORT
   runtimes: "runtimes-minimal-travis.json"
 
+invoker:
+  containerFactory:
+    impl: $OW_CONTAINER_FACTORY
+    kubernetes:
+      agent:
+        enabled: true
+
 nginx:
   httpsNodePort: $WSK_PORT
 EOF

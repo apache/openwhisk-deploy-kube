@@ -234,7 +234,7 @@ pushd kubernetes/invoker
         echo "Deploying invoker using DockerContainerFactory"
         kubectl -n openwhisk create cm invoker.config --from-env-file=invoker-dcf.env
         kubectl apply -f invoker-dcf.yml
-    elif [ "$OW_CONTAINER_FACTORY" = "kube" ]; then
+    elif [ "$OW_CONTAINER_FACTORY" = "kubernetes" ]; then
         echo "Deploying invoker using KubernetesContainerFactory"
         kubectl -n openwhisk create cm invoker.config --from-env-file=invoker-k8scf.env
         kubectl apply -f invoker-agent.yml
