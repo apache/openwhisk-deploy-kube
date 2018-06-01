@@ -87,9 +87,6 @@ controller:
     actionsInvokesPerminute: 60
     actionsInvokesConcurrentinsystem: 5000
     actionsInvokesConcurrent: 30
-  localbookkeeping: true
-  seedNodes: "[]"
-  HA: false
 
 # Invoker configurations
 invoker:

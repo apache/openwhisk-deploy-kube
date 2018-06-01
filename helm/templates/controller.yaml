@@ -31,6 +31,7 @@ spec:
       labels:
         name: {{ .Values.controller.name | quote }}
     spec:
+      serviceAccountName: ow-core
       restartPolicy: {{ .Values.controller.restartPolicy }}
 
       {{- if .Values.affinity.enabled }}
@@ -52,6 +53,10 @@ spec:
         ports:
         - name: controller
           containerPort: {{ .Values.controller.port }}
+        - name: akka-remoting
+          containerPort: 2552
+        - name: akka-mgmt-http
+          containerPort: 19999
         livenessProbe:
           httpGet:
             path: "/ping"
@@ -111,11 +116,17 @@ spec:
 
         - name: "CONTROLLER_INSTANCES"
           value: {{ .Values.controller.replicaCount | quote }}
-        - name: "CONTROLLER_LOCALBOOKKEEPING"
-          value: {{ .Values.controller.localbookkeeping | quote }}
-        - name: "AKKA_CLUSTER_SEED_NODES"
-          value: {{ .Values.controller.seedNodes | quote }}
-        - name: "CONTROLLER_HA"
-          value: {{ .Values.controller.HA | quote }}
+{{- if gt (int .Values.controller.replicaCount) 1 }}
+        - name: "CONFIG_whisk_cluster_useClusterBootstrap"
+          value: "true"
         - name: "CONFIG_akka_actor_provider"
           value: "cluster"
+        - name: "CONFIG_akka_discovery_method"
+          value: "kubernetes-api"
+        - name: "CONFIG_akka_discovery_kubernetesApi_podNamespace"
+          value: {{ .Release.Namespace | quote }}
+        - name: "CONFIG_akka_discovery_kubernetesApi_podLabelSelector"
+          value: "name={{ .Values.controller.name }}"
+        - name: "CONFIG_akka_discovery_kubernetesApi_podPortName"
+          value: "akka-mgmt-http"
+{{- end }}
