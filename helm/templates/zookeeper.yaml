@@ -36,6 +36,16 @@ spec:
     spec:
       restartPolicy: {{ .Values.zookeeper.restartPolicy | quote }}
 
+{{- if .Values.zookeeper.persistence.enabled }}
+      volumes:
+      - name: zk-data
+        persistentVolumeClaim:
+          claimName: "{{- .Values.zookeeper.persistence.pvcName -}}-data"
+      - name: zk-datalog
+        persistentVolumeClaim:
+          claimName: "{{- .Values.zookeeper.persistence.pvcName -}}-datalog"
+{{- end }}
+
       {{- if .Values.affinity.enabled }}
       affinity:
 {{ include "affinity.core" . | indent 8 }}
@@ -53,3 +63,46 @@ spec:
           containerPort: {{ .Values.zookeeper.serverPort }}
         - name: leader-election
           containerPort: {{ .Values.zookeeper.leaderElectionPort }}
+{{- if .Values.zookeeper.persistence.enabled }}
+        volumeMounts:
+        - mountPath: /data
+          name: zk-data
+        - mountPath: /datalog
+          name: zk-data
+{{- end }}
+        env:
+{{- if .Values.zookeeper.persistence.enabled }}
+        - name: "ZOO_DATA_DIR"
+          value: /data
+        - name: "ZOO_DATA_LOG_DIR"
+          value: /datalog
+{{- end }}
+
+{{- if .Values.zookeeper.persistence.enabled }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: "{{- .Values.zookeeper.persistence.pvcName -}}-data"
+  namespace: {{ .Release.Namespace | quote }}
+spec:
+  storageClassName: {{ .Values.zookeeper.persistence.storageClass }}
+  accessModes:
+    - {{ .Values.zookeeper.persistence.accessMode }}
+  resources:
+    requests:
+      storage: {{ .Values.zookeeper.persistence.size }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: "{{- .Values.zookeeper.persistence.pvcName -}}-datalog"
+  namespace: {{ .Release.Namespace | quote }}
+spec:
+  storageClassName: {{ .Values.zookeeper.persistence.storageClass }}
+  accessModes:
+    - {{ .Values.zookeeper.persistence.accessMode }}
+  resources:
+    requests:
+      storage: {{ .Values.zookeeper.persistence.size }}
+{{- end }}

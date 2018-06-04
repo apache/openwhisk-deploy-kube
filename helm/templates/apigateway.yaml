@@ -42,10 +42,6 @@ spec:
       {{- end }}
 
       containers:
-        - name: redis
-          imagePullPolicy: {{ .Values.apigw.imagePullPolicy | quote }}
-          image: redis:3.2
-
         - name: apigateway
           imagePullPolicy: {{ .Values.apigw.imagePullPolicy | quote }}
           image: {{ .Values.apigw.image | quote }}
@@ -56,8 +52,8 @@ spec:
             containerPort: {{ .Values.apigw.apiPort }}
           env:
           - name: "REDIS_HOST"
-            value: "127.0.0.1"
+            value: "{{ include "redis_host" . }}"
           - name: "REDIS_PORT"
-            value: "6379"
+            value: {{ .Values.redis.port | quote }}
           - name: "PUBLIC_GATEWAY_URL"
-            value: "https://{{ .Values.whisk.ingress.api_host }}"
+            value: "{{- .Values.whisk.ingress.api_host_proto -}}://{{- .Values.whisk.ingress.api_host_name -}}:{{- .Values.whisk.ingress.api_host_port -}}"

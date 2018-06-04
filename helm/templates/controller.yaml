@@ -69,36 +69,33 @@ spec:
         - name: "PORT"
           value: {{ .Values.controller.port | quote }}
 
-        # Loadbalancer options
-        - name: "LOADBALANCER_INVOKERBUSYTHRESHOLD"
-          value: "16"
+        - name:  "WHISK_VERSION_DATE"
+          value: {{ dateInZone "2006-01-02-03:04:05Z" (now) "UTC"| quote }}
+        - name: "WHISK_VERSION_BUILDNO"
+          value: {{ .Values.whisk.versions.tag | quote }}
+        - name: "WHISK_VERSION_NAME"
+          value: {{ .Values.whisk.versions.name | quote }}
+
+        # Java options
+        - name: "JAVA_OPTS"
+          value: "-Xmx{{- .Values.controller.jvmHeapMB -}}M {{ .Values.controller.jvmOptions }}"
+
+        # specific controller arguments
+        - name: "CONTROLLER_OPTS"
+          value: {{ .Values.controller.options | quote }}
 
         # action runtimes
         - name: "RUNTIMES_MANIFEST"
           value: {{ template "runtimes_manifest" . }}
 
-        # this version is the day it is deployed and should be configured every time
-        - name:  "WHISK_VERSION_DATE"
-          value: "2017-01-01T00:00:00Z"
-        # the buildno should be the docker image tag to use
-        - name: "WHISK_VERSION_BUILDNO"
-          value: "latest"
-        - name: "WHISK_VERSION_NAME"
-          value: ""
-
-        # Java options
-        - name: "JAVA_OPTS"
-          value: "-Xmx2g"
+        - name: "CONFIG_whisk_loadbalancer_invokerBusyThreshold"
+          value: {{ .Values.invoker.busyThreshold | quote }}
 
         # Kafka properties
         - name: "KAFKA_HOSTS"
           value: "{{ include "kafka_host" . }}:{{ .Values.kafka.port }}"
         - name: "KAFKA_HOST_PORT"
           value: {{ .Values.kafka.port | quote }}
-
-        # specific controller arguments
-        - name: "CONTROLLER_OPTS"
-          value: ""
 
         # properties for DB connection
 {{ include "whisk.dbEnvVars" . | indent 8 }}

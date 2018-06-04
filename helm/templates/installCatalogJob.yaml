@@ -27,8 +27,6 @@ spec:
               secretKeyRef:
                 name: whisk.auth
                 key: system
+          # poorly named envvar; actually expects full apihost (host:port)
           - name: "WHISK_API_HOST_NAME"
-            valueFrom:
-              configMapKeyRef:
-                name: whisk.ingress
-                key: api_host
+            value: "{{- .Values.whisk.ingress.api_host_name -}}:{{- .Values.whisk.ingress.api_host_port -}}"
