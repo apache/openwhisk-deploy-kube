@@ -1,53 +1,52 @@
 # Licensed to the Apache Software Foundation (ASF) under one or more contributor
 # license agreements; and to You under the Apache License, Version 2.0.
 
+---
+{{- if eq .Values.invoker.containerFactory.impl "docker" }}
 apiVersion: extensions/v1beta1
 kind: DaemonSet
+{{- else if eq .Values.invoker.containerFactory.impl "kubernetes" -}}
+apiVersion: apps/v1beta1
+kind: StatefulSet
+{{- end }}
 metadata:
   name: {{ .Values.invoker.name | quote }}
   namespace: {{ .Release.Namespace | quote }}
   labels:
     name: {{ .Values.invoker.name | quote }}
 spec:
+{{- if eq .Values.invoker.containerFactory.impl "kubernetes" }}
+  replicas: {{ .Values.invoker.containerFactory.kubernetes.replicaCount }}
+{{- end }}
   template:
     metadata:
       labels:
         name: {{ .Values.invoker.name | quote }}
     spec:
+{{- if eq .Values.invoker.containerFactory.impl "kubernetes" }}
+      serviceAccountName: {{ .Values.invoker.name | quote }}
+{{- end }}
       restartPolicy: {{ .Values.invoker.restartPolicy }}
 
       affinity:
 {{ include "affinity.invoker" . | indent 8 }}
+{{- if eq .Values.invoker.containerFactory.impl "kubernetes" }}
+{{ include "affinity.selfAntiAffinity" ( .Values.invoker.name | quote ) | indent 8 }}
+{{- end }}
 
+{{- if eq .Values.invoker.containerFactory.impl "docker" }}
       volumes:
-      - name: cgroup
-        hostPath:
-          path: "/sys/fs/cgroup"
-      - name: runc
-        hostPath:
-          path: "/run/runc"
-      - name: dockerrootdir
-        hostPath:
-          path: "/var/lib/docker/containers"
-      - name: dockersock
-        hostPath:
-          path: "/var/run/docker.sock"
+{{ include "docker_volumes" . | indent 6 }}
+{{- end }}
 
       initContainers:
       # Wait for a controller to be up (which implies kafka, zookeeper, couchdb are all up as well).
 {{ include "readiness.waitForController" . | indent 6 }}
 
+{{- if eq .Values.invoker.containerFactory.impl "docker" }}
       # Pull images for all default runtimes before starting invoker
-      - name: docker-pull-runtimes
-        imagePullPolicy: {{ .Values.invoker.imagePullPolicy | quote }}
-        image: openwhisk/kube-docker-pull
-        volumeMounts:
-        - name: dockersock
-          mountPath: "/var/run/docker.sock"
-        env:
-          # action runtimes
-          - name: "RUNTIMES_MANIFEST"
-            value: {{ template "runtimes_manifest" . }}
+{{ include "docker_pull_runtimes" . | indent 6 }}
+{{- end }}
 
       containers:
       - name: {{ .Values.invoker.name | quote }}
@@ -56,7 +55,7 @@ spec:
         command: [ "/bin/bash", "-c", "COMPONENT_NAME=$(hostname | cut -d'-' -f2) /init.sh"]
         env:
           - name: "PORT"
-            value: "8080"
+            value: {{ .Values.invoker.port | quote }}
           - name: "WHISK_API_HOST_NAME"
             valueFrom:
               configMapKeyRef:
@@ -75,19 +74,26 @@ spec:
           - name: "DOCKER_REGISTRY"
             value: ""
 
-          # Invoker name is name of the Kube node when using DaemonSet
+          # Invoker name is the name of the node (DaemonSet) or pod (StatefulSet)
           - name: "INVOKER_NAME"
             valueFrom:
               fieldRef:
-                fieldPath: spec.nodeName
+                fieldPath: {{ if eq .Values.invoker.containerFactory.impl "docker" }} spec.nodeName {{ else }} metadata.name {{ end }}
 
           # Java options
           - name: "JAVA_OPTS"
-            value: "-Xmx2g"
+            value: {{ .Values.invoker.jvmOptions | quote }}
 
           # Invoker options
           - name: "INVOKER_OPTS"
-            value: {{ .Values.invoker.options | quote }}
+            value: "{{ .Values.invoker.options }} {{ if eq .Values.invoker.containerFactory.impl "docker" }} -Dwhisk.spi.ContainerFactoryProvider=whisk.core.containerpool.docker.DockerContainerFactoryProvider {{ else }} -Dkubernetes.master=https://$KUBERNETES_SERVICE_HOST -Dwhisk.spi.ContainerFactoryProvider=whisk.core.containerpool.kubernetes.KubernetesContainerFactoryProvider {{ end }}"
+
+{{ if .Values.invoker.containerFactory.kubernetes.agent.enabled }}
+          - name: "CONFIG_whisk_kubernetes_invokerAgent_enabled"
+            value:  "TRUE"
+          - name: "CONFIG_whisk_kubernetes_invokerAgent_port"
+            value: {{ .Values.invoker.containerFactory.kubernetes.agent.port | quote }}
+{{ end }}
 
           # action runtimes
           - name: "RUNTIMES_MANIFEST"
@@ -114,13 +120,56 @@ spec:
 
         ports:
         - name: invoker
-          containerPort: 8080
+          containerPort: {{ .Values.invoker.port }}
+{{- if eq .Values.invoker.containerFactory.impl "docker" }}
         volumeMounts:
-        - name: cgroup
-          mountPath: "/sys/fs/cgroup"
-        - name: runc
-          mountPath: "/run/runc"
-        - name: dockersock
-          mountPath: "/var/run/docker.sock"
-        - name: dockerrootdir
-          mountPath: "/containers"
+{{ include "docker_volume_mounts" . | indent 8 }}
+{{- end }}
+
+{{ if .Values.invoker.containerFactory.kubernetes.agent.enabled }}
+---
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: {{ .Values.invoker.containerFactory.kubernetes.agent.name | quote }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    name: {{ .Values.invoker.containerFactory.kubernetes.agent.name | quote }}
+spec:
+  template:
+    metadata:
+      labels:
+        name: {{ .Values.invoker.containerFactory.kubernetes.agent.name | quote }}
+    spec:
+      restartPolicy: Always
+      hostNetwork: true
+
+      # TODO: disabled affinity until user-action pods are
+      #       created by KubernetesContainerFacotry with the
+      #       same affinity rules.
+      #       Requires extension to upstream kube java client
+      #       run only on nodes labeled with openwhisk-role=invoker
+
+      volumes:
+{{ include "docker_volumes" . | indent 6 }}
+      - name: userlogs
+        emptyDir: {}
+
+      initContainers:
+      # Pull images for all default runtimes before starting invoker
+{{ include "docker_pull_runtimes" . | indent 6 }}
+
+      containers:
+      - name: {{ .Values.invoker.containerFactory.kubernetes.agent.name | quote }}
+        imagePullPolicy: {{ .Values.invoker.imagePullPolicy | quote }}
+        image: {{ .Values.invoker.containerFactory.kubernetes.agent.image }}
+        securityContext:
+          privileged: true
+        ports:
+        - name: agent
+          containerPort: {{ .Values.invoker.containerFactory.kubernetes.agent.port }}
+        volumeMounts:
+{{ include "docker_volume_mounts" . | indent 8 }}
+        - name: userlogs
+          mountPath: "/action-logs"
+{{- end }}

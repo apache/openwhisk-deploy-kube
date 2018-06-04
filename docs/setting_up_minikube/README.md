@@ -40,12 +40,12 @@ asdf plugin-add kubectl
 asdf plugin-add minikube
 ```
 
-### Install asdf plugin minikube@0.23.0 and kubectl@1.7.4
+### Install asdf plugin minikube@0.25.2 and kubectl@1.9.0
 ```
-asdf install kubectl 1.7.4
-asdf global kubectl 1.7.4
-asdf install minikube 0.23.0
-asdf global minikube 0.23.0
+asdf install kubectl 1.9.0
+asdf global kubectl 1.9.0
+asdf install minikube 0.25.2
+asdf global minikube 0.25.2
 ```
 
 ## Create the minikube VM
@@ -54,7 +54,7 @@ If you have a larger machine, you may want to provision more (especially more me
 
 Start Minikube with:
 ```
-minikube start --cpus 2 --memory 4096 --kubernetes-version=v1.7.4
+minikube start --cpus 2 --memory 4096 --kubernetes-version=v1.9.0 --extra-config=apiserver.Authorization.Mode=RBAC
 ```
 
 ## Setup Docker network in promiscuous mode
