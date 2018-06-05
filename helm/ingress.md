@@ -25,7 +25,8 @@ are going to deploy available outside of your Kubernetes cluster. When
 you select an ingress method, you are determining what values to use
 for the `whisk.ingress` stanza of your `mycluster.yaml` file that you
 will use in the `helm install` command.  You will need to define
-values for at least `whisk.ingress.type` and `whisk.ingress.api_host`.
+values for at least `whisk.ingress.type` and `whisk.ingress.api_host_name`
+and `whisk.ingress.api_host_port`.
 
 Unfortunately, the exact details of configuring an Ingress vary across
 cloud providers.  The detailed instructions
@@ -63,7 +64,8 @@ Next pick an unassigned port (eg 31001) and define mycluster.yaml as
 whisk:
   ingress:
     type: NodePort
-    api_host: 192.168.99.100:31001
+    api_host_name: 192.168.99.100
+    api_host_port: 31001
 
 nginx:
   httpsNodePort: 31001
@@ -85,7 +87,8 @@ Then define mycluster.yaml as
 whisk:
   ingress:
     type: NodePort
-    api_host: YOUR_WORKERS_PUBLIC_IP_ADDR:31001
+    api_host_name: YOUR_WORKERS_PUBLIC_IP_ADDR
+    api_host_port: 31001
 
 nginx:
   httpsNodePort: 31001
@@ -123,7 +126,8 @@ whisk:
     type: ibm.standard
     ibmdomain: <ibmdomain>
     ibmtlssecret: <ibmtlssecret>
-    api_host: <ibmdomain>
+    api_host_name: <ibmdomain>
+    api_host_port: 443
 ```
 
 ## Other cloud providers

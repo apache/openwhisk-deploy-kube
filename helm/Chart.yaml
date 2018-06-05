@@ -3,7 +3,7 @@
 
 apiVersion: v1
 description: A Helm chart to deploy Apache OpenWhisk for Kubernetes
-name: openwhisk
+name: Apache OpenWhisk
 version: 0.1.0
 keywords:
   - Apache OpenWhisk

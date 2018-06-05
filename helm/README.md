@@ -89,7 +89,8 @@ file appropriate for a minikube cluster where `minikube ip` returns
 whisk:
   ingress:
     type: NodePort
-    api_host: 192.168.99.100:31001
+    api_host_name: 192.168.99.100
+    api_host_port: 31001
 
 nginx:
   httpsNodePort: 31001
@@ -112,9 +113,10 @@ kubectl get pods -n openwhisk
 Configure the OpenWhisk CLI, wsk, by setting the auth and apihost
 properties (if you don't already have the wsk cli, follow the
 instructions [here](https://github.com/apache/incubator-openwhisk-cli)
-to get it).
+to get it). Replace `whisk.ingress.api_host_name` and `whisk.ingress.api_host_port`
+with the actual values from your mycluster.yaml.
 ```shell
-wsk property set --apihost <Value of whisk.ingress.api_host from mycluster.yaml>
+wsk property set --apihost whisk.ingress.api_host_name:whisk.ingress.api_host_port
 wsk property set --auth 23bc46b1-71f6-4ed5-8c54-816aa4f8c502:123zO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP
 ```
 

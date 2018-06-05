@@ -56,23 +56,32 @@ spec:
         env:
           - name: "PORT"
             value: {{ .Values.invoker.port | quote }}
+
+          # Needed by invoker to set the environment variable __OW_API_HOST in action containers
+          - name: "WHISK_API_HOST_PROTO"
+            value: {{ .Values.whisk.ingress.api_host_proto | quote }}
+          - name: "WHISK_API_HOST_PORT"
+            value: {{ .Values.whisk.ingress.api_host_port | quote }}
           - name: "WHISK_API_HOST_NAME"
-            valueFrom:
-              configMapKeyRef:
-                name: whisk.ingress
-                key: api_host
+            value: {{ .Values.whisk.ingress.api_host_name | quote }}
+
           - name: "INVOKER_CONTAINER_NETWORK"
-            value: "bridge"
+            value: {{ .Values.invoker.containerNetwork | quote }}
           - name: "CONFIG_whisk_docker_containerFactory_useRunc"
-            value: "false"
+            value: {{ .Values.invoker.containerFactory.useRunc | quote }}
 
           # Properties for invoker image
           - name: "DOCKER_IMAGE_PREFIX"
-            value: "openwhisk"
+            value: {{ .Values.docker.image.prefix | quote }}
           - name: "DOCKER_IMAGE_TAG"
-            value: "latest"
+            value: {{ .Values.docker.image.tag | quote }}
           - name: "DOCKER_REGISTRY"
-            value: ""
+            value: {{ .Values.docker.registry.name | quote }}
+
+          - name: "CONFIG_whisk_containerPool_numCore"
+            value: {{ .Values.invoker.containerPool.numCore | quote }}
+          - name: "CONFIG_whisk_containerPool_coreShare"
+            value: {{ .Values.invoker.containerPool.coreShare | quote }}
 
           # Invoker name is the name of the node (DaemonSet) or pod (StatefulSet)
           - name: "INVOKER_NAME"
@@ -82,7 +91,7 @@ spec:
 
           # Java options
           - name: "JAVA_OPTS"
-            value: {{ .Values.invoker.jvmOptions | quote }}
+            value: "-Xmx{{- .Values.invoker.jvmHeapMB -}}M {{ .Values.invoker.jvmOptions }}"
 
           # Invoker options
           - name: "INVOKER_OPTS"
@@ -105,7 +114,7 @@ spec:
 
           # this version is the day it is deployed,
           - name:  "WHISK_VERSION_DATE"
-            value: "2017-01-01T00:00:00Z"
+            value: {{ dateInZone "2006-01-02-03:04:05Z" (now) "UTC"| quote }}
 
           # properties for DB connection
 {{ include "whisk.dbEnvVars" . | indent 10 }}

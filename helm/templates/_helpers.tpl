@@ -21,6 +21,11 @@
 {{ .Values.kafka.name }}.{{ .Release.Namespace }}.svc.cluster.local
 {{- end -}}
 
+{{/* hostname for redis */}}
+{{- define "redis_host" -}}
+{{ .Values.redis.name }}.{{ .Release.Namespace }}.svc.cluster.local
+{{- end -}}
+
 {{/* hostname for zookeeper */}}
 {{- define "zookeeper_host" -}}
 {{ .Values.zookeeper.name }}.{{ .Release.Namespace }}.svc.cluster.local
@@ -34,9 +39,15 @@
 {{/* Environment variables required for accessing CouchDB from a pod */}}
 {{- define "whisk.dbEnvVars" -}}
 - name: "CONFIG_whisk_couchdb_username"
-  value: {{ .Values.db.auth.username | quote }}
+  valueFrom:
+    secretKeyRef:
+      name: db.auth
+      key: db_username
 - name: "CONFIG_whisk_couchdb_password"
-  value: {{ .Values.db.auth.password | quote }}
+  valueFrom:
+    secretKeyRef:
+      name: db.auth
+      key: db_password
 - name: "CONFIG_whisk_couchdb_port"
   value: {{ .Values.db.port | quote}}
 - name: "CONFIG_whisk_couchdb_protocol"
