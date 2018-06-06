@@ -19,28 +19,39 @@
 
 # Setting Up Minikube for OpenWhisk
 
-First, download and install Minikube following these [instructions](https://github.com/kubernetes/minikube).
+New versions of Minikube and Kubernetes are released fairly
+frequently.  Over time, you will probably end up needing to have
+multiple versions installed on your development machine. We recommend
+using the asdf package manager to make it very easy to switch between
+versions and manage installation.
 
-## Setup MacOS for local minikube
-We recommend using the same versions we use in Travis, using asdf makes it very easy to select the version of minikube and kubectl
+## Install and configure asdf
 
-### Install asdf
+### MacOS
 ```
 brew install asdf
 ```
-### Setup asdf in terminal
+
 Edit your `~/.profile` or equivalent
 ```
 [ -s "/usr/local/opt/asdf/asdf.sh" ] && . /usr/local/opt/asdf/asdf.sh
 ```
 
-### Add minikune and kubectl plugins
+### Other Platforms
+
+Follow the asdf installation instructions at https://github.com/asdf-vm/asdf
+
+## Add minikube and kubectl plugins
 ```
 asdf plugin-add kubectl
 asdf plugin-add minikube
 ```
 
-### Install asdf plugin minikube@0.25.2 and kubectl@1.9.0
+## Install minikube and kubectl using asdf.
+We recommend starting with versions of minikube and kubectl that match
+what we test in TravisCI. After you have experience with OpenWhisk on
+Minikube, feel free to experiment with additional versions.
+
 ```
 asdf install kubectl 1.9.0
 asdf global kubectl 1.9.0

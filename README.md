@@ -17,7 +17,7 @@
 #
 -->
 
-# OpenWhisk Deployment for Kubernetes
+# OpenWhisk Deployment on Kubernetes
 
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 [![Build Status](https://travis-ci.org/apache/incubator-openwhisk-deploy-kube.svg?branch=master)](https://travis-ci.org/apache/incubator-openwhisk-deploy-kube)
@@ -26,23 +26,23 @@ This repository can be used to deploy OpenWhisk to a Kubernetes cluster.
 
 # Table of Contents
 
-* [Requirements](#requirements)
-* [Setting up Kubernetes](#setting-up-kubernetes)
-* [Configuring OpenWhisk](#configuring-openwhisk)
+* [Setting up Kubernetes and Helm](#setting-up-kubernetes-and-helm)
+* [Deploying OpenWhisk](#deploying-openwhisk)
 * [Cleanup](#cleanup)
 * [Issues](#issues)
 
-# Requirements
-Several requirements must be met for OpenWhisk to deploy on Kubernetes.
+# Setting up Kubernetes and Helm
 
-**Kubernetes**
-* [Kubernetes](https://github.com/kubernetes/kubernetes) version 1.6+. However, multiple minor releases of Kubernetes, including 1.6.3, 1.7.14, 1.8.9 and 1.9.4 will not work for OpenWhisk due to bugs with volume mount subpaths (see[[1](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG-1.6.md#known-issues-for-v163), [2](https://github.com/kubernetes/kubernetes/issues/61076)]. This bug will surface as a failure when deploying the nginx container.
+## Kubernetes
+
+### Requirements
+
+Several requirements must be met for OpenWhisk to deploy on Kubernetes.
+* [Kubernetes](https://github.com/kubernetes/kubernetes) version 1.7+. However, multiple minor releases of Kubernetes, including 1.7.14, 1.8.9 and 1.9.4 will not work for OpenWhisk due to bugs with volume mount subpaths (see[[1](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG-1.6.md#known-issues-for-v163), [2](https://github.com/kubernetes/kubernetes/issues/61076)]. This bug will surface as a failure when deploying the nginx container.
 * The ability to create Ingresses to make a Kubernetes service available outside of the cluster so you can actually use OpenWhisk.
 * Endpoints of Kubernetes services must be able to loopback to themselves (the kubelet's `hairpin-mode` must not be `none`).
 
-# Setting up Kubernetes
-
-## Using Minikube
+### Using Minikube
 
 For local development and testing, we recommend using Minikube with
 the docker network in promiscuous mode.  Not all combinations of
@@ -56,87 +56,146 @@ Travis CI testing.
 1.8.0 | 0.25.2 |
 1.9.0 | 0.25.2 |
 
-For details on setting up Minikube, see these [instructions](/docs/setting_up_minikube/README.md).
+For details on setting up Minikube, see these [instructions](docs/minikube.md).
 
-## Using a Kubernetes cluster from a cloud provider
+### Using a Kubernetes cluster from a cloud provider
 
 You can also provision a Kubernetes cluster from a cloud provider, subject to the cluster meeting the requirements above.
 
-# Configuring OpenWhisk
+## Helm
 
-The first time you deploy OpenWhisk on Kubernetes, we recommend
-following the steps below manually so you can inspect the results and
-debug your setup.  After you are confident that OpenWhisk deploys
-smoothly on your cluster, you might find it useful to drive your
-deployments using the script [build.sh](tools/travis/build.sh) that we
-use to deploy OpenWhisk on Kubernetes for our Travis CI testing.
+[Helm](https://github.com/kubernetes/helm) is a tool to simplify the
+deployment and management of applications on Kubernetes clusters. Helm
+consists of the `helm` command line tool that you install on your
+development machine and the `tiller` runtime that you install on your
+Kubernetes cluster.
 
-## Initial Cluster Configuration
+For details on installing Helm, see these [instructions](docs/helm.md).
 
-* Follow the steps for initial [Cluster Setup](kubernetes/cluster-setup)
-* Configure your [Ingresses](kubernetes/ingress), including configuring the wsk CLI.
+# Deploying OpenWhisk
 
-## Configure or Deploy CouchDB
+## Overview
 
-Do one of the following:
-* For development and testing purposes, this repo includes a configuration
-  for deploying a [non-replicated CouchDB instance](kubernetes/couchdb)
-  within the Kubernetes cluster.
-* For a production level CouchDB instance, take a look at the main
-  OpenWhisk [documentation for configuring CouchDB](https://github.com/apache/incubator-openwhisk/blob/master/tools/db/README.md).
-  You will need to define the db.auth secret and db.config configmap as described in the [CouchDB README.md](kubernetes/couchdb/README.md)
-  to match your database deployment and create a CouchDB service instance
-  that forwards connections to your external database.
+You will use Helm to deploy OpenWhisk to your Kubernetes cluster.
+There are four deployment steps that are described in more
+detail below in the rest of this section.
+1. [Initial cluster setup](#initial-setup). You will create a
+Kubernetes namespace into which to deploy OpenWhisk and label the
+Kubernetes worker nodes to be used to execute user actions.
+2. [Customize the deployment](#customize-the-deployment). You will
+create a `mycluster.yaml` that specifies key facts about your
+Kubernetes cluster and the OpenWhisk configuration you wish to
+deploy.
+3. [Deploy with Helm](#deploy-with-helm). You will use Helm and
+`mycluster.yaml` to deploy OpenWhisk to your Kubernetes cluster.
+4. [Configure the `wsk` CLI](#configure-the-wsk-cli). You need to
+tell the `wsk` CLI how to connect to your OpenWhisk deployment.
 
-## Deploy Remaining Components
+## Initial setup
 
-To deploy OpenWhisk on Kubernetes, you must deploy its components in
-an order that respects their dependencies.  Detailed instructions and
-the supporting configuration files can be found in the kubernetes
-directory tree. Follow the instructions for each step in order.
+1. Resources in Kubernetes are organized into namespaces. You can use
+any name for the namespace you want, but we suggest using
+`openwhisk`. Create one by issuing the command:
+```shell
+kubectl create namespace openwhisk
+```
 
-* Deploy [ApiGateway](kubernetes/apigateway)
-* Deploy [Zookeeper](kubernetes/zookeeper)
-* Deploy [Kafka](kubernetes/kafka)
-* Deploy [Controller](kubernetes/controller)
-* Deploy [Invoker](kubernetes/invoker)
-* Deploy [Nginx](kubernetes/nginx)
+2. Identify the Kubernetes worker nodes that should be used to execute
+user containers.  Do this by labeling each node with
+`openwhisk-role=invoker`.  For a single node cluster, simply do
+```shell
+kubectl label nodes --all openwhisk-role=invoker
+```
+If you have a multi-node cluster, for each node <INVOKER_NODE_NAME>
+you want to be an invoker, execute
+```shell
+$ kubectl label nodes <INVOKER_NODE_NAME> openwhisk-role=invoker
+```
 
-## Install system actions and the openwhisk catalog
+## Customize the Deployment
 
-* Install [RouteMgmt](kubernetes/routemgmt)
-* Install [Package Catalog](kubernetes/openwhisk-catalog)
+You will need to create a mycluster.yaml file that records how the
+OpenWhisk deployment on your cluster will be accessed by clients.  See
+the [ingress discussion](./docs/ingress.md) for details. Below is a sample
+file appropriate for a Minikube cluster where `minikube ip` returns
+`192.168.99.100` and port 31001 is available to be used.
 
-## Verify
+```yaml
+whisk:
+  ingress:
+    type: NodePort
+    api_host_name: 192.168.99.100
+    api_host_port: 31001
+
+nginx:
+  httpsNodePort: 31001
+```
+
+Beyond specifying the ingress, the `mycluster.yaml` file is also used
+to customize your OpenWhisk deployment by enabling optional features
+and controlling the replication factor of the various micro-services
+that make up the OpenWhisk implementation. See the [configuration
+choices documentation](./docs/configurationChoices.md) for a
+discussion of the primary options.
+
+## Deploy With Helm
+
+Deployment can be done by using the following single command:
+```shell
+helm install . --namespace=openwhisk -f mycluster.yaml
+```
+
+After a while, if you can see all the pods listed by the command below
+are in `Running` state, congratulations, you have finished OpenWhisk
+deployment:
+```shell
+kubectl get pods -n openwhisk
+```
+
+You can also use `helm status` to get a summary of the various
+Kubernetes artifacts that make up your OpenWhisk deployment.
+
+## Configure the wsk CLI
+
+Configure the OpenWhisk CLI, wsk, by setting the auth and apihost
+properties (if you don't already have the wsk cli, follow the
+instructions [here](https://github.com/apache/incubator-openwhisk-cli)
+to get it). Replace `whisk.ingress.api_host_name` and `whisk.ingress.api_host_port`
+with the actual values from your mycluster.yaml.
+```shell
+wsk property set --apihost whisk.ingress.api_host_name:whisk.ingress.api_host_port
+wsk property set --auth 23bc46b1-71f6-4ed5-8c54-816aa4f8c502:123zO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP
+```
+
+## Verify your OpenWhisk Deployment
 
 Your OpenWhisk installation should now be usable.  You can test it by following
 [these instructions](https://github.com/apache/incubator-openwhisk/blob/master/docs/actions.md)
 to define and invoke a sample OpenWhisk action in your favorite programming language.
 
-Note: if you installed self-signed certificates when you configured Nginx, you will need to use `wsk -i` to suppress certificate checking.  This works around `cannot validate certificate` errors from the `wsk` CLI.
+Note: if you installed self-signed certificates, which is the default
+for the OpenWhisk Helm chart, you will need to use `wsk -i` to
+suppress certificate checking.  This works around `cannot validate
+certificate` errors from the `wsk` CLI.
+
+If your deployment is not working, check our
+[troubleshooting guide](./docs/troubleshooting.md) for ideas.
 
 # Cleanup
 
-At some point there might be a need to cleanup the Kubernetes environment.
-For this, we want to delete all the OpenWhisk deployments, services, jobs
-and whatever else might be there. This is easily accomplished by
-deleting the `openwhisk` namespace and all persistent volumes labeled with
-pv-owner=openwhisk:
-
+Use the following command to remove the deployment:
+```shell
+helm delete <release_name>
 ```
-kubectl delete namespace openwhisk
-kubectl delete persistentvolume -lpv-owner=openwhisk
+or with a `--purge` option if you want to completely remove the deployment from helm:
+```shell
+helm delete <release_name> --purge
 ```
-
-# Deploying OpenWhisk using Helm
-
-We are also working on developing Helm charts to deploy OpenWhisk on
-Kubernetes. Currently, the Helm charts do not support all of the
-configuration options of the more manual deployment process described
-above. However, they are sufficient for deploying the core OpenWhisk
-system on Minikube. Please see [helm/README.md](helm/README.md) for more details.
 
 # Issues
+
+If your OpenWhisk deployment is not working, check our
+[troubleshooting guide](./docs/troubleshooting.md) for ideas.
 
 Report bugs, ask questions and request features [here on GitHub](../../issues).
 
