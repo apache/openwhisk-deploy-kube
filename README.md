@@ -38,7 +38,7 @@ This repository can be used to deploy OpenWhisk to a Kubernetes cluster.
 ### Requirements
 
 Several requirements must be met for OpenWhisk to deploy on Kubernetes.
-* [Kubernetes](https://github.com/kubernetes/kubernetes) version 1.7+. However, multiple minor releases of Kubernetes, including 1.7.14, 1.8.9 and 1.9.4 will not work for OpenWhisk due to bugs with volume mount subpaths (see[[1](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG-1.6.md#known-issues-for-v163), [2](https://github.com/kubernetes/kubernetes/issues/61076)]. This bug will surface as a failure when deploying the nginx container.
+* [Kubernetes](https://github.com/kubernetes/kubernetes) version 1.8+. However, multiple minor releases of Kubernetes, including 1.8.9 and 1.9.4 will not work for OpenWhisk due to bugs with volume mount subpaths (see[[1](https://github.com/kubernetes/kubernetes/issues/61076)]. This bug will surface as a failure when deploying the nginx container.
 * The ability to create Ingresses to make a Kubernetes service available outside of the cluster so you can actually use OpenWhisk.
 * Endpoints of Kubernetes services must be able to loopback to themselves (the kubelet's `hairpin-mode` must not be `none`).
 
@@ -145,15 +145,11 @@ Deployment can be done by using the following single command:
 helm install . --namespace=openwhisk -f mycluster.yaml
 ```
 
-After a while, if you can see all the pods listed by the command below
-are in `Running` state, congratulations, you have finished OpenWhisk
-deployment:
-```shell
-kubectl get pods -n openwhisk
-```
-
-You can also use `helm status` to get a summary of the various
-Kubernetes artifacts that make up your OpenWhisk deployment.
+You can use the command `helm status <release_name>` to get a summary
+of the various Kubernetes artifacts that make up your OpenWhisk
+deployment. Once all the pods shown by the status command are in
+either the `Running` or `Completed` state, your OpenWhisk deployment
+is ready to be used.
 
 ## Configure the wsk CLI
 
@@ -183,11 +179,13 @@ If your deployment is not working, check our
 
 # Cleanup
 
-Use the following command to remove the deployment:
+Use the following command to remove all the deployed OpenWhisk components:
 ```shell
 helm delete <release_name>
 ```
-or with a `--purge` option if you want to completely remove the deployment from helm:
+Helm does keep a history of previous deployments.  If you want to
+completely remove the deployment from helm, for example so you can
+reuse <release_name> to deploy OpenWhisk again, use the command:
 ```shell
 helm delete <release_name> --purge
 ```
