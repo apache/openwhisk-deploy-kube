@@ -3,6 +3,9 @@
 
 {{/* Init container that waits for couchdb to be ready */}}
 {{- define "readiness.waitForCouchDB" -}}
+{{ if .Values.db.external }}
+# external db is assumed to be already ready; no need for init container
+{{- else -}}
 - name: "wait-for-couchdb"
   image: "busybox"
   imagePullPolicy: "IfNotPresent"
@@ -10,6 +13,7 @@
   - name: "READINESS_URL"
     value: {{ .Values.db.protocol }}://{{ include "db_host" . }}:{{ .Values.db.port }}/{{ .Values.db.activationsTable }}
   command: ["sh", "-c", "result=1; until [ $result -eq 0 ]; do echo verifying CouchDB readiness; wget -T 5 --spider $READINESS_URL; result=$?; sleep 1; done;"]
+{{- end -}}
 {{- end -}}
 
 {{/* Init container that waits for kafka to be ready */}}
