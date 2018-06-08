@@ -36,6 +36,53 @@ controller:
   replicaCount: 2
 ```
 
+### Using an external database
+
+You may want to use an external CouchDB or Cloudant instance instead
+of deploying a CouchDB instance as a Kubernetes pod.  You can do this
+by adding a stanza like the one below to your `mycluster.yaml`,
+substituting in the appropriate values for `<...>`
+```yaml
+db:
+  external: true
+  host: <db hostname or ip addr>
+  port: <db port>
+  protocol: <"http" or "https">
+  auth:
+    username: <username>
+    password: <password>
+```
+
+Note that if you use an external database, the Helm deployment process
+will not attempt to create the necessary database tables or otherwise
+initialize/wipe the database.  You will need to properly initialize
+your external database before deploying the OpenWhisk chart.
+
+### Persistence
+
+The couchdb, zookeeper, kafka, and redis microservices can each be
+configured to use persistent volumes to store their data. Enabling
+persistence may allow the system to survive failures/restarts of these
+components without a complete loss of application state. By default,
+none of these services is configured to use persistent volumes.  To
+enable persistence, you can add stanzas like the following to your
+`mycluster.yaml` to enable persistence and to request an appropriately
+sized volume.
+
+```yaml
+redis:
+  persistence:
+    enabled: true
+    size: 256Mi
+    storageClass: default
+```
+If you are deploying on a managed Kubernetes cluster, check the cloud
+provider's documentation to determine the appropriate `storageClass`
+and `size` to request.
+
+*Limitation* Currently the persistent volume support assumes that the
+`replicaCount` of the deployment using the persistent volume is 1.
+
 ### Invoker Container Factory
 
 The Invoker is responsible for creating and managing the containers

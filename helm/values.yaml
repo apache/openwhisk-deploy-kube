@@ -1,13 +1,29 @@
 # Licensed to the Apache Software Foundation (ASF) under one or more contributor
 # license agreements; and to You under the Apache License, Version 2.0.
 
-# Default values for OpenWhisk.
 
-# Overall system configuration
+# This file defines the default values for all variables
+# used in the OpenWhisk Helm Chart.  The variables are grouped
+# by component into subtrees.
+#
+# You _MUST_ override the default values of whisk.ingress.api_host_name
+# and whisk.ingress.api_host_port (see docs/ingress.md for a discussion
+# of how to determine values for these variables).
+#
+# Production deployments _MUST_ override the default credentials
+# that are used in whisk.auth and db.auth.
+#
+# The file docs/configurationChoices.md discusses other common
+# configuration options for OpenWhisk and which variables to override
+# to enable them.
+
+
+# Overall configuration of the deployment
 whisk:
+  # Ingress defines how to access OpenWhisk from outside the Kubernetes cluster.
+  # See docs/ingress.md for a discussion of how to provide these values.
   ingress:
     name: "ow-ingress"
-    # You _MUST_ provide a value for whisk.ingress.api_host_name and api_host_port when deploying the chart
     api_host_name: nil
     api_host_port: nil
     api_host_proto: "https"
@@ -66,14 +82,17 @@ kafka:
 
 # Database configuration
 db:
+  external: false
   name: "couchdb"
   image: "openwhisk/kube-couchdb:latest"
   replicaCount: 1
   imagePullPolicy: "IfNotPresent"
   restartPolicy: "Always"
+  host: nil
   port: 5984
   provider: "CouchDB"
   protocol: "http"
+  # Production deployments _MUST_ override the default user/password values
   auth:
     username: "whisk_admin"
     password: "some_passw0rd"
@@ -169,7 +188,10 @@ redis:
     storageClass: default
     accessMode: ReadWriteOnce
 
-# Resolve the pod/node affinity for invoker, controller and other components.
+# Used to define pod affinity and anti-affinity for the Kubernetes scheduler.
+# If affinity.enabled is true, then all of the deployments for the OpenWhisk
+# microservices will use node and pod affinity directives to inform the
+# scheduler how to best distribute the pods on the available nodes in the cluster.
 affinity:
   enabled: true
   coreNodeLabel: core

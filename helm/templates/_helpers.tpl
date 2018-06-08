@@ -13,7 +13,11 @@
 
 {{/* hostname for database */}}
 {{- define "db_host" -}}
+{{- if .Values.db.external -}}
+{{ .Values.db.host }}
+{{- else -}}
 {{ .Values.db.name }}.{{ .Release.Namespace }}.svc.cluster.local
+{{- end -}}
 {{- end -}}
 
 {{/* hostname for kafka */}}
