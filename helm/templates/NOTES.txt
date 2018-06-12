@@ -1,4 +1,10 @@
-Thank you for installing {{ .Chart.Name }}.
+{{/* Licensed to the Apache Software Foundation (ASF) under one or more contributor */}}
+{{/* license agreements; and to You under the Apache License, Version 2.0. */}}
+Apache OpenWhisk
+Copyright 2016-2018 The Apache Software Foundation
+
+This product includes software developed at
+The Apache Software Foundation (http://www.apache.org/).
 
 To configure your wsk cli to connect to it, set the apihost property
 using the command below:
