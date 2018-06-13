@@ -198,22 +198,35 @@ if [ -z "$RESULT" ]; then
 fi
 
 # next invoke the new hello world action via the CLI
-RESULT=$(wsk -i action invoke --blocking hello | grep "\"status\": \"success\"")
-if [ -z "$RESULT" ]; then
+# We have a retry loop because we do not have a robust way to ask
+# the controller if it has a healthy invoker.  There is a lag of
+# unpredictable duration between the invoker pod reporting as Running
+# and the controller deciding the invoker is healthy.
+PASSED=false
+ATTEMPTS=0
+until $PASSED || [ $ATTEMPTS -eq 3 ]; do
+  RESULT=$(wsk -i action invoke --blocking hello | grep "\"status\": \"success\"")
+  if [ -z "$RESULT" ]; then
+    echo "Attempt $ATTEMPTS to invoke action via the CLI failed; will sleep and retry in case controller is slow registering invoker"
+    let ATTEMPTS=ATTEMPTS+1
+    sleep 10
+  else
+      PASSED=true
+  fi
+done
+if [ "$PASSED" = false ]; then
   echo "FAILED! Could not invoke hello action via CLI"
   exit 1
 fi
 
 # now run it as a web action
+# No need to retry here, we succeeded above so we have a working invoker
 HELLO_URL=$(wsk -i action get hello --url | grep "https://")
 RESULT=$(wget --no-check-certificate -qO- $HELLO_URL | grep 'Hello world')
 if [ -z "$RESULT" ]; then
   echo "FAILED! Could not invoke hello as a web action"
   exit 1
 fi
-
-# wait a few seconds
-sleep 3
 
 # now define it as an api and invoke it that way
 
