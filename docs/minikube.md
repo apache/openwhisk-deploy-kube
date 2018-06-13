@@ -59,13 +59,22 @@ asdf install minikube 0.25.2
 asdf global minikube 0.25.2
 ```
 
-## Create the minikube VM
+## Configure the Minikube VM
+
 You will want at least 4GB of memory and 2 CPUs for Minikube to run OpenWhisk.
 If you have a larger machine, you may want to provision more (especially more memory).
 
-Start Minikube with:
 ```
-minikube start --cpus 2 --memory 4096 --kubernetes-version=v1.9.0 --extra-config=apiserver.Authorization.Mode=RBAC
+minikube config set kubernetes-version v1.9.0
+minikube config set cpus 2
+minikube config set memory 4096
+minikube config set WantUpdateNotification false
+```
+
+## Start Minikube
+
+```
+minikube start --extra-config=apiserver.Authorization.Mode=RBAC
 ```
 
 ## Setup Docker network in promiscuous mode
@@ -74,7 +83,20 @@ Put the docker network in promiscuous mode.
 minikube ssh -- sudo ip link set docker0 promisc on
 ```
 
+**Tip**: Make sure to setup the Docker network after `minkube start` if you ran `minkube delete` as this configuration will be lost.
+
 Your Minikube cluster should now be ready to deploy OpenWhisk.
+
+## Changing Kubernetes versions
+
+To use a different version of Kubernetes with Minikube, you need to delete the VM, reconfigure minikube, restart, and
+redo the setup of the Docker network.
+```
+minikube delete
+minikube config set kubernetes-version <NEW_VERSION>
+minikube start --extra-config=apiserver.Authorization.Mode=RBAC
+minikube ssh -- sudo ip link set docker0 promisc on
+```
 
 # Troubleshooting
 
