@@ -142,10 +142,13 @@ discussion of the primary options.
 
 Deployment can be done by using the following single command:
 ```shell
-helm install . --namespace=openwhisk -f mycluster.yaml
+helm install . --namespace=openwhisk --name=owdev -f mycluster.yaml
 ```
+For simplicity, in this README, we have used `owdev` as the release name.
+You can use a different name, or not specify a name at all and let
+Helm auto-generate one for you.
 
-You can use the command `helm status <release_name>` to get a summary
+You can use the command `helm status owdev` to get a summary
 of the various Kubernetes artifacts that make up your OpenWhisk
 deployment. Once all the pods shown by the status command are in
 either the `Running` or `Completed` state, your OpenWhisk deployment
@@ -181,13 +184,13 @@ If your deployment is not working, check our
 
 Use the following command to remove all the deployed OpenWhisk components:
 ```shell
-helm delete <release_name>
+helm delete owdev
 ```
 Helm does keep a history of previous deployments.  If you want to
 completely remove the deployment from helm, for example so you can
-reuse <release_name> to deploy OpenWhisk again, use the command:
+reuse owdev to deploy OpenWhisk again, use the command:
 ```shell
-helm delete <release_name> --purge
+helm delete owdev --purge
 ```
 
 # Issues
