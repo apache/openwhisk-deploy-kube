@@ -1,0 +1,47 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more contributor
+# license agreements; and to You under the Apache License, Version 2.0.
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: install-package-kafka
+  namespace: {{ .Release.Namespace | quote }}
+spec:
+  activeDeadlineSeconds: 600
+  template:
+    metadata:
+      name: install-package-kafka
+    spec:
+      restartPolicy: Never
+      initContainers:
+      # Wait for a controller to be up so we can perfom our CRUD actions with the CLI
+{{ include "readiness.waitForController" . | indent 6 }}
+      containers:
+      - name: kafkapkginstaller
+        image: openwhisk/kube-kafkapkginstaller
+        env:
+          - name: "AUTH"
+            valueFrom:
+              secretKeyRef:
+                name: whisk.auth
+                key: system
+          # poorly named envvar; actually expects full apihost (host:port)
+          - name: "APIHOST"
+            value: "{{- .Values.whisk.ingress.api_host_name -}}:{{- .Values.whisk.ingress.api_host_port -}}"
+          # for the database used by kafka package
+          - name: "DB_HOST"
+            value: {{ include "db_host" . | quote }}
+          - name: "DB_PORT"
+            value: {{ .Values.db.port | quote}}
+          - name: "DB_USERNAME"
+            valueFrom:
+              secretKeyRef:
+                name: db.auth
+                key: db_username
+          - name: "DB_PASSWORD"
+            valueFrom:
+              secretKeyRef:
+                name: db.auth
+                key: db_password
+          - name: "DB_PREFIX"
+            value: "{{- .Values.kafkaprovider.dbPrefix -}}"

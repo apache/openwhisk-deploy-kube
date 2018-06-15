@@ -1,0 +1,50 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more contributor
+# license agreements; and to You under the Apache License, Version 2.0.
+
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ .Values.kafkaprovider.name | quote }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    name: nginx
+spec:
+  replicas: {{ .Values.kafkaprovider.replicaCount }}
+  template:
+    metadata:
+      labels:
+        name: {{ .Values.kafkaprovider.name | quote }}
+    spec:
+      restartPolicy: {{ .Values.kafkaprovider.restartPolicy }}
+      initContainers:
+      # The controller must wait for kafka and couchdb to be ready before it starts
+{{ include "readiness.waitForCouchDB" . | indent 6 }}
+
+      containers:
+      - name: {{ .Values.kafkaprovider.name | quote }}
+        imagePullPolicy: {{ .Values.kafkaprovider.imagePullPolicy | quote }}
+        image: {{ .Values.kafkaprovider.image | quote }}
+        ports:
+        - name: kafkaprovider
+          containerPort: {{ .Values.kafkaprovider.apiPort }}
+        env:
+        - name: "DB_URL"
+          value: "{{ .Values.db.protocol }}://{{ include "db_host" . }}:{{ .Values.db.port }}"
+        - name: "DB_USER"
+          valueFrom:
+            secretKeyRef:
+              name: db.auth
+              key: db_username
+        - name: "DB_PASS"
+          valueFrom:
+            secretKeyRef:
+              name: db.auth
+              key: db_password
+        - name: "DB_PREFIX"
+          value: "{{- .Values.kafkaprovider.dbPrefix -}}"
+        - name: "LOCAL_DEV"
+          value: "true"
+        - name: "ROUTER_HOST"
+          value: "{{- .Values.whisk.ingress.api_host_name -}}:{{- .Values.whisk.ingress.api_host_port -}}"
+        - name: "ENDPOINT_AUTH"
+          value: "{{- .Values.whisk.ingress.api_host_name -}}:{{- .Values.whisk.ingress.api_host_port -}}"

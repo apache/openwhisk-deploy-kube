@@ -198,3 +198,13 @@ affinity:
   edgeNodeLabel: edge
   invokerNodeLabel: invoker
   providerNodeLabel: provider
+
+# Kafka provider configurations
+kafkaprovider:
+  name: "kafkaprovider"
+  image: "openwhisk/kafkaprovider:latest"
+  replicaCount: 1
+  imagePullPolicy: "IfNotPresent"
+  restartPolicy: "Always"
+  apiPort: 8080
+  dbPrefix: "kp"
