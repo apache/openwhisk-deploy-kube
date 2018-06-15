@@ -20,6 +20,7 @@ metadata:
   name: {{ .Values.kafka.name | quote }}
   namespace: {{ .Release.Namespace | quote }}
 spec:
+  podManagementPolicy: "Parallel"
   name: {{ .Values.kafka.name | quote }}
   replicas: {{ .Values.kafka.replicaCount }}
   template:
@@ -73,7 +74,7 @@ spec:
 
         # zookeeper info
         - name: "KAFKA_ZOOKEEPER_CONNECT"
-          value: "{{ include "zookeeper_host" . }}:{{ .Values.zookeeper.port }}"
+          value: "{{ include "zookeeper_connect" . }}"
 
 {{- if .Values.kafka.persistence.enabled }}
 ---

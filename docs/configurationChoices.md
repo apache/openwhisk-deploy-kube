@@ -36,6 +36,16 @@ controller:
   replicaCount: 2
 ```
 
+NOTE: The Helm-based deployment does not yet support setting the replicaCount
+to be greater than 1 for the following components:
+- apigateway
+- couchdb
+- kakfa
+- kakfaprovider
+- nginx
+- redis
+We are actively working on reducing this list and would welcome PRs to help.
+
 ### Using an external database
 
 You may want to use an external CouchDB or Cloudant instance instead
