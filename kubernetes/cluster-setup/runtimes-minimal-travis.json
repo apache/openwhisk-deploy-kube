@@ -5,16 +5,24 @@
                 "kind": "nodejs:6",
                 "default": true,
                 "image": {
-                    "name": "nodejs6action"
+                    "prefix": "openwhisk",
+                    "name": "nodejs6action",
+                    "tag": "latest"
                 },
-                "deprecated": false
+                "deprecated": false,
+                "stemCells": [{
+                    "count": 2,
+                    "memory": "256 MB"
+                }]
             }
         ],
         "python": [
             {
                 "kind": "python:3",
                 "image": {
-                    "name": "python3action"
+                    "prefix": "openwhisk",
+                    "name": "python3action",
+                    "tag": "latest"
                 },
                 "deprecated": false
             }
@@ -22,7 +30,9 @@
     },
     "blackboxes": [
         {
-            "name": "dockerskeleton"
+            "prefix": "openwhisk",
+            "name": "dockerskeleton",
+            "tag": "latest"
         }
     ]
 }
