@@ -36,3 +36,4 @@ deploy:
   script: ./tools/travis/deploy.sh
   on:
     branch: master
+    repo: apache/incubator-openwhisk-deploy-kube
