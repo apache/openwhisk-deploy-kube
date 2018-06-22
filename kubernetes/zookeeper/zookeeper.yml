@@ -71,7 +71,7 @@ spec:
         - mountPath: /data
           name: zk-data
         - mountPath: /datalog
-          name: zk-data
+          name: zk-datalog
         env:
         - name: "ZOO_DATA_DIR"
           value: /data

@@ -68,7 +68,7 @@ spec:
         - mountPath: /data
           name: zk-data
         - mountPath: /datalog
-          name: zk-data
+          name: zk-datalog
 {{- end }}
         env:
 {{- if .Values.zookeeper.persistence.enabled }}
