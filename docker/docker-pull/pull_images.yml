@@ -2,38 +2,47 @@
 # license agreements; and to You under the Apache License, Version 2.0.
 ---
 
-# Playbook to prefetch runtime action images from a docker registry for an invoker node.
+# Playbook to prefetch runtime action images from a docker registry for an invoker node
+# as specified by the RUNTIMES_MANIFEST environment variable
+# Note: If RUNTIMES_REGISTRY is not "", it must include a trailing '/'
 
 - hosts: localhost
   vars:
     docker_pull_retries: 10
     docker_pull_delay: 10
-    docker_registry:
-    runtimesManifest: "{{ lookup('env', 'RUNTIMES_MANIFEST') | from_json }}"
-    dip: "{{ lookup('env', 'DEFAULT_IMAGE_PREFIX') }}"
-    defaultImagePrefix: "{{ dip if dip != '' else 'openwhisk'}}"
-    dit: "{{ lookup('env', 'DEFAULT_IMAGE_TAG') }}"
-    defaultImageTag: "{{ dit if dit != '' else 'latest' }}"
+    runtimes_registry: "{{ lookup('env', 'RUNTIMES_REGISTRY') | default() }}"
+    runtimes_registry_username: "{{ lookup('env', 'RUNTIMES_REGISTRY_USERNAME') | default() }}"
+    runtimes_registry_password: "{{ lookup('env', 'RUNTIMES_REGISTRY_PASSWORD') | default() }}"
+    runtimes_manifest: "{{ lookup('env', 'RUNTIMES_MANIFEST') }}"
+    runtimes_manifest_json: "{{ lookup('env', 'RUNTIMES_MANIFEST') | from_json }}"
 
   tasks:
     - name: docker login
       docker_login:
-        registry: "{{ docker_registry }}"
-        username: "{{ docker_registry_username }}"
-        password: "{{ docker_registry_password }}"
-      when: docker_registry != "" and docker_registry_password is defined
+        registry: "{{ runtimes_registry }}"
+        username: "{{ runtimes_registry_username }}"
+        password: "{{ runtimes_registry_password }}"
+      when: runtimes_registry != "" and runtimes_registry_password is defined
 
-    - name: "pull runtime action images with tag {{defaultImageTag}}"
-      shell: "docker pull {{docker_registry}}{{defaultImagePrefix}}/{{item}}:{{defaultImageTag}}"
-      with_items: "{{ runtimesManifest.runtimes.values() | sum(start=[]) | selectattr('deprecated', 'equalto',false)  | map(attribute='image.name') | list | unique }}"
-      when: docker_registry != ""
+    - name: "Display runtime manifest"
+      debug:
+        var: runtimes_manifest
+
+    - name: "Process runtime manifest"
+      set_fact:
+        docker_images_managed: "{{ runtimes_manifest_json.runtimes.values() | sum(start=[]) | selectattr('deprecated', 'equalto', false)  | map(attribute='image') | list | unique }}"
+        docker_images_blackbox: "{{ runtimes_manifest_json.blackboxes }}"
+
+    - name: "pull runtime action images per manifest"
+      shell: "docker pull {{runtimes_registry}}{{item.prefix}}/{{item.name}}:{{item.tag | default()}}"
+      with_items:
+        - "{{ docker_images_managed }}"
       retries: "{{ docker_pull_retries }}"
       delay: "{{ docker_pull_delay }}"
 
-    - name: "pull blackboxes action images with tag {{defaultImageTag}}"
-      shell: "docker pull {{docker_registry}}{{defaultImagePrefix}}/{{item.name}}:{{defaultImageTag}}"
+    - name: "pull blackboxes action images per manifest"
+      shell: "docker pull {{runtimes_registry}}{{item.prefix}}/{{item.name}}:{{item.tag | default()}}"
       with_items:
-        - "{{ runtimesManifest.blackboxes }}"
-      when: docker_registry != ""
+        - "{{ docker_images_blackbox }}"
       retries: "{{ docker_pull_retries }}"
       delay: "{{ docker_pull_delay }}"

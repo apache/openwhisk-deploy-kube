@@ -38,21 +38,19 @@
     # action runtimes
     - name: "RUNTIMES_MANIFEST"
       value: {{ template "runtimes_manifest" . }}
-    - name: "DOCKER_REGISTRY"
-      value: {{ .Values.docker.registry.name | quote }}
-    - name: "DOCKER_IMAGE_PREFIX"
-      value: {{ .Values.docker.image.prefix | quote }}
-    - name: "DOCKER_IMAGE_TAG"
-      value: {{ .Values.docker.image.tag | quote }}
-    - name: "DOCKER_REGISTRY_USERNAME"
+{{- if ne .Values.docker.registry.name "" }}
+    - name: "RUNTIMES_REGISTRY"
+      value: "{{- .Values.docker.registry.name -}}/"
+    - name: "RUNTIMES_REGISTRY_USERNAME"
       valueFrom:
         secretKeyRef:
           name: docker.registry.auth
           key: docker_registry_username
-    - name: "DOCKER_REGISTRY_PASSWORD"
+    - name: "RUNTIMES_REGISTRY_PASSWORD"
       valueFrom:
         secretKeyRef:
           name: docker.registry.auth
           key: docker_registry_password
+{{- end -}}
 {{- end -}}
 
