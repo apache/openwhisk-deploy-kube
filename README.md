@@ -70,7 +70,15 @@ consists of the `helm` command line tool that you install on your
 development machine and the `tiller` runtime that you install on your
 Kubernetes cluster.
 
-For details on installing Helm, see these [instructions](docs/helm.md).
+For detailed instructions on installing Helm, see these [instructions](docs/helm.md).
+
+In short if you already have the `helm` cli installed on your development machine,
+you will need to execute these two commands and wait a few seconds for the
+`tiller-deploy` pod to be in the `Running` state.
+```shell
+helm init
+kubectl create clusterrolebinding tiller-cluster-admin --clusterrole=cluster-admin --serviceaccount=kube-system:default
+```
 
 # Deploying OpenWhisk
 
@@ -142,7 +150,7 @@ discussion of the primary options.
 
 Deployment can be done by using the following single command:
 ```shell
-helm install . --namespace=openwhisk --name=owdev -f mycluster.yaml
+helm install ./helm --namespace=openwhisk --name=owdev -f mycluster.yaml
 ```
 For simplicity, in this README, we have used `owdev` as the release name.
 You can use a different name, or not specify a name at all and let
