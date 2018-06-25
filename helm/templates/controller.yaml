@@ -69,12 +69,10 @@ spec:
         - name: "PORT"
           value: {{ .Values.controller.port | quote }}
 
-        - name:  "WHISK_VERSION_DATE"
+        - name:  "CONFIG_whisk_info_date"
           value: {{ dateInZone "2006-01-02-03:04:05Z" (now) "UTC"| quote }}
-        - name: "WHISK_VERSION_BUILDNO"
+        - name: "CONFIG_whisk_info_buildNo"
           value: {{ .Values.whisk.versions.tag | quote }}
-        - name: "WHISK_VERSION_NAME"
-          value: {{ .Values.whisk.versions.name | quote }}
 
         # Java options
         - name: "JAVA_OPTS"
