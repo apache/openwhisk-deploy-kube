@@ -137,7 +137,8 @@ WSK_HOST=$(kubectl describe nodes | grep Hostname: | awk '{print $2}')
 if [ "$WSK_HOST" = "minikube" ]; then
     WSK_HOST=$(minikube ip)
 fi
-wsk property set --auth `cat $ROOTDIR/kubernetes/cluster-setup/auth.guest` --apihost $WSK_HOST:$WSK_PORT
+WSK_GUEST_AUTH=$(kubectl get secret whisk.auth -o jsonpath='{.data.guest}')
+wsk property set --auth $WSK_GUEST_AUTH --apihost $WSK_HOST:$WSK_PORT
 
 # Deploy OpenWhisk using Helm
 cd $ROOTDIR/helm
