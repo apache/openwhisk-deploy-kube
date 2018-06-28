@@ -130,14 +130,12 @@ kubectl describe nodes
 echo "Create openwhisk namespace"
 kubectl create namespace openwhisk
 
-# configure Ingress and wsk CLI
-#
+# configure Ingress
 WSK_PORT=31001
 WSK_HOST=$(kubectl describe nodes | grep Hostname: | awk '{print $2}')
 if [ "$WSK_HOST" = "minikube" ]; then
     WSK_HOST=$(minikube ip)
 fi
-wsk property set --auth `cat $ROOTDIR/kubernetes/cluster-setup/auth.guest` --apihost $WSK_HOST:$WSK_PORT
 
 # Deploy OpenWhisk using Helm
 cd $ROOTDIR/helm
@@ -177,6 +175,9 @@ sleep 10
 # Wait for catalog and routemgmt jobs to complete successfully
 jobHealthCheck "install-catalog"
 jobHealthCheck "install-routemgmt"
+
+# Configure wsk CLI
+wsk property set --auth `kubectl -n openwhisk get secret whisk.auth -o jsonpath='{.data.guest}' | base64 --decode` --apihost $WSK_HOST:$WSK_PORT
 
 #################
 # Sniff test: create and invoke a simple Hello world action
