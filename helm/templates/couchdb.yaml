@@ -51,7 +51,10 @@ spec:
         - name: "DB_HOST"
           value: "127.0.0.1"
         - name: "DB_PREFIX"
-          value: {{ .Values.db.dbPrefix | quote }}
+          valueFrom:
+            configMapKeyRef:
+              name: db.config
+              key: db_prefix
         - name: "COUCHDB_USER"
           valueFrom:
             secretKeyRef:
@@ -63,7 +66,10 @@ spec:
               name: db.auth
               key: db_password
         - name: "DB_PORT"
-          value: {{ .Values.db.port | quote }}
+          valueFrom:
+            configMapKeyRef:
+              name: db.config
+              key: db_port
         - name: "NODENAME"
           value: "couchdb0"
         readinessProbe:

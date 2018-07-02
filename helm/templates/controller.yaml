@@ -70,9 +70,15 @@ spec:
           value: {{ .Values.controller.port | quote }}
 
         - name:  "CONFIG_whisk_info_date"
-          value: {{ dateInZone "2006-01-02-03:04:05Z" (now) "UTC"| quote }}
+          valueFrom:
+            configMapKeyRef:
+              name: whisk.config
+              key: whisk_info_date
         - name: "CONFIG_whisk_info_buildNo"
-          value: {{ .Values.whisk.versions.tag | quote }}
+          valueFrom:
+            configMapKeyRef:
+              name: whisk.config
+              key: whisk_info_date
 
         # Java options
         - name: "JAVA_OPTS"

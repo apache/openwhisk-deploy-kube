@@ -59,12 +59,20 @@ spec:
 
           # Needed by invoker to set the environment variable __OW_API_HOST in action containers
           - name: "WHISK_API_HOST_PROTO"
-            value: {{ .Values.whisk.ingress.api_host_proto | quote }}
+            valueFrom:
+              configMapKeyRef:
+                name: whisk.config
+                key: whisk_api_host_proto
           - name: "WHISK_API_HOST_PORT"
-            value: {{ .Values.whisk.ingress.api_host_port | quote }}
+            valueFrom:
+              configMapKeyRef:
+                name: whisk.config
+                key: whisk_api_host_port
           - name: "WHISK_API_HOST_NAME"
-            value: {{ .Values.whisk.ingress.api_host_name | quote }}
-
+            valueFrom:
+              configMapKeyRef:
+                name: whisk.config
+                key: whisk_api_host_name
           - name: "INVOKER_CONTAINER_NETWORK"
             value: {{ .Values.invoker.containerNetwork | quote }}
           - name: "CONFIG_whisk_docker_containerFactory_useRunc"
@@ -114,7 +122,10 @@ spec:
 
           # this version is the day it is deployed,
           - name:  "CONFIG_whisk_info_date"
-            value: {{ dateInZone "2006-01-02-03:04:05Z" (now) "UTC"| quote }}
+            valueFrom:
+              configMapKeyRef:
+                name: whisk.config
+                key: whisk_info_date
 
           # properties for DB connection
 {{ include "whisk.dbEnvVars" . | indent 10 }}

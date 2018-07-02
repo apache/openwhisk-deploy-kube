@@ -27,12 +27,21 @@ spec:
                 key: system
           # poorly named envvar; actually expects full apihost (host:port)
           - name: "APIHOST"
-            value: "{{- .Values.whisk.ingress.api_host_name -}}:{{- .Values.whisk.ingress.api_host_port -}}"
+            valueFrom:
+              configMapKeyRef:
+                name: whisk.config
+                key: whisk_api_host_nameAndPort
           # for the database used by kafka package
           - name: "DB_HOST"
-            value: {{ include "db_host" . | quote }}
+            valueFrom:
+              configMapKeyRef:
+                name: db.config
+                key: db_host
           - name: "DB_PORT"
-            value: {{ .Values.db.port | quote}}
+            valueFrom:
+              configMapKeyRef:
+                name: db.config
+                key: db_port
           - name: "DB_USERNAME"
             valueFrom:
               secretKeyRef:
