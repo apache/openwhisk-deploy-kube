@@ -21,7 +21,10 @@ spec:
         image: openwhisk/kube-routemgmt
         env:
           - name: "WHISK_CLI_VERSION"
-            value: {{ .Values.whisk.versions.cli | quote }}
+            valueFrom:
+              configMapKeyRef:
+                name: whisk.config
+                key: whisk_cli_version_tag
           - name: "WHISK_AUTH"
             valueFrom:
               secretKeyRef:
@@ -29,8 +32,14 @@ spec:
                 key: system
           # poorly named envvar; actually expects full apihost (host:port)
           - name: "WHISK_API_HOST_NAME"
-            value: "{{- .Values.whisk.ingress.api_host_name -}}:{{- .Values.whisk.ingress.api_host_port -}}"
+            valueFrom:
+              configMapKeyRef:
+                name: whisk.config
+                key: whisk_api_host_nameAndPort
           - name: "WHISK_NAMESPACE"
-            value: {{ .Values.whisk.systemNameSpace | quote }}
+            valueFrom:
+              configMapKeyRef:
+                name: whisk.config
+                key: whisk_system_namespace
           - name: "WHISK_API_GATEWAY_HOST_V2"
             value: "http://$(APIGATEWAY_SERVICE_HOST):$(APIGATEWAY_SERVICE_PORT_API)/v2"

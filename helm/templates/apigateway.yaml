@@ -56,4 +56,7 @@ spec:
           - name: "REDIS_PORT"
             value: {{ .Values.redis.port | quote }}
           - name: "PUBLIC_GATEWAY_URL"
-            value: "{{- .Values.whisk.ingress.api_host_proto -}}://{{- .Values.whisk.ingress.api_host_name -}}:{{- .Values.whisk.ingress.api_host_port -}}"
+            valueFrom:
+              configMapKeyRef:
+                name: whisk.config
+                key: whisk_api_host_url

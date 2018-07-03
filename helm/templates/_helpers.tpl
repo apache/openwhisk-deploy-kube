@@ -53,17 +53,35 @@
       name: db.auth
       key: db_password
 - name: "CONFIG_whisk_couchdb_port"
-  value: {{ .Values.db.port | quote}}
+  valueFrom:
+    configMapKeyRef:
+      name: db.config
+      key: db_port
 - name: "CONFIG_whisk_couchdb_protocol"
-  value: {{ .Values.db.protocol | quote }}
+  valueFrom:
+    configMapKeyRef:
+      name: db.config
+      key: db_protocol
 - name: "CONFIG_whisk_couchdb_host"
   value: {{ include "db_host" . | quote }}
 - name: "CONFIG_whisk_couchdb_provider"
-  value: {{ .Values.db.provider | quote }}
+  valueFrom:
+    configMapKeyRef:
+      name: db.config
+      key: db_provider
 - name: "CONFIG_whisk_couchdb_databases_WhiskActivation"
-  value: {{ .Values.db.activationsTable | quote }}
+  valueFrom:
+    configMapKeyRef:
+      name: db.config
+      key: db_whisk_activations
 - name: "CONFIG_whisk_couchdb_databases_WhiskEntity"
-  value: {{ .Values.db.actionsTable | quote }}
+  valueFrom:
+    configMapKeyRef:
+      name: db.config
+      key: db_whisk_actions
 - name: "CONFIG_whisk_couchdb_databases_WhiskAuth"
-  value: {{ .Values.db.authsTable | quote }}
+  valueFrom:
+    configMapKeyRef:
+      name: db.config
+      key: db_whisk_auths
 {{- end -}}

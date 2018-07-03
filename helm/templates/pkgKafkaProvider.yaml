@@ -29,7 +29,10 @@ spec:
           containerPort: {{ .Values.kafkaprovider.apiPort }}
         env:
         - name: "DB_URL"
-          value: "{{ .Values.db.protocol }}://{{ include "db_host" . }}:{{ .Values.db.port }}"
+          valueFrom:
+            configMapKeyRef:
+              name: db.config
+              key: db_url
         - name: "DB_USER"
           valueFrom:
             secretKeyRef:
@@ -45,6 +48,12 @@ spec:
         - name: "LOCAL_DEV"
           value: "true"
         - name: "ROUTER_HOST"
-          value: "{{- .Values.whisk.ingress.api_host_name -}}:{{- .Values.whisk.ingress.api_host_port -}}"
+          valueFrom:
+            configMapKeyRef:
+              name: whisk.config
+              key: whisk_api_host_nameAndPort
         - name: "ENDPOINT_AUTH"
-          value: "{{- .Values.whisk.ingress.api_host_name -}}:{{- .Values.whisk.ingress.api_host_port -}}"
+          valueFrom:
+            configMapKeyRef:
+              name: whisk.config
+              key: whisk_api_host_nameAndPort
