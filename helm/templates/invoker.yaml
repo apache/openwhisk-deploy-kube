@@ -16,6 +16,7 @@ metadata:
     name: {{ .Values.invoker.name | quote }}
 spec:
 {{- if eq .Values.invoker.containerFactory.impl "kubernetes" }}
+  podManagementPolicy: "Parallel"
   replicas: {{ .Values.invoker.containerFactory.kubernetes.replicaCount }}
 {{- end }}
   template:
@@ -136,7 +137,7 @@ spec:
 
           # properties for zookeeper connection
           - name: "ZOOKEEPER_HOSTS"
-            value: "{{ include "zookeeper_host" . }}:{{ .Values.zookeeper.port }}"
+            value: "{{ include "zookeeper_connect" . }}"
 
         ports:
         - name: invoker

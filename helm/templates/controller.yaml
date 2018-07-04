@@ -24,6 +24,7 @@ metadata:
   labels:
     name: {{ .Values.controller.name | quote }}
 spec:
+  podManagementPolicy: "Parallel"
   replicas: {{ .Values.controller.replicaCount }}
   name: {{ .Values.controller.name | quote }}
   template:

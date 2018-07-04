@@ -51,6 +51,7 @@ docker:
 zookeeper:
   name: "zookeeper"
   image: "zookeeper:3.4"
+  # Note: Zookeeper's quorum protocol is designed to have an odd number of replicas.
   replicaCount: 1
   imagePullPolicy: "IfNotPresent"
   restartPolicy: "Always"
@@ -63,11 +64,19 @@ zookeeper:
     size: 2Gi
     storageClass: default
     accessMode: ReadWriteOnce
+  # Default values for entries in zoo.cfg (see Apache Zookeeper documentation for semantics)
+  config:
+    tickTime: 2000
+    initLimit: 5
+    syncLimit: 2
+    dataDir: "/data"
+    dataLogDir: "/datalog"
 
 # kafka configurations
 kafka:
   name: "kafka"
   image: "wurstmeister/kafka:0.11.0.1"
+  # NOTE: setting replicaCount > 1 will not work...actively being worked on.
   replicaCount: 1
   imagePullPolicy: "IfNotPresent"
   restartPolicy: "Always"
@@ -84,6 +93,7 @@ db:
   external: false
   name: "couchdb"
   image: "openwhisk/kube-couchdb:latest"
+  # NOTE: setting replicaCount > 1 will not work.
   replicaCount: 1
   imagePullPolicy: "IfNotPresent"
   restartPolicy: "Always"
@@ -110,6 +120,7 @@ db:
 nginx:
   name: "nginx"
   image: "nginx:1.11"
+  # NOTE: setting replicaCount > 1 is not tested and may not work
   replicaCount: 1
   imagePullPolicy: "IfNotPresent"
   restartPolicy: "Always"
@@ -166,6 +177,7 @@ invoker:
 apigw:
   name: "apigateway"
   image: "openwhisk/apigateway:latest"
+  # NOTE: setting replicaCount > 1 is not tested and may not work
   replicaCount: 1
   imagePullPolicy: "IfNotPresent"
   restartPolicy: "Always"
@@ -176,6 +188,7 @@ apigw:
 redis:
   name: "redis"
   image: "redis:3.2"
+  # NOTE: setting replicaCount > 1 will not work; need to add redis cluster configuration
   replicaCount: 1
   imagePullPolicy: "IfNotPresent"
   restartPolicy: "Always"
@@ -202,6 +215,7 @@ affinity:
 kafkaprovider:
   name: "kafkaprovider"
   image: "openwhisk/kafkaprovider:latest"
+  # NOTE: setting replicaCount > 1 has not been tested and may not work
   replicaCount: 1
   imagePullPolicy: "IfNotPresent"
   restartPolicy: "Always"
