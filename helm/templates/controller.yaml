@@ -79,7 +79,7 @@ spec:
           valueFrom:
             configMapKeyRef:
               name: whisk.config
-              key: whisk_info_date
+              key: whisk_info_buildNo
 
         # Java options
         - name: "JAVA_OPTS"
