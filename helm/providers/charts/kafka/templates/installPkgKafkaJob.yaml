@@ -13,9 +13,6 @@ spec:
       name: install-package-kafka
     spec:
       restartPolicy: Never
-      initContainers:
-      # Wait for a controller to be up so we can perfom our CRUD actions with the CLI
-{{ include "readiness.waitForController" . | indent 6 }}
       containers:
       - name: kafkapkginstaller
         image: openwhisk/kube-kafkapkginstaller

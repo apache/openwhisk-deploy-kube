@@ -1,0 +1,16 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more contributor
+# license agreements; and to You under the Apache License, Version 2.0.
+
+# Used to define pod affinity and anti-affinity for the Kubernetes scheduler.
+# If affinity.enabled is true, then all of the deployments for the OpenWhisk
+# microservices will use node and pod affinity directives to inform the
+# scheduler how to best distribute the pods on the available nodes in the cluster.
+# NOTE: These labels must match the ones defined in the core openwhisk chart.
+global:
+  affinity:
+    enabled: true
+    coreNodeLabel: core
+    edgeNodeLabel: edge
+    invokerNodeLabel: invoker
+    providerNodeLabel: provider
+

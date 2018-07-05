@@ -138,7 +138,7 @@ if [ "$WSK_HOST" = "minikube" ]; then
 fi
 
 # Deploy OpenWhisk using Helm
-cd $ROOTDIR/helm
+cd $ROOTDIR
 
 cat > mycluster.yaml <<EOF
 whisk:
@@ -162,7 +162,7 @@ EOF
 echo "Contents of mycluster.yaml are:"
 cat mycluster.yaml
 
-helm install . --namespace=openwhisk --name=ow4travis -f mycluster.yaml
+helm install helm/openwhisk --namespace=openwhisk --name=ow4travis -f mycluster.yaml
 
 # Wait for controller to be up
 statefulsetHealthCheck "controller"

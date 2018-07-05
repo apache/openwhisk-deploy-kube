@@ -211,13 +211,3 @@ affinity:
   invokerNodeLabel: invoker
   providerNodeLabel: provider
 
-# Kafka provider configurations
-kafkaprovider:
-  name: "kafkaprovider"
-  image: "openwhisk/kafkaprovider:latest"
-  # NOTE: setting replicaCount > 1 has not been tested and may not work
-  replicaCount: 1
-  imagePullPolicy: "IfNotPresent"
-  restartPolicy: "Always"
-  apiPort: 8080
-  dbPrefix: "kp"
