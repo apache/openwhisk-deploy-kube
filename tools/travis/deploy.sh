@@ -9,20 +9,14 @@ ROOTDIR="$SCRIPTDIR/../../"
 
 cd $ROOTDIR
 
+echo "Publishing kube-whisk-script-runner image"
+./tools/travis/publish.sh openwhisk kube-whisk-script-runner latest docker/whisk-script-runner
+
+echo "Publishing kube-whisk-ansible-runner image"
+./tools/travis/publish.sh openwhisk kube-whisk-ansible-runner latest docker/whisk-ansible-runner
+
 echo "Publishing kube-couchdb image"
 ./tools/travis/publish.sh openwhisk kube-couchdb latest docker/couchdb
 
-echo "Publishing kube-docker-pull image"
-./tools/travis/publish.sh openwhisk kube-docker-pull latest docker/docker-pull
-
 echo "Publishing kube-invoker-agent image"
 ./tools/travis/publish.sh openwhisk kube-invoker-agent latest docker/invoker-agent
-
-echo "Publishing kube-openwhisk-catalog image"
-./tools/travis/publish.sh openwhisk kube-openwhisk-catalog latest docker/openwhisk-catalog
-
-echo "Publishing kube-routemgmt image"
-./tools/travis/publish.sh openwhisk kube-routemgmt latest docker/routemgmt
-
-echo "Publishing kube-kafkapkginstaller image"
-./tools/travis/publish.sh openwhisk kube-kafkapkginstaller latest docker/kafkapkg-installer

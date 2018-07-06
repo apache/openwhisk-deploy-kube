@@ -1,22 +1,10 @@
-#!/bin/bash
 # Licensed to the Apache Software Foundation (ASF) under one or more contributor
 # license agreements; and to You under the Apache License, Version 2.0.
 
-set -ex
-
 export OPENWHISK_HOME=/openwhisk
 
-# Clone openwhisk repo to get latest installRouteMgmt.sh and core/routemgmt
-# TODO: when OpenWhisk has releases, download release artifacts instead!
+# Clone openwhisk repo to get installRouteMgmt.sh and core/routemgmt
 git clone https://github.com/apache/incubator-openwhisk openwhisk
-
-cd $OPENWHISK_HOME
-
-# Download and install openwhisk cli
-pushd bin
-  wget -q https://github.com/apache/incubator-openwhisk-cli/releases/download/$WHISK_CLI_VERSION/OpenWhisk_CLI-$WHISK_CLI_VERSION-linux-amd64.tgz
-  tar xzf OpenWhisk_CLI-$WHISK_CLI_VERSION-linux-amd64.tgz
-popd
 
 # Setup env for installRouteMgmt.sh
 if [ "$WHISK_API_GATEWAY_USER" ]; then
@@ -37,6 +25,6 @@ else
 fi
 
 # Run installRouteMgmt.sh
-pushd ansible/roles/routemgmt/files
-  ./installRouteMgmt.sh $WHISK_AUTH $WHISK_API_HOST_NAME $WHISK_NAMESPACE $OPENWHISK_HOME/bin/wsk
+pushd $OPENWHISK_HOME/ansible/roles/routemgmt/files
+    ./installRouteMgmt.sh $WHISK_AUTH $WHISK_API_HOST_NAME $WHISK_NAMESPACE /usr/local/bin/wsk
 popd
