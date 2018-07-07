@@ -16,10 +16,6 @@ spec:
         name: {{ .Values.kafkaprovider.name | quote }}
     spec:
       restartPolicy: {{ .Values.kafkaprovider.restartPolicy }}
-      initContainers:
-      # The controller must wait for kafka and couchdb to be ready before it starts
-{{ include "readiness.waitForCouchDB" . | indent 6 }}
-
       containers:
       - name: {{ .Values.kafkaprovider.name | quote }}
         imagePullPolicy: {{ .Values.kafkaprovider.imagePullPolicy | quote }}

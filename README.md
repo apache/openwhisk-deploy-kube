@@ -28,6 +28,7 @@ This repository can be used to deploy OpenWhisk to a Kubernetes cluster.
 
 * [Setting up Kubernetes and Helm](#setting-up-kubernetes-and-helm)
 * [Deploying OpenWhisk](#deploying-openwhisk)
+* [Deploying OpenWhisk Providers](#deploying-openwhisk-providers)
 * [Cleanup](#cleanup)
 * [Issues](#issues)
 
@@ -94,7 +95,7 @@ Kubernetes worker nodes to be used to execute user actions.
 create a `mycluster.yaml` that specifies key facts about your
 Kubernetes cluster and the OpenWhisk configuration you wish to
 deploy.
-3. [Deploy with Helm](#deploy-with-helm). You will use Helm and
+3. [Deploy OpenWhisk with Helm](#deploy-with-helm). You will use Helm and
 `mycluster.yaml` to deploy OpenWhisk to your Kubernetes cluster.
 4. [Configure the `wsk` CLI](#configure-the-wsk-cli). You need to
 tell the `wsk` CLI how to connect to your OpenWhisk deployment.
@@ -150,7 +151,7 @@ discussion of the primary options.
 
 Deployment can be done by using the following single command:
 ```shell
-helm install ./helm --namespace=openwhisk --name=owdev -f mycluster.yaml
+helm install ./helm/openwhisk --namespace=openwhisk --name=owdev -f mycluster.yaml
 ```
 For simplicity, in this README, we have used `owdev` as the release name.
 You can use a different name, or not specify a name at all and let
@@ -187,6 +188,27 @@ certificate` errors from the `wsk` CLI.
 
 If your deployment is not working, check our
 [troubleshooting guide](./docs/troubleshooting.md) for ideas.
+
+
+# Deploying OpenWhisk Providers
+
+Now that you have a working OpenWhisk installation, you may optionally
+deploy additional packages and event providers. A standard set of
+event providers is available as a collection of Helm charts in the
+`helm/providers` directory.  You may install all the providers in a
+single command with
+```shell
+helm install ./helm/providers --namespace=openwhisk --name=owdev-providers
+```
+or you may selectively install the charts for individual providers
+with commands like
+```shell
+helm install ./helm/providers/charts/kafka --namespace=openwhisk --name=owdev-kafka-provider
+```
+
+Please see the `values.yaml` file and/or README.md in the individual
+charts for instructions on enabling any optional customizations of the
+providers.
 
 # Cleanup
 
