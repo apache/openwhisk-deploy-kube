@@ -2,4 +2,5 @@ kubernetes/nginx/certs
 helm/mycluster.yaml
 mycluster.yaml
 myruntimes.json
+.DS_Store
 *~
