@@ -95,7 +95,7 @@ db:
   image: "openwhisk/kube-couchdb:latest"
   # NOTE: setting replicaCount > 1 will not work.
   replicaCount: 1
-  imagePullPolicy: "IfNotPresent"
+  imagePullPolicy: "Always"
   restartPolicy: "Always"
   host: nil
   port: 5984
@@ -133,7 +133,7 @@ controller:
   name: "controller"
   image: "openwhisk/controller:latest"
   replicaCount: 1
-  imagePullPolicy: "IfNotPresent"
+  imagePullPolicy: "Always"
   restartPolicy: "Always"
   port: 8080
   options: ""
@@ -150,7 +150,7 @@ controller:
 invoker:
   name: "invoker"
   image: "openwhisk/invoker:latest"
-  imagePullPolicy: "IfNotPresent"
+  imagePullPolicy: "Always"
   restartPolicy: "Always"
   port: 8080
   pullRuntimesImage: "openwhisk/kube-docker-pull:latest"
@@ -179,7 +179,7 @@ apigw:
   image: "openwhisk/apigateway:latest"
   # NOTE: setting replicaCount > 1 is not tested and may not work
   replicaCount: 1
-  imagePullPolicy: "IfNotPresent"
+  imagePullPolicy: "Always"
   restartPolicy: "Always"
   apiPort: 9000
   mgmtPort: 8080
