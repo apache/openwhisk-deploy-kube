@@ -92,3 +92,9 @@
       name: db.config
       key: db_whisk_auths
 {{- end -}}
+
+
+{{/* tlssecretname for ingress */}}
+{{- define "tls_secret_name" -}}
+{{ .Values.whisk.ingress.tlssecretname | default "ow-ingress-tls-secret" | quote }}
+{{- end -}}
