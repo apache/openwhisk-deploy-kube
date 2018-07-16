@@ -68,6 +68,35 @@ will not attempt to create the necessary database tables or otherwise
 initialize/wipe the database.  You will need to properly initialize
 your external database before deploying the OpenWhisk chart.
 
+### Using external Kafka and Zookeeper services
+
+You may want to use an external Zookeeper or Kafka service.  You can do this
+by adding a stanza like the one below to your `mycluster.yaml`.
+```yaml
+kafka:
+  external: true
+zookeeper:
+  external: true
+```
+
+And then defining kafka_host, zookeeper_connect, and zookeeper_zero_host in your parent chart. e.g.
+```
+{{/* hostname for kafka */}}
+{{- define "kafka_host" -}}
+{{ template "kafka.serviceName" . }}
+{{- end -}}
+
+{{/* hostname for zookeeper */}}
+{{- define "zookeeper_connect" -}}
+{{ template "zookeeper.serviceName" . }}
+{{- end -}}
+
+{{/* zookeeper_zero_host required by openwhisk readiness check */}}
+{{- define "zookeeper_zero_host" -}}
+{{ template "zookeeper.serviceName" . }}
+{{- end -}}
+```
+
 ### Persistence
 
 The couchdb, zookeeper, kafka, and redis microservices can each be
