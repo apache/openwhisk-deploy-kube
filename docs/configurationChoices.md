@@ -90,7 +90,7 @@ zookeeper:
 
 ```
 
-Optionally, if including this chart as a dependency of another chart where kafka and zookeeper services are already included, disable this charts kafka and zookeeper as shown above and then define kafka_host, zookeeper_connect, and zookeeper_zero_host in your parent chart _helpers.tpl. e.g.
+Optionally, if including this chart as a dependency of another chart where kafka and zookeeper services are already defined, disable this chart's kafka and zookeeper as shown above, and then define kafka_host, zookeeper_connect, and zookeeper_zero_host in your parent chart _helpers.tpl. e.g.
 ```
 {{/* hostname for kafka */}}
 {{- define "kafka_host" -}}
