@@ -23,7 +23,7 @@
 {{/* hostname for kafka */}}
 {{- define "kafka_host" -}}
 {{- if .Values.kafka.external -}}
-{{ .Values.kafka.host }}
+{{ .Values.kafka.name }}
 {{- else -}}
 {{ .Values.kafka.name }}.{{ .Release.Namespace }}.svc.cluster.local
 {{- end -}}
@@ -37,7 +37,7 @@
 {{/* client connection string for zookeeper cluster (server1:port server2:port ... serverN:port)*/}}
 {{- define "zookeeper_connect" -}}
 {{- if .Values.zookeeper.external -}}
-{{ .Values.zookeeper.connect }}
+{{ .Values.zookeeper.name }}
 {{- else -}}
 {{- $zkname := .Values.zookeeper.name }}
 {{- $zkport := .Values.zookeeper.port }}
@@ -47,8 +47,13 @@
 
 {{/* host name for server.0 in zookeeper cluster */}}
 {{- define "zookeeper_zero_host" -}}
+{{- if .Values.zookeeper.external -}}
+{{ .Values.zookeeper.name }}
+{{- else -}}
 {{ .Values.zookeeper.name }}-0.{{ .Values.zookeeper.name }}.{{ $.Release.Namespace }}.svc.cluster.local
 {{- end -}}
+{{- end -}}
+
 
 {{/* Runtimes manifest */}}
 {{- define "runtimes_manifest" -}}
