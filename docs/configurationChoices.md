@@ -86,12 +86,17 @@ redis:
     size: 256Mi
     storageClass: default
 ```
+If you are deploying to `minikube`, use the storageClass `standard`.
 If you are deploying on a managed Kubernetes cluster, check the cloud
 provider's documentation to determine the appropriate `storageClass`
 and `size` to request.
 
-*Limitation* Currently the persistent volume support assumes that the
-`replicaCount` of the deployment using the persistent volume is 1.
+Note that the Helm charts do not explicitly create the
+PersistentVolumes to satisfy the PersistentVolumeClaims they
+instantiate. We assume that either your cluster is configured to
+support [Dynamic Volume Provision](https://kubernetes.io/docs/concepts/storage/dynamic-provisioning/)
+or that you will manually create any necessary PersistentVolumes when
+deploying the Helm chart.
 
 ### Invoker Container Factory
 
