@@ -162,7 +162,9 @@ whisk:
 ### Google Cloud with nginx ingress
 
 This type of installation allows the same benefits as the IBM Cloud standard cluster.
+
 According to your nginx ingress settings you can define a <domain> value of your choice. Check the official Google Cloud documentation here: https://cloud.google.com/kubernetes-engine/docs/tutorials/configuring-domain-name-static-ip. As stated you can create a domain of the type: `openwhisk.<your-chosen-dns-name>.com`
+
 You can choose to create a tls secret for that <domain> and provide values for <tlscrt> and <tlskey> in base64.
 
 To generate the values for <tlscrt> and <tlskey> you can use the openssl tool:
