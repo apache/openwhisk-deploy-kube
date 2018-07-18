@@ -28,38 +28,35 @@ will use in the `helm install` command.  You will need to define
 values for at least `whisk.ingress.type` and `whisk.ingress.api_host_name`
 and `whisk.ingress.api_host_port`.
 
-Unfortunately, the exact details of configuring an Ingress vary across
-cloud providers.  The detailed instructions
-[below](#possible-ingress-types) describe multiple possible Ingress
-configurations.  We welcome contributions from the community to
+Unfortunately, the exact details of configuring an Ingress can vary
+across cloud providers.  The detailed instructions describe multiple
+possible Ingress configurations with specific details for some public
+cloud providers.  We welcome contributions from the community to
 describe how to configure Ingress for additional cloud providers.
 
 If you are deploying on minikube, use the NodePort instructions below.
 
-# Possible Ingress Types
-
-## NodePort
+# NodePort
 
 NodePort is the simplest type of Ingress and is suitable for use with
 minikube and single node clusters that do not support more advanced
 ingress options.  Deploying a NodePort ingress will expose a port on
 each Kubernetes worker node for OpenWhisk's nginx service.
+
 In this Ingress, TLS termination will be handled by OpenWhisk's
 `nginx` service and will use self-signed certificates.  You will need
 to invoke `wsk` with the `-i` command line argument to bypass
 certificate checking.
 
-First,  obtain the IP address of the Kubernetes nodes. If you are
-using minikube, use the command
+## Setting up NodePort on minikube
+
+First,  obtain the IP address of the single Kubernetes worker node.
 ```shell
 minikube ip
 ```
-otherwise use
-```
-kubectl get nodes
-```
+This will return an ip address, for example `192.168.99.100`.
 
-Next pick an unassigned port (eg 31001) and define mycluster.yaml as
+Next pick an unassigned port (eg 31001) and define `mycluster.yaml` as
 ```yaml
 whisk:
   ingress:
@@ -71,18 +68,15 @@ nginx:
   httpsNodePort: 31001
 ```
 
-## IBM Cloud
+## Setting up NodePort on an IBM Cloud Lite cluster
 
-### IBM Cloud Lite cluster
-
-The only available ingress method for a Lite cluster is to use a
-NodePort (see above). Obtain the Public IP address of the sole worker
-node by using the command
- ```
+The only available ingress method for an IBM Cloud Lite cluster is to
+use a NodePort. Obtain the Public IP address of the sole worker node
+by using the command
+```shell
 bx cs workers <my-cluster>
- ```
-Then define mycluster.yaml as
-
+```
+Then define `mycluster.yaml` as
 ```yaml
 whisk:
   ingress:
@@ -94,12 +88,45 @@ nginx:
   httpsNodePort: 31001
 ```
 
-### IBM Cloud standard cluster
+# Standard
 
-This type of cluster can support a more advanced ingress style that
-does not use self-signed certificates for TLS termination (you can use
-`wsk` instead of `wsk -i`).  You will need to determine the values for
-<domain> and <ibmtlssecret> for your cluster by running the command
+Many cloud providers will support creating a Kubernetes Ingress that
+may offer additional capabilities features such as TLS termination,
+load balancing, and other advanced features. We will call this a
+`standard` ingress and provide a parameterized ingress.yaml as part of
+the Helm chart that will create it using cloud-provider specific
+parameters from your `mycluster.yaml`. Generically, your
+`mycluster.yaml`'s ingress section will look something like:
+```yaml
+whisk:
+  ingress:
+    api_host_name: *<domain>*
+    api_host_port: 443
+    api_host_proto: https
+    type: standard
+    domain: *<domain>*
+    tls:
+      enabled: *<true or false>*
+      secretenabled: *<true or false>*
+      createsecret: *<true or false>*
+      secretname: *<tlssecretname>*
+      *<additional cloud-provider-specific key/value pairs>*
+    annotations:
+      *<optional list of cloud-provider-specific key/value pairs>*
+```
+
+Note that if you can setup an ingress that does not use self-signed
+certificates for TLS termination you will be able to use `wsk` instead
+of `wsk -i` for cli operations.
+
+## IBM Cloud standard cluster
+
+This cluster type does not use self-signed certificates for TLS
+termination and can be configured with additional annotations to
+fine tune ingress performance.
+
+First, determine the values for <domain> and <ibmtlssecret> for
+your cluster by running the command:
 ```
 bx cs cluster-get <mycluster>
 ```
@@ -118,12 +145,11 @@ Ingress secret:  <ibmtlssecret>
 Workers:  3
 ```
 
-Now define mycluster.yaml as below (substituting the real values for
+Now define `mycluster.yaml` as below (substituting the real values for
 `<domain>` and `<ibmtlssecret>`).
 ```yaml
 whisk:
   ingress:
-    name: ow-ingress
     api_host_name: <domain>
     api_host_port: 443
     api_host_proto: https
@@ -157,9 +183,7 @@ whisk:
 
 ```
 
-## Google Cloud
-
-### Google Cloud with nginx ingress
+## Google Cloud with nginx ingress
 
 This type of installation allows the same benefits as the IBM Cloud standard cluster.
 
@@ -175,12 +199,11 @@ cat tls.key | base64
 cat tls.crt | base64
 ```
 
-Now define mycluster.yaml as below:
+Now define `mycluster.yaml` as below:
 
 ```yaml
 whisk:
   ingress:
-    name: ow-ingress
     api_host_name: <domain>
     api_host_port: 443
     api_host_proto: https
@@ -200,6 +223,7 @@ whisk:
       nginx.ingress.kubernetes.io/proxy-body-size: 0
 ```
 
-## Other cloud providers
+## Additional cloud providers
 
-Please submit Pull Requests with instructions for other cloud providers.
+Please submit Pull Requests with instructions for configuing the
+`standard` ingress for other cloud providers.
