@@ -34,6 +34,9 @@
   volumeMounts:
   - name: dockersock
     mountPath: "/var/run/docker.sock"
+  - name: task-dir
+    mountPath: "/task/playbook.yml"
+    subPath: "playbook.yml"
   env:
     # action runtimes
     - name: "RUNTIMES_MANIFEST"
