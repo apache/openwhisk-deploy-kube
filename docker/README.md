@@ -28,8 +28,5 @@ The built images are:
     ansible playbooks.
   * whisk-script-runner - An alpine-based utility image for running
     simple bash scripts that need the `wsk` cli available to them.
-  * couchdb - creates and initializes a CouchDB instance for
-    dev/testing of OpenWhisk.  This image is not intended for
-    production usage.
   * invoker-agent - worker node invoker agent -- used to implement
     suspend/resume and log consolidation ops for a remote invoker

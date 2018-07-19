@@ -43,18 +43,10 @@ spec:
       - name: {{ .Values.db.name | quote }}
         imagePullPolicy: {{ .Values.db.imagePullPolicy | quote }}
         image: {{ .Values.db.image | quote }}
-        command: ["/init.sh"]
         ports:
         - name: couchdb
           containerPort: {{ .Values.db.port }}
         env:
-        - name: "DB_HOST"
-          value: "127.0.0.1"
-        - name: "DB_PREFIX"
-          valueFrom:
-            configMapKeyRef:
-              name: db.config
-              key: db_prefix
         - name: "COUCHDB_USER"
           valueFrom:
             secretKeyRef:
@@ -65,21 +57,8 @@ spec:
             secretKeyRef:
               name: db.auth
               key: db_password
-        - name: "DB_PORT"
-          valueFrom:
-            configMapKeyRef:
-              name: db.config
-              key: db_port
         - name: "NODENAME"
           value: "couchdb0"
-        readinessProbe:
-          httpGet:
-            port: {{ .Values.db.port }}
-            path: /{{ .Values.db.activationsTable }}
-          initialDelaySeconds: 60
-          periodSeconds: 10
-          failureThreshold: 10
-          timeoutSeconds: 1
         {{- if .Values.db.persistence.enabled }}
         volumeMounts:
           - name: database-storage

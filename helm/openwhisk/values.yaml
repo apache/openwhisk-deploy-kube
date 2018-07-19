@@ -91,11 +91,14 @@ kafka:
 # Database configuration
 db:
   external: false
+  # Should we run a Job to wipe and re-initialize the database when the chart is deployed?
+  # This should always be true if external is false.
+  wipeAndInit: true
   name: "couchdb"
-  image: "openwhisk/kube-couchdb:latest"
+  image: "apache/couchdb:2.1"
   # NOTE: setting replicaCount > 1 will not work.
   replicaCount: 1
-  imagePullPolicy: "Always"
+  imagePullPolicy: "IfNotPresent"
   restartPolicy: "Always"
   host: nil
   port: 5984

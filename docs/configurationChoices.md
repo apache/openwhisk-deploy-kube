@@ -63,10 +63,13 @@ db:
     password: <password>
 ```
 
-Note that if you use an external database, the Helm deployment process
-will not attempt to create the necessary database tables or otherwise
-initialize/wipe the database.  You will need to properly initialize
-your external database before deploying the OpenWhisk chart.
+If your external database has already been initialized for use by OpenWhisk,
+you can disable the Kubernetes Job that wipes and re-initializes the
+database by adding the following to your `mycluster.yaml`
+```yaml
+db:
+  wipeAndInit: false
+```
 
 ### Persistence
 

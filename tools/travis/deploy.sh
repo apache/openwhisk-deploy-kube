@@ -15,8 +15,5 @@ echo "Publishing kube-whisk-script-runner image"
 echo "Publishing kube-whisk-ansible-runner image"
 ./tools/travis/publish.sh openwhisk kube-whisk-ansible-runner latest docker/whisk-ansible-runner
 
-echo "Publishing kube-couchdb image"
-./tools/travis/publish.sh openwhisk kube-couchdb latest docker/couchdb
-
 echo "Publishing kube-invoker-agent image"
 ./tools/travis/publish.sh openwhisk kube-invoker-agent latest docker/invoker-agent
