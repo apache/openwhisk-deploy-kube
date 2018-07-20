@@ -25,7 +25,7 @@ kubectl -n openwhisk logs -lname=nginx >& logs/nginx.log
 kubectl -n openwhisk logs -lname=kafkaprovider >& logs/kafkaprovider.log
 kubectl -n openwhisk logs jobs/install-routemgmt >& logs/routemgmt.log
 kubectl -n openwhisk logs jobs/install-catalog >& logs/catalog.log
-kubectl -n openwhisk logs jobs/kafkapkginstaller >& logs/kafkapkginstaller.log
+kubectl -n openwhisk logs jobs/init-couchdb >& logs/init-couchdb.log
 kubectl get pods --all-namespaces -o wide --show-all >& logs/all-pods.txt
 
 # System level logs from minikube

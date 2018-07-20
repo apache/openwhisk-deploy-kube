@@ -44,13 +44,12 @@ spec:
 {{- end }}
 
       initContainers:
-      # Wait for a controller to be up (which implies kafka, zookeeper, couchdb are all up as well).
-{{ include "readiness.waitForController" . | indent 6 }}
-
 {{- if eq .Values.invoker.containerFactory.impl "docker" }}
       # Pull images for all default runtimes before starting invoker
 {{ include "docker_pull_runtimes" . | indent 6 }}
 {{- end }}
+      # Wait for a controller to be up (which implies kafka, zookeeper, couchdb are all up as well).
+{{ include "readiness.waitForController" . | indent 6 }}
 
       containers:
       - name: {{ .Values.invoker.name | quote }}

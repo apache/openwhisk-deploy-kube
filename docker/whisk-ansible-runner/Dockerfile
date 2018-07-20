@@ -6,17 +6,22 @@ from alpine
 ENV DOCKER_VERSION 1.12.0
 
 RUN apk --no-cache add \
+  bash \
+  curl \
+  git \
+  libc6-compat \
+  libffi \
+  openssl \
   python \
   py-pip \
-  libffi \
-  openssl
+  wget \
+  zip
 
 RUN apk --no-cache add --virtual build-dependencies \
   python-dev \
   build-base \
   libffi-dev \
-  openssl-dev \
-  wget
+  openssl-dev
 
 # Install docker client
 RUN wget --no-verbose https://get.docker.com/builds/Linux/x86_64/docker-${DOCKER_VERSION}.tgz && \
