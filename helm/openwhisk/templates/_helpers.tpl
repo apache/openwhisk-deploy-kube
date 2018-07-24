@@ -22,7 +22,11 @@
 
 {{/* hostname for kafka */}}
 {{- define "kafka_host" -}}
+{{- if .Values.kafka.external -}}
+{{ .Values.kafka.name }}
+{{- else -}}
 {{ .Values.kafka.name }}.{{ .Release.Namespace }}.svc.cluster.local
+{{- end -}}
 {{- end -}}
 
 {{/* hostname for redis */}}
@@ -32,15 +36,24 @@
 
 {{/* client connection string for zookeeper cluster (server1:port server2:port ... serverN:port)*/}}
 {{- define "zookeeper_connect" -}}
+{{- if .Values.zookeeper.external -}}
+{{ .Values.zookeeper.name }}
+{{- else -}}
 {{- $zkname := .Values.zookeeper.name }}
 {{- $zkport := .Values.zookeeper.port }}
 {{- range $i, $e := until (int .Values.zookeeper.replicaCount) -}}{{ if ne $i 0 }},{{ end }}{{ $zkname }}-{{ . }}.{{ $zkname }}.{{ $.Release.Namespace }}.svc.cluster.local:{{ $zkport }}{{ end }}
 {{- end -}}
+{{- end -}}
 
 {{/* host name for server.0 in zookeeper cluster */}}
 {{- define "zookeeper_zero_host" -}}
+{{- if .Values.zookeeper.external -}}
+{{ .Values.zookeeper.name }}
+{{- else -}}
 {{ .Values.zookeeper.name }}-0.{{ .Values.zookeeper.name }}.{{ $.Release.Namespace }}.svc.cluster.local
 {{- end -}}
+{{- end -}}
+
 
 {{/* Runtimes manifest */}}
 {{- define "runtimes_manifest" -}}

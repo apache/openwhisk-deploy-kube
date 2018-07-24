@@ -71,6 +71,46 @@ db:
   wipeAndInit: false
 ```
 
+### Using external Kafka and Zookeeper services
+
+You may want to use an external Zookeeper or Kafka service.  To disable the kafka and/or zookeeper with this chart, add a stanza like the one below to your `mycluster.yaml`.
+```yaml
+kafka:
+  external: true
+zookeeper:
+  external: true
+```
+
+To add the hostname of a pre-existing kafka and/or zookeeper, define it in `mycluster.yml` like this
+
+```yaml
+kafka:
+  external: true
+  name: < existing kafka service >
+zookeeper:
+  external: true
+  name: < existing zookeeper service >
+
+```
+
+Optionally, if including this chart as a dependency of another chart where kafka and zookeeper services are already defined, disable this chart's kafka and zookeeper as shown above, and then define kafka_host, zookeeper_connect, and zookeeper_zero_host in your parent chart _helpers.tpl. e.g.
+```
+{{/* hostname for kafka */}}
+{{- define "kafka_host" -}}
+{{ template "kafka.serviceName" . }}
+{{- end -}}
+
+{{/* hostname for zookeeper */}}
+{{- define "zookeeper_connect" -}}
+{{ template "zookeeper.serviceName" . }}
+{{- end -}}
+
+{{/* zookeeper_zero_host required by openwhisk readiness check */}}
+{{- define "zookeeper_zero_host" -}}
+{{ template "zookeeper.serviceName" . }}
+{{- end -}}
+```
+
 ### Persistence
 
 The couchdb, zookeeper, kafka, and redis microservices can each be
