@@ -1,0 +1,79 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more contributor
+# license agreements; and to You under the Apache License, Version 2.0.
+
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ .Values.alarmprovider.name | quote }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    name: alarmprovider
+spec:
+  replicas: {{ .Values.alarmprovider.replicaCount }}
+  template:
+    metadata:
+      labels:
+        name: {{ .Values.alarmprovider.name | quote }}
+    spec:
+      restartPolicy: {{ .Values.alarmprovider.restartPolicy }}
+      volumes:
+        - name: alarm-logs
+          persistentVolumeClaim:
+            claimName: {{ .Values.alarmprovider.persistence.pvcName | quote }}
+      containers:
+      - name: {{ .Values.alarmprovider.name | quote }}
+        imagePullPolicy: {{ .Values.alarmprovider.imagePullPolicy | quote }}
+        image: {{ .Values.alarmprovider.image | quote }}
+        ports:
+        - name: kafkaprovider
+          containerPort: {{ .Values.alarmprovider.apiPort }}
+        env:
+        - name: "DB_PROTOCOL"
+          valueFrom:
+            configMapKeyRef:
+              name: db.config
+              key: db_protocol
+        - name: "DB_URL"
+          valueFrom:
+            configMapKeyRef:
+              name: db.config
+              key: db_host_port
+        - name: "DB_USER"
+          valueFrom:
+            secretKeyRef:
+              name: db.auth
+              key: db_username
+        - name: "DB_PASS"
+          valueFrom:
+            secretKeyRef:
+              name: db.auth
+              key: db_password
+        - name: "DB_PREFIX"
+          value: "{{- .Values.alarmprovider.dbPrefix -}}"
+        - name: "ROUTER_HOST"
+          valueFrom:
+            configMapKeyRef:
+              name: whisk.config
+              key: whisk_api_host_nameAndPort
+        - name: "ENDPOINT_AUTH"
+          valueFrom:
+            configMapKeyRef:
+              name: whisk.config
+              key: whisk_api_host_nameAndPort
+        volumeMounts:
+          - name: alarm-logs
+            mountPath: /logs
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.alarmprovider.persistence.pvcName | quote }}
+  namespace: {{ .Release.Namespace | quote }}
+spec:
+  storageClassName: {{ .Values.alarmprovider.persistence.storageClass }}
+  accessModes:
+    - {{ .Values.alarmprovider.persistence.accessMode }}
+  resources:
+    requests:
+      storage: {{ .Values.alarmprovider.persistence.size }}
