@@ -17,16 +17,7 @@
 #
 -->
 
-This directory contains the Dockerfiles and other artifacts to
-build specialized docker images for deploying OpenWhisk to Kubernetes.
+This directory contains files that are used to create ConfigMaps
+that are volume-mounted into containers.  By keeping them as separate
+files, we avoid needing to escape {{ or }} and can use natural indentation.
 
-These images are built automatically and published
-to DockerHub under the openwhisk userid.  Docker images are
-published on all successful Travis CI builds of the master branch.
-The built images are:
-  * whisk-ansible-runner - An alpine-based utility image for running
-    ansible playbooks.
-  * whisk-script-runner - An alpine-based utility image for running
-    simple bash scripts that need the `wsk` cli available to them.
-  * invoker-agent - worker node invoker agent -- used to implement
-    suspend/resume and log consolidation ops for a remote invoker

@@ -63,10 +63,53 @@ db:
     password: <password>
 ```
 
-Note that if you use an external database, the Helm deployment process
-will not attempt to create the necessary database tables or otherwise
-initialize/wipe the database.  You will need to properly initialize
-your external database before deploying the OpenWhisk chart.
+If your external database has already been initialized for use by OpenWhisk,
+you can disable the Kubernetes Job that wipes and re-initializes the
+database by adding the following to your `mycluster.yaml`
+```yaml
+db:
+  wipeAndInit: false
+```
+
+### Using external Kafka and Zookeeper services
+
+You may want to use an external Zookeeper or Kafka service.  To disable the kafka and/or zookeeper with this chart, add a stanza like the one below to your `mycluster.yaml`.
+```yaml
+kafka:
+  external: true
+zookeeper:
+  external: true
+```
+
+To add the hostname of a pre-existing kafka and/or zookeeper, define it in `mycluster.yml` like this
+
+```yaml
+kafka:
+  external: true
+  name: < existing kafka service >
+zookeeper:
+  external: true
+  name: < existing zookeeper service >
+
+```
+
+Optionally, if including this chart as a dependency of another chart where kafka and zookeeper services are already defined, disable this chart's kafka and zookeeper as shown above, and then define kafka_host, zookeeper_connect, and zookeeper_zero_host in your parent chart _helpers.tpl. e.g.
+```
+{{/* hostname for kafka */}}
+{{- define "kafka_host" -}}
+{{ template "kafka.serviceName" . }}
+{{- end -}}
+
+{{/* hostname for zookeeper */}}
+{{- define "zookeeper_connect" -}}
+{{ template "zookeeper.serviceName" . }}
+{{- end -}}
+
+{{/* zookeeper_zero_host required by openwhisk readiness check */}}
+{{- define "zookeeper_zero_host" -}}
+{{ template "zookeeper.serviceName" . }}
+{{- end -}}
+```
 
 ### Persistence
 
@@ -86,12 +129,17 @@ redis:
     size: 256Mi
     storageClass: default
 ```
+If you are deploying to `minikube`, use the storageClass `standard`.
 If you are deploying on a managed Kubernetes cluster, check the cloud
 provider's documentation to determine the appropriate `storageClass`
 and `size` to request.
 
-*Limitation* Currently the persistent volume support assumes that the
-`replicaCount` of the deployment using the persistent volume is 1.
+Note that the Helm charts do not explicitly create the
+PersistentVolumes to satisfy the PersistentVolumeClaims they
+instantiate. We assume that either your cluster is configured to
+support [Dynamic Volume Provision](https://kubernetes.io/docs/concepts/storage/dynamic-provisioning/)
+or that you will manually create any necessary PersistentVolumes when
+deploying the Helm chart.
 
 ### Invoker Container Factory
 

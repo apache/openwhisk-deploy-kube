@@ -38,16 +38,18 @@ spec:
 {{- if eq .Values.invoker.containerFactory.impl "docker" }}
       volumes:
 {{ include "docker_volumes" . | indent 6 }}
+      - name: task-dir
+        configMap:
+          name: docker-pull-runtimes
 {{- end }}
 
       initContainers:
-      # Wait for a controller to be up (which implies kafka, zookeeper, couchdb are all up as well).
-{{ include "readiness.waitForController" . | indent 6 }}
-
 {{- if eq .Values.invoker.containerFactory.impl "docker" }}
       # Pull images for all default runtimes before starting invoker
 {{ include "docker_pull_runtimes" . | indent 6 }}
 {{- end }}
+      # Wait for a controller to be up (which implies kafka, zookeeper, couchdb are all up as well).
+{{ include "readiness.waitForController" . | indent 6 }}
 
       containers:
       - name: {{ .Values.invoker.name | quote }}
@@ -175,6 +177,9 @@ spec:
 {{ include "docker_volumes" . | indent 6 }}
       - name: userlogs
         emptyDir: {}
+      - name: task-dir
+        configMap:
+          name: docker-pull-runtimes
 
       initContainers:
       # Pull images for all default runtimes before starting invoker
@@ -194,3 +199,13 @@ spec:
         - name: userlogs
           mountPath: "/action-logs"
 {{- end }}
+
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: docker-pull-runtimes
+  namespace: {{ .Release.Namespace | quote }}
+data:
+{{ (.Files.Glob "configMapFiles/dockerPullRuntimes/playbook.yml").AsConfig | indent 2 }}

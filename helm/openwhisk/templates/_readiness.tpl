@@ -3,8 +3,8 @@
 
 {{/* Init container that waits for couchdb to be ready */}}
 {{- define "readiness.waitForCouchDB" -}}
-{{ if .Values.db.external }}
-# external db is assumed to be already ready; no need for init container
+{{ if not .Values.db.wipeAndInit }}
+# if not db.wipeAndInit, the external db must already be ready; so no need for init container
 {{- else -}}
 - name: "wait-for-couchdb"
   image: "busybox"
