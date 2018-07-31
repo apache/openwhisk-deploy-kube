@@ -12,7 +12,7 @@
   env:
   - name: "READINESS_URL"
     value: {{ .Values.db.protocol }}://{{ include "db_host" . }}:{{ .Values.db.port }}/{{ .Values.db.activationsTable }}
-  command: ["sh", "-c", "result=1; until [ $result -eq 0 ]; do echo verifying CouchDB readiness; wget -T 5 --spider $READINESS_URL; result=$?; sleep 1; done;"]
+  command: ["sh", "-c", "result=1; until [ $result -eq 0 ]; do echo verifying CouchDB readiness; wget -T 5 --spider $READINESS_URL --header=\"Authorization: Basic {{ include "db_authentication" . | b64enc }}\"; result=$?; sleep 1; done;"]
 {{- end -}}
 {{- end -}}
 
