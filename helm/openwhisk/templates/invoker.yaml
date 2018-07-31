@@ -55,7 +55,7 @@ spec:
       - name: {{ .Values.invoker.name | quote }}
         imagePullPolicy: {{ .Values.invoker.imagePullPolicy | quote }}
         image: {{ .Values.invoker.image | quote }}
-        command: [ "/bin/bash", "-c", "COMPONENT_NAME=$(hostname | cut -d'-' -f2) && /init.sh --uniqueName $COMPONENT_NAME"]
+        command: [ "/bin/bash", "-c", "/init.sh --uniqueName $INVOKER_NAME" ]
         env:
           - name: "PORT"
             value: {{ .Values.invoker.port | quote }}
