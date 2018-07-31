@@ -20,6 +20,10 @@
 {{- end -}}
 {{- end -}}
 
+{{- define "db_authentication" -}}
+{{ .Values.db.auth.username }}:{{ .Values.db.auth.password }}
+{{- end -}}
+
 {{/* hostname for kafka */}}
 {{- define "kafka_host" -}}
 {{- if .Values.kafka.external -}}
