@@ -146,7 +146,6 @@ controller:
     actionsSequenceMaxlength: 50
     triggersFiresPerminute: 60
     actionsInvokesPerminute: 60
-    actionsInvokesConcurrentinsystem: 5000
     actionsInvokesConcurrent: 30
 
 # Invoker configurations

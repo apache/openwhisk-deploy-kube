@@ -111,8 +111,6 @@ spec:
           value: {{ .Values.controller.limits.triggersFiresPerminute | quote }}
         - name: "LIMITS_ACTIONS_INVOKES_PERMINUTE"
           value: {{ .Values.controller.limits.actionsInvokesPerminute | quote }}
-        - name: "LIMITS_ACTIONS_INVOKES_CONCURRENTINSYSTEM"
-          value: {{ .Values.controller.limits.actionsInvokesConcurrentinsystem | quote }}
         - name: "LIMITS_ACTIONS_INVOKES_CONCURRENT"
           value: {{ .Values.controller.limits.actionsInvokesConcurrent | quote }}
 
