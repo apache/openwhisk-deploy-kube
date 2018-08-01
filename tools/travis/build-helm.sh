@@ -105,6 +105,32 @@ jobHealthCheck () {
   echo "$1 completed"
 }
 
+verifyHealthyInvoker () {
+  PASSED=false
+  TIMEOUT=0
+  until $PASSED || [ $TIMEOUT -eq $TIMEOUT_STEP_LIMIT ]; do
+    wget -qO /tmp/count.txt --no-check-certificate https://$WSK_HOST:$WSK_PORT/invokers/healthy/count
+    NUM_HEALTHY_INVOKERS=$(cat /tmp/count.txt)
+    if [ $NUM_HEALTHY_INVOKERS -gt 0 ]; then
+      PASSED=true
+      echo "There are $NUM_HEALTHY_INVOKERS healthy invokers"
+      break
+    fi
+
+    kubectl get pods --all-namespaces -o wide --show-all
+
+    let TIMEOUT=TIMEOUT+1
+    sleep 10
+  done
+
+  if [ "$PASSED" = false ]; then
+    echo "No healthy invokers available"
+
+    exit 1
+  fi
+}
+
+
 
 #################
 # Main body of script -- deploy OpenWhisk
@@ -167,10 +193,11 @@ helm install helm/openwhisk --namespace=openwhisk --name=ow4travis -f mycluster.
 # Wait for controller to be up
 statefulsetHealthCheck "controller"
 
-# Wait for invoker to be up and considered healthy
+# Wait for invoker to be up
 deploymentHealthCheck "invoker"
-echo "Sleeping for 10 seconds to allow controller to consider invoker healthy"
-sleep 10
+
+# Wait for the controller to confirm that it has at least one healthy invoker
+verifyHealthyInvoker
 
 # Wait for catalog and routemgmt jobs to complete successfully
 jobHealthCheck "install-catalog"
@@ -199,29 +226,13 @@ if [ -z "$RESULT" ]; then
 fi
 
 # next invoke the new hello world action via the CLI
-# We have a retry loop because we do not have a robust way to ask
-# the controller if it has a healthy invoker.  There is a lag of
-# unpredictable duration between the invoker pod reporting as Running
-# and the controller deciding the invoker is healthy.
-PASSED=false
-ATTEMPTS=0
-until $PASSED || [ $ATTEMPTS -eq 3 ]; do
-  RESULT=$(wsk -i action invoke --blocking hello | grep "\"status\": \"success\"")
-  if [ -z "$RESULT" ]; then
-    echo "Attempt $ATTEMPTS to invoke action via the CLI failed; will sleep and retry in case controller is slow registering invoker"
-    let ATTEMPTS=ATTEMPTS+1
-    sleep 10
-  else
-      PASSED=true
-  fi
-done
-if [ "$PASSED" = false ]; then
+RESULT=$(wsk -i action invoke --blocking hello | grep "\"status\": \"success\"")
+if [ -z "$RESULT" ]; then
   echo "FAILED! Could not invoke hello action via CLI"
   exit 1
 fi
 
 # now run it as a web action
-# No need to retry here, we succeeded above so we have a working invoker
 HELLO_URL=$(wsk -i action get hello --url | grep "https://")
 RESULT=$(wget --no-check-certificate -qO- $HELLO_URL | grep 'Hello world')
 if [ -z "$RESULT" ]; then
