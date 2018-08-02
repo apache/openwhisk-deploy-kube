@@ -38,6 +38,7 @@ data:
   db_host: {{ include "db_host" . | quote }}
   db_port: {{ .Values.db.port | quote }}
   db_url: "{{ .Values.db.protocol }}://{{ include "db_host" . }}:{{ .Values.db.port }}"
+  db_host_port: "{{ include "db_host" . }}:{{ .Values.db.port }}"
   db_whisk_actions: {{ .Values.db.actionsTable | quote }}
   db_whisk_activations: {{ .Values.db.activationsTable | quote }}
   db_whisk_auths: {{ .Values.db.authsTable | quote }}

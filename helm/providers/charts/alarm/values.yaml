@@ -1,0 +1,18 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more contributor
+# license agreements; and to You under the Apache License, Version 2.0.
+
+# Alarm provider configurations
+alarmprovider:
+  name: "alarmprovider"
+  image: "openwhisk/alarmprovider:latest"
+  # NOTE: replicaCount > 1 doesn't work because of the PVC
+  replicaCount: 1
+  imagePullPolicy: "IfNotPresent"
+  restartPolicy: "Always"
+  apiPort: 8080
+  dbPrefix: "alm"
+  persistence:
+    pvcName: alarmprovider-pvc
+    size: 1Gi
+    storageClass: default
+    accessMode: ReadWriteOnce

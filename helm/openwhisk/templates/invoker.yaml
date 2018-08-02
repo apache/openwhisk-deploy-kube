@@ -94,6 +94,12 @@ spec:
           - name: "CONFIG_whisk_containerPool_coreShare"
             value: {{ .Values.invoker.containerPool.coreShare | quote }}
 
+          # DNS Server passed to action containers
+{{- if not (eq .Values.invoker.kube_dns "nil") }}
+          - name: "CONFIG_whisk_containerFactory_containerArgs_dnsServers_0"
+            value: {{ .Values.invoker.kube_dns }}
+{{ end }}
+
           # Invoker name is the name of the node (DaemonSet) or pod (StatefulSet)
           - name: "INVOKER_NAME"
             valueFrom:
