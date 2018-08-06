@@ -50,7 +50,7 @@ spec:
       - name: {{ .Values.controller.name | quote }}
         imagePullPolicy: {{ .Values.controller.imagePullPolicy | quote }}
         image: {{ .Values.controller.image | quote }}
-        command: ["/bin/bash", "-c", "COMPONENT_NAME=$(hostname | cut -d'-' -f2) /init.sh `hostname | cut -d'-' -f2`"]
+        command: ["/bin/bash", "-c", "/init.sh `hostname | cut -d'-' -f2`"]
         ports:
         - name: controller
           containerPort: {{ .Values.controller.port }}
