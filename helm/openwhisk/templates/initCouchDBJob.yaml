@@ -61,6 +61,16 @@ spec:
               key: db_password
         - name: "NODENAME"
           value: "couchdb0"
+        - name: "WHISK_AUTH_GUEST"
+          valueFrom:
+            secretKeyRef:
+              name: whisk.auth
+              key: guest
+        - name: "WHISK_AUTH_SYSTEM"
+          valueFrom:
+            secretKeyRef:
+              name: whisk.auth
+              key: system
 
 ---
 apiVersion: v1

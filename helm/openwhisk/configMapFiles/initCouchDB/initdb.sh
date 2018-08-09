@@ -4,6 +4,10 @@
 # Clone OpenWhisk to get the ansible playbooks needed to initialize CouchDB
 git clone https://github.com/apache/incubator-openwhisk /openwhisk
 
+# overwriting auth.guest and auth.whisk.system files with custom defined keys
+echo "$WHISK_AUTH_GUEST" > /openwhisk/ansible/files/auth.guest
+echo "$WHISK_AUTH_SYSTEM" > /openwhisk/ansible/files/auth.whisk.system
+
 # generate db_local.ini so the ansible jobs know how to access the database
 pushd /openwhisk/ansible
     ansible-playbook -i environments/local setup.yml
