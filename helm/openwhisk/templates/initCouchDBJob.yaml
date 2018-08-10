@@ -19,6 +19,9 @@ spec:
       - name: task-dir
         configMap:
           name: init-couchdb
+      - name: whisk-auth
+        secret:
+          secretName: whisk.auth
       containers:
       - name: init-couchdb
         image: openwhisk/kube-whisk-ansible-runner
@@ -28,6 +31,8 @@ spec:
         - name: task-dir
           mountPath: "/task/initdb.sh"
           subPath: "initdb.sh"
+        - name: whisk-auth
+          mountPath: "/etc/whisk-auth"
         env:
         - name: "DB_PROTOCOL"
           valueFrom:
