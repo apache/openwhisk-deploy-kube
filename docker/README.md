@@ -29,4 +29,4 @@ The built images are:
   * whisk-script-runner - An alpine-based utility image for running
     simple bash scripts that need the `wsk` cli available to them.
   * invoker-agent - worker node invoker agent -- used to implement
-    suspend/resume and log consolidation ops for a remote invoker
+    suspend/resume on action containers for a remote invoker
