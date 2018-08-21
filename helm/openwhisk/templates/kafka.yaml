@@ -21,8 +21,8 @@ metadata:
   name: {{ .Values.kafka.name | quote }}
   namespace: {{ .Release.Namespace | quote }}
 spec:
+  serviceName: {{ .Values.kafka.name | quote }}
   podManagementPolicy: "Parallel"
-  name: {{ .Values.kafka.name | quote }}
   replicas: {{ .Values.kafka.replicaCount }}
   template:
     metadata:

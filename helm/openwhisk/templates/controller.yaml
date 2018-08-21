@@ -24,9 +24,9 @@ metadata:
   labels:
     name: {{ .Values.controller.name | quote }}
 spec:
+  serviceName: {{ .Values.controller.name | quote }}
   podManagementPolicy: "Parallel"
   replicas: {{ .Values.controller.replicaCount }}
-  name: {{ .Values.controller.name | quote }}
   template:
     metadata:
       labels:
