@@ -37,11 +37,12 @@ sudo -E /usr/local/bin/minikube start --vm-driver=none --kubernetes-version=$TRA
 TIMEOUT=0
 TIMEOUT_COUNT=60
 until [ $TIMEOUT -eq $TIMEOUT_COUNT ]; do
-  if [ -n "$(/usr/local/bin/kubectl get nodes | grep Ready)" ]; then
+  kubectl get po &> /dev/null
+  if [ $? -ne 1 ]; then
     break
   fi
 
-  echo "minikube is not up yet"
+  echo "waiting for minikube to be up"
   let TIMEOUT=TIMEOUT+1
   sleep 5
 done
