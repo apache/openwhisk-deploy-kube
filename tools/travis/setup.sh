@@ -31,7 +31,7 @@ mkdir $HOME/.kube || true
 touch $HOME/.kube/config
 
 export KUBECONFIG=$HOME/.kube/config
-sudo -E /usr/local/bin/minikube start --vm-driver=none --extra-config=apiserver.Authorization.Mode=RBAC --kubernetes-version=$TRAVIS_KUBE_VERSION
+sudo -E /usr/local/bin/minikube start --vm-driver=none --kubernetes-version=$TRAVIS_KUBE_VERSION
 
 # Wait until we have a ready node in minikube
 TIMEOUT=0
