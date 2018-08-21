@@ -18,7 +18,11 @@ pushd /tmp
 
   # Download and install helm
   curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get > get_helm.sh && chmod +x get_helm.sh && ./get_helm.sh
+
+  # Needed by Helm for socket forwarding to tiller
+  sudo apt-get install -y socat
 popd
+
 
 # set docker0 to promiscuous mode
 sudo ip link set docker0 promisc on
