@@ -33,7 +33,7 @@ touch $HOME/.kube/config
 export KUBECONFIG=$HOME/.kube/config
 sudo -E /usr/local/bin/minikube start --vm-driver=none --kubernetes-version=$TRAVIS_KUBE_VERSION
 
-# Wait until we have a ready node in minikube
+# Wait until the API server is responding
 TIMEOUT=0
 TIMEOUT_COUNT=60
 until [ $TIMEOUT -eq $TIMEOUT_COUNT ]; do
@@ -57,13 +57,17 @@ minikube update-context
 echo "minikube is deployed and reachable"
 /usr/local/bin/kubectl describe nodes
 
+# Give kube-system service account cluster-admin
+kubectl create clusterrolebinding kube-system-cluster-admin --clusterrole=cluster-admin --serviceaccount=kube-system:default
+clusterrolebinding "kube-system-cluster-admin" created
+
 # Create privileged RBAC for tiller
 /usr/local/bin/kubectl create clusterrolebinding tiller-cluster-admin --clusterrole=cluster-admin --serviceaccount=kube-system:default
 
 # Install tiller into the minikube cluster
 /usr/local/bin/helm init --service-account default
 
-# Wait for tiller to be ready
+# Wait for tiller-deploy to be ready
 TIMEOUT=0
 TIMEOUT_COUNT=60
 until [ $TIMEOUT -eq $TIMEOUT_COUNT ]; do
