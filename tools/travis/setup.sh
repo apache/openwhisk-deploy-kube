@@ -57,6 +57,9 @@ minikube update-context
 echo "minikube is deployed and reachable"
 /usr/local/bin/kubectl describe nodes
 
+# Create privileged RBAC for tiller
+/usr/local/bin/kubectl create clusterrolebinding tiller-cluster-admin --clusterrole=cluster-admin --serviceaccount=kube-system:default
+
 # Install tiller into the minikube cluster
 /usr/local/bin/helm init --service-account default
 
@@ -80,5 +83,3 @@ if [ $TIMEOUT -eq $TIMEOUT_COUNT ]; then
   exit 1
 fi
 
-# Create privileged RBAC for tiller
-/usr/local/bin/kubectl create clusterrolebinding tiller-cluster-admin --clusterrole=cluster-admin --serviceaccount=kube-system:default
