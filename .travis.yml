@@ -1,6 +1,9 @@
 # Licensed to the Apache Software Foundation (ASF) under one or more contributor
 # license agreements; and to You under the Apache License, Version 2.0.
+
 sudo: required
+# Required to use kubeadm as the bootstrapper, which is required for testing with kube 1.11
+dist: xenial
 
 env:
   global:
@@ -23,7 +26,7 @@ notifications:
 
 before_install:
   - ./tools/travis/setupscan.sh
-  - ./tools/travis/setup.sh
+  - ./tools/travis/setup-xenial.sh
 
 script:
   - ./tools/travis/scancode.sh
