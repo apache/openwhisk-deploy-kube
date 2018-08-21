@@ -62,7 +62,7 @@ echo "minikube is deployed and reachable"
 
 # Wait for tiller to be ready
 TIMEOUT=0
-TIMEOUT_COUNT=20
+TIMEOUT_COUNT=60
 until [ $TIMEOUT -eq $TIMEOUT_COUNT ]; do
   TILLER_STATUS=$(/usr/local/bin/kubectl -n kube-system get pods -o wide | grep tiller-deploy | awk '{print $3}')
   TILLER_READY_COUNT=$(/usr/local/bin/kubectl -n kube-system get pods -o wide | grep tiller-deploy | awk '{print $2}')
