@@ -53,10 +53,10 @@ what we test in TravisCI. After you have experience with OpenWhisk on
 Minikube, feel free to experiment with additional versions.
 
 ```
-asdf install kubectl 1.9.0
-asdf global kubectl 1.9.0
-asdf install minikube 0.25.2
-asdf global minikube 0.25.2
+asdf install kubectl 1.10.5
+asdf global kubectl 1.10.5
+asdf install minikube 0.28.2
+asdf global minikube 0.28.2
 ```
 
 ## Configure the Minikube VM
@@ -65,7 +65,7 @@ You will want at least 4GB of memory and 2 CPUs for Minikube to run OpenWhisk.
 If you have a larger machine, you may want to provision more (especially more memory).
 
 ```
-minikube config set kubernetes-version v1.9.0
+minikube config set kubernetes-version v1.10.5
 minikube config set cpus 2
 minikube config set memory 4096
 minikube config set WantUpdateNotification false
@@ -73,9 +73,15 @@ minikube config set WantUpdateNotification false
 
 ## Start Minikube
 
+With minikube v0.25.2:
 ```
 minikube start --extra-config=apiserver.Authorization.Mode=RBAC
 ```
+with minikube versions more recent than v0.25.2:
+```
+minikube start
+```
+
 
 ## Setup Docker network in promiscuous mode
 Put the docker network in promiscuous mode.
@@ -94,10 +100,6 @@ redo the setup of the Docker network.
 ```
 minikube delete
 minikube config set kubernetes-version <NEW_VERSION>
-minikube start --extra-config=apiserver.Authorization.Mode=RBAC
+minikube start [--extra-config=apiserver.Authorization.Mode=RBAC]
 minikube ssh -- sudo ip link set docker0 promisc on
 ```
-
-# Troubleshooting
-
-For some combinations of Minikube and Kubernetes versions, you may need to workaround a [Minikube DNS issue](https://github.com/kubernetes/minikube/issues/2240#issuecomment-348319371). A common symptom of this issue is that the OpenWhisk couchdb pod will fail to start with the error that it is unable to resolve `github.com` when cloning the openwhisk git repo. A work around is to delete the minikube cluster, issue the command `minikube config set bootstrapper kubeadm` and then redo the `minikube start` command above.

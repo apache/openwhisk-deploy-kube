@@ -30,8 +30,12 @@ EOF
 
 # Download and install misc packages and utilities
 pushd /tmp
-  # helm on minikube's vm-driver=none requires nsenter
+  # helm on minikube's vm-driver=none requires nsenter, which is not present by default on ubuntu 14.04
   check_or_build_nsenter
+
+  # Need socat for helm to forward connections to tiller on ubuntu 16.04
+  sudo apt update
+  sudo apt install -y socat
 
   # download and install the wsk cli
   wget -q https://github.com/apache/incubator-openwhisk-cli/releases/download/latest/OpenWhisk_CLI-latest-linux-amd64.tgz
@@ -45,7 +49,6 @@ pushd /tmp
 
   # Download and install helm
   curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get > get_helm.sh && chmod +x get_helm.sh && ./get_helm.sh
-
 popd
 
 # set docker0 to promiscuous mode
@@ -59,7 +62,14 @@ mkdir $HOME/.kube || true
 touch $HOME/.kube/config
 
 export KUBECONFIG=$HOME/.kube/config
-sudo -E /usr/local/bin/minikube start --vm-driver=none --extra-config=apiserver.Authorization.Mode=RBAC --kubernetes-version=$TRAVIS_KUBE_VERSION
+
+if [ "$TRAVIS_MINIKUBE_VERSION" == "v0.25.2" ]; then
+  # bootstrap with localkube -- restricts choice of kube version
+  sudo -E /usr/local/bin/minikube start --vm-driver=none --bootstrapper=localkube --extra-config=apiserver.Authorization.Mode=RBAC --kubernetes-version=$TRAVIS_KUBE_VERSION
+else
+  # bootstrap with kubeadm (preferred).
+  sudo -E /usr/local/bin/minikube start --vm-driver=none --bootstrapper=kubeadm --extra-config=apiserver.authorization-mode=RBAC --kubernetes-version=$TRAVIS_KUBE_VERSION
+fi
 
 # Wait until we have a ready node in minikube
 TIMEOUT=0
@@ -84,12 +94,15 @@ minikube update-context
 echo "minikube is deployed and reachable"
 /usr/local/bin/kubectl describe nodes
 
+# Pods running in kube-system namespace should have cluster-admin role
+kubectl create clusterrolebinding add-on-cluster-admin --clusterrole=cluster-admin --serviceaccount=kube-system:default
+
 # Install tiller into the minikube cluster
 /usr/local/bin/helm init --service-account default
 
 # Wait for tiller to be ready
 TIMEOUT=0
-TIMEOUT_COUNT=20
+TIMEOUT_COUNT=60
 until [ $TIMEOUT -eq $TIMEOUT_COUNT ]; do
   TILLER_STATUS=$(/usr/local/bin/kubectl -n kube-system get pods -o wide | grep tiller-deploy | awk '{print $3}')
   TILLER_READY_COUNT=$(/usr/local/bin/kubectl -n kube-system get pods -o wide | grep tiller-deploy | awk '{print $2}')
@@ -104,8 +117,9 @@ done
 
 if [ $TIMEOUT -eq $TIMEOUT_COUNT ]; then
   echo "Failed to install tiller"
+
+  # Dump lowlevel logs to help diagnose failure to start tiller
+  minikube logs
+  kubectl -n kube-system describe pods
   exit 1
 fi
-
-# Create privileged RBAC for tiller
-/usr/local/bin/kubectl create clusterrolebinding tiller-cluster-admin --clusterrole=cluster-admin --serviceaccount=kube-system:default
