@@ -26,7 +26,7 @@ notifications:
 
 before_install:
   - ./tools/travis/setupscan.sh
-  - ./tools/travis/setup-xenial.sh
+  - ./tools/travis/setup.sh
 
 script:
   - ./tools/travis/scancode.sh
