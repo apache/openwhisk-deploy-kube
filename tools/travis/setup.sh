@@ -31,7 +31,7 @@ mkdir $HOME/.kube || true
 touch $HOME/.kube/config
 
 export KUBECONFIG=$HOME/.kube/config
-sudo -E /usr/local/bin/minikube start --vm-driver=none --kubernetes-version=$TRAVIS_KUBE_VERSION
+sudo -E /usr/local/bin/minikube start --vm-driver=none --bootstrapper=kubeadm --extra-config=apiserver.authorization-mode=RBAC --kubernetes-version=$TRAVIS_KUBE_VERSION
 
 # Wait until the API server is responding
 TIMEOUT=0
