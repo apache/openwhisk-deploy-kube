@@ -4,21 +4,21 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: install-package-alarm
+  name: install-package-cloudant
   namespace: {{ .Release.Namespace | quote }}
 spec:
   activeDeadlineSeconds: 600
   template:
     metadata:
-      name: install-package-alarm
+      name: install-package-cloudant
     spec:
       restartPolicy: Never
       volumes:
       - name: task-dir
         configMap:
-          name: install-package-alarms
+          name: install-package-cloudant
       containers:
-      - name: alarmpkginstaller
+      - name: cloudantpkginstaller
         image: openwhisk/kube-whisk-script-runner
         volumeMounts:
         - name: task-dir
@@ -36,12 +36,17 @@ spec:
               configMapKeyRef:
                 name: whisk.config
                 key: whisk_api_host_nameAndPort
-          # for the database used by alarms package
+          # for the database used by cloudant package
           - name: "DB_HOST"
             valueFrom:
               configMapKeyRef:
                 name: db.config
                 key: db_host
+          - name: "DB_PROTOCOL"
+            valueFrom:
+              configMapKeyRef:
+                name: db.config
+                key: db_protocol
           - name: "DB_PORT"
             valueFrom:
               configMapKeyRef:
@@ -58,12 +63,12 @@ spec:
                 name: db.auth
                 key: db_password
           - name: "DB_PREFIX"
-            value: "{{- .Values.alarmprovider.dbPrefix -}}"
+            value: "{{- .Values.cloudantprovider.dbPrefix -}}"
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: install-package-alarms
+  name: install-package-cloudant
   namespace: {{ .Release.Namespace | quote }}
 data:
 {{ (.Files.Glob "configMapFiles/myTask.sh").AsConfig | indent 2 }}
