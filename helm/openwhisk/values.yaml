@@ -36,6 +36,8 @@ whisk:
     cli: "latest"
   systemNameSpace: "/whisk.system"
   runtimes: "runtimes.json"
+  loadbalancer:
+    invokerUserMemory: "2048m"
 
 # Docker registry
 docker:
@@ -170,10 +172,6 @@ invoker:
         enabled: false
         port: 3233
   containerNetwork: "bridge"
-  containerPool:
-    numcore: 2
-    coreshare: 4
-  busyThreshold: 8
   kube_dns: nil
 
 # API Gateway configurations

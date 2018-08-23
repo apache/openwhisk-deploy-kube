@@ -89,10 +89,8 @@ spec:
           - name: "DOCKER_REGISTRY"
             value: {{ .Values.docker.registry.name | quote }}
 
-          - name: "CONFIG_whisk_containerPool_numCore"
-            value: {{ .Values.invoker.containerPool.numCore | quote }}
-          - name: "CONFIG_whisk_containerPool_coreShare"
-            value: {{ .Values.invoker.containerPool.coreShare | quote }}
+          - name: "CONFIG_whisk_loadbalancer_invokerUserMemory"
+            value: {{ .Values.whisk.loadbalancer.invokerUserMemory | quote }}
 
           # DNS Server passed to action containers
 {{- if not (eq .Values.invoker.kube_dns "nil") }}

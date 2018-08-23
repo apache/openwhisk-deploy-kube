@@ -200,3 +200,7 @@ to your `mycluster.yaml`
 
 For scalability, you will probably want to use `replicaCount` to
 deploy more than one Invoker when using the KubernetesContainerFactory.
+You will also need to override the value of `whisk.loadbalancer.invokerUserMemory`
+to a significantly larger value when using the KubernetesContainerFactory
+to better match the overall memory available on invoker worker nodes divided by
+the number of Invokers you are creating.
