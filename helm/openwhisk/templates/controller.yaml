@@ -93,8 +93,8 @@ spec:
         - name: "RUNTIMES_MANIFEST"
           value: {{ template "runtimes_manifest" . }}
 
-        - name: "CONFIG_whisk_loadbalancer_invokerBusyThreshold"
-          value: {{ .Values.invoker.busyThreshold | quote }}
+        - name: "CONFIG_whisk_loadbalancer_invokerUserMemory"
+          value: {{ .Values.whisk.loadbalancer.invokerUserMemory | quote }}
 
         # Kafka properties
         - name: "KAFKA_HOSTS"
