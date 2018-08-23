@@ -36,7 +36,20 @@ spec:
               configMapKeyRef:
                 name: whisk.config
                 key: whisk_api_host_nameAndPort
-          # for the database used by cloudant package
+          {{- if .Values.cloudantprovider.db.external }}
+          # Config database using the external cloudant instance
+          - name: "DB_PROTOCOL"
+            value: {{ .Values.cloudantprovider.db.protocol | quote }}
+          - name: "DB_HOST"
+            value: {{ .Values.cloudantprovider.db.host | quote }}
+          - name: "DB_USERNAME"
+            value: {{ .Values.cloudantprovider.db.username | quote }}
+          - name: "DB_PASSWORD"
+            value: {{ .Values.cloudantprovider.db.password | quote }}
+          - name: "DB_PORT"
+            value: {{ .Values.cloudantprovider.db.port | quote }}
+          {{- else }}
+          # Config database using the same openwhisk cloudant instance
           - name: "DB_HOST"
             valueFrom:
               configMapKeyRef:
@@ -62,8 +75,9 @@ spec:
               secretKeyRef:
                 name: db.auth
                 key: db_password
+          {{ end }}
           - name: "DB_PREFIX"
-            value: "{{- .Values.cloudantprovider.dbPrefix -}}"
+            value: {{ .Values.cloudantprovider.db.prefix | default "cldt" | quote }}
 ---
 apiVersion: v1
 kind: ConfigMap

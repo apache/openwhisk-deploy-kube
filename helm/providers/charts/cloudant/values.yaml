@@ -10,7 +10,15 @@ cloudantprovider:
   imagePullPolicy: "IfNotPresent"
   restartPolicy: "Always"
   apiPort: 8080
-  dbPrefix: "cldt"
+  db:
+    external: false
+    prefix: "cldt"
+    # Add below values if you are using external instance
+    # host: "10.10.10.10"
+    # port: 5984
+    # protocol: "http"
+    # username: "admin"
+    # password: "secret"
   persistence:
     pvcName: cludntprovider-pvc
     size: 1Gi

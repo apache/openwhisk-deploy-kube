@@ -23,7 +23,23 @@ This chart is to deploy Cloudant provider and package to OpenWhisk on a Kubernet
 
 ## Preconditions
 
-+ A database to save the event data is required by Cloudant provider and package. The current implementation is to use the same Cloudant instance that is being used by OpenWhisk itself. Later we will provide another choice to use a different database.
++ A CouchDB instance is required to save the event data. You can use the same CouchDB instance or you can use a different CouchDB instance. To use the same CouchDB instance as OpenWhisk, config `values.yaml` as:
+```
+db:
+  external: false
+  prefix: "cldt"
+```
+To use a different CouchDB instance, config the database parameters in `value.yaml` as:
+```
+db:
+  external: true
+  prefix: "cldt"
+  host: "0.0.0.0"
+  port: 5984
+  protocol: "http"
+  username: "admin"
+  password: "secret"
+```
 + persistentvolumes (aka 'pv') is required by this charter. You can verify by `kubectl get pv`.
 + Action containers use Kubernetes DNS. The easiest way to do this is to use the `KubernetesContainerFactory` as the [Invoker Container Factory](https://github.com/apache/incubator-openwhisk-deploy-kube/blob/master/docs/configurationChoices.md#invoker-container-factory) in the Kubernetes cluster by adding below configuration in the `mycluster.yaml` when you deploy OpenWhisk with Helm:
 ```
