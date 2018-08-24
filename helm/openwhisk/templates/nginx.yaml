@@ -26,7 +26,7 @@ spec:
       name: https-admin
 
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Values.nginx.name | quote }}
@@ -35,6 +35,9 @@ metadata:
     name: nginx
 spec:
   replicas: {{ .Values.nginx.replicaCount }}
+  selector:
+    matchLabels:
+      name: {{ .Values.nginx.name | quote }}
   template:
     metadata:
       labels:

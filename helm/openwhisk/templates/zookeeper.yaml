@@ -43,7 +43,7 @@ data:
 {{- end }}
 
 ---
-apiVersion: apps/v1beta1
+apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: {{ .Values.zookeeper.name | quote }}
@@ -52,6 +52,9 @@ spec:
   serviceName: {{ .Values.zookeeper.name | quote }}
   podManagementPolicy: "Parallel"
   replicas: {{ .Values.zookeeper.replicaCount }}
+  selector:
+    matchLabels:
+      name: {{ .Values.zookeeper.name | quote }}
   template:
     metadata:
       labels:

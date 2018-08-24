@@ -17,7 +17,7 @@ spec:
       name: redis
 
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Values.redis.name | quote }}
@@ -26,6 +26,9 @@ metadata:
     name: {{ .Values.redis.name | quote }}
 spec:
   replicas: {{ .Values.redis.replicaCount }}
+  selector:
+    matchLabels:
+      name: {{ .Values.redis.name | quote }}
   template:
     metadata:
       labels:

@@ -39,7 +39,7 @@ This repository can be used to deploy OpenWhisk to a Kubernetes cluster.
 ### Requirements
 
 Several requirements must be met for OpenWhisk to deploy on Kubernetes.
-* [Kubernetes](https://github.com/kubernetes/kubernetes) version 1.8+. However, multiple minor releases of Kubernetes, including 1.8.9 and 1.9.4 will not work for OpenWhisk due to bugs with volume mount subpaths (see[[kubernetes-61076](https://github.com/kubernetes/kubernetes/issues/61076)]). This bug will surface as a failure when deploying the nginx container.
+* [Kubernetes](https://github.com/kubernetes/kubernetes) version 1.9+. However, version 1.9.4 will not work for OpenWhisk due to a bug with volume mount subpaths (see[[kubernetes-61076](https://github.com/kubernetes/kubernetes/issues/61076)]). This bug will surface as a failure when deploying the nginx container.
 * The ability to create Ingresses to make a Kubernetes service available outside of the cluster so you can actually use OpenWhisk.
 * If you enable persistence (see [docs/configurationChoices.md](./docs/configurationChoices.md)), either your cluster is configured to support [Dynamic Volume Provision](https://kubernetes.io/docs/concepts/storage/dynamic-provisioning/) or you must manually create any necessary PersistentVolumes when deploying the Helm chart.
 * Endpoints of Kubernetes services must be able to loopback to themselves (the kubelet's `hairpin-mode` must not be `none`).
@@ -55,7 +55,6 @@ Travis CI testing.
 
 | Kubernetes Version | Minikube Version |
 --- | --- |
-1.8.0 | 0.25.2 |
 1.9.0 | 0.25.2 |
 1.10.5 | 0.28.2 |
 

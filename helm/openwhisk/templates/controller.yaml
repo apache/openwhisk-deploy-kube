@@ -16,7 +16,7 @@ spec:
     - port: {{ .Values.controller.port }}
       name: http
 ---
-apiVersion: apps/v1beta1
+apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: {{ .Values.controller.name | quote }}
@@ -27,6 +27,9 @@ spec:
   serviceName: {{ .Values.controller.name | quote }}
   podManagementPolicy: "Parallel"
   replicas: {{ .Values.controller.replicaCount }}
+  selector:
+    matchLabels:
+      name: {{ .Values.controller.name | quote }}
   template:
     metadata:
       labels:

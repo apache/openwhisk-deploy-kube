@@ -19,7 +19,7 @@ spec:
       name: api
 
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Values.apigw.name | quote }}
@@ -28,6 +28,9 @@ metadata:
     name: {{ .Values.apigw.name | quote }}
 spec:
   replicas: {{ .Values.apigw.replicaCount }}
+  selector:
+    matchLabels:
+      name: {{ .Values.apigw.name | quote }}
   template:
     metadata:
       labels:
