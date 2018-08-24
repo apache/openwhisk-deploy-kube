@@ -28,6 +28,18 @@ spec:
         - name: cludntprovider
           containerPort: {{ .Values.cloudantprovider.apiPort }}
         env:
+        {{- if .Values.cloudantprovider.db.external }}
+        # Config database using the external instance
+        - name: "DB_PROTOCOL"
+          value: {{ .Values.cloudantprovider.db.protocol | quote }}
+        - name: "DB_HOST"
+          value: "{{ .Values.cloudantprovider.db.host }}:{{ .Values.cloudantprovider.db.port }}"
+        - name: "DB_USERNAME"
+          value: {{ .Values.cloudantprovider.db.username | quote }}
+        - name: "DB_PASSWORD"
+          value: {{ .Values.cloudantprovider.db.password | quote }}
+        {{- else }}
+        # Config database using the same openwhisk cloudant instance
         - name: "DB_PROTOCOL"
           valueFrom:
             configMapKeyRef:
@@ -48,8 +60,9 @@ spec:
             secretKeyRef:
               name: db.auth
               key: db_password
+        {{- end }}
         - name: "DB_PREFIX"
-          value: "{{- .Values.cloudantprovider.dbPrefix -}}"
+          value: {{ .Values.cloudantprovider.db.prefix | default "cldt" | quote }}
         - name: "ROUTER_HOST"
           valueFrom:
             configMapKeyRef:
