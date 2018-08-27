@@ -19,7 +19,7 @@ spec:
           name: install-package-cloudant
       containers:
       - name: cloudantpkginstaller
-        image: openwhisk/kube-whisk-script-runner
+        image: openwhisk/script-runner
         volumeMounts:
         - name: task-dir
           mountPath: "/task/myTask.sh"

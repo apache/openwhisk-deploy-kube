@@ -9,11 +9,5 @@ ROOTDIR="$SCRIPTDIR/../../"
 
 cd $ROOTDIR
 
-echo "Publishing kube-whisk-script-runner image"
-./tools/travis/publish.sh openwhisk kube-whisk-script-runner latest docker/whisk-script-runner
-
-echo "Publishing kube-whisk-ansible-runner image"
-./tools/travis/publish.sh openwhisk kube-whisk-ansible-runner latest docker/whisk-ansible-runner
-
 echo "Publishing kube-invoker-agent image"
 ./tools/travis/publish.sh openwhisk kube-invoker-agent latest docker/invoker-agent

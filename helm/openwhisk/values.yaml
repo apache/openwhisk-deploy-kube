@@ -157,7 +157,7 @@ invoker:
   imagePullPolicy: "Always"
   restartPolicy: "Always"
   port: 8080
-  pullRuntimesImage: "openwhisk/kube-whisk-ansible-runner:latest"
+  pullRuntimesImage: "openwhisk/ansible-runner:latest"
   options: ""
   jvmHeapMB: "512"
   jvmOptions: ""

@@ -29,7 +29,7 @@ deploymentHealthCheck () {
     sleep 10
   done
 
-  if [ "$PASSED" = false ]; then
+  if [ ! $PASSED ]; then
     echo "Failed to finish deploying $1"
 
     kubectl -n openwhisk logs $(kubectl -n openwhisk get pods -l name="$1" -o wide | grep "$1" | awk '{print $1}')
@@ -62,7 +62,7 @@ statefulsetHealthCheck () {
     sleep 10
   done
 
-  if [ "$PASSED" = false ]; then
+  if [ ! $PASSED ]; then
     echo "Failed to finish deploying $1"
 
     kubectl -n openwhisk logs $(kubectl -n openwhisk get pods -o wide | grep "$1"-0 | awk '{print $1}')
@@ -95,7 +95,7 @@ jobHealthCheck () {
     sleep 10
   done
 
-  if [ "$PASSED" = false ]; then
+  if [ ! $PASSED ]; then
     echo "Failed to finish running $1"
 
     kubectl -n openwhisk logs jobs/$1
@@ -123,7 +123,7 @@ verifyHealthyInvoker () {
     sleep 10
   done
 
-  if [ "$PASSED" = false ]; then
+  if [ ! $PASSED ]; then
     echo "No healthy invokers available"
 
     exit 1
