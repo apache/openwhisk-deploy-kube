@@ -177,11 +177,8 @@ spec:
       restartPolicy: Always
       hostNetwork: true
 
-      # TODO: disabled affinity until user-action pods are
-      #       created by KubernetesContainerFacotry with the
-      #       same affinity rules.
-      #       Requires extension to upstream kube java client
-      #       run only on nodes labeled with openwhisk-role=invoker
+      affinity:
+{{ include "affinity.invoker" . | indent 8 }}
 
       volumes:
 {{ include "docker_volumes" . | indent 6 }}
