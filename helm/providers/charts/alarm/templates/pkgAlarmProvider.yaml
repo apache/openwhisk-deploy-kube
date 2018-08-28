@@ -1,7 +1,7 @@
 # Licensed to the Apache Software Foundation (ASF) under one or more contributor
 # license agreements; and to You under the Apache License, Version 2.0.
 
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Values.alarmprovider.name | quote }}
@@ -10,6 +10,9 @@ metadata:
     name: alarmprovider
 spec:
   replicas: {{ .Values.alarmprovider.replicaCount }}
+  selector:
+    matchLabels:
+      name: {{ .Values.alarmprovider.name | quote }}
   template:
     metadata:
       labels:

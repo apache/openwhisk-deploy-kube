@@ -17,7 +17,7 @@ spec:
       name: couchdb
 
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Values.db.name | quote }}
@@ -26,6 +26,9 @@ metadata:
     name: {{ .Values.db.name | quote }}
 spec:
   replicas: {{ .Values.db.replicaCount }}
+  selector:
+    matchLabels:
+      name: {{ .Values.db.name | quote }}
   template:
     metadata:
       labels:

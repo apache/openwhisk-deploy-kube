@@ -12,10 +12,10 @@ spec:
   - name: broker
     port: {{ .Values.kafka.port }}
   selector:
-    app: {{ .Values.kafka.name | quote }}
+    name: {{ .Values.kafka.name | quote }}
 
 ---
-apiVersion: apps/v1beta1
+apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: {{ .Values.kafka.name | quote }}
@@ -24,10 +24,13 @@ spec:
   serviceName: {{ .Values.kafka.name | quote }}
   podManagementPolicy: "Parallel"
   replicas: {{ .Values.kafka.replicaCount }}
+  selector:
+    matchLabels:
+      name: {{ .Values.kafka.name | quote }}
   template:
     metadata:
       labels:
-        app: {{ .Values.kafka.name | quote }}
+        name: {{ .Values.kafka.name | quote }}
     spec:
       restartPolicy: {{ .Values.kafka.restartPolicy }}
 

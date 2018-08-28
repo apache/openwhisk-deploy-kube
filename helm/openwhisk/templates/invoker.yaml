@@ -3,10 +3,10 @@
 
 ---
 {{- if eq .Values.invoker.containerFactory.impl "docker" }}
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: DaemonSet
 {{- else if eq .Values.invoker.containerFactory.impl "kubernetes" -}}
-apiVersion: apps/v1beta1
+apiVersion: apps/v1
 kind: StatefulSet
 {{- end }}
 metadata:
@@ -19,6 +19,9 @@ spec:
   podManagementPolicy: "Parallel"
   replicas: {{ .Values.invoker.containerFactory.kubernetes.replicaCount }}
 {{- end }}
+  selector:
+    matchLabels:
+      name: {{ .Values.invoker.name | quote }}
   template:
     metadata:
       labels:
@@ -155,7 +158,7 @@ spec:
 
 {{ if .Values.invoker.containerFactory.kubernetes.agent.enabled }}
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: {{ .Values.invoker.containerFactory.kubernetes.agent.name | quote }}
@@ -163,6 +166,9 @@ metadata:
   labels:
     name: {{ .Values.invoker.containerFactory.kubernetes.agent.name | quote }}
 spec:
+  selector:
+    matchLabels:
+      name: {{ .Values.invoker.containerFactory.kubernetes.agent.name | quote }}
   template:
     metadata:
       labels:
