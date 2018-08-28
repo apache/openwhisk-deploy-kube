@@ -199,12 +199,12 @@ event providers is available as a collection of Helm charts in the
 `helm/providers` directory.  You may install all the providers in a
 single command with
 ```shell
-helm install ./helm/providers --namespace=openwhisk --name=owdev-providers
+helm install ./helm/openwhisk-providers --namespace=openwhisk --name=owdev-providers
 ```
 or you may selectively install the charts for individual providers
 with commands like
 ```shell
-helm install ./helm/providers/charts/kafka --namespace=openwhisk --name=owdev-kafka-provider
+helm install ./helm/openwhisk-providers/charts/ow-kafka --namespace=openwhisk --name=owdev-kafka-provider
 ```
 
 Please see the `values.yaml` file and/or README.md in the individual
