@@ -19,7 +19,7 @@ spec:
           name: install-package-alarms
       containers:
       - name: alarmpkginstaller
-        image: openwhisk/kube-whisk-script-runner
+        image: openwhisk/script-runner
         volumeMounts:
         - name: task-dir
           mountPath: "/task/myTask.sh"

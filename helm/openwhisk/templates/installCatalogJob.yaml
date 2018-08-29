@@ -22,7 +22,7 @@ spec:
 {{ include "readiness.waitForController" . | indent 6 }}
       containers:
       - name: catalog
-        image: openwhisk/kube-whisk-script-runner
+        image: openwhisk/script-runner
         volumeMounts:
         - name: task-dir
           mountPath: "/task/myTask.sh"

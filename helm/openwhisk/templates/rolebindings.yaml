@@ -38,12 +38,12 @@ metadata:
   name: {{ .Values.invoker.name | quote }}
 ---
 kind: Role
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   namespace: {{ .Release.Namespace | quote }}
   name: {{ .Values.invoker.name | quote }}
 rules:
-- apiGroups: ["extensions"]
+- apiGroups: ["extensions", "apps"]
   resources: ["deployments"]
   verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
 - apiGroups: [""]
@@ -54,7 +54,7 @@ rules:
   verbs: ["get", "list"]
 ---
 kind: RoleBinding
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   namespace: {{ .Release.Namespace | quote }}
   name: {{ .Values.invoker.name | quote }}
