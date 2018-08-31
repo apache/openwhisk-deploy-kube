@@ -11,3 +11,8 @@ kafkaprovider:
   restartPolicy: "Always"
   apiPort: 8080
   dbPrefix: "kp"
+
+# Images used to run auxillary tasks/jobs
+utility:
+  scriptRunnerImage: "openwhisk/script-runner:latest"
+  imagePullPolicy: "Always"

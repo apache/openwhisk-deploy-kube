@@ -19,7 +19,8 @@ spec:
           name: install-package-kafka
       containers:
       - name: kafkapkginstaller
-        image: openwhisk/script-runner
+        image: {{ .Values.utility.scriptRunnerImage | quote }}
+        imagePullPolicy: {{ .Values.utility.imagePullPolicy | quote }}
         volumeMounts:
         - name: task-dir
           mountPath: "/task/myTask.sh"

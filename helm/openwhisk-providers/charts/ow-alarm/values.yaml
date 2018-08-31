@@ -7,7 +7,7 @@ alarmprovider:
   image: "openwhisk/alarmprovider:latest"
   # NOTE: replicaCount > 1 doesn't work because of the PVC
   replicaCount: 1
-  imagePullPolicy: "IfNotPresent"
+  imagePullPolicy: "Always"
   restartPolicy: "Always"
   apiPort: 8080
   dbPrefix: "alm"
@@ -16,3 +16,8 @@ alarmprovider:
     size: 1Gi
     storageClass: default
     accessMode: ReadWriteOnce
+
+# Images used to run auxillary tasks/jobs
+utility:
+  scriptRunnerImage: "openwhisk/script-runner:latest"
+  imagePullPolicy: "Always"

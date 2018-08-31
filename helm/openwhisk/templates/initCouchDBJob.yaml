@@ -24,8 +24,8 @@ spec:
           secretName: whisk.auth
       containers:
       - name: init-couchdb
-        image: openwhisk/ansible-runner
-        imagePullPolicy: "Always"
+        image: {{ .Values.utility.ansibleRunnerImage | quote }}
+        imagePullPolicy: {{ .Values.utility.imagePullPolicy | quote }}
         command: ["/bin/bash", "-c", "set -e; . /task/initdb.sh"]
         volumeMounts:
         - name: task-dir

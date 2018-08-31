@@ -19,7 +19,8 @@ spec:
           name: install-package-alarms
       containers:
       - name: alarmpkginstaller
-        image: openwhisk/script-runner
+        image: {{ .Values.utility.scriptRunnerImage | quote }}
+        imagePullPolicy: {{ .Values.utility.imagePullPolicy | quote }}
         volumeMounts:
         - name: task-dir
           mountPath: "/task/myTask.sh"

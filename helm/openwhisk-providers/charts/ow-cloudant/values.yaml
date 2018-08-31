@@ -7,7 +7,7 @@ cloudantprovider:
   image: "openwhisk/cloudantprovider:latest"
   # NOTE: replicaCount > 1 doesn't work because of the PVC
   replicaCount: 1
-  imagePullPolicy: "IfNotPresent"
+  imagePullPolicy: "Always"
   restartPolicy: "Always"
   apiPort: 8080
   db:
@@ -20,7 +20,12 @@ cloudantprovider:
     # username: "admin"
     # password: "secret"
   persistence:
-    pvcName: cludntprovider-pvc
+    pvcName: cloudntprovider-pvc
     size: 1Gi
     storageClass: default
     accessMode: ReadWriteOnce
+
+# Images used to run auxillary tasks/jobs
+utility:
+  scriptRunnerImage: "openwhisk/script-runner:latest"
+  imagePullPolicy: "Always"
