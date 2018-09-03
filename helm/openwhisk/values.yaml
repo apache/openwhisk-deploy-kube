@@ -39,6 +39,12 @@ whisk:
   loadbalancer:
     invokerUserMemory: "2048m"
 
+# Images used to run auxillary tasks/jobs
+utility:
+  ansibleRunnerImage: "openwhisk/ansible-runner:latest"
+  scriptRunnerImage: "openwhisk/script-runner:latest"
+  imagePullPolicy: "Always"
+
 # Docker registry
 docker:
   image:
