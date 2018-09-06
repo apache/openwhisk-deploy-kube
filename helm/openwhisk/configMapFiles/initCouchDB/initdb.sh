@@ -60,4 +60,7 @@ pushd /openwhisk/ansible
                      -e openwhisk_home=/openwhisk
 popd
 
+echo "Creating ow_kube_couchdb_initialized_marker database"
+curl --silent -X PUT $DB_PROTOCOL://$COUCHDB_USER:$COUCHDB_PASSWORD@$DB_HOST:$DB_PORT/ow_kube_couchdb_initialized_marker
+
 echo "successfully initialized CouchDB for OpenWhisk"
