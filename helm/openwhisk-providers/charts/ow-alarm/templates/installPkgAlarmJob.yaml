@@ -37,12 +37,30 @@ spec:
               configMapKeyRef:
                 name: whisk.config
                 key: whisk_api_host_nameAndPort
+          {{- if .Values.alarmprovider.db.external }}
+          # Config database using the external cloudant instance
+          - name: "DB_PROTOCOL"
+            value: {{ .Values.alarmprovider.db.protocol | quote }}
+          - name: "DB_HOST"
+            value: {{ .Values.alarmprovider.db.host | quote }}
+          - name: "DB_USERNAME"
+            value: {{ .Values.alarmprovider.db.username | quote }}
+          - name: "DB_PASSWORD"
+            value: {{ .Values.alarmprovider.db.password | quote }}
+          - name: "DB_PORT"
+            value: {{ .Values.alarmprovider.db.port | quote }}
+          {{- else }}
           # for the database used by alarms package
           - name: "DB_HOST"
             valueFrom:
               configMapKeyRef:
                 name: db.config
                 key: db_host
+          - name: "DB_PROTOCOL"
+            valueFrom:
+              configMapKeyRef:
+                name: db.config
+                key: db_protocol
           - name: "DB_PORT"
             valueFrom:
               configMapKeyRef:
@@ -58,8 +76,9 @@ spec:
               secretKeyRef:
                 name: db.auth
                 key: db_password
+          {{ end }}
           - name: "DB_PREFIX"
-            value: "{{- .Values.alarmprovider.dbPrefix -}}"
+            value: "{{- .Values.alarmprovider.db.prefix -}}"
 ---
 apiVersion: v1
 kind: ConfigMap

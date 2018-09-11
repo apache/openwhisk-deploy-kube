@@ -21,9 +21,9 @@
 
 This chart is to deploy Cloudant provider and package to OpenWhisk on a Kubernetes using Helm.
 
-## Preconditions
+## Config a CouchDB instance
 
-+ A CouchDB instance is required to save the event data. You can use the same CouchDB instance or you can use a different CouchDB instance. To use the same CouchDB instance as OpenWhisk, config `values.yaml` as:
+A CouchDB instance is required to save the event data. You can use the same CouchDB instance as part of the OpenWhisk deployment or you can use a different CouchDB instance. To use the same CouchDB instance as OpenWhisk, config `values.yaml` as:
 ```
 db:
   external: false
@@ -40,8 +40,16 @@ db:
   username: "admin"
   password: "secret"
 ```
-+ persistentvolumes (aka 'pv') is required by this charter. You can verify by `kubectl get pv`.
-+ Action containers use Kubernetes DNS. The easiest way to do this is to use the `KubernetesContainerFactory` as the [Invoker Container Factory](https://github.com/apache/incubator-openwhisk-deploy-kube/blob/master/docs/configurationChoices.md#invoker-container-factory) in the Kubernetes cluster by adding below configuration in the `mycluster.yaml` when you deploy OpenWhisk with Helm:
+
+## Config a persistentvolumes
+persistentvolumes (aka 'pv') is required by this charter. You can verify by `kubectl get pv`.
+
+## Enable action containers use Kubernetes DNS
+You need to enable action containers to use Kubernetes DNS under one of below conditions:
++ you use the same CouchDB instance as part of the OpenWhisk deployment to save event data;
++ you intend to use the Kubernetes DNS name to locate a CouchDB/Cloudant instance as the CouchDB/Cloudant event provider.
+
+The easiest way to do this is to use the `KubernetesContainerFactory` as the [Invoker Container Factory](https://github.com/apache/incubator-openwhisk-deploy-kube/blob/master/docs/configurationChoices.md#invoker-container-factory) in the Kubernetes cluster by adding below configuration in the `mycluster.yaml` when you deploy OpenWhisk with Helm:
 ```
 # Invoker configurations
 invoker:

@@ -21,10 +21,33 @@
 
 This chart is to deploy the kafka provider and package to OpenWhisk on a Kubernetes using Helm.
 
-## Preconditions
+## Config a CouchDB instance
 
-If you intend to use a Kafka instance that is external to Kubernetes as your broker, you can stop reading this section; there are no additional preconditions.
-However, if you want to use the Kakfa instance that is installed as part of the OpenWhisk deployment as your Kafka broker, you need to configure your OpenWhisk deployment so that the action containers use Kubernetes DNS. The easiest way to do this is to use the `KubernetesContainerFactory` as the [Invoker Container Factory](https://github.com/apache/incubator-openwhisk-deploy-kube/blob/master/docs/configurationChoices.md#invoker-container-factory) in the Kubernetes cluster by adding below configuration in the `mycluster.yaml` when you deploy OpenWhisk with Helm:
+A CouchDB instance is required to save the event data. You can use the same CouchDB instance as part of the OpenWhisk deployment or you can use a different CouchDB instance. To use the same CouchDB instance as OpenWhisk, config `values.yaml` as:
+```
+db:
+  external: false
+  prefix: "cldt"
+```
+To use a different CouchDB instance, config the database parameters in `value.yaml` as:
+```
+db:
+  external: true
+  prefix: "cldt"
+  host: "0.0.0.0"
+  port: 5984
+  protocol: "http"
+  username: "admin"
+  password: "secret"
+```
+
+## Enable action containers to use Kubernetes DNS
+
+You need to enable action containers to use Kubernetes DNS under one of below conditions:
++ you use the same CouchDB instance as part of the OpenWhisk deployment to save event data;
++ you intend to use Kubernetes DNS name to locate a Kafka instance as the Kafka event provider.
+
+The easiest way to do this is to use the `KubernetesContainerFactory` as the [Invoker Container Factory](https://github.com/apache/incubator-openwhisk-deploy-kube/blob/master/docs/configurationChoices.md#invoker-container-factory) in the Kubernetes cluster by adding below configuration in the `mycluster.yaml` when you deploy OpenWhisk with Helm:
 ```
 # Invoker configurations
 invoker:

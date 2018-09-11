@@ -10,7 +10,15 @@ kafkaprovider:
   imagePullPolicy: "IfNotPresent"
   restartPolicy: "Always"
   apiPort: 8080
-  dbPrefix: "kp"
+  db:
+    external: false
+    prefix: "kp"
+    # Add below values if you are using external couchdb instance
+    # host: "10.10.10.10"
+    # port: 5984
+    # protocol: "http"
+    # username: "admin"
+    # password: "secret"
 
 # Images used to run auxillary tasks/jobs
 utility:

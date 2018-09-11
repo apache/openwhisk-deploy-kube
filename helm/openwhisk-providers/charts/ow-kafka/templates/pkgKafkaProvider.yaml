@@ -27,6 +27,16 @@ spec:
         - name: kafkaprovider
           containerPort: {{ .Values.kafkaprovider.apiPort }}
         env:
+        {{- if .Values.kafkaprovider.db.external }}
+        # Config database using the external instance
+        - name: "DB_URL"
+          value: {{ .Values.kafkaprovider.db.protocol }}://{{ .Values.kafkaprovider.db.host }}:{{ .Values.kafkaprovider.db.port }}
+        - name: "DB_USER"
+          value: {{ .Values.kafkaprovider.db.username | quote }}
+        - name: "DB_PASS"
+          value: {{ .Values.kafkaprovider.db.password | quote }}
+        {{- else }}
+        # Config database using the same openwhisk cloudant instance
         - name: "DB_URL"
           valueFrom:
             configMapKeyRef:
@@ -42,8 +52,9 @@ spec:
             secretKeyRef:
               name: db.auth
               key: db_password
+        {{- end }}
         - name: "DB_PREFIX"
-          value: "{{- .Values.kafkaprovider.dbPrefix -}}"
+          value: "{{- .Values.kafkaprovider.db.prefix -}}"
         - name: "LOCAL_DEV"
           value: "true"
         - name: "ROUTER_HOST"

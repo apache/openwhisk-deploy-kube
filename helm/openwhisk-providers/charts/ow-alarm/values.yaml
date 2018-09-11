@@ -10,7 +10,15 @@ alarmprovider:
   imagePullPolicy: "Always"
   restartPolicy: "Always"
   apiPort: 8080
-  dbPrefix: "alm"
+  db:
+    external: false
+    prefix: "alm"
+    # Add below values if you are using external couchdb instance
+    # host: "10.10.10.10"
+    # port: 5984
+    # protocol: "http"
+    # username: "admin"
+    # password: "secret"
   persistence:
     pvcName: alarmprovider-pvc
     size: 1Gi

@@ -13,7 +13,7 @@ cloudantprovider:
   db:
     external: false
     prefix: "cldt"
-    # Add below values if you are using external instance
+    # Add below values if you are using external couchdb instance
     # host: "10.10.10.10"
     # port: 5984
     # protocol: "http"
