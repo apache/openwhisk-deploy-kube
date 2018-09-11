@@ -169,6 +169,10 @@ invoker:
   jvmOptions: ""
   containerFactory:
     useRunc: false
+    externalLogEnrichment:
+      name: "log-enrich-agent"
+      image: "dgrove/ow-fluent-bit:latest"
+      enabled: true
     impl: "docker"
     kubernetes:
       replicaCount: 1

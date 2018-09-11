@@ -1,0 +1,40 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more contributor
+# license agreements; and to You under the Apache License, Version 2.0.
+
+---
+{{- if .Values.invoker.containerFactory.externalLogEnrichment.enabled }}
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ .Values.invoker.containerFactory.externalLogEnrichment.name | quote }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    name: {{ .Values.invoker.containerFactory.externalLogEnrichment.name | quote }}
+spec:
+  selector:
+    matchLabels:
+      name: {{ .Values.invoker.containerFactory.externalLogEnrichment.name | quote }}
+  template:
+    metadata:
+      labels:
+        name: {{ .Values.invoker.containerFactory.externalLogEnrichment.name | quote }}
+    spec:
+      restartPolicy: {{ .Values.invoker.restartPolicy }}
+
+      affinity:
+{{ include "affinity.invoker" . | indent 8 }}
+
+      volumes:
+{{ include "docker_volumes" . | indent 8 }}
+
+      containers:
+      - name: {{ .Values.invoker.containerFactory.externalLogEnrichment.name | quote }}
+        imagePullPolicy: {{ .Values.invoker.imagePullPolicy | quote }}
+        image: {{ .Values.invoker.containerFactory.externalLogEnrichment.image | quote }}
+        env:
+          - name: "OW_FLUENTBIT_INPUT_PATH"
+            value: "/containers/*/*-json.log"
+
+        volumeMounts:
+{{ include "docker_volume_mounts" . | indent 10 }}
+{{ end }}
