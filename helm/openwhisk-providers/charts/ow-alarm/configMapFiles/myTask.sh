@@ -11,7 +11,7 @@ apk add --update nodejs-npm
 
 git clone https://github.com/apache/incubator-openwhisk-package-alarms.git
 
-export DB_URL=http://$DB_USERNAME:$DB_PASSWORD@$DB_HOST:$DB_PORT
+export DB_URL=$DB_PROTOCOL://$DB_USERNAME:$DB_PASSWORD@$DB_HOST:$DB_PORT
 pushd /incubator-openwhisk-package-alarms
   ./installCatalog.sh $AUTH $APIHOST $DB_URL $DB_PREFIX $APIHOST
 popd

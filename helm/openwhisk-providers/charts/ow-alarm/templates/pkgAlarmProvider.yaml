@@ -31,6 +31,17 @@ spec:
         - name: alarmprovider
           containerPort: {{ .Values.alarmprovider.apiPort }}
         env:
+        {{- if .Values.alarmprovider.db.external }}
+        # Config database using the external instance
+        - name: "DB_PROTOCOL"
+          value: {{ .Values.alarmprovider.db.protocol | quote }}
+        - name: "DB_HOST"
+          value: "{{ .Values.alarmprovider.db.host }}:{{ .Values.alarmprovider.db.port }}"
+        - name: "DB_USERNAME"
+          value: {{ .Values.alarmprovider.db.username | quote }}
+        - name: "DB_PASSWORD"
+          value: {{ .Values.alarmprovider.db.password | quote }}
+        {{- else }}
         - name: "DB_PROTOCOL"
           valueFrom:
             configMapKeyRef:
@@ -51,8 +62,9 @@ spec:
             secretKeyRef:
               name: db.auth
               key: db_password
+        {{- end }}
         - name: "DB_PREFIX"
-          value: "{{- .Values.alarmprovider.dbPrefix -}}"
+          value: "{{- .Values.alarmprovider.db.prefix -}}"
         - name: "ROUTER_HOST"
           valueFrom:
             configMapKeyRef:

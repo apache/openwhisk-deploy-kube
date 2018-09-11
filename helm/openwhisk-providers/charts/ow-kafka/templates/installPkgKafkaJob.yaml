@@ -37,12 +37,30 @@ spec:
               configMapKeyRef:
                 name: whisk.config
                 key: whisk_api_host_nameAndPort
+          {{- if .Values.kafkaprovider.db.external }}
+          # Config database using the external cloudant instance
+          - name: "DB_PROTOCOL"
+            value: {{ .Values.kafkaprovider.db.protocol | quote }}
+          - name: "DB_HOST"
+            value: {{ .Values.kafkaprovider.db.host | quote }}
+          - name: "DB_USERNAME"
+            value: {{ .Values.kafkaprovider.db.username | quote }}
+          - name: "DB_PASSWORD"
+            value: {{ .Values.kafkaprovider.db.password | quote }}
+          - name: "DB_PORT"
+            value: {{ .Values.kafkaprovider.db.port | quote }}
+          {{- else }}
           # for the database used by kafka package
           - name: "DB_HOST"
             valueFrom:
               configMapKeyRef:
                 name: db.config
                 key: db_host
+          - name: "DB_PROTOCOL"
+            valueFrom:
+              configMapKeyRef:
+                name: db.config
+                key: db_protocol
           - name: "DB_PORT"
             valueFrom:
               configMapKeyRef:
@@ -58,8 +76,9 @@ spec:
               secretKeyRef:
                 name: db.auth
                 key: db_password
+          {{ end }}
           - name: "DB_PREFIX"
-            value: "{{- .Values.kafkaprovider.dbPrefix -}}"
+            value: "{{- .Values.kafkaprovider.db.prefix -}}"
 ---
 apiVersion: v1
 kind: ConfigMap

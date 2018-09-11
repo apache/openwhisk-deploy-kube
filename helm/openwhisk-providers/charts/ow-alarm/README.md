@@ -21,11 +21,33 @@
 
 This chart is to deploy alarm provider and package to OpenWhisk on a Kubernetes using Helm.
 
-## Preconditions
+## Config a CouchDB instance
 
-Alarm package can only be successfully installed under these two preconditions:
-+ persistentvolumes (aka 'pv') is defined in the Kubernetes cluster. You can verify by `kubectl get pv`.
-+ Kubernetes DNS is used as the DNS server in action containers. In order to achieve it, you can set `KubernetesContainerFactory` as the [Invoker Container Factory](https://github.com/apache/incubator-openwhisk-deploy-kube/blob/master/docs/configurationChoices.md#invoker-container-factory) in the Kubernetes cluster by adding below configuration in the `mycluster.yaml` when you deploy OpenWhisk with Helm:
+A CouchDB instance is required to save the event data. You can use the same CouchDB instance as part of the OpenWhisk deployment or you can use a different CouchDB instance. To use the same CouchDB instance as OpenWhisk, config `values.yaml` as:
+```
+db:
+  external: false
+  prefix: "alm"
+```
+To use a different CouchDB instance, config the database parameters in `value.yaml` as:
+```
+db:
+  external: true
+  prefix: "cldt"
+  host: "0.0.0.0"
+  port: 5984
+  protocol: "http"
+  username: "admin"
+  password: "secret"
+```
+
+## Config a persistentvolumes
+persistentvolumes (aka 'pv') is defined in the Kubernetes cluster. You can verify by `kubectl get pv`.
+
+## Enable action containers use Kubernetes DNS
+You need to enable action containers to use Kubernetes DNS when you want to use the same CouchDB instance as part of the OpenWhisk deployment to save event data.
+
+The easiest way to do this is to set `KubernetesContainerFactory` as the [Invoker Container Factory](https://github.com/apache/incubator-openwhisk-deploy-kube/blob/master/docs/configurationChoices.md#invoker-container-factory) in the Kubernetes cluster by adding below configuration in the `mycluster.yaml` when you deploy OpenWhisk with Helm:
 ```
 # Invoker configurations
 invoker:
