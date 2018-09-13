@@ -65,7 +65,7 @@ invoker:
 
 You may install this chart with command like
 ```
-helm install ./helm/providers/charts/alarm --namespace=openwhisk --name owdev-alarm-provider
+helm install ./helm/openwhisk-providers/charts/ow-alarm --namespace=openwhisk --name owdev-alarm-provider
 ```
 
 You can use `helm status owdev-alarm-provider` to check the status. When you see pod is running and job is completed, you can check alarm package by `wsk package get /whisk.system/alarms -i --summary`
