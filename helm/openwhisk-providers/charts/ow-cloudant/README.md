@@ -67,7 +67,7 @@ invoker:
 
 You may install this chart with command like
 ```
-helm install ./helm/providers/charts/cloudant --namespace=openwhisk --name owdev-cloudant-provider
+helm install ./helm/openwhisk-providers/charts/ow-cloudant --namespace=openwhisk --name owdev-cloudant-provider
 ```
 
 You can use `helm status owdev-cloudant-provider` to check the status. When you see pod is running and job is completed, you can check cloudant package by `wsk package get /whisk.system/cloudant -i --summary`

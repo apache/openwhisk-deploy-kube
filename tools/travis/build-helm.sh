@@ -260,3 +260,57 @@ fi
 # fi
 
 echo "PASSED! Deployed openwhisk and invoked Hello action"
+
+####
+# now test the installation of kafka provider
+####
+helm install helm/openwhisk-providers/charts/ow-kafka --namespace=openwhisk --name=kafkap4travis
+
+jobHealthCheck "install-package-kafka"
+
+deploymentHealthCheck "kafkaprovider"
+
+# Verify messaging package is installed
+RESULT=$(wsk package list /whisk.system -i | grep messaging)
+if [ -z "$RESULT" ]; then
+  echo "FAILED! Could not list messaging package via CLI"
+  exit 1
+fi
+
+echo "PASSED! Deployed Kafka provider and package"
+
+####
+# now test the installation of Alarm provider
+####
+helm install helm/openwhisk-providers/charts/ow-alarm --namespace=openwhisk --name alarmp4travis
+
+jobHealthCheck "install-package-alarm"
+
+deploymentHealthCheck "alarmprovider"
+
+# Verify alarms package is installed
+RESULT=$(wsk package list /whisk.system -i | grep alarms)
+if [ -z "$RESULT" ]; then
+  echo "FAILED! Could not list alarms package via CLI"
+  exit 1
+fi
+
+echo "PASSED! Deployed Alarms provider and package"
+
+####
+# now test the installation of Cloudant provider
+####
+helm install helm/openwhisk-providers/charts/ow-cloudant --namespace=openwhisk --name cloudantp4travis
+
+jobHealthCheck "install-package-cloudant"
+
+deploymentHealthCheck "cloudantprovider"
+
+# Verify cloudant package is installed
+RESULT=$(wsk package list /whisk.system -i | grep cloudant)
+if [ -z "$RESULT" ]; then
+  echo "FAILED! Could not list cloudant package via CLI"
+  exit 1
+fi
+
+echo "PASSED! Deployed Cloudant provider and package"
