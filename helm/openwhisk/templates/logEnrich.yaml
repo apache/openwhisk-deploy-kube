@@ -18,14 +18,19 @@ spec:
     metadata:
       labels:
         name: {{ .Values.invoker.containerFactory.externalLogEnrichment.name | quote }}
+    annotations:
+      fluentbit.io/exclude: "true"
     spec:
+      serviceAccountName: log-enrichment
       restartPolicy: {{ .Values.invoker.restartPolicy }}
 
       affinity:
 {{ include "affinity.invoker" . | indent 8 }}
 
       volumes:
-{{ include "docker_volumes" . | indent 8 }}
+        - name: docker-containers
+          hostPath:
+            path: "/var/lib/docker/containers"
 
       containers:
       - name: {{ .Values.invoker.containerFactory.externalLogEnrichment.name | quote }}
@@ -33,8 +38,15 @@ spec:
         image: {{ .Values.invoker.containerFactory.externalLogEnrichment.image | quote }}
         env:
           - name: "OW_FLUENTBIT_INPUT_PATH"
-            value: "/containers/*/*-json.log"
-
+            value: "/var/log/containers/*/*-json.log"
+          - name: "OW_FLUENTBIT_CONF_FILE"
+{{- if eq .Values.invoker.containerFactory.impl "kubernetes" }}
+            value: /fluent-bit/etc/ow-kcf-fileout.conf
+{{- else -}}
+            value: /fluent-bit/etc/ow-dcf-stdout.conf
+{{- end }}
         volumeMounts:
-{{ include "docker_volume_mounts" . | indent 10 }}
+          - name: docker-containers
+            mountPath: "/var/log/containers"
+            readOnly: true
 {{ end }}

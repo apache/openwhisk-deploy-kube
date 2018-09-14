@@ -25,6 +25,7 @@
   mountPath: "/var/run/docker.sock"
 - name: dockerrootdir
   mountPath: "/containers"
+  readOnly: true
 {{- end -}}
 
 {{- define "docker_pull_runtimes" -}}

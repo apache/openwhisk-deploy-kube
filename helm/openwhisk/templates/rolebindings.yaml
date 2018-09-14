@@ -67,3 +67,36 @@ roleRef:
   name: {{ .Values.invoker.name | quote }}
   apiGroup: rbac.authorization.k8s.io
 {{- end }}
+
+{{- if .Values.invoker.containerFactory.externalLogEnrichment.enabled }}
+# Give the fluent-bit DaemonSet the ability to view pod/namespaces to
+# extract Pod metadata (labels/annotations) for the Kubernetes Filter plugin
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: log-enrichment
+  namespace: {{ .Release.Namespace | quote }}
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRole
+metadata:
+  name: log-enrichment-read
+rules:
+- apiGroups: [""]
+  resources: ["namespaces", "pods"]
+  verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: log-enrichment-read
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: log-enrichment-read
+subjects:
+- kind: ServiceAccount
+  name: log-enrichment
+  namespace: {{ .Release.Namespace | quote }}
+{{- end }}
