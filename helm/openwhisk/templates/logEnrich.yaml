@@ -41,9 +41,9 @@ spec:
             value: "/var/log/containers/*/*-json.log"
           - name: "OW_FLUENTBIT_CONF_FILE"
 {{- if eq .Values.invoker.containerFactory.impl "kubernetes" }}
-            value: /fluent-bit/etc/ow-kcf-fileout.conf
-{{- else -}}
-            value: /fluent-bit/etc/ow-dcf-stdout.conf
+            value: "/fluent-bit/etc/ow-kcf-fileout.conf"
+{{- else }}
+            value: "/fluent-bit/etc/ow-dcf-fileout.conf"
 {{- end }}
         volumeMounts:
           - name: docker-containers
