@@ -43,3 +43,14 @@
     value: http://{{ include "controller_host" . }}:{{ .Values.controller.port }}/ping
   command: ["sh", "-c", "result=1; until [ $result -eq 0 ]; do echo 'Checking controller readiness'; wget -T 5 --spider $READINESS_URL; result=$?; sleep 1; done; echo 'Success: controller is ready'"]
 {{- end -}}
+
+{{/* Init container that waits for at least 1 healthy invoker */}}
+{{- define "readiness.waitForHealthyInvoker" -}}
+- name: "wait-for-healthy-invoker"
+  image: "busybox"
+  imagePullPolicy: "IfNotPresent"
+  env:
+  - name: "READINESS_URL"
+    value: "http://{{ include "controller_host" . }}:{{ .Values.controller.port }}/invokers/healthy/count"
+  command: ["sh", "-c", "echo 0 > /tmp/count.txt; while true; do echo 'waiting for healthy invoker'; wget -T 5 -qO /tmp/count.txt --no-check-certificate \"$READINESS_URL\"; NUM_HEALTHY_INVOKERS=$(cat /tmp/count.txt); if [ $NUM_HEALTHY_INVOKERS -gt 0 ]; then echo \"Success: there are $NUM_HEALTHY_INVOKERS healthy invokers\"; break; fi; echo '...not ready yet; sleeping 3 seconds before retry'; sleep 3; done;"]
+{{- end -}}

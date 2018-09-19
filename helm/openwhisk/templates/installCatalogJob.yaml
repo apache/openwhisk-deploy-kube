@@ -19,7 +19,7 @@ spec:
           name: install-catalog
       initContainers:
       # Wait for a controller to be up so we can perfom our CRUD actions with the CLI
-{{ include "readiness.waitForController" . | indent 6 }}
+{{ include "readiness.waitForHealthyInvoker" . | indent 6 }}
       containers:
       - name: catalog
         image: {{ .Values.utility.scriptRunnerImage | quote }}
