@@ -280,6 +280,17 @@ fi
 echo "PASSED! Deployed Kafka provider and package"
 
 ####
+# Test if persistant volume is available
+# Exist 0 if pv is not available
+# Continue the following provider tests if pv is available
+####
+RESULT=$(kubectl get pv | sed -n '2p' | awk '{print $5}')
+if [ "$RESULT" != "Available" ]; then
+  echo "No pv defined! Ignore alarm provider and cloudant provider test. Exist with 0."
+  exit 0
+fi
+
+####
 # now test the installation of Alarm provider
 ####
 helm install helm/openwhisk-providers/charts/ow-alarm --namespace=openwhisk --name alarmp4travis
