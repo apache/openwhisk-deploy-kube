@@ -282,7 +282,7 @@ echo "PASSED! Deployed Kafka provider and package"
 ####
 # now test the installation of Alarm provider
 ####
-helm install helm/openwhisk-providers/charts/ow-alarm --namespace=openwhisk --name alarmp4travis
+helm install helm/openwhisk-providers/charts/ow-alarm --namespace=openwhisk --name alarmp4travis --set alarmprovider.persistence.storageClass=standard
 
 jobHealthCheck "install-package-alarm"
 
@@ -300,7 +300,7 @@ echo "PASSED! Deployed Alarms provider and package"
 ####
 # now test the installation of Cloudant provider
 ####
-helm install helm/openwhisk-providers/charts/ow-cloudant --namespace=openwhisk --name cloudantp4travis
+helm install helm/openwhisk-providers/charts/ow-cloudant --namespace=openwhisk --name cloudantp4travis --set cloudantprovider.persistence.storageClass=standard
 
 jobHealthCheck "install-package-cloudant"
 
