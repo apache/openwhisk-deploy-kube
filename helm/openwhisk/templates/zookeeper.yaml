@@ -35,11 +35,12 @@ data:
     syncLimit={{ .Values.zookeeper.config.syncLimit }}
     dataDir={{ .Values.zookeeper.config.dataDir }}
     dataLogDir={{ .Values.zookeeper.config.dataLogDir }}
+{{- $kubeDomain := .Values.k8s.domain }}
 {{- $zkname := .Values.zookeeper.name }}
 {{- $zkserverport := .Values.zookeeper.serverPort }}
 {{- $zkelectionport := .Values.zookeeper.leaderElectionPort }}
 {{- range $i, $e := until (int .Values.zookeeper.replicaCount) }}
-    server.{{ . }}={{ $zkname }}-{{ . }}.{{ $zkname }}.{{ $.Release.Namespace }}.svc.cluster.local:{{ $zkserverport }}:{{ $zkelectionport }}
+    server.{{ . }}={{ $zkname }}-{{ . }}.{{ $zkname }}.{{ $.Release.Namespace }}.svc.{{ $kubeDomain }}:{{ $zkserverport }}:{{ $zkelectionport }}
 {{- end }}
 
 ---

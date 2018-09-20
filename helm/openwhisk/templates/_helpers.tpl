@@ -3,12 +3,12 @@
 
 {{/* hostname for apigateway */}}
 {{- define "apigw_host" -}}
-{{ .Values.apigw.name }}.{{ .Release.Namespace }}.svc.cluster.local
+{{ .Values.apigw.name }}.{{ .Release.Namespace }}.svc.{{ .Values.k8s.domain }}
 {{- end -}}
 
 {{/* hostname for controller */}}
 {{- define "controller_host" -}}
-{{ .Values.controller.name }}.{{ .Release.Namespace }}.svc.cluster.local
+{{ .Values.controller.name }}.{{ .Release.Namespace }}.svc.{{ .Values.k8s.domain }}
 {{- end -}}
 
 {{/* hostname for database */}}
@@ -16,7 +16,7 @@
 {{- if .Values.db.external -}}
 {{ .Values.db.host }}
 {{- else -}}
-{{ .Values.db.name }}.{{ .Release.Namespace }}.svc.cluster.local
+{{ .Values.db.name }}.{{ .Release.Namespace }}.svc.{{ .Values.k8s.domain }}
 {{- end -}}
 {{- end -}}
 
@@ -29,13 +29,13 @@
 {{- if .Values.kafka.external -}}
 {{ .Values.kafka.name }}
 {{- else -}}
-{{ .Values.kafka.name }}.{{ .Release.Namespace }}.svc.cluster.local
+{{ .Values.kafka.name }}.{{ .Release.Namespace }}.svc.{{ .Values.k8s.domain }}
 {{- end -}}
 {{- end -}}
 
 {{/* hostname for redis */}}
 {{- define "redis_host" -}}
-{{ .Values.redis.name }}.{{ .Release.Namespace }}.svc.cluster.local
+{{ .Values.redis.name }}.{{ .Release.Namespace }}.svc.{{ .Values.k8s.domain }}
 {{- end -}}
 
 {{/* client connection string for zookeeper cluster (server1:port server2:port ... serverN:port)*/}}
@@ -45,7 +45,8 @@
 {{- else -}}
 {{- $zkname := .Values.zookeeper.name }}
 {{- $zkport := .Values.zookeeper.port }}
-{{- range $i, $e := until (int .Values.zookeeper.replicaCount) -}}{{ if ne $i 0 }},{{ end }}{{ $zkname }}-{{ . }}.{{ $zkname }}.{{ $.Release.Namespace }}.svc.cluster.local:{{ $zkport }}{{ end }}
+{{- $kubeDomain := .Values.k8s.domain }}
+{{- range $i, $e := until (int .Values.zookeeper.replicaCount) -}}{{ if ne $i 0 }},{{ end }}{{ $zkname }}-{{ . }}.{{ $zkname }}.{{ $.Release.Namespace }}.svc.{{ $kubeDomain }}:{{ $zkport }}{{ end }}
 {{- end -}}
 {{- end -}}
 
@@ -54,7 +55,7 @@
 {{- if .Values.zookeeper.external -}}
 {{ .Values.zookeeper.name }}
 {{- else -}}
-{{ .Values.zookeeper.name }}-0.{{ .Values.zookeeper.name }}.{{ $.Release.Namespace }}.svc.cluster.local
+{{ .Values.zookeeper.name }}-0.{{ .Values.zookeeper.name }}.{{ $.Release.Namespace }}.svc.{{ .Values.k8s.domain }}
 {{- end -}}
 {{- end -}}
 
