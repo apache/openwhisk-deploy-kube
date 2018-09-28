@@ -60,6 +60,24 @@ Travis CI testing.
 
 For details on setting up Minikube, see these [instructions](docs/minikube.md).
 
+### Using Kubernetes in Docker for Mac
+
+Docker 18.06 for Mac added built-in support for running a single node Kubernetes cluster.
+Using this capability, you can use Helm to deploy to Kubernetes on your laptop without
+needing to install Minikube or an additional layer of virtualization.
+
+Step-by-step instructions on enabling Kubernetes in Docker are
+available as part of the
+[Getting started](https://docs.docker.com/docker-for-mac/#general)
+documentation from Docker.
+
+In a nutshell, open the Docker preferences pane, switch to the
+Kubernetes panel, and check the box to enable Kubernetes.  You will
+want to use the `kubectl` cli that is installed by Docker in
+`/usr/local/bin` and is configured to access the Kubernetes cluster
+running in Docker, so please make sure it is appears in your path
+before any `kubectl` you have installed on your machine.
+
 ### Using a Kubernetes cluster from a cloud provider
 
 You can also provision a Kubernetes cluster from a cloud provider, subject to the cluster meeting the requirements above.
@@ -128,7 +146,11 @@ You will need to create a mycluster.yaml file that records how the
 OpenWhisk deployment on your cluster will be accessed by clients.  See
 the [ingress discussion](./docs/ingress.md) for details. Below is a sample
 file appropriate for a Minikube cluster where `minikube ip` returns
-`192.168.99.100` and port 31001 is available to be used.
+`192.168.99.100` and port 31001 is available to be used.  If you are
+using Docker for Mac, you can use the same configuration but use the
+command `kubectl describe nodes | grep InternalIP` to determine the
+value for `api_host_name`.
+
 
 ```yaml
 whisk:
@@ -173,6 +195,18 @@ to get it). Replace `whisk.ingress.api_host_name` and `whisk.ingress.api_host_po
 with the actual values from your mycluster.yaml.
 ```shell
 wsk property set --apihost whisk.ingress.api_host_name:whisk.ingress.api_host_port
+wsk property set --auth 23bc46b1-71f6-4ed5-8c54-816aa4f8c502:123zO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP
+```
+### Configuring the CLI for Kubernetes on Docker for Mac
+
+The `docker0` network interface does not exist in the Docker for Mac
+host environment. Instead, exposed NodePorts are forwarded from localhost
+to the appropriate containers.  This means that you will use `localhost`
+instead of `whisk.ingress.api_host_name` as your apihost when configuring
+the `wsk` cli.
+
+```shell
+wsk property set --apihost localhost:whisk.ingress.api_host_port
 wsk property set --auth 23bc46b1-71f6-4ed5-8c54-816aa4f8c502:123zO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP
 ```
 

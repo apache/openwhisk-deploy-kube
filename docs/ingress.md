@@ -68,6 +68,26 @@ nginx:
   httpsNodePort: 31001
 ```
 
+## Setting up NodePort on Kubernetes in Docker for Mac
+
+First,  obtain the IP address of the single Kubernetes worker node.
+```shell
+kubectl describe nodes | grep InternalIP
+```
+This should produce output like: `InternalIP:  192.168.65.3`
+
+Next pick an unassigned port (eg 31001) and define `mycluster.yaml` as
+```yaml
+whisk:
+  ingress:
+    type: NodePort
+    api_host_name: 192.168.65.3
+    api_host_port: 31001
+
+nginx:
+  httpsNodePort: 31001
+```
+
 ## Setting up NodePort on an IBM Cloud Lite cluster
 
 The only available ingress method for an IBM Cloud Lite cluster is to
