@@ -44,9 +44,43 @@ Several requirements must be met for OpenWhisk to deploy on Kubernetes.
 * If you enable persistence (see [docs/configurationChoices.md](./docs/configurationChoices.md)), either your cluster is configured to support [Dynamic Volume Provision](https://kubernetes.io/docs/concepts/storage/dynamic-provisioning/) or you must manually create any necessary PersistentVolumes when deploying the Helm chart.
 * Endpoints of Kubernetes services must be able to loopback to themselves (the kubelet's `hairpin-mode` must not be `none`).
 
+### Using Kubernetes in Docker for Mac
+
+If you are using a Mac as your development machine, the simplest way to get
+a Kubernetes cluster is to use the built-in support for running a single node
+Kubernetes cluster that became available in Docker 18.06.  This will let you
+use Helm to deploy Apache OpenWhisk to Kubernetes on your laptop without
+needing to install Minikube or an additional layer of virtualization.
+
+Step-by-step instructions on enabling Kubernetes in Docker are
+available as part of the
+[Getting started](https://docs.docker.com/docker-for-mac/#kubernetes)
+documentation from Docker.
+
+In a nutshell, open the Docker preferences pane, switch to the
+Kubernetes panel, and check the box to enable Kubernetes.  You will
+want to use the `kubectl` cli that is installed by Docker in
+`/usr/local/bin`, so please make sure it is appears in your path
+before any `kubectl` you have installed on your machine.  Pick the
+`docker-for-desktop` config for `kubectl` by executing the command
+`kubectl config use-context docker-for-desktop`.
+
+Once nice feature of this style, is that the containers being run in
+Kubernetes are also visible/accessible via the usual Docker
+commands. Furthermore, it is straightforward to deploy local images by
+adding a stanza to your mycluster.yaml. For example, to use a local
+controller image, just add the stanza below to your `mycluster.yaml`
+to override the default behavior of pulling
+`openwhisk/controller:latest` from Docker Hub.
+```yaml
+controller:
+  image: "whisk/controller"
+  imagePullPolicy: "IfNotPresent"
+```
+
 ### Using Minikube
 
-For local development and testing, we recommend using Minikube with
+If you are not on a Mac, then for local development and testing, we recommend using Minikube with
 the docker network in promiscuous mode.  Not all combinations of
 Minikube and Kubernetes versions will work for running OpenWhisk.
 Although other combinations may work, we recommend at least initially
@@ -59,24 +93,6 @@ Travis CI testing.
 1.10.5 | 0.28.2 |
 
 For details on setting up Minikube, see these [instructions](docs/minikube.md).
-
-### Using Kubernetes in Docker for Mac
-
-Docker 18.06 for Mac added built-in support for running a single node Kubernetes cluster.
-Using this capability, you can use Helm to deploy to Kubernetes on your laptop without
-needing to install Minikube or an additional layer of virtualization.
-
-Step-by-step instructions on enabling Kubernetes in Docker are
-available as part of the
-[Getting started](https://docs.docker.com/docker-for-mac/#general)
-documentation from Docker.
-
-In a nutshell, open the Docker preferences pane, switch to the
-Kubernetes panel, and check the box to enable Kubernetes.  You will
-want to use the `kubectl` cli that is installed by Docker in
-`/usr/local/bin` and is configured to access the Kubernetes cluster
-running in Docker, so please make sure it is appears in your path
-before any `kubectl` you have installed on your machine.
 
 ### Using a Kubernetes cluster from a cloud provider
 
