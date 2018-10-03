@@ -46,11 +46,12 @@ Several requirements must be met for OpenWhisk to deploy on Kubernetes.
 
 ### Using Kubernetes in Docker for Mac
 
-If you are using a Mac as your development machine, the simplest way to get
-a Kubernetes cluster is to use the built-in support for running a single node
-Kubernetes cluster that became available in Docker 18.06.  This will let you
-use Helm to deploy Apache OpenWhisk to Kubernetes on your laptop without
-needing to install Minikube or an additional layer of virtualization.
+If you are using a Mac as your development machine, the simplest way
+to get a Kubernetes cluster for local development is to use the
+built-in support for running a single node Kubernetes cluster that is
+available in Docker 18.06 and later.  This will let you use Helm to
+deploy Apache OpenWhisk to Kubernetes on your laptop without needing
+to install Minikube or otherwise run inside a virtual machine.
 
 Step-by-step instructions on enabling Kubernetes in Docker are
 available as part of the
@@ -65,13 +66,13 @@ before any `kubectl` you have installed on your machine.  Pick the
 `docker-for-desktop` config for `kubectl` by executing the command
 `kubectl config use-context docker-for-desktop`.
 
-Once nice feature of this style, is that the containers being run in
-Kubernetes are also visible/accessible via the usual Docker
-commands. Furthermore, it is straightforward to deploy local images by
-adding a stanza to your mycluster.yaml. For example, to use a local
-controller image, just add the stanza below to your `mycluster.yaml`
-to override the default behavior of pulling
-`openwhisk/controller:latest` from Docker Hub.
+Once nice feature of using Kubernetes in Docker, is that the
+containers being run in Kubernetes are also directly
+visible/accessible via the usual Docker commands. Furthermore, it is
+straightforward to deploy local images by adding a stanza to your
+mycluster.yaml. For example, to use a locally built controller image,
+just add the stanza below to your `mycluster.yaml` to override the default
+behavior of pulling `openwhisk/controller:latest` from Docker Hub.
 ```yaml
 controller:
   image: "whisk/controller"
