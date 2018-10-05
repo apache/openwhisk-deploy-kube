@@ -6,9 +6,6 @@
 
 export OPENWHISK_HOME=/usr/local
 
-# install npm
-apk add --update nodejs-npm
-
 git clone https://github.com/apache/incubator-openwhisk-package-alarms.git
 
 export DB_URL=$DB_PROTOCOL://$DB_USERNAME:$DB_PASSWORD@$DB_HOST:$DB_PORT
