@@ -188,7 +188,7 @@ EOF
 echo "Contents of mycluster.yaml are:"
 cat mycluster.yaml
 
-helm install helm/openwhisk --namespace=openwhisk --name=ow4travis -f mycluster.yaml
+helm install helm/openwhisk --namespace=openwhisk --name=ow4travis -f mycluster.yaml || exit 1
 
 # Wait for controller to be up
 statefulsetHealthCheck "controller"
@@ -264,7 +264,7 @@ echo "PASSED! Deployed openwhisk and invoked Hello action"
 ####
 # now test the installation of kafka provider
 ####
-helm install helm/openwhisk-providers/charts/ow-kafka --namespace=openwhisk --name=kafkap4travis
+helm install helm/openwhisk-providers/charts/ow-kafka --namespace=openwhisk --name=kafkap4travis  || exit 1
 
 jobHealthCheck "install-package-kafka"
 
@@ -282,7 +282,7 @@ echo "PASSED! Deployed Kafka provider and package"
 ####
 # now test the installation of Alarm provider
 ####
-helm install helm/openwhisk-providers/charts/ow-alarm --namespace=openwhisk --name alarmp4travis --set alarmprovider.persistence.storageClass=standard
+helm install helm/openwhisk-providers/charts/ow-alarm --namespace=openwhisk --name alarmp4travis --set alarmprovider.persistence.storageClass=standard  || exit 1
 
 jobHealthCheck "install-package-alarm"
 
@@ -300,7 +300,7 @@ echo "PASSED! Deployed Alarms provider and package"
 ####
 # now test the installation of Cloudant provider
 ####
-helm install helm/openwhisk-providers/charts/ow-cloudant --namespace=openwhisk --name cloudantp4travis --set cloudantprovider.persistence.storageClass=standard
+helm install helm/openwhisk-providers/charts/ow-cloudant --namespace=openwhisk --name cloudantp4travis --set cloudantprovider.persistence.storageClass=standard  || exit 1
 
 jobHealthCheck "install-package-cloudant"
 
