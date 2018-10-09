@@ -247,3 +247,62 @@ whisk:
 
 Please submit Pull Requests with instructions for configuing the
 `standard` ingress for other cloud providers.
+
+# LoadBalancer
+
+AWS's Elastic Kubernetes Service (EKS) does not support the standard
+ingress type.  Instead, it relies on provisioning Elastic Load
+Balancers (ELBs) outside of the EKS cluster to direct traffic to
+exposed services running in the cluster.  Because the `wsk` cli
+expects be able to use TLS to communicate securely with the OpenWhisk
+server, you will first need to ensure that you have a certificate
+available for your ELB instance to use in AWS's IAM service. For
+development and testing purposes, you can use a self-signed
+certificate (for example the `openwhisk-server-cert.pem` and
+`openwhisk-server-key.pem` that are generated when you build OpenWhisk
+from source and can be found in the
+`$OPENWHISK_HOME/ansible/roles/nginx/files` directory. Upload these to
+IAM using the aws cli:
+```shell
+aws iam upload-server-certificate --server-certificate-name ow-self-signed --certificate-body file://openwhisk-server-cert.pem --private-key file://openwhisk-server-key.pem
+```
+Verify that the upload was successful by using the command:
+```shell
+aws iam list-server-certificates
+```
+A typical output would be as shown below
+```
+{
+    "ServerCertificateMetadataList": [
+        {
+            "ServerCertificateId": "ASCAJ4HPCCVA65ZHD5TFQ",
+            "ServerCertificateName": "ow-self-signed",
+            "Expiration": "2019-10-01T20:50:02Z",
+            "Path": "/",
+            "Arn": "arn:aws:iam::12345678901:server-certificate/ow-self-signed",
+            "UploadDate": "2018-10-01T21:27:47Z"
+        }
+    ]
+}
+```
+Add the following to your mycluster.yaml, using your certificate's Arn
+instead of the example one:
+```yaml
+whisk:
+  ingress:
+    type: LoadBalancer
+    annotations:
+      service.beta.kubernetes.io/aws-load-balancer-internal: 0.0.0.0/0
+      service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:iam::12345678901:server-certificate/ow-self-signed
+```
+
+Shortly after you deploy your helm chart, an ELB should be
+automatically created. You will can determine its hostname by issuing
+the command `kubectl get services  -o wide`. Use the value in the
+the EXTERNAL-IP column for the nginx service and port 443 to define
+your wsk apihost.
+
+NOTE: It may take several minutes after the ELB is reported as being
+available before the hostname is actually properly registered in DNS.
+Be patient and keep trying until you stop getting `no such host`
+errors from `wsk` when attempting to access it.

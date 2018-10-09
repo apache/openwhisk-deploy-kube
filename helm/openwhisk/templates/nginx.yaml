@@ -9,7 +9,9 @@ metadata:
   labels:
     name: {{ .Values.nginx.name | quote }}
 spec:
-  {{- if .Values.nginx.httpsNodePort }}
+  {{- if eq .Values.whisk.ingress.type "LoadBalancer" }}
+  type: LoadBalancer
+  {{- else if .Values.nginx.httpsNodePort }}
   type: NodePort
   {{- end }}
   selector:

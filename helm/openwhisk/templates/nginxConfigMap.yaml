@@ -29,6 +29,9 @@ data:
       proxy_set_header Connection "";
 
       server {
+{{- if eq .Values.whisk.ingress.type "LoadBalancer" }}
+        listen 80;
+{{- end }}
         listen 443 default ssl;
 
         # match namespace, note while OpenWhisk allows a richer character set for a
@@ -50,11 +53,11 @@ data:
         # Hack to convince nginx to dynamically resolve the dns entries.
         resolver kube-dns.kube-system;
         set $controllers {{ include "controller_host" . }};
-{{- if eq .Values.whisk.ingress.type "NodePort" }}
+{{- if or (eq .Values.whisk.ingress.type "NodePort") (eq .Values.whisk.ingress.type "LoadBalancer") }}
         set $apigw {{ include "apigw_host" . }};
 {{- end }}
 
-{{- if eq .Values.whisk.ingress.type "NodePort" }}
+{{- if or (eq .Values.whisk.ingress.type "NodePort") (eq .Values.whisk.ingress.type "LoadBalancer") }}
         location /api/v1/web {
             if ($namespace) {
                 rewrite    /(.*) /api/v1/web/${namespace}/$1 break;
