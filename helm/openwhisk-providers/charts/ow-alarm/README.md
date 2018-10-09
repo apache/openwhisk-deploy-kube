@@ -33,7 +33,7 @@ To use a different CouchDB instance, config the database parameters in `value.ya
 ```
 db:
   external: true
-  prefix: "cldt"
+  prefix: "alm"
   host: "0.0.0.0"
   port: 5984
   protocol: "http"
