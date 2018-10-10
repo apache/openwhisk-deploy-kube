@@ -202,7 +202,41 @@ whisk:
         }
 
 ```
+## IBM Cloud Private
 
+Login to IBM Cloud Private
+```
+bx pr login -a https://mgrcluster.icp:8443 --skip-ssl-validation
+```
+Use below `mycluster.yaml`:
+```
+whisk:
+  ingress:
+    api_host_name: wsk.icp
+    api_host_port: 443
+    api_host_proto: https
+    type: standard
+    domain: wsk.icp
+    tls:
+      enabled: false
+    annotations:
+      kubernetes.io/ingress.class: nginx
+
+k8s:
+  domain: mgrcluster.local
+```
+After deploy, get your ingress IP address by:
+```
+kubectl get ingress ow-ingress -n openwhisk
+```
+Config your local host file and add below entry:
+```
+<ingress-ip> wsk.icp
+```
+Then you can use
+```
+wsk property set --apihost wsk.icp
+```
 ## Google Cloud with nginx ingress
 
 This type of installation allows the same benefits as the IBM Cloud standard cluster.

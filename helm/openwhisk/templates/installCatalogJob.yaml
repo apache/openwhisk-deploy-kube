@@ -36,10 +36,7 @@ spec:
                 key: system
           # poorly named envvar; actually expects full apihost (host:port)
           - name: "WHISK_API_HOST_NAME"
-            valueFrom:
-              configMapKeyRef:
-                name: whisk.config
-                key: whisk_api_host_nameAndPort
+            value: {{ .Values.nginx.name }}.{{ .Release.Namespace }}.svc.{{ .Values.k8s.domain }}:{{ .Values.nginx.httpsPort }}
 
 ---
 apiVersion: v1
