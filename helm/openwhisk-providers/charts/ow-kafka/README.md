@@ -27,13 +27,13 @@ A CouchDB instance is required to save the event data. You can use the same Couc
 ```
 db:
   external: false
-  prefix: "cldt"
+  prefix: "kp"
 ```
 To use a different CouchDB instance, config the database parameters in `value.yaml` as:
 ```
 db:
   external: true
-  prefix: "cldt"
+  prefix: "kp"
   host: "0.0.0.0"
   port: 5984
   protocol: "http"
