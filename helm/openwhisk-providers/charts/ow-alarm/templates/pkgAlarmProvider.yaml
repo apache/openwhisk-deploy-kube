@@ -21,8 +21,12 @@ spec:
       restartPolicy: {{ .Values.alarmprovider.restartPolicy }}
       volumes:
         - name: alarm-logs
+{{- if ne .Values.alarmprovider.persistence.storageClass "none" }}
           persistentVolumeClaim:
             claimName: {{ .Values.alarmprovider.persistence.pvcName | quote }}
+{{- else }}
+          emptyDir: {}
+{{- end }}
       containers:
       - name: {{ .Values.alarmprovider.name | quote }}
         imagePullPolicy: {{ .Values.alarmprovider.imagePullPolicy | quote }}
@@ -80,6 +84,7 @@ spec:
             mountPath: /logs
 
 ---
+{{- if ne .Values.alarmprovider.persistence.storageClass "none" }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -92,3 +97,4 @@ spec:
   resources:
     requests:
       storage: {{ .Values.alarmprovider.persistence.size }}
+{{- end }}

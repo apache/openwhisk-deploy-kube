@@ -17,8 +17,7 @@ mkdir logs
 kubectl -n openwhisk logs -lname=couchdb >& logs/couchdb.log
 kubectl -n openwhisk logs -lname=zookeeper >& logs/zookeeper.log
 kubectl -n openwhisk logs -lname=kafka >& logs/kafka.log
-kubectl -n openwhisk logs controller-0 >& logs/controller-0.log
-kubectl -n openwhisk logs controller-1 >& logs/controller-1.log
+kubectl -n openwhisk logs -lname=controller >& logs/controller.log
 kubectl -n openwhisk logs -lname=invoker -c docker-pull-runtimes >& logs/invoker-docker-pull.log
 kubectl -n openwhisk logs -lname=invoker -c invoker >& logs/invoker-invoker.log
 kubectl -n openwhisk logs -lname=nginx >& logs/nginx.log
@@ -28,5 +27,5 @@ kubectl -n openwhisk logs jobs/install-catalog >& logs/catalog.log
 kubectl -n openwhisk logs jobs/init-couchdb >& logs/init-couchdb.log
 kubectl get pods --all-namespaces -o wide --show-all >& logs/all-pods.txt
 
-# System level logs from minikube
-minikube logs >& logs/minikube.log
+# System level logs from kubernetes cluster
+$HOME/dind-cluster.sh dump >& logs/dind-cluster-dump.txt

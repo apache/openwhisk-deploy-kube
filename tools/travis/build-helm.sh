@@ -23,13 +23,13 @@ deploymentHealthCheck () {
       break
     fi
 
-    kubectl get pods --all-namespaces -o wide --show-all
+    kubectl get pods -n openwhisk -o wide
 
     let TIMEOUT=TIMEOUT+1
     sleep 10
   done
 
-  if [ ! $PASSED ]; then
+  if [ "$PASSED" == "false" ]; then
     echo "Failed to finish deploying $1"
 
     kubectl -n openwhisk logs $(kubectl -n openwhisk get pods -l name="$1" -o wide | grep "$1" | awk '{print $1}')
@@ -56,14 +56,16 @@ statefulsetHealthCheck () {
       break
     fi
 
-    kubectl get pods --all-namespaces -o wide --show-all
+    kubectl get pods -n openwhisk -o wide
 
     let TIMEOUT=TIMEOUT+1
     sleep 10
   done
 
-  if [ ! $PASSED ]; then
+  if [ "$PASSED" == "false" ]; then
     echo "Failed to finish deploying $1"
+    # Dump all namespaces in case the problem is with a pod in the kube-system namespace
+    kubectl get pods --all-namespaces -o wide
 
     kubectl -n openwhisk logs $(kubectl -n openwhisk get pods -o wide | grep "$1"-0 | awk '{print $1}')
     exit 1
@@ -89,14 +91,16 @@ jobHealthCheck () {
       break
     fi
 
-    kubectl get jobs --all-namespaces -o wide --show-all
+    kubectl get pods -n openwhisk -o wide
 
     let TIMEOUT=TIMEOUT+1
     sleep 10
   done
 
-  if [ ! $PASSED ]; then
+  if [ "$PASSED" == "false" ]; then
     echo "Failed to finish running $1"
+    # Dump all namespaces in case the problem is with a pod in the kube-system namespace
+    kubectl get jobs --all-namespaces -o wide --show-all
 
     kubectl -n openwhisk logs jobs/$1
     exit 1
@@ -117,13 +121,15 @@ verifyHealthyInvoker () {
       break
     fi
 
-    kubectl get pods --all-namespaces -o wide --show-all
+    kubectl get pods -n openwhisk -o wide
 
     let TIMEOUT=TIMEOUT+1
     sleep 10
   done
 
-  if [ ! $PASSED ]; then
+  if [ "$PASSED" == "false" ]; then
+    # Dump all namespaces in case the problem is with a pod in the kube-system namespace
+    kubectl get pods --all-namespaces -o wide --show-all
     echo "No healthy invokers available"
 
     exit 1
@@ -147,20 +153,23 @@ OW_CONTAINER_FACTORY=${OW_CONTAINER_FACTORY:="docker"}
 # Default timeout limit to 60 steps
 TIMEOUT_STEP_LIMIT=${TIMEOUT_STEP_LIMIT:=60}
 
-# Label invoker nodes (needed for DockerContainerFactory-based invoker deployment)
-echo "Labeling invoker node"
-kubectl label nodes --all openwhisk-role=invoker
-kubectl describe nodes
+# Label nodes for affinity. For DockerContainerFactory, at least one invoker node is required.
+echo "Labeling nodes with openwhisk-role assignments"
+kubectl label nodes kube-node-1 openwhisk-role=core
+kubectl label nodes kube-node-1 openwhisk-role=edge
+kubectl label nodes kube-node-2 openwhisk-role=invoker
 
 # Create namespace
 echo "Create openwhisk namespace"
 kubectl create namespace openwhisk
 
-# configure Ingress
+# configure a NodePort Ingress assuming kubeadm-dind-cluster conventions
+# use kube-node-1 as the ingress, since that is where nginx will be running
 WSK_PORT=31001
-WSK_HOST=$(kubectl describe nodes | grep Hostname: | awk '{print $2}')
-if [ "$WSK_HOST" = "minikube" ]; then
-    WSK_HOST=$(minikube ip)
+WSK_HOST=$(kubectl describe node kube-node-1 | grep InternalIP: | awk '{print $2}')
+if [ -z "$WSK_HOST" ]; then
+  echo "FAILED! Could not determine value for WSK_HOST"
+  exit 1
 fi
 
 # Deploy OpenWhisk using Helm
@@ -241,76 +250,64 @@ if [ -z "$RESULT" ]; then
 fi
 
 # now define it as an api and invoke it that way
+wsk -i api create /demo /hello get hello
+API_URL=$(wsk -i api list | grep hello | awk '{print $4}')
+RESULT=$(wget --no-check-certificate -qO- "$API_URL" | grep 'Hello world')
+if [ -z "$RESULT" ]; then
+  echo "FAILED! Could not invoke hello via apigateway"
+  exit 1
+fi
 
-# TEMP: test is not working yet in travis environment.
-#       disable for now to allow rest of PR to be merged...
-# wsk -v -i api create /demo /hello get hello
-#
-# API_URL=$(wsk -i api list | grep hello | awk '{print $4}')
-# echo "API URL is $API_URL"
-# wget --no-check-certificate -O sayHello.txt "$API_URL"
-# echo "AJA!"
-# cat sayHello.txt
-# echo "AJA!"
-#
-# RESULT=$(wget --no-check-certificate -qO- "$API_URL" | grep 'Hello world')
-# if [ -z "$RESULT" ]; then
-#   echo "FAILED! Could not invoke hello via apigateway"
-#   exit 1
-# fi
+echo "PASSED! Created Hello action and invoked via cli, web and apigateway"
 
-echo "PASSED! Deployed openwhisk and invoked Hello action"
-
-####
-# now test the installation of kafka provider
-####
+###
+# Now install all the provider helm charts.
+# To reduce testing latency we first install all the charts,
+# then we check for correct deployment of each one.
+###
 helm install helm/openwhisk-providers/charts/ow-kafka --namespace=openwhisk --name=kafkap4travis  || exit 1
+helm install helm/openwhisk-providers/charts/ow-alarm --namespace=openwhisk --name alarmp4travis --set alarmprovider.persistence.storageClass=none || exit 1
+helm install helm/openwhisk-providers/charts/ow-cloudant --namespace=openwhisk --name cloudantp4travis --set cloudantprovider.persistence.storageClass=none || exit 1
 
+
+####
+# Verify kafka provider and messaging package
+####
 jobHealthCheck "install-package-kafka"
-
 deploymentHealthCheck "kafkaprovider"
 
-# Verify messaging package is installed
 RESULT=$(wsk package list /whisk.system -i | grep messaging)
 if [ -z "$RESULT" ]; then
   echo "FAILED! Could not list messaging package via CLI"
   exit 1
+else
+  echo "PASSED! Deployed Kafka provider and package"
 fi
 
-echo "PASSED! Deployed Kafka provider and package"
-
 ####
-# now test the installation of Alarm provider
+# Verify alarm provider and alarms package
 ####
-helm install helm/openwhisk-providers/charts/ow-alarm --namespace=openwhisk --name alarmp4travis --set alarmprovider.persistence.storageClass=standard  || exit 1
-
 jobHealthCheck "install-package-alarm"
-
 deploymentHealthCheck "alarmprovider"
 
-# Verify alarms package is installed
 RESULT=$(wsk package list /whisk.system -i | grep alarms)
 if [ -z "$RESULT" ]; then
   echo "FAILED! Could not list alarms package via CLI"
   exit 1
+else
+  echo "PASSED! Deployed Alarms provider and package"
 fi
 
-echo "PASSED! Deployed Alarms provider and package"
-
 ####
-# now test the installation of Cloudant provider
+# Verify Cloudant provider and cloudant package
 ####
-helm install helm/openwhisk-providers/charts/ow-cloudant --namespace=openwhisk --name cloudantp4travis --set cloudantprovider.persistence.storageClass=standard  || exit 1
-
 jobHealthCheck "install-package-cloudant"
-
 deploymentHealthCheck "cloudantprovider"
 
-# Verify cloudant package is installed
 RESULT=$(wsk package list /whisk.system -i | grep cloudant)
 if [ -z "$RESULT" ]; then
   echo "FAILED! Could not list cloudant package via CLI"
   exit 1
+else
+  echo "PASSED! Deployed Cloudant provider and package"
 fi
-
-echo "PASSED! Deployed Cloudant provider and package"

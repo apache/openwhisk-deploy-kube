@@ -88,6 +88,30 @@ nginx:
   httpsNodePort: 31001
 ```
 
+## Setting up NodePort using kubadm-dind-cluster
+
+Obtain the IP address of one of the two Kubernetes worker nodes using
+the command below.  To eliminate a network hop to the nginx pod, pick the
+worker node which you did not label with `openwhisk-role=invoker`.
+So, if you label `kube-node-2` as your invoker node, pick `kube-node-1`
+as your api_host.
+```shell
+kubectl describe node kube-node-1 | grep InternalIP
+```
+This should produce output like: `InternalIP:  10.192.0.3`
+
+Next pick an unassigned port (eg 31001) and define `mycluster.yaml` as
+```yaml
+whisk:
+  ingress:
+    type: NodePort
+    api_host_name: 10.192.0.3
+    api_host_port: 31001
+
+nginx:
+  httpsNodePort: 31001
+```
+
 ## Setting up NodePort on an IBM Cloud Lite cluster
 
 The only available ingress method for an IBM Cloud Lite cluster is to
