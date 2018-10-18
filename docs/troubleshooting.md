@@ -42,11 +42,31 @@ running on your Kubernetes worker node.
 
 If services are having trouble connecting to Kafka, it may be that the
 Kafka service didn't actually come up successfully. One reason Kafka
-can fail to come up is that it cannot connect to itself.  On minikube,
+can fail to fully come up is that it cannot connect to itself.  On minikube,
 fix this by saying `minikube ssh -- sudo ip link set docker0 promisc
 on`. If using kubeadm-dind-cluster, set `USE_HAIRPIN=true` in your environment
 before running 'dind-cluster.sh up`. On full scale Kubernetes clusters,
 make sure that your kubelet's `hairpin-mode` is not `none`).
+
+The usual symptom of this network misconfiguration is the controller
+pod being in a CrashLoopBackOff where it exits before it reports
+the successful creation of its `completed` topic.
+
+Here's an example controller log of a successful startup:
+```
+[2018-10-18T17:53:48.129Z] [INFO] [#tid_sid_unknown] [Config] environment set value for kafka.hosts
+[2018-10-18T17:53:48.130Z] [INFO] [#tid_sid_unknown] [Config] environment set value for port
+[2018-10-18T17:53:49.360Z] [INFO] [#tid_sid_unknown] [KafkaMessagingProvider] created topic completed0
+[2018-10-18T17:53:49.685Z] [INFO] [#tid_sid_unknown] [KafkaMessagingProvider] created topic health
+[2018-10-18T17:53:49.929Z] [INFO] [#tid_sid_unknown] [KafkaMessagingProvider] created topic cacheInvalidation
+[2018-10-18T17:53:50.151Z] [INFO] [#tid_sid_unknown] [KafkaMessagingProvider] created topic events
+```
+Here's what it looks like when the network is misconfigured and kafka is not really working:
+```
+[2018-10-18T17:30:37.309Z] [INFO] [#tid_sid_unknown] [Config] environment set value for kafka.hosts
+[2018-10-18T17:30:37.310Z] [INFO] [#tid_sid_unknown] [Config] environment set value for port
+[2018-10-18T17:30:53.433Z] [INFO] [#tid_sid_unknown] [Controller] Shutting down Kamon with coordinated shutdown
+```
 
 ### wsk `cannot validate certificates` error
 

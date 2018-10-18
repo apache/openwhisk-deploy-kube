@@ -30,6 +30,7 @@ This repository can be used to deploy OpenWhisk to a Kubernetes cluster.
 * [Setting up Kubernetes and Helm](#setting-up-kubernetes-and-helm)
 * [Deploying OpenWhisk](#deploying-openwhisk)
 * [Deploying OpenWhisk Providers](#deploying-openwhisk-providers)
+* [Development and Testing](#development-and-testing)
 * [Cleanup](#cleanup)
 * [Issues](#issues)
 
@@ -59,15 +60,17 @@ available as part of the
 [Getting started](https://docs.docker.com/docker-for-mac/#kubernetes)
 documentation from Docker.
 
-In a nutshell, open the Docker preferences pane, switch to the
-Kubernetes panel, and check the box to enable Kubernetes.  You will
-want to use the `kubectl` cli that is installed by Docker in
-`/usr/local/bin`, so please make sure it is appears in your path
-before any `kubectl` you have installed on your machine.  Pick the
+In a nutshell, open the Docker preferences window, switch to the
+`Advanced` panel and make sure you have at least 4GB of Memory
+allocated to Docker. Then switch to the Kubernetes panel, and check
+the box to enable Kubernetes. It is recommended that you use the
+`kubectl` cli that is installed by Docker in `/usr/local/bin`, so
+please make sure it is appears in your path before any `kubectl` you
+might also have installed on your machine.  Finally, pick the
 `docker-for-desktop` config for `kubectl` by executing the command
 `kubectl config use-context docker-for-desktop`.
 
-Once nice feature of using Kubernetes in Docker, is that the
+One nice feature of using Kubernetes in Docker, is that the
 containers being run in Kubernetes are also directly
 visible/accessible via the usual Docker commands. Furthermore, it is
 straightforward to deploy local images by adding a stanza to your
@@ -80,9 +83,9 @@ controller:
   imagePullPolicy: "IfNotPresent"
 ```
 
-NOTE: Docker for Windows 18.06 and later also has similar built-in
-support for Kubernetes. We would be interested in any experience using
-it to run Apache OpenWhisk on the Windows platform.
+NOTE: Docker for Windows 18.06 and later has similar built-in support
+for Kubernetes. We would be interested in any experience using it to
+run Apache OpenWhisk on the Windows platform.
 
 ### Using kubeadm-dind-cluster
 On Linux, you can get a similar experience to using Kubernetes in
@@ -90,13 +93,14 @@ Docker for Mac via the
 [kubeadm-dind-cluster](https://github.com/kubernetes-sigs/kubeadm-dind-cluster)
 project.  In a nutshell, you can get started by doing
 ```shell
+# Get the script for the Kubernetes version you want
 wget https://cdn.rawgit.com/kubernetes-sigs/kubeadm-dind-cluster/master/fixed/dind-cluster-v1.10.sh
 chmod +x dind-cluster-v1.10.sh
 
 # start the cluster
 ./dind-cluster-v1.10.sh up
 
-# add kubectl directory to PATH
+# add kubectl directory to your PATH
 export PATH="$HOME/.kubeadm-dind-cluster:$PATH"
 ```
 
@@ -207,7 +211,7 @@ nginx:
 
 Beyond specifying the ingress, the `mycluster.yaml` file is also used
 to customize your OpenWhisk deployment by enabling optional features
-and controlling the replication factor of the various micro-services
+and controlling the replication factor of the various microservices
 that make up the OpenWhisk implementation. See the [configuration
 choices documentation](./docs/configurationChoices.md) for a
 discussion of the primary options.
@@ -286,6 +290,72 @@ helm install ./helm/openwhisk-providers/charts/ow-kafka --namespace=openwhisk --
 Please see the `values.yaml` file and/or README.md in the individual
 charts for instructions on enabling any optional customizations of the
 providers.
+
+# Development and Testing
+
+This section outlines how common OpenWhisk development tasks are
+supported when OpenWhisk is deployed on Kubernetes using Helm.
+
+### Running OpenWhisk test cases
+
+Some key differences in a Kubernetes-based deployment of OpenWhisk are
+that deploying the system does not generate a `whisk.properties` file and
+that the various internal microservices (`invoker`, `controller`,
+etc.) are not directly accessible from the outside of the Kubernetes cluster.
+Therefore, although you can run full system tests against a
+Kubernetes-based deployment by giving some extra command line
+arguments, any unit tests that assume direct access to one of the internal
+microservices will fail.   The system tests can be executed in a
+batch-style as shown below, where WHISK_SERVER and WHISK_AUTH are
+replaced by the values returned by `wsk property get --apihost` and
+`wsk property get --auth` respectively.
+```shell
+cd $OPENWHISK_HOME
+./gradlew :tests:testSystemBasic -Dwhisk.auth=$WHISK_AUTH -Dwhisk.server=https://$WHISK_SERVER -Dopenwhisk.home=`pwd`
+```
+You can also launch the system tests as JUnit test from an IDE by
+adding the same system properties to the JVM command line used to
+launch the tests:
+```shell
+ -Dwhisk.auth=$WHISK_AUTH -Dwhisk.server=https://$WHISK_SERVER -Dopenwhisk.home=`pwd`
+```
+
+### Deploying a locally built docker image.
+
+By overriding the default `image` and `imagePullPolicy` for one or
+more OpenWhisk components, you can run locally built docker images.
+For example, to use a locally built controller image, just add the
+stanza below to your `mycluster.yaml` to override the default behavior
+of pulling `openwhisk/controller:latest` from Docker Hub.
+```yaml
+controller:
+  image: "whisk/controller"
+  imagePullPolicy: "IfNotPresent"
+```
+
+### Selectively redeploying using a locally built docker image
+
+You can use the `helm upgrade` command to selectively redeploy one or
+more OpenWhisk componenets.  Continuing the example above, if you make
+additional changes to the controller source code and want to just
+redeploy it without redeploying the entire OpenWhisk system you can do
+the following:
+```shell
+# Execute these commands in your openwhisk directory
+./gradlew distDocker
+docker tag whisk/controller whisk/controller:v2
+```
+Then, edit your `mycluster.yaml` to contain:
+```yaml
+controller:
+  image: "whisk/controller:v2"
+  imagePullPolicy: "IfNotPresent"
+```
+Redeploy with Helm by executing this commaned in your
+openwhisk-deploy-kube directory:
+```shell
+helm upgrade ./helm/openwhisk --namespace=openwhisk --name=owdev -f mycluster.yaml
+```
 
 # Cleanup
 
