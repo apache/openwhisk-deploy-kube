@@ -2,6 +2,10 @@
 # Licensed to the Apache Software Foundation (ASF) under one or more contributor
 # license agreements; and to You under the Apache License, Version 2.0.
 
+# NOTE: This script is not currently being used.
+#       Will remove after a couple of weeks experience with
+#       kubeadm-dind-cluster on TravisCI
+
 # This script assumes Docker is already installed
 set -x
 

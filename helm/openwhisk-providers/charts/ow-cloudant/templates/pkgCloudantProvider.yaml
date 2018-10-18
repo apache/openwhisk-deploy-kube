@@ -21,8 +21,12 @@ spec:
       restartPolicy: {{ .Values.cloudantprovider.restartPolicy }}
       volumes:
         - name: cloudant-logs
+{{- if ne .Values.cloudantprovider.persistence.storageClass "none" }}
           persistentVolumeClaim:
             claimName: {{ .Values.cloudantprovider.persistence.pvcName | quote }}
+{{- else }}
+          emptyDir: {}
+{{- end }}
       containers:
       - name: {{ .Values.cloudantprovider.name | quote }}
         imagePullPolicy: {{ .Values.cloudantprovider.imagePullPolicy | quote }}
@@ -81,6 +85,7 @@ spec:
             mountPath: /logs
 
 ---
+{{- if ne .Values.cloudantprovider.persistence.storageClass "none" }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -93,3 +98,4 @@ spec:
   resources:
     requests:
       storage: {{ .Values.cloudantprovider.persistence.size }}
+{{- end }}

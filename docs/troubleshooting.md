@@ -44,8 +44,9 @@ If services are having trouble connecting to Kafka, it may be that the
 Kafka service didn't actually come up successfully. One reason Kafka
 can fail to come up is that it cannot connect to itself.  On minikube,
 fix this by saying `minikube ssh -- sudo ip link set docker0 promisc
-on`. On full scale Kubernetes clusters, make sure that your kubelet's
-`hairpin-mode` is not `none`).
+on`. If using kubeadm-dind-cluster, set `USE_HAIRPIN=true` in your environment
+before running 'dind-cluster.sh up`. On full scale Kubernetes clusters,
+make sure that your kubelet's `hairpin-mode` is not `none`).
 
 ### wsk `cannot validate certificates` error
 

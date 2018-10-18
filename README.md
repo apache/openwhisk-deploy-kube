@@ -80,14 +80,37 @@ controller:
   imagePullPolicy: "IfNotPresent"
 ```
 
+NOTE: Docker for Windows 18.06 and later also has similar built-in
+support for Kubernetes. We would be interested in any experience using
+it to run Apache OpenWhisk on the Windows platform.
+
+### Using kubeadm-dind-cluster
+On Linux, you can get a similar experience to using Kubernetes in
+Docker for Mac via the
+[kubeadm-dind-cluster](https://github.com/kubernetes-sigs/kubeadm-dind-cluster)
+project.  In a nutshell, you can get started by doing
+```shell
+wget https://cdn.rawgit.com/kubernetes-sigs/kubeadm-dind-cluster/master/fixed/dind-cluster-v1.10.sh
+chmod +x dind-cluster-v1.10.sh
+
+# start the cluster
+./dind-cluster-v1.10.sh up
+
+# add kubectl directory to PATH
+export PATH="$HOME/.kubeadm-dind-cluster:$PATH"
+```
+
+Our TravisCI testing uses kubeadm-dind-cluster.sh on an ubuntu 16.04
+host.  The `fixed` `dind-cluster` scripts for Kubernetes version 1.10
+and 1.11 are known to work for deploying OpenWhisk.
+
 ### Using Minikube
 
-If you are not on a Mac, then for local development and testing, we recommend using Minikube with
-the docker network in promiscuous mode.  Not all combinations of
-Minikube and Kubernetes versions will work for running OpenWhisk.
-Although other combinations may work, we recommend at least initially
-using a combination from the table below that is verified by our
-Travis CI testing.
+If you are on Linux and do not want to use kubeadm-dind-cluster, then
+an alternative for local development and testing, is using Minikube
+with the docker network in promiscuous mode.  However not all
+combinations of Minikube and Kubernetes versions will work for running
+OpenWhisk. Some known good combinations are:
 
 | Kubernetes Version | Minikube Version |
 --- | --- |
@@ -167,8 +190,9 @@ file appropriate for a Minikube cluster where `minikube ip` returns
 `192.168.99.100` and port 31001 is available to be used.  If you are
 using Docker for Mac, you can use the same configuration but use the
 command `kubectl describe nodes | grep InternalIP` to determine the
-value for `api_host_name`.
-
+value for `api_host_name`.  If you are using kubeadm-dind-cluster, use
+the command `kubectl describe node kube-node-2 | grep InternalIP` to
+determine the value for `api_host_name`.
 
 ```yaml
 whisk:
