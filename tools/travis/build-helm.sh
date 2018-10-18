@@ -109,6 +109,34 @@ jobHealthCheck () {
   echo "$1 completed"
 }
 
+
+packageListingCheck() {
+  if [ -z "$1" ]; then
+    echo "Error, package listing check called without a package name"
+    exit 1
+  fi
+
+  # Try several times to accommodate eventual consistency of CouchDB
+  PACKAGE_LIST_PASSED=false
+  PACKAGE_LIST_ATTEMPTS=0
+  until $PACKAGE_LIST_PASSED; do
+      RESULT=$(wsk package list /whisk.system -i | grep "$1")
+      if [ -z "$RESULT" ]; then
+          let PACKAGE_LIST_ATTEMPTS=PACKAGE_LIST_ATTEMPTS+1
+          if [ $PACKAGE_LIST_ATTEMPTS -gt 5 ]; then
+              echo "FAILED! Could not list package $1"
+              exit 1
+          fi
+          echo "wsk package list did not find $1; sleep 5 seconds and try again"
+          sleep 5
+      else
+          echo "success: wsk package list included $1"
+          PACKAGE_LIST_PASSED=true
+      fi
+  done
+}
+
+
 verifyHealthyInvoker () {
   PASSED=false
   TIMEOUT=0
@@ -142,8 +170,6 @@ verifyHealthyInvoker () {
 # Main body of script -- deploy OpenWhisk
 #################
 
-set -x
-
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 ROOTDIR="$SCRIPTDIR/../../"
 
@@ -153,18 +179,20 @@ OW_CONTAINER_FACTORY=${OW_CONTAINER_FACTORY:="docker"}
 # Default timeout limit to 60 steps
 TIMEOUT_STEP_LIMIT=${TIMEOUT_STEP_LIMIT:=60}
 
-# Label nodes for affinity. For DockerContainerFactory, at least one invoker node is required.
+# Label nodes for affinity.
+# For DockerContainerFactory, at least one must be labeled as an invoker.
 echo "Labeling nodes with openwhisk-role assignments"
 kubectl label nodes kube-node-1 openwhisk-role=core
-kubectl label nodes kube-node-1 openwhisk-role=edge
 kubectl label nodes kube-node-2 openwhisk-role=invoker
 
 # Create namespace
 echo "Create openwhisk namespace"
 kubectl create namespace openwhisk
 
-# configure a NodePort Ingress assuming kubeadm-dind-cluster conventions
-# use kube-node-1 as the ingress, since that is where nginx will be running
+# Configure a NodePort Ingress assuming kubeadm-dind-cluster conventions.
+# Use kube-node-1 as the ingress, since that is where nginx will actually
+# be running, but using kube-node-2 would also work because Kubernetes
+# exposes the same NodePort service on all worker nodes.
 WSK_PORT=31001
 WSK_HOST=$(kubectl describe node kube-node-1 | grep InternalIP: | awk '{print $2}')
 if [ -z "$WSK_HOST" ]; then
@@ -188,7 +216,7 @@ invoker:
     impl: $OW_CONTAINER_FACTORY
     kubernetes:
       agent:
-        enabled: true
+        enabled: false
 
 nginx:
   httpsNodePort: $WSK_PORT
@@ -213,7 +241,8 @@ jobHealthCheck "install-catalog"
 jobHealthCheck "install-routemgmt"
 
 # Configure wsk CLI
-wsk property set --auth `kubectl -n openwhisk get secret whisk.auth -o jsonpath='{.data.guest}' | base64 --decode` --apihost $WSK_HOST:$WSK_PORT
+WSK_AUTH=$(kubectl -n openwhisk get secret whisk.auth -o jsonpath='{.data.guest}' | base64 --decode)
+wsk property set --auth $WSK_AUTH --apihost $WSK_HOST:$WSK_PORT
 
 #################
 # Sniff test: create and invoke a simple Hello world action
@@ -227,12 +256,25 @@ function main() {
 EOL
 wsk -i action create hello /tmp/hello.js --web true
 
-# first list the actions and expect to see hello
-RESULT=$(wsk -i action list | grep hello)
-if [ -z "$RESULT" ]; then
-  echo "FAILED! Could not list hello action via CLI"
-  exit 1
-fi
+# first list actions and expect to see hello
+# Try several times to accommodate eventual consistency of CouchDB
+ACTION_LIST_PASSED=false
+ACTION_LIST_ATTEMPTS=0
+until $ACTION_LIST_PASSED; do
+  RESULT=$(wsk -i action list | grep hello)
+  if [ -z "$RESULT" ]; then
+    let ACTION_LIST_ATTEMPTS=ACTION_LIST_ATTEMPTS+1
+    if [ $ACTION_LIST_ATTEMPTS -gt 5 ]; then
+      echo "FAILED! Could not list hello action via CLI"
+      exit 1
+    fi
+    echo "wsk action list did not include hello; sleep 5 seconds and try again"
+    sleep 5
+  else
+      echo "success: wsk action list included hello"
+      ACTION_LIST_PASSED=true
+  fi
+done
 
 # next invoke the new hello world action via the CLI
 RESULT=$(wsk -i action invoke --blocking hello | grep "\"status\": \"success\"")
@@ -275,39 +317,36 @@ helm install helm/openwhisk-providers/charts/ow-cloudant --namespace=openwhisk -
 ####
 jobHealthCheck "install-package-kafka"
 deploymentHealthCheck "kafkaprovider"
+packageListingCheck "messaging"
+echo "PASSED! Deployed Kafka provider and package"
 
-RESULT=$(wsk package list /whisk.system -i | grep messaging)
-if [ -z "$RESULT" ]; then
-  echo "FAILED! Could not list messaging package via CLI"
-  exit 1
-else
-  echo "PASSED! Deployed Kafka provider and package"
-fi
 
 ####
 # Verify alarm provider and alarms package
 ####
 jobHealthCheck "install-package-alarm"
 deploymentHealthCheck "alarmprovider"
+packageListingCheck "alarms"
+echo "PASSED! Deployed Alarms provider and package"
 
-RESULT=$(wsk package list /whisk.system -i | grep alarms)
-if [ -z "$RESULT" ]; then
-  echo "FAILED! Could not list alarms package via CLI"
-  exit 1
-else
-  echo "PASSED! Deployed Alarms provider and package"
-fi
 
 ####
 # Verify Cloudant provider and cloudant package
 ####
 jobHealthCheck "install-package-cloudant"
 deploymentHealthCheck "cloudantprovider"
+packageListingCheck "cloudant"
+echo "PASSED! Deployed Cloudant provider and package"
 
-RESULT=$(wsk package list /whisk.system -i | grep cloudant)
-if [ -z "$RESULT" ]; then
-  echo "FAILED! Could not list cloudant package via CLI"
-  exit 1
-else
-  echo "PASSED! Deployed Cloudant provider and package"
+
+###
+# Finally, clone the main openwhisk repo to get the test suite and run tests:testSystemBasic
+# TODO: The following tests have issues under the KubernetesContainerFactory
+#   1. WskActionTest "not be able to use 'ping' in an action" -- fails because user actions are full fledged pods with unrestricted network
+#   2. Tests that read activation logs in retry loops fail; perhaps because log extraction is so slow
+###
+if [ "$OW_RUN_SYSTEM_TESTS" == "yes" ]; then
+    (git clone https://github.com/apache/incubator-openwhisk openwhisk && cd openwhisk && \
+         TERM=dumb ./gradlew install && \
+         TERM=dumb ./gradlew :tests:testSystemBasic -Dwhisk.auth="$WSK_AUTH" -Dwhisk.server=https://$WSK_HOST:$WSK_PORT -Dopenwhisk.home=`pwd`) || exit 1
 fi
