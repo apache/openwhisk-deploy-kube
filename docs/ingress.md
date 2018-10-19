@@ -91,10 +91,11 @@ nginx:
 ## Setting up NodePort using kubadm-dind-cluster
 
 Obtain the IP address of one of the two Kubernetes worker nodes using
-the command below.  To eliminate a network hop to the nginx pod, pick the
-worker node which you did not label with `openwhisk-role=invoker`.
-So, if you label `kube-node-2` as your invoker node, pick `kube-node-1`
-as your api_host.
+the command below.  Although the nginx NodePort service is actually
+available on both of the nodes, by using the node which you did not
+label with `openwhisk-role=invoker` as your api-host you can cut 1 hop
+out of the network path. So, if you label `kube-node-2` as your
+invoker node, pick `kube-node-1` as your api_host.
 ```shell
 kubectl describe node kube-node-1 | grep InternalIP
 ```
