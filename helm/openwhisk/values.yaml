@@ -104,7 +104,7 @@ db:
   wipeAndInit: true
   name: "couchdb"
   image: "apache/couchdb:2.1"
-  # NOTE: setting replicaCount > 1 will not work.
+  # NOTE: must be 1 (because initdb.sh enables single node mode)
   replicaCount: 1
   imagePullPolicy: "IfNotPresent"
   restartPolicy: "Always"

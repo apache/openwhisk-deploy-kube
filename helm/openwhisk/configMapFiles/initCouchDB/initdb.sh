@@ -27,19 +27,14 @@ until $( curl --output /dev/null --silent $DB_PROTOCOL://$DB_HOST:$DB_PORT/_util
     sleep 2
 done
 
+# Enable single node mode (this also creates the system databases)
+echo "Enabling single node cluster"
+curl --silent -X POST -H "Content-Type: application/json" $DB_PROTOCOL://$COUCHDB_USER:$COUCHDB_PASSWORD@$DB_HOST:$DB_PORT/_cluster_setup -d '{"action": "enable_single_node"}'
+
 # disable reduce limits on views
 echo "Disabling reduce limits on views"
 curl --silent -X PUT $DB_PROTOCOL://$COUCHDB_USER:$COUCHDB_PASSWORD@$DB_HOST:$DB_PORT/_node/couchdb@$NODENAME/_config/query_server_config/reduce_limit -d '"false"'
 
-# create the couchdb system databases
-echo "Creating _global_changes database"
-curl --silent -X PUT $DB_PROTOCOL://$COUCHDB_USER:$COUCHDB_PASSWORD@$DB_HOST:$DB_PORT/_global_changes
-echo "Creating _metadata database"
-curl --silent -X PUT $DB_PROTOCOL://$COUCHDB_USER:$COUCHDB_PASSWORD@$DB_HOST:$DB_PORT/_metadata
-echo "Creating _replicator database"
-curl --silent -X PUT $DB_PROTOCOL://$COUCHDB_USER:$COUCHDB_PASSWORD@$DB_HOST:$DB_PORT/_replicator
-echo "Creating _users database"
-curl --silent -X PUT $DB_PROTOCOL://$COUCHDB_USER:$COUCHDB_PASSWORD@$DB_HOST:$DB_PORT/_users
 
 # initialize the DB tables for OpenWhisk
 pushd /openwhisk/ansible
