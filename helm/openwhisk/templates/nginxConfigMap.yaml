@@ -51,7 +51,7 @@ data:
         proxy_ssl_verify off;
 
         # Hack to convince nginx to dynamically resolve the dns entries.
-        resolver kube-dns.kube-system;
+        resolver {{ .Values.k8s.dns }};
         set $controllers {{ include "controller_host" . }};
 {{- if or (eq .Values.whisk.ingress.type "NodePort") (eq .Values.whisk.ingress.type "LoadBalancer") }}
         set $apigw {{ include "apigw_host" . }};
