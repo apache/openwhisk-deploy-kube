@@ -18,7 +18,7 @@
 # to enable them.
 
 
-# Overall configuration of the deployment
+# Overall configuration of OpenWhisk deployment
 whisk:
   # Ingress defines how to access OpenWhisk from outside the Kubernetes cluster.
   # See docs/ingress.md for a discussion of how to provide these values.
@@ -38,6 +38,11 @@ whisk:
   runtimes: "runtimes.json"
   loadbalancer:
     invokerUserMemory: "2048m"
+
+# Properties of the Kubernetes cluster on which OpenWhisk is being deployed
+k8s:
+  domain: cluster.local
+  dns: kube-dns.kube-system
 
 # Images used to run auxillary tasks/jobs
 utility:
@@ -217,6 +222,3 @@ affinity:
   edgeNodeLabel: edge
   invokerNodeLabel: invoker
   providerNodeLabel: provider
-
-k8s:
-  domain: cluster.local

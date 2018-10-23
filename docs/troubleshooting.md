@@ -24,7 +24,7 @@ deploying OpenWhisk on Kubernetes and how to correct them.
 
 Verify that you actually have at least one node with the label openwhisk-role=invoker.
 
-### Invokers containers fail to start with volume mounting problems
+### Invoker pods fail to start with volume mounting problems
 
 To execute the containers for user actions, OpenWhisk relies on part
 of the underlying infrastructure that Kubernetes is running on. When
@@ -74,3 +74,16 @@ If you installed self-signed certificates, which is the default
 for the OpenWhisk Helm chart, you will need to use `wsk -i` to
 suppress certificate checking.  This works around `cannot validate
 certificate` errors from the `wsk` CLI.
+
+### nginx pod fails with `host not found in resolver` error
+
+The nginx config map specifies a resolver that is used to resolve references to
+Kubernetes services like the controller and apigateway into ip addresses. By default,
+it uses `kube-dns.kube-system`. If your cluster instead uses `coredns` (or some other
+dns subsystem), you will need to edit the `k8s.dns` entry in values.yaml to
+an appropriate value for your cluster.  A misconfigured resolver will results in
+the nginx pod entering a CrashLoopBackOff with an error message like the one below:
+```
+018/09/27 23:33:48 [emerg] 1#1: host not found in resolver "kube-dns.kube-system" in /etc/nginx/nginx.conf:41
+nginx: [emerg] host not found in resolver "kube-dns.kube-system" in /etc/nginx/nginx.conf:41
+```
