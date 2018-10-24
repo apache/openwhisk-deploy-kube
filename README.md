@@ -97,8 +97,8 @@ project.  In a nutshell, you can get started by doing
 wget https://cdn.rawgit.com/kubernetes-sigs/kubeadm-dind-cluster/master/fixed/dind-cluster-v1.10.sh
 chmod +x dind-cluster-v1.10.sh
 
-# start the cluster
-./dind-cluster-v1.10.sh up
+# start the cluster. Please note you *must* set `USE_HAIRPIN` to `true`
+USE_HAIRPIN=true ./dind-cluster-v1.10.sh up
 
 # add kubectl directory to your PATH
 export PATH="$HOME/.kubeadm-dind-cluster:$PATH"
