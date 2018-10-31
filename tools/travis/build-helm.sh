@@ -207,8 +207,8 @@ cat > mycluster.yaml <<EOF
 whisk:
   ingress:
     type: NodePort
-    api_host_name: $WSK_HOST
-    api_host_port: $WSK_PORT
+    apiHostName: $WSK_HOST
+    apiHostPort: $WSK_PORT
   runtimes: "runtimes-minimal-travis.json"
 
 invoker:

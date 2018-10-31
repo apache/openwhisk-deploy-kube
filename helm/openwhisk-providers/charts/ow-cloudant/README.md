@@ -60,7 +60,7 @@ If you want to use the `DockerContainerFactory` you can instead attempt to confi
 ```
 # Invoker configurations
 invoker:
-  kube_dns: "<IP_Address_Of_Kube_DNS>"
+  kubeDNS: "<IP_Address_Of_Kube_DNS>"
 ```
 
 ## Install

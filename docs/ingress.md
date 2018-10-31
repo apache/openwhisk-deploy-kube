@@ -25,8 +25,8 @@ are going to deploy available outside of your Kubernetes cluster. When
 you select an ingress method, you are determining what values to use
 for the `whisk.ingress` stanza of your `mycluster.yaml` file that you
 will use in the `helm install` command.  You will need to define
-values for at least `whisk.ingress.type` and `whisk.ingress.api_host_name`
-and `whisk.ingress.api_host_port`.
+values for at least `whisk.ingress.type` and `whisk.ingress.apiHostName`
+and `whisk.ingress.apiHostPort`.
 
 Unfortunately, the exact details of configuring an Ingress can vary
 across cloud providers.  The detailed instructions describe multiple
@@ -61,8 +61,8 @@ Next pick an unassigned port (eg 31001) and define `mycluster.yaml` as
 whisk:
   ingress:
     type: NodePort
-    api_host_name: 192.168.99.100
-    api_host_port: 31001
+    apiHostName: 192.168.99.100
+    apiHostPort: 31001
 
 nginx:
   httpsNodePort: 31001
@@ -81,8 +81,8 @@ Next pick an unassigned port (eg 31001) and define `mycluster.yaml` as
 whisk:
   ingress:
     type: NodePort
-    api_host_name: 192.168.65.3
-    api_host_port: 31001
+    apiHostName: 192.168.65.3
+    apiHostPort: 31001
 
 nginx:
   httpsNodePort: 31001
@@ -106,8 +106,8 @@ Next pick an unassigned port (eg 31001) and define `mycluster.yaml` as
 whisk:
   ingress:
     type: NodePort
-    api_host_name: 10.192.0.3
-    api_host_port: 31001
+    apiHostName: 10.192.0.3
+    apiHostPort: 31001
 
 nginx:
   httpsNodePort: 31001
@@ -126,8 +126,8 @@ Then define `mycluster.yaml` as
 whisk:
   ingress:
     type: NodePort
-    api_host_name: YOUR_WORKERS_PUBLIC_IP_ADDR
-    api_host_port: 31001
+    apiHostName: YOUR_WORKERS_PUBLIC_IP_ADDR
+    apiHostPort: 31001
 
 nginx:
   httpsNodePort: 31001
@@ -145,9 +145,9 @@ parameters from your `mycluster.yaml`. Generically, your
 ```yaml
 whisk:
   ingress:
-    api_host_name: *<domain>*
-    api_host_port: 443
-    api_host_proto: https
+    apiHostName: *<domain>*
+    apiHostPort: 443
+    apiHostProto: https
     type: standard
     domain: *<domain>*
     tls:
@@ -195,9 +195,9 @@ Now define `mycluster.yaml` as below (substituting the real values for
 ```yaml
 whisk:
   ingress:
-    api_host_name: <domain>
-    api_host_port: 443
-    api_host_proto: https
+    apiHostName: <domain>
+    apiHostPort: 443
+    apiHostProto: https
     type: standard
     domain: <domain>
     tls:
@@ -249,9 +249,9 @@ Now define `mycluster.yaml` as below:
 ```yaml
 whisk:
   ingress:
-    api_host_name: <domain>
-    api_host_port: 443
-    api_host_proto: https
+    apiHostName: <domain>
+    apiHostPort: 443
+    apiHostProto: https
     type: standard
     domain: <domain>
     tls:
