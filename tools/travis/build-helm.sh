@@ -213,6 +213,7 @@ whisk:
 
 invoker:
   containerFactory:
+    dind: true
     impl: $OW_CONTAINER_FACTORY
     kubernetes:
       agent:
