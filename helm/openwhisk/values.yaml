@@ -173,6 +173,7 @@ invoker:
   jvmHeapMB: "512"
   jvmOptions: ""
   containerFactory:
+    dind: false
     useRunc: false
     impl: "docker"
     kubernetes:
