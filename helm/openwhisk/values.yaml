@@ -6,8 +6,8 @@
 # used in the OpenWhisk Helm Chart.  The variables are grouped
 # by component into subtrees.
 #
-# You _MUST_ override the default values of whisk.ingress.api_host_name
-# and whisk.ingress.api_host_port (see docs/ingress.md for a discussion
+# You _MUST_ override the default values of whisk.ingress.apiHostName
+# and whisk.ingress.apiHostPort (see docs/ingress.md for a discussion
 # of how to determine values for these variables).
 #
 # Production deployments _MUST_ override the default credentials
@@ -24,9 +24,9 @@ whisk:
   # See docs/ingress.md for a discussion of how to provide these values.
   ingress:
     name: "ow-ingress"
-    api_host_name: nil
-    api_host_port: nil
-    api_host_proto: "https"
+    apiHostName: nil
+    apiHostPort: nil
+    apiHostProto: "https"
   # Production deployments _MUST_ override these default auth values
   auth:
     system: "789c46b1-71f6-4ed5-8c54-816aa4f8c502:abczO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP"
@@ -184,7 +184,7 @@ invoker:
         enabled: false
         port: 3233
   containerNetwork: "bridge"
-  kube_dns: nil
+  kubeDNS: nil
 
 # API Gateway configurations
 apigw:

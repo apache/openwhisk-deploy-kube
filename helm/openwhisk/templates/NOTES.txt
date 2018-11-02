@@ -14,7 +14,7 @@ and port 443 in the command below:
 $ wsk property set --apihost NGINX_SERVICE_EXTERNAL_IP:443
 {{- else }}
 using the command below:
-  $ wsk property set --apihost {{ .Values.whisk.ingress.api_host_name -}}:{{- .Values.whisk.ingress.api_host_port }}
+  $ wsk property set --apihost {{ .Values.whisk.ingress.apiHostName -}}:{{- .Values.whisk.ingress.apiHostPort }}
 {{- end }}
 
 Your release is named {{ .Release.Name }}.

@@ -194,16 +194,16 @@ file appropriate for a Minikube cluster where `minikube ip` returns
 `192.168.99.100` and port 31001 is available to be used.  If you are
 using Docker for Mac, you can use the same configuration but use the
 command `kubectl describe nodes | grep InternalIP` to determine the
-value for `api_host_name`.  If you are using kubeadm-dind-cluster, use
+value for `apiHostName`.  If you are using kubeadm-dind-cluster, use
 the command `kubectl describe node kube-node-2 | grep InternalIP` to
-determine the value for `api_host_name`.
+determine the value for `apiHostName`.
 
 ```yaml
 whisk:
   ingress:
     type: NodePort
-    api_host_name: 192.168.99.100
-    api_host_port: 31001
+    apiHostName: 192.168.99.100
+    apiHostPort: 31001
 
 nginx:
   httpsNodePort: 31001
@@ -237,10 +237,10 @@ is ready to be used.
 Configure the OpenWhisk CLI, wsk, by setting the auth and apihost
 properties (if you don't already have the wsk cli, follow the
 instructions [here](https://github.com/apache/incubator-openwhisk-cli)
-to get it). Replace `whisk.ingress.api_host_name` and `whisk.ingress.api_host_port`
+to get it). Replace `whisk.ingress.apiHostName` and `whisk.ingress.apiHostPort`
 with the actual values from your mycluster.yaml.
 ```shell
-wsk property set --apihost whisk.ingress.api_host_name:whisk.ingress.api_host_port
+wsk property set --apihost whisk.ingress.apiHostName:whisk.ingress.apiHostPort
 wsk property set --auth 23bc46b1-71f6-4ed5-8c54-816aa4f8c502:123zO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP
 ```
 ### Configuring the CLI for Kubernetes on Docker for Mac
@@ -248,11 +248,11 @@ wsk property set --auth 23bc46b1-71f6-4ed5-8c54-816aa4f8c502:123zO3xZCLrMN6v2BKK
 The `docker0` network interface does not exist in the Docker for Mac
 host environment. Instead, exposed NodePorts are forwarded from localhost
 to the appropriate containers.  This means that you will use `localhost`
-instead of `whisk.ingress.api_host_name` as your apihost when configuring
+instead of `whisk.ingress.apiHostName` as your apihost when configuring
 the `wsk` cli.
 
 ```shell
-wsk property set --apihost localhost:whisk.ingress.api_host_port
+wsk property set --apihost localhost:whisk.ingress.apiHostPort
 wsk property set --auth 23bc46b1-71f6-4ed5-8c54-816aa4f8c502:123zO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP
 ```
 

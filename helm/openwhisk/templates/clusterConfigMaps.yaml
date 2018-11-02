@@ -6,8 +6,8 @@
 #
 {{- if ne .Values.whisk.ingress.type "LoadBalancer" }}
 # whisk.ingress.type is {{ required "You must provide a value for whisk.ingress.type (See docs/ingress.md)" .Values.whisk.ingress.type }}
-# whisk.ingress.api_host_name is {{ required "You must provide a value for whisk.ingress.api_host_name (See docs/ingress.md)" .Values.whisk.ingress.api_host_name }}
-# whisk.ingress.api_host_port is {{ required "You must provide a value for whisk.ingress.api_host_port (See docs/ingress.md)" .Values.whisk.ingress.api_host_port }}
+# whisk.ingress.apiHostName is {{ required "You must provide a value for whisk.ingress.apiHostName (See docs/ingress.md)" .Values.whisk.ingress.apiHostName }}
+# whisk.ingress.apiHostPort is {{ required "You must provide a value for whisk.ingress.apiHostPort (See docs/ingress.md)" .Values.whisk.ingress.apiHostPort }}
 {{- end }}
 
 ---
@@ -28,11 +28,11 @@ data:
   whisk_api_host_nameAndPort: "{{ .Values.nginx.name }}.{{ .Release.Namespace }}.svc.{{ .Values.k8s.domain }}:{{ .Values.nginx.httpsPort }}"
   whisk_api_host_url: "https://{{ .Values.nginx.name }}.{{ .Release.Namespace }}.svc.{{ .Values.k8s.domain }}:{{ .Values.nginx.httpsPort }}"
 {{- else }}
-  whisk_api_host_proto: {{ .Values.whisk.ingress.api_host_proto | quote }}
-  whisk_api_host_port: {{ .Values.whisk.ingress.api_host_port | quote }}
-  whisk_api_host_name: {{ .Values.whisk.ingress.api_host_name | quote }}
-  whisk_api_host_nameAndPort: "{{ .Values.whisk.ingress.api_host_name }}:{{ .Values.whisk.ingress.api_host_port }}"
-  whisk_api_host_url: "{{ .Values.whisk.ingress.api_host_proto }}://{{ .Values.whisk.ingress.api_host_name }}:{{ .Values.whisk.ingress.api_host_port }}"
+  whisk_api_host_proto: {{ .Values.whisk.ingress.apiHostProto | quote }}
+  whisk_api_host_port: {{ .Values.whisk.ingress.apiHostPort | quote }}
+  whisk_api_host_name: {{ .Values.whisk.ingress.apiHostName | quote }}
+  whisk_api_host_nameAndPort: "{{ .Values.whisk.ingress.apiHostName }}:{{ .Values.whisk.ingress.apiHostPort }}"
+  whisk_api_host_url: "{{ .Values.whisk.ingress.apiHostProto }}://{{ .Values.whisk.ingress.apiHostName }}:{{ .Values.whisk.ingress.apiHostPort }}"
 {{- end }}
 
 ---

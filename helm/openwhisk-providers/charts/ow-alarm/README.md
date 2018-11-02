@@ -58,7 +58,7 @@ or you can pass Kubernetes DNS to invoker. First you can get the IP address of K
 ```
 # Invoker configurations
 invoker:
-  kube_dns: "<IP_Address_Of_Kube_DNS>"
+  kubeDNS: "<IP_Address_Of_Kube_DNS>"
 ```
 
 ## Install

@@ -96,9 +96,9 @@ spec:
             value: {{ .Values.whisk.loadbalancer.invokerUserMemory | quote }}
 
           # DNS Server passed to action containers
-{{- if not (eq .Values.invoker.kube_dns "nil") }}
+{{- if not (eq .Values.invoker.kubeDNS "nil") }}
           - name: "CONFIG_whisk_containerFactory_containerArgs_dnsServers_0"
-            value: {{ .Values.invoker.kube_dns }}
+            value: {{ .Values.invoker.kubeDNS }}
 {{ end }}
 
           # Invoker name is the name of the node (DaemonSet) or pod (StatefulSet)
