@@ -59,11 +59,13 @@ whisk:
   containerPool:
     userMemory: "2048m"
   runtimes: "runtimes.json"
+  testing:
+    includeSystemTests: false
   versions:
     openwhisk:
       buildDate: "2018-11-26-16:11:11Z"
       buildNo: "20181126a"
-      gitTag: "7bd49718232d0381b53794f9353c014a1abfef15"
+      gitTag: "83de20ef2b7ef383a5708b59f36ba38e4cc279a8"
     openwhiskCli:
       tag: "8da6e3b"
     openwhiskCatalog:

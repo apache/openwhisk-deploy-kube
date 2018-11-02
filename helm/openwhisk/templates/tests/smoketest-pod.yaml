@@ -21,7 +21,7 @@ spec:
   - name: smoketest
     image: "{{- .Values.utility.imageName -}}:{{- .Values.utility.imageTag -}}"
     imagePullPolicy: {{ .Values.utility.imagePullPolicy | quote }}
-    command: ["/bin/bash", "-c", "set -e; . /task/myTask.sh"]
+    command: ["/bin/bash", "/task/myTask.sh"]
     volumeMounts:
     - name: task-dir
       mountPath: "/task/myTask.sh"
