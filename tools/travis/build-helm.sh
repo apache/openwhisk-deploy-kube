@@ -170,6 +170,8 @@ verifyHealthyInvoker () {
 # Main body of script -- deploy OpenWhisk
 #################
 
+set -x
+
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 ROOTDIR="$SCRIPTDIR/../../"
 
