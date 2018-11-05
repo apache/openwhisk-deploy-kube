@@ -48,9 +48,11 @@ asdf plugin-add minikube
 ```
 
 ## Install minikube and kubectl using asdf.
-We recommend starting with versions of minikube and kubectl that match
-what we test in TravisCI. After you have experience with OpenWhisk on
-Minikube, feel free to experiment with additional versions.
+
+We recommend starting a combination of minikube 0.28.2 and kubectl
+1.10.5 that are known to work for running OpenWhisk.  After you have
+experience with OpenWhisk on Minikube, feel free to experiment with
+additional versions.
 
 ```
 asdf install kubectl 1.10.5

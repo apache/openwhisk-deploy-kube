@@ -23,109 +23,76 @@
 [![Build Status](https://travis-ci.org/apache/incubator-openwhisk-deploy-kube.svg?branch=master)](https://travis-ci.org/apache/incubator-openwhisk-deploy-kube)
 [![Join Slack](https://img.shields.io/badge/join-slack-9B69A0.svg)](http://slack.openwhisk.org/)
 
-This repository can be used to deploy OpenWhisk to a Kubernetes cluster.
+This repository can be used to deploy OpenWhisk to Kubernetes.
+It contains Helm charts, documentation, and supporting
+configuration files and scripts that can be used to deploy OpenWhisk
+to both single-node and multi-node Kubernetes clusters.
 
 # Table of Contents
 
-* [Setting up Kubernetes and Helm](#setting-up-kubernetes-and-helm)
+* [Prerequisites: Kubernetes and Helm](#prerequisites-kubernetes-and-helm)
 * [Deploying OpenWhisk](#deploying-openwhisk)
 * [Deploying OpenWhisk Providers](#deploying-openwhisk-providers)
 * [Development and Testing](#development-and-testing)
 * [Cleanup](#cleanup)
 * [Issues](#issues)
 
-# Setting up Kubernetes and Helm
+# Prerequisites: Kubernetes and Helm
+
+[Kubernetes](https://kubernetes.io/) is a container orchestration
+platform that automates the deployment, scaling, and management of
+containerized applications. [Helm](https://helm.sh/) is a package
+manager for Kubernetes that simplifies the management of Kubernetes
+applications. You do not need to be an expert on either Kubernetes or
+Helm to use this project, but you may find it useful to review their
+overview documentation at the links above to become familiar with
+their key concepts and terminology.
 
 ## Kubernetes
 
-### Requirements
+Your first step is to create a Kubernetes cluster that is capable of
+supporting an OpenWhisk deployment. Although there are some [technical
+requirements](docs/k8s-technical-requirements.md) that the Kubernetes
+cluster must satisfy, any of the options described below is
+acceptable.
 
-Several requirements must be met for OpenWhisk to deploy on Kubernetes.
-* [Kubernetes](https://github.com/kubernetes/kubernetes) version 1.9+. However, version 1.9.4 will not work for OpenWhisk due to a bug with volume mount subpaths (see[[kubernetes-61076](https://github.com/kubernetes/kubernetes/issues/61076)]). This bug will surface as a failure when deploying the nginx container.
-* The ability to create Ingresses to make a Kubernetes service available outside of the cluster so you can actually use OpenWhisk.
-* If you enable persistence (see [docs/configurationChoices.md](./docs/configurationChoices.md)), either your cluster is configured to support [Dynamic Volume Provision](https://kubernetes.io/docs/concepts/storage/dynamic-provisioning/) or you must manually create any necessary PersistentVolumes when deploying the Helm chart.
-* Endpoints of Kubernetes services must be able to loopback to themselves (the kubelet's `hairpin-mode` must not be `none`).
+### Simple Docker-based options
 
-### Using Kubernetes in Docker for Mac
-
-If you are using a Mac as your development machine, the simplest way
-to get a Kubernetes cluster for local development is to use the
-built-in support for running a single node Kubernetes cluster that is
-available in Docker 18.06 and later.  This will let you use Helm to
-deploy Apache OpenWhisk to Kubernetes on your laptop without needing
-to install Minikube or otherwise run inside a virtual machine.
-
-Step-by-step instructions on enabling Kubernetes in Docker are
-available as part of the
-[Getting started](https://docs.docker.com/docker-for-mac/#kubernetes)
-documentation from Docker.
-
-In a nutshell, open the Docker preferences window, switch to the
-`Advanced` panel and make sure you have at least 4GB of Memory
-allocated to Docker. Then switch to the Kubernetes panel, and check
-the box to enable Kubernetes. It is recommended that you use the
-`kubectl` cli that is installed by Docker in `/usr/local/bin`, so
-please make sure it is appears in your path before any `kubectl` you
-might also have installed on your machine.  Finally, pick the
-`docker-for-desktop` config for `kubectl` by executing the command
-`kubectl config use-context docker-for-desktop`.
-
-One nice feature of using Kubernetes in Docker, is that the
-containers being run in Kubernetes are also directly
-visible/accessible via the usual Docker commands. Furthermore, it is
-straightforward to deploy local images by adding a stanza to your
-mycluster.yaml. For example, to use a locally built controller image,
-just add the stanza below to your `mycluster.yaml` to override the default
-behavior of pulling `openwhisk/controller:latest` from Docker Hub.
-```yaml
-controller:
-  image: "whisk/controller"
-  imagePullPolicy: "IfNotPresent"
-```
-
-NOTE: Docker for Windows 18.06 and later has similar built-in support
-for Kubernetes. We would be interested in any experience using it to
-run Apache OpenWhisk on the Windows platform.
-
-### Using kubeadm-dind-cluster
-On Linux, you can get a similar experience to using Kubernetes in
-Docker for Mac via the
-[kubeadm-dind-cluster](https://github.com/kubernetes-sigs/kubeadm-dind-cluster)
-project.  In a nutshell, you can get started by doing
-```shell
-# Get the script for the Kubernetes version you want
-wget https://cdn.rawgit.com/kubernetes-sigs/kubeadm-dind-cluster/master/fixed/dind-cluster-v1.10.sh
-chmod +x dind-cluster-v1.10.sh
-
-# start the cluster. Please note you *must* set `USE_HAIRPIN` to `true`
-USE_HAIRPIN=true ./dind-cluster-v1.10.sh up
-
-# add kubectl directory to your PATH
-export PATH="$HOME/.kubeadm-dind-cluster:$PATH"
-```
-
-Our TravisCI testing uses kubeadm-dind-cluster.sh on an ubuntu 16.04
-host.  The `fixed` `dind-cluster` scripts for Kubernetes version 1.10
-and 1.11 are known to work for deploying OpenWhisk.
+The simplest way to get a small Kubernetes cluster suitable for
+development and testing is to use one of the Docker-in-Docker
+approaches for running Kubernetes directly on top of Docker on your
+development machine. Depending on your host operating system, we
+recommend the following:
+1. MacOS: Use the built-in Kubernetes support in Docker for Mac
+version 18.06 or later. Please follow our
+[setup instructions](docs/k8s-docker-for-mac.md) to initially create
+your cluster.
+2. Linux: Use kubeadm-dind-cluster, but carefully follow our
+[setup instructions](docs/k8s-dind-cluster.md) because the default
+setup of kubeadm-dind-cluster does *not* meet the requirements for
+running OpenWhisk.
+3. Windows: We believe that just like with MacOS, the built-in
+Kubernetes support in Docker for Windows version 18.06 or later should
+be sufficient to run OpenWhisk.  We would welcome a pull request with
+provide detailed setup instructions for Windows.
 
 ### Using Minikube
 
-If you are on Linux and do not want to use kubeadm-dind-cluster, then
-an alternative for local development and testing, is using Minikube
-with the docker network in promiscuous mode.  However not all
-combinations of Minikube and Kubernetes versions will work for running
-OpenWhisk. Some known good combinations are:
-
-| Kubernetes Version | Minikube Version |
---- | --- |
-1.9.0 | 0.25.2 |
-1.10.5 | 0.28.2 |
-
-For details on setting up Minikube, see these [instructions](docs/minikube.md).
+Minikube provides a Kubernetes cluster running inside a virtual
+machine (for example VirtualBox). It can be used on MacOS, Linux, or
+Windows to run OpenWhisk, but is somewhat more finicky than the
+docker-in-docker options described above. For details on setting up
+Minikube, see these [instructions](docs/k8s-minikube.md).
 
 ### Using a Kubernetes cluster from a cloud provider
 
-You can also provision a Kubernetes cluster from a cloud provider, subject to the cluster meeting the requirements above.
+You can also provision a Kubernetes cluster from a cloud provider,
+subject to the cluster meeting the [technical
+requirements]([docs/k8s-technical-requirements.md).  Managed
+Kubernetes services from IBM (IKS), Google (GKE), and Amazon (EKS) are
+known to work for running OpenWhisk and are all documented and
+supported by this project.  We would welcome contributions of
+documentation for Azure (AKS) and any other public cloud providers.
 
 ## Helm
 
@@ -146,6 +113,9 @@ kubectl create clusterrolebinding tiller-cluster-admin --clusterrole=cluster-adm
 ```
 
 # Deploying OpenWhisk
+
+Now that you have your Kubernetes cluster and have installed and
+initialized Helm, you are ready to deploy OpenWhisk.
 
 ## Overview
 
@@ -187,16 +157,65 @@ $ kubectl label nodes <INVOKER_NODE_NAME> openwhisk-role=invoker
 
 ## Customize the Deployment
 
-You will need to create a mycluster.yaml file that records how the
-OpenWhisk deployment on your cluster will be accessed by clients.  See
-the [ingress discussion](./docs/ingress.md) for details. Below is a sample
-file appropriate for a Minikube cluster where `minikube ip` returns
-`192.168.99.100` and port 31001 is available to be used.  If you are
-using Docker for Mac, you can use the same configuration but use the
-command `kubectl describe nodes | grep InternalIP` to determine the
-value for `apiHostName`.  If you are using kubeadm-dind-cluster, use
-the command `kubectl describe node kube-node-2 | grep InternalIP` to
-determine the value for `apiHostName`.
+You must create a `mycluster.yaml` file to record key aspects of your
+Kubernetes cluster that are needed to configure the deployment of
+OpenWhisk to your cluster. Most of the needed configuration is related
+to networking and is described in the [ingress discussion](./docs/ingress.md).
+
+Beyond specifying the ingress, the `mycluster.yaml` file is also used
+to customize your OpenWhisk deployment by enabling optional features
+and controlling the replication factor of the various microservices
+that make up the OpenWhisk implementation. See the [configuration
+choices documentation](./docs/configurationChoices.md) for a
+discussion of the primary options.
+
+### Sample mycluster.yaml for Docker for Mac
+
+Here is a sample file for a Docker for Mac deployment where
+`kubectl describe nodes | grep InternalIP` returns 192.168.65.3 and port 31001 is available to
+be used on your host machine.
+```yaml
+whisk:
+  ingress:
+    type: NodePort
+    apiHostName: 192.168.65.3
+    apiHostPort: 31001
+
+nginx:
+  httpsNodePort: 31001
+```
+
+### Sample mycluster.yaml for kubeadm-dind-cluster.sh
+
+Here is a sample file for a kubeadm-dind-cluster where `kubectl describe node kube-node-1 |
+grep InternalIP` returns 10.192.0.3 and port 31001 is available to
+be used on your host machine.
+```yaml
+whisk:
+  ingress:
+    type: NodePort
+    apiHostName: 10.192.0.3
+    apiHostPort: 31001
+
+nginx:
+  httpsNodePort: 31001
+
+invoker:
+  containerFactory:
+    dind: true
+```
+
+Note the addition of setting `invoker.containerFactory.dind` to `true`.
+This is required; failure to override the default of `false` inherited
+from `helm/openwhisk/values.yaml` will result in a deployment
+of OpenWhisk with no healthy invokers (and thus a deployment that
+will not execute any user actions).
+
+### Sample mycluster.yaml for Minikube
+
+Here is a sample file appropriate for a Minikube cluster where
+`minikube ip` returns `192.168.99.100` and port 31001 is available to
+be used on your host machine.
 
 ```yaml
 whisk:
@@ -208,13 +227,6 @@ whisk:
 nginx:
   httpsNodePort: 31001
 ```
-
-Beyond specifying the ingress, the `mycluster.yaml` file is also used
-to customize your OpenWhisk deployment by enabling optional features
-and controlling the replication factor of the various microservices
-that make up the OpenWhisk implementation. See the [configuration
-choices documentation](./docs/configurationChoices.md) for a
-discussion of the primary options.
 
 ## Deploy With Helm
 
@@ -322,11 +334,11 @@ launch the tests:
 
 ### Deploying a locally built docker image.
 
-By overriding the default `image` and `imagePullPolicy` for one or
-more OpenWhisk components, you can run locally built docker images.
-For example, to use a locally built controller image, just add the
-stanza below to your `mycluster.yaml` to override the default behavior
-of pulling `openwhisk/controller:latest` from Docker Hub.
+If you are using Kubernetes in Docker, it is
+straightforward to deploy local images by adding a stanza to your
+mycluster.yaml. For example, to use a locally built controller image,
+just add the stanza below to your `mycluster.yaml` to override the default
+behavior of pulling `openwhisk/controller:latest` from Docker Hub.
 ```yaml
 controller:
   image: "whisk/controller"
