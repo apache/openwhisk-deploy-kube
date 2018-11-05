@@ -121,6 +121,7 @@
                     "attachmentName": "jarfile",
                     "attachmentType": "application/java-archive"
                 },
+                "sentinelledLogs": false,
                 "requireMain": true
             }
         ],
