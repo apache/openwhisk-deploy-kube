@@ -205,8 +205,8 @@ invoker:
     dind: true
 ```
 
-Note the addition of setting `invoker.containerFactory.dind` to `true`.
-This is required; failure to override the default of `false` inherited
+Note the stanza setting `invoker.containerFactory.dind` to `true`.
+This stanza is required; failure to override the default of `false` inherited
 from `helm/openwhisk/values.yaml` will result in a deployment
 of OpenWhisk with no healthy invokers (and thus a deployment that
 will not execute any user actions).
