@@ -2,15 +2,6 @@
     "runtimes": {
         "nodejs": [
             {
-                "kind": "nodejs",
-                "image": {
-                    "prefix": "openwhisk",
-                    "name": "nodejsaction",
-                    "tag": "latest"
-                },
-                "deprecated": true
-            },
-            {
                 "kind": "nodejs:6",
                 "default": true,
                 "image": {
@@ -19,10 +10,16 @@
                     "tag": "latest"
                 },
                 "deprecated": false,
-                "stemCells": [{
-                    "count": 2,
-                    "memory": "256 MB"
-                }]
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                },
+                "stemCells": [
+                    {
+                        "count": 2,
+                        "memory": "256 MB"
+                    }
+                ]
             },
             {
                 "kind": "nodejs:8",
@@ -32,7 +29,11 @@
                     "name": "action-nodejs-v8",
                     "tag": "latest"
                 },
-                "deprecated": false
+                "deprecated": false,
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                }
             }
         ],
         "python": [
@@ -43,7 +44,11 @@
                     "name": "python2action",
                     "tag": "latest"
                 },
-                "deprecated": false
+                "deprecated": false,
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                }
             },
             {
                 "kind": "python:2",
@@ -53,7 +58,11 @@
                     "name": "python2action",
                     "tag": "latest"
                 },
-                "deprecated": false
+                "deprecated": false,
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                }
             },
             {
                 "kind": "python:3",
@@ -62,7 +71,11 @@
                     "name": "python3action",
                     "tag": "latest"
                 },
-                "deprecated": false
+                "deprecated": false,
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                }
             }
         ],
         "swift": [
@@ -73,7 +86,11 @@
                     "name": "action-swift-v3.1.1",
                     "tag": "latest"
                 },
-                "deprecated": false
+                "deprecated": false,
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                }
             },
             {
                 "kind": "swift:4.1",
@@ -83,7 +100,11 @@
                     "name": "action-swift-v4.1",
                     "tag": "latest"
                 },
-                "deprecated": false
+                "deprecated": false,
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                }
             }
         ],
         "java": [
@@ -100,19 +121,36 @@
                     "attachmentName": "jarfile",
                     "attachmentType": "application/java-archive"
                 },
-                "sentinelledLogs": false,
                 "requireMain": true
             }
         ],
         "php": [
             {
                 "kind": "php:7.1",
-                "default": true,
+                "default": false,
                 "deprecated": false,
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-php-v7.1",
                     "tag": "latest"
+                },
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                }
+            },
+            {
+                "kind": "php:7.2",
+                "default": true,
+                "deprecated": false,
+                "image": {
+                    "prefix": "openwhisk",
+                    "name": "action-php-v7.2",
+                    "tag": "latest"
+                },
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
                 }
             }
         ],
@@ -121,6 +159,10 @@
                 "kind": "ruby:2.5",
                 "default": true,
                 "deprecated": false,
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                },
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-ruby-v2.5",
@@ -133,6 +175,10 @@
                 "kind": "go:1.11",
                 "default": true,
                 "deprecated": false,
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                },
                 "image": {
                     "prefix": "openwhisk",
                     "name": "actionloop-golang-v1.11",
