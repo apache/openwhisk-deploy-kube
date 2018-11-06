@@ -1,0 +1,17 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more contributor
+# license agreements; and to You under the Apache License, Version 2.0.
+
+{{- if ne .Values.cloudantprovider.persistence.storageClass "none" }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.cloudantprovider.persistence.pvcName | quote }}
+  namespace: {{ .Release.Namespace | quote }}
+spec:
+  storageClassName: {{ .Values.cloudantprovider.persistence.storageClass }}
+  accessModes:
+    - {{ .Values.cloudantprovider.persistence.accessMode }}
+  resources:
+    requests:
+      storage: {{ .Values.cloudantprovider.persistence.size }}
+{{- end }}

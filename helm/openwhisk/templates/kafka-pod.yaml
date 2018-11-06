@@ -1,20 +1,7 @@
 # Licensed to the Apache Software Foundation (ASF) under one or more contributor
 # license agreements; and to You under the Apache License, Version 2.0.
+
 {{ if not .Values.kafka.external }}
-
-apiVersion: v1
-kind: Service
-metadata:
-  name: {{ .Values.kafka.name | quote }}
-  namespace: {{ .Release.Namespace | quote }}
-spec:
-  ports:
-  - name: broker
-    port: {{ .Values.kafka.port }}
-  selector:
-    name: {{ .Values.kafka.name | quote }}
-
----
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -79,20 +66,4 @@ spec:
         # zookeeper info
         - name: "KAFKA_ZOOKEEPER_CONNECT"
           value: "{{ include "zookeeper_connect" . }}"
-
-{{- if .Values.kafka.persistence.enabled }}
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: {{ .Values.kafka.persistence.pvcName | quote }}
-  namespace: {{ .Release.Namespace | quote }}
-spec:
-  storageClassName: {{ .Values.kafka.persistence.storageClass }}
-  accessModes:
-    - {{ .Values.kafka.persistence.accessMode }}
-  resources:
-    requests:
-      storage: {{ .Values.kafka.persistence.size }}
-{{- end }}
 {{- end }}

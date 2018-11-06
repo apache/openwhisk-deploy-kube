@@ -1,0 +1,19 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more contributor
+# license agreements; and to You under the Apache License, Version 2.0.
+
+{{ if not .Values.db.external }}
+{{- if .Values.db.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.db.persistence.pvcName | quote }}
+  namespace: {{ .Release.Namespace | quote }}
+spec:
+  storageClassName: {{ .Values.db.persistence.storageClass }}
+  accessModes:
+    - {{ .Values.db.persistence.accessMode }}
+  resources:
+    requests:
+      storage: {{ .Values.db.persistence.size }}
+{{- end }}
+{{ end }}

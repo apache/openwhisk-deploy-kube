@@ -1,11 +1,10 @@
 # Licensed to the Apache Software Foundation (ASF) under one or more contributor
 # license agreements; and to You under the Apache License, Version 2.0.
 
----
 {{- if eq .Values.invoker.containerFactory.impl "docker" }}
 apiVersion: apps/v1
 kind: DaemonSet
-{{- else if eq .Values.invoker.containerFactory.impl "kubernetes" -}}
+{{- else if eq .Values.invoker.containerFactory.impl "kubernetes" }}
 apiVersion: apps/v1
 kind: StatefulSet
 {{- end }}
@@ -155,64 +154,3 @@ spec:
         volumeMounts:
 {{ include "docker_volume_mounts" . | indent 8 }}
 {{- end }}
-
-{{ if .Values.invoker.containerFactory.kubernetes.agent.enabled }}
----
-apiVersion: apps/v1
-kind: DaemonSet
-metadata:
-  name: {{ .Values.invoker.containerFactory.kubernetes.agent.name | quote }}
-  namespace: {{ .Release.Namespace | quote }}
-  labels:
-    name: {{ .Values.invoker.containerFactory.kubernetes.agent.name | quote }}
-spec:
-  selector:
-    matchLabels:
-      name: {{ .Values.invoker.containerFactory.kubernetes.agent.name | quote }}
-  template:
-    metadata:
-      labels:
-        name: {{ .Values.invoker.containerFactory.kubernetes.agent.name | quote }}
-    spec:
-      restartPolicy: Always
-      hostNetwork: true
-
-      affinity:
-{{ include "affinity.invoker" . | indent 8 }}
-
-      volumes:
-{{ include "docker_volumes" . | indent 6 }}
-      - name: userlogs
-        emptyDir: {}
-      - name: task-dir
-        configMap:
-          name: docker-pull-runtimes
-
-      initContainers:
-      # Pull images for all default runtimes before starting invoker
-{{ include "docker_pull_runtimes" . | indent 6 }}
-
-      containers:
-      - name: {{ .Values.invoker.containerFactory.kubernetes.agent.name | quote }}
-        imagePullPolicy: {{ .Values.invoker.imagePullPolicy | quote }}
-        image: {{ .Values.invoker.containerFactory.kubernetes.agent.image }}
-        securityContext:
-          privileged: true
-        ports:
-        - name: agent
-          containerPort: {{ .Values.invoker.containerFactory.kubernetes.agent.port }}
-        volumeMounts:
-{{ include "docker_volume_mounts" . | indent 8 }}
-        - name: userlogs
-          mountPath: "/action-logs"
-{{- end }}
-
-
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: docker-pull-runtimes
-  namespace: {{ .Release.Namespace | quote }}
-data:
-{{ (.Files.Glob "configMapFiles/dockerPullRuntimes/playbook.yml").AsConfig | indent 2 }}
