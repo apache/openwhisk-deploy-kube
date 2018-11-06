@@ -29,7 +29,7 @@ the Kubernetes cluster is run within another VM, Minikube is slightly
 more resource intensive and slightly less flexible than some of the
 other docker-in-docker based approaches to running Kubernetes.
 
-## Initial Setup
+## Initial Minikube Setup
 
 New versions of Minikube and Kubernetes are released fairly
 frequently.  Over time, you will probably end up needing to have

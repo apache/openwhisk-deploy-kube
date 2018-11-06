@@ -17,6 +17,9 @@
 #
 -->
 
+# Using Kubernetes in Docker for Mac for OpenWhisk
+
+## Overview
 
 If you are using a Mac as your development machine, the simplest way
 to get a Kubernetes cluster for local development is to use the
@@ -25,9 +28,13 @@ available in Docker 18.06 and later.  This will let you use Helm to
 deploy Apache OpenWhisk to Kubernetes on your laptop without needing
 to install Minikube or otherwise run inside a virtual machine.
 
+## Initial setup
+
+### Creating the Kubernetes Cluster
+
 Step-by-step instructions on enabling Kubernetes in Docker are
 available as part of the
-[Getting started](https://docs.docker.com/docker-for-mac/#kubernetes)
+[Getting started](https://docs.docker.com/docker-for-mac/#Kubernetes)
 documentation from Docker.
 
 In a nutshell, open the Docker preferences window, switch to the
@@ -39,6 +46,25 @@ please make sure it is appears in your path before any `kubectl` you
 might also have installed on your machine.  Finally, pick the
 `docker-for-desktop` config for `kubectl` by executing the command
 `kubectl config use-context docker-for-desktop`.
+
+### Configuring OpenWhisk
+
+You will be using a NodePort ingress to access OpenWhisk. Assuming
+`kubectl describe nodes | grep InternalIP` returns 192.168.65.3 and
+port 31001 is available to be used on your host machine, you can add
+the following stanzas of to your mycluster.yaml:
+```yaml
+whisk:
+  ingress:
+    type: NodePort
+    apiHostName: 192.168.65.3
+    apiHostPort: 31001
+
+nginx:
+  httpsNodePort: 31001
+```
+
+## Hints and Tips
 
 One nice feature of using Kubernetes in Docker, is that the
 containers being run in Kubernetes are also directly
@@ -52,3 +78,17 @@ controller:
   image: "whisk/controller"
   imagePullPolicy: "IfNotPresent"
 ```
+
+## Limitations
+
+Using Kubernetes in Docker for Mac is only appropriate for development
+and testing purposes.  It is not recommended for production
+deployments of OpenWhisk.
+
+The docker network is not exposed to the host on MacOS. However, the
+exposed ports for NodePort services are forwarded from localhost.
+Therefore you must use different host names to connect to OpenWhisk
+from outside the cluster (with the `wsk` cli) and from inside the
+cluster (in `mycluster.yaml`).  Continuing the example from above,
+when setting the `--apihost` for the `wsk` cli, you would use
+`localhost:31001`.

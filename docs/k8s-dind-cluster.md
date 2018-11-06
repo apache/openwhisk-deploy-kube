@@ -87,7 +87,7 @@ invoker:
 ```
 
 You will be using a NodePort ingress to access OpenWhisk. Assuming
-`kubectl describe node kube-node-1 | grep InternalIP` returns 10.192.0.3
+w`kubectl describe node kube-node-1 | grep InternalIP` returns 10.192.0.3
 and port 31001 is available to be used on your host machine, you can
 add the following stanzas of to your mycluster.yaml:
 ```yaml
