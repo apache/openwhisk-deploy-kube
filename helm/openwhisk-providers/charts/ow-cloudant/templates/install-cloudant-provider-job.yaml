@@ -79,11 +79,3 @@ spec:
           {{ end }}
           - name: "DB_PREFIX"
             value: {{ .Values.cloudantprovider.db.prefix | default "cldt" | quote }}
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: install-package-cloudant
-  namespace: {{ .Release.Namespace | quote }}
-data:
-{{ (.Files.Glob "configMapFiles/myTask.sh").AsConfig | indent 2 }}

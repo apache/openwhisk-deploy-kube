@@ -10,7 +10,6 @@
 # whisk.ingress.apiHostPort is {{ required "You must provide a value for whisk.ingress.apiHostPort (See docs/ingress.md)" .Values.whisk.ingress.apiHostPort }}
 {{- end }}
 
----
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -34,21 +33,3 @@ data:
   whisk_api_host_nameAndPort: "{{ .Values.whisk.ingress.apiHostName }}:{{ .Values.whisk.ingress.apiHostPort }}"
   whisk_api_host_url: "{{ .Values.whisk.ingress.apiHostProto }}://{{ .Values.whisk.ingress.apiHostName }}:{{ .Values.whisk.ingress.apiHostPort }}"
 {{- end }}
-
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: db.config
-  namespace: {{ .Release.Namespace | quote }}
-data:
-  db_prefix: {{ .Values.db.dbPrefix | quote }}
-  db_protocol: {{ .Values.db.protocol | quote }}
-  db_provider: {{ .Values.db.provider | quote }}
-  db_host: {{ include "db_host" . | quote }}
-  db_port: {{ .Values.db.port | quote }}
-  db_url: "{{ .Values.db.protocol }}://{{ include "db_host" . }}:{{ .Values.db.port }}"
-  db_host_port: "{{ include "db_host" . }}:{{ .Values.db.port }}"
-  db_whisk_actions: {{ .Values.db.actionsTable | quote }}
-  db_whisk_activations: {{ .Values.db.activationsTable | quote }}
-  db_whisk_auths: {{ .Values.db.authsTable | quote }}

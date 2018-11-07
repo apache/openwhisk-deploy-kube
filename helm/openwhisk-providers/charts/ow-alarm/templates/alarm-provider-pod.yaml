@@ -82,19 +82,3 @@ spec:
         volumeMounts:
           - name: alarm-logs
             mountPath: /logs
-
----
-{{- if ne .Values.alarmprovider.persistence.storageClass "none" }}
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: {{ .Values.alarmprovider.persistence.pvcName | quote }}
-  namespace: {{ .Release.Namespace | quote }}
-spec:
-  storageClassName: {{ .Values.alarmprovider.persistence.storageClass }}
-  accessModes:
-    - {{ .Values.alarmprovider.persistence.accessMode }}
-  resources:
-    requests:
-      storage: {{ .Values.alarmprovider.persistence.size }}
-{{- end }}

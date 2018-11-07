@@ -4,21 +4,21 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: install-package-alarm
+  name: install-package-kafka
   namespace: {{ .Release.Namespace | quote }}
 spec:
   activeDeadlineSeconds: 600
   template:
     metadata:
-      name: install-package-alarm
+      name: install-package-kafka
     spec:
       restartPolicy: Never
       volumes:
       - name: task-dir
         configMap:
-          name: install-package-alarms
+          name: install-package-kafka
       containers:
-      - name: alarmpkginstaller
+      - name: kafkapkginstaller
         image: {{ .Values.utility.scriptRunnerImage | quote }}
         imagePullPolicy: {{ .Values.utility.imagePullPolicy | quote }}
         volumeMounts:
@@ -37,20 +37,20 @@ spec:
               configMapKeyRef:
                 name: whisk.config
                 key: whisk_api_host_nameAndPort
-          {{- if .Values.alarmprovider.db.external }}
+          {{- if .Values.kafkaprovider.db.external }}
           # Config database using the external cloudant instance
           - name: "DB_PROTOCOL"
-            value: {{ .Values.alarmprovider.db.protocol | quote }}
+            value: {{ .Values.kafkaprovider.db.protocol | quote }}
           - name: "DB_HOST"
-            value: {{ .Values.alarmprovider.db.host | quote }}
+            value: {{ .Values.kafkaprovider.db.host | quote }}
           - name: "DB_USERNAME"
-            value: {{ .Values.alarmprovider.db.username | quote }}
+            value: {{ .Values.kafkaprovider.db.username | quote }}
           - name: "DB_PASSWORD"
-            value: {{ .Values.alarmprovider.db.password | quote }}
+            value: {{ .Values.kafkaprovider.db.password | quote }}
           - name: "DB_PORT"
-            value: {{ .Values.alarmprovider.db.port | quote }}
+            value: {{ .Values.kafkaprovider.db.port | quote }}
           {{- else }}
-          # for the database used by alarms package
+          # for the database used by kafka package
           - name: "DB_HOST"
             valueFrom:
               configMapKeyRef:
@@ -78,12 +78,4 @@ spec:
                 key: db_password
           {{ end }}
           - name: "DB_PREFIX"
-            value: "{{- .Values.alarmprovider.db.prefix -}}"
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: install-package-alarms
-  namespace: {{ .Release.Namespace | quote }}
-data:
-{{ (.Files.Glob "configMapFiles/myTask.sh").AsConfig | indent 2 }}
+            value: "{{- .Values.kafkaprovider.db.prefix -}}"

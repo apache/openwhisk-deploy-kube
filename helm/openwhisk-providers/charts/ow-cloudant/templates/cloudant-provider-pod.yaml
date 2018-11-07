@@ -83,19 +83,3 @@ spec:
         volumeMounts:
           - name: cloudant-logs
             mountPath: /logs
-
----
-{{- if ne .Values.cloudantprovider.persistence.storageClass "none" }}
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: {{ .Values.cloudantprovider.persistence.pvcName | quote }}
-  namespace: {{ .Release.Namespace | quote }}
-spec:
-  storageClassName: {{ .Values.cloudantprovider.persistence.storageClass }}
-  accessModes:
-    - {{ .Values.cloudantprovider.persistence.accessMode }}
-  resources:
-    requests:
-      storage: {{ .Values.cloudantprovider.persistence.size }}
-{{- end }}

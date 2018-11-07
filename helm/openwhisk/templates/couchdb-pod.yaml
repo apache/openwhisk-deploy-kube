@@ -2,21 +2,6 @@
 # license agreements; and to You under the Apache License, Version 2.0.
 
 {{ if not .Values.db.external }}
-apiVersion: v1
-kind: Service
-metadata:
-  name: {{ .Values.db.name | quote }}
-  namespace: {{ .Release.Namespace | quote }}
-  labels:
-    name: {{ .Values.db.name | quote }}
-spec:
-  selector:
-    name: {{ .Values.db.name | quote }}
-  ports:
-    - port: {{ .Values.db.port }}
-      name: couchdb
-
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -73,21 +58,4 @@ spec:
           persistentVolumeClaim:
             claimName: {{ .Values.db.persistence.pvcName | quote }}
       {{- end }}
-
-{{- if .Values.db.persistence.enabled }}
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: {{ .Values.db.persistence.pvcName | quote }}
-  namespace: {{ .Release.Namespace | quote }}
-spec:
-  storageClassName: {{ .Values.db.persistence.storageClass }}
-  accessModes:
-    - {{ .Values.db.persistence.accessMode }}
-  resources:
-    requests:
-      storage: {{ .Values.db.persistence.size }}
-{{- end }}
-
 {{ end }}

@@ -47,12 +47,3 @@ spec:
                 key: whisk_system_namespace
           - name: "WHISK_API_GATEWAY_HOST_V2"
             value: "http://$(APIGATEWAY_SERVICE_HOST):$(APIGATEWAY_SERVICE_PORT_API)/v2"
-
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: install-routemgmt
-  namespace: {{ .Release.Namespace | quote }}
-data:
-{{ (.Files.Glob "configMapFiles/installRouteMgmt/myTask.sh").AsConfig | indent 2 }}

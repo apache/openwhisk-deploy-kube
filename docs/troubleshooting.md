@@ -35,7 +35,7 @@ means that the default volume hostPath values assume that the Kubernetes worker
 node image is Ubuntu. If containers fail to start with errors related
 mounting`/sys/fs/cgroup`, `/run/runc`,`/var/lib/docker/containers`, or
 `/var/run/docker.sock`, then you will need to change the corresponding
-value in `helm/templates/invoker.yaml` to match the host operating system
+value in `helm/openwhisk/templates/_invoker-helpers.yaml` to match the host operating system
 running on your Kubernetes worker node.
 
 ### Controller and Invoker cannot connect to Kafka

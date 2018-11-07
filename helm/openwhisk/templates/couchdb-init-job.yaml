@@ -2,7 +2,6 @@
 # license agreements; and to You under the Apache License, Version 2.0.
 
 {{ if .Values.db.wipeAndInit }}
-
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -66,14 +65,4 @@ spec:
               key: db_password
         - name: "NODENAME"
           value: "couchdb0"
-
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: init-couchdb
-  namespace: {{ .Release.Namespace | quote }}
-data:
-{{ (.Files.Glob "configMapFiles/initCouchDB/initdb.sh").AsConfig | indent 2 }}
-
 {{ end }}
