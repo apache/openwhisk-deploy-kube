@@ -6,11 +6,15 @@ kind: Job
 metadata:
   name: install-routemgmt
   namespace: {{ .Release.Namespace | quote }}
+  labels:
+    name: install-routemgmt
 spec:
   activeDeadlineSeconds: 600
   template:
     metadata:
       name: install-routemgmt
+      labels:
+        name: install-routemgmt
     spec:
       restartPolicy: Never
       volumes:
@@ -19,7 +23,7 @@ spec:
           name: install-routemgmt
       initContainers:
       # Wait for a controller to be up so we can perfom our CRUD actions with the CLI
-{{ include "readiness.waitForHealthyInvoker" . | indent 6 }}
+{{ include "openwhisk.readiness.waitForHealthyInvoker" . | indent 6 }}
       containers:
       - name: routemgmt
         image: {{ .Values.utility.scriptRunnerImage | quote }}

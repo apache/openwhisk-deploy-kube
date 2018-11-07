@@ -7,6 +7,9 @@ kind: StatefulSet
 metadata:
   name: {{ .Values.kafka.name | quote }}
   namespace: {{ .Release.Namespace | quote }}
+  labels:
+    name: {{ .Values.kafka.name | quote }}
+{{ include "openwhisk.label_boilerplate" . | indent 4 }}
 spec:
   serviceName: {{ .Values.kafka.name | quote }}
   podManagementPolicy: "Parallel"
@@ -18,13 +21,14 @@ spec:
     metadata:
       labels:
         name: {{ .Values.kafka.name | quote }}
+{{ include "openwhisk.label_boilerplate" . | indent 8 }}
     spec:
       restartPolicy: {{ .Values.kafka.restartPolicy }}
 
       {{- if .Values.affinity.enabled }}
       affinity:
-{{ include "affinity.core" . | indent 8 }}
-{{ include "affinity.selfAntiAffinity" ( .Values.kafka.name | quote ) | indent 8 }}
+{{ include "openwhisk.affinity.core" . | indent 8 }}
+{{ include "openwhisk.affinity.selfAntiAffinity" ( .Values.kafka.name | quote ) | indent 8 }}
       {{- end }}
 
 {{- if .Values.kafka.persistence.enabled }}
@@ -35,7 +39,7 @@ spec:
 {{- end }}
 
       initContainers:
-{{ include "readiness.waitForZookeeper" . | indent 6 }}
+{{ include "openwhisk.readiness.waitForZookeeper" . | indent 6 }}
 
       containers:
       - name: {{ .Values.kafka.name | quote }}
@@ -65,5 +69,5 @@ spec:
 
         # zookeeper info
         - name: "KAFKA_ZOOKEEPER_CONNECT"
-          value: "{{ include "zookeeper_connect" . }}"
+          value: "{{ include "openwhisk.zookeeper_connect" . }}"
 {{- end }}

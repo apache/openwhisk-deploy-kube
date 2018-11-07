@@ -9,6 +9,7 @@ metadata:
   namespace: {{ .Release.Namespace | quote }}
   labels:
     name: {{ .Values.invoker.containerFactory.kubernetes.agent.name | quote }}
+{{ include "openwhisk.label_boilerplate" .| indent 4 }}
 spec:
   selector:
     matchLabels:
@@ -17,15 +18,16 @@ spec:
     metadata:
       labels:
         name: {{ .Values.invoker.containerFactory.kubernetes.agent.name | quote }}
+{{ include "openwhisk.label_boilerplate" . | indent 8 }}
     spec:
       restartPolicy: Always
       hostNetwork: true
 
       affinity:
-{{ include "affinity.invoker" . | indent 8 }}
+{{ include "openwhisk.affinity.invoker" . | indent 8 }}
 
       volumes:
-{{ include "docker_volumes" . | indent 6 }}
+{{ include "openwhisk.docker_volumes" . | indent 6 }}
       - name: userlogs
         emptyDir: {}
       - name: task-dir
@@ -34,7 +36,7 @@ spec:
 
       initContainers:
       # Pull images for all default runtimes before starting invoker
-{{ include "docker_pull_runtimes" . | indent 6 }}
+{{ include "openwhisk.docker_pull_runtimes" . | indent 6 }}
 
       containers:
       - name: {{ .Values.invoker.containerFactory.kubernetes.agent.name | quote }}
@@ -46,7 +48,7 @@ spec:
         - name: agent
           containerPort: {{ .Values.invoker.containerFactory.kubernetes.agent.port }}
         volumeMounts:
-{{ include "docker_volume_mounts" . | indent 8 }}
+{{ include "openwhisk.docker_volume_mounts" . | indent 8 }}
         - name: userlogs
           mountPath: "/action-logs"
 {{- end }}

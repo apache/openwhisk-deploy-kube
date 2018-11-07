@@ -6,11 +6,15 @@ kind: Job
 metadata:
   name: install-catalog
   namespace: {{ .Release.Namespace | quote }}
+  labels:
+    name: install-catalog
 spec:
   activeDeadlineSeconds: 600
   template:
     metadata:
       name: install-catalog
+      labels:
+        name: install-catalog
     spec:
       restartPolicy: Never
       volumes:
@@ -19,7 +23,7 @@ spec:
           name: install-catalog
       initContainers:
       # Wait for a controller to be up so we can perfom our CRUD actions with the CLI
-{{ include "readiness.waitForHealthyInvoker" . | indent 6 }}
+{{ include "openwhisk.readiness.waitForHealthyInvoker" . | indent 6 }}
       containers:
       - name: catalog
         image: {{ .Values.utility.scriptRunnerImage | quote }}

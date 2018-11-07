@@ -8,6 +8,7 @@ metadata:
   namespace: {{ .Release.Namespace | quote }}
   labels:
     name: {{ .Values.nginx.name | quote }}
+{{ include "openwhisk.label_boilerplate" . | indent 4 }}
 spec:
   {{- if eq .Values.whisk.ingress.type "LoadBalancer" }}
   type: LoadBalancer

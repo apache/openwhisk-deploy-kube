@@ -7,6 +7,9 @@ kind: Service
 metadata:
   name: {{ .Values.kafka.name | quote }}
   namespace: {{ .Release.Namespace | quote }}
+  labels:
+    name: {{ .Values.kafka.name | quote }}
+{{ include "openwhisk.label_boilerplate" . | indent 4 }}
 spec:
   ports:
   - name: broker

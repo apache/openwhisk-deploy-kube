@@ -7,11 +7,15 @@ kind: Job
 metadata:
   name: init-couchdb
   namespace: {{ .Release.Namespace | quote }}
+  labels:
+    name: init-couchdb
 spec:
   activeDeadlineSeconds: 600
   template:
     metadata:
       name: init-couchdb
+      labels:
+        name: init-couchdb
     spec:
       restartPolicy: Never
       volumes:

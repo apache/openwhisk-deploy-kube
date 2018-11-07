@@ -8,6 +8,7 @@ metadata:
   namespace: {{ .Release.Namespace | quote }}
   labels:
     name: {{ .Values.apigw.name | quote }}
+{{ include "openwhisk.label_boilerplate" . | indent 4 }}
 spec:
   selector:
     name: {{ .Values.apigw.name | quote }}
