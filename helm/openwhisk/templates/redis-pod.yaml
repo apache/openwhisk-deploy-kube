@@ -54,7 +54,7 @@ spec:
           imagePullPolicy: {{ .Values.redis.imagePullPolicy | quote }}
           image: {{ .Values.redis.image | quote }}
 {{- if .Values.redis.persistence.enabled }}
-         volumeMounts:
+          volumeMounts:
           - mountPath: /data
             name: redis-data
             readOnly: false
