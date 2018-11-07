@@ -88,7 +88,7 @@ Minikube, see these [instructions](docs/k8s-minikube.md).
 
 You can also provision a Kubernetes cluster from a cloud provider,
 subject to the cluster meeting the [technical
-requirements]([docs/k8s-technical-requirements.md).  Managed
+requirements](docs/k8s-technical-requirements.md).  Managed
 Kubernetes services from IBM (IKS), Google (GKE), and Amazon (EKS) are
 known to work for running OpenWhisk and are all documented and
 supported by this project.  We would welcome contributions of
