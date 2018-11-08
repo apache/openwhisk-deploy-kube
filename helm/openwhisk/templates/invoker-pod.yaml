@@ -112,7 +112,7 @@ spec:
 
           # Invoker options
           - name: "INVOKER_OPTS"
-            value: "{{ .Values.invoker.options }} {{ if eq .Values.invoker.containerFactory.impl "docker" }} -Dwhisk.spi.ContainerFactoryProvider=whisk.core.containerpool.docker.DockerContainerFactoryProvider {{ else }} -Dkubernetes.master=https://$KUBERNETES_SERVICE_HOST -Dwhisk.spi.ContainerFactoryProvider=whisk.core.containerpool.kubernetes.KubernetesContainerFactoryProvider {{ end }}"
+            value: "{{ .Values.invoker.options }} {{ if eq .Values.invoker.containerFactory.impl "docker" }} -Dwhisk.spi.ContainerFactoryProvider=org.apache.openwhisk.core.containerpool.docker.DockerContainerFactoryProvider {{ else }} -Dkubernetes.master=https://$KUBERNETES_SERVICE_HOST -Dwhisk.spi.ContainerFactoryProvider=org.apache.openwhisk.core.containerpool.kubernetes.KubernetesContainerFactoryProvider {{ end }}"
 
 {{ if .Values.invoker.containerFactory.kubernetes.agent.enabled }}
           - name: "CONFIG_whisk_kubernetes_invokerAgent_enabled"
