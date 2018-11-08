@@ -24,9 +24,9 @@
 [![Join Slack](https://img.shields.io/badge/join-slack-9B69A0.svg)](http://slack.openwhisk.org/)
 
 This repository can be used to deploy OpenWhisk to Kubernetes.
-It contains Helm charts, documentation, and supporting
-configuration files and scripts that can be used to deploy OpenWhisk
-to both single-node and multi-node Kubernetes clusters.
+It contains Helm charts, documentation, and other supporting artifacts
+that can be used to deploy OpenWhisk to both single-node and
+multi-node Kubernetes clusters.
 
 # Table of Contents
 
@@ -80,19 +80,22 @@ provide detailed setup instructions for Windows.
 
 Minikube provides a Kubernetes cluster running inside a virtual
 machine (for example VirtualBox). It can be used on MacOS, Linux, or
-Windows to run OpenWhisk, but is somewhat more finicky than the
+Windows to run OpenWhisk, but is somewhat less flexible than the
 docker-in-docker options described above. For details on setting up
-Minikube, see these [instructions](docs/k8s-minikube.md).
+Minikube, see these [setup instructions](docs/k8s-minikube.md).
 
 ### Using a Kubernetes cluster from a cloud provider
 
 You can also provision a Kubernetes cluster from a cloud provider,
 subject to the cluster meeting the [technical
-requirements](docs/k8s-technical-requirements.md).  Managed
-Kubernetes services from IBM (IKS), Google (GKE), and Amazon (EKS) are
-known to work for running OpenWhisk and are all documented and
-supported by this project.  We would welcome contributions of
-documentation for Azure (AKS) and any other public cloud providers.
+requirements](docs/k8s-technical-requirements.md).  We have
+detailed documentation on using Kubernetes clusters from the following
+major cloud providers:
+* [IBM (IKS)](docs/k8s-ibm-public.md)
+* [Google (GKE)](docs/k8s-google.md)
+* [Amazon (EKS)](docs/k8s-aws.md)
+
+We would welcome contributions of documentation for Azure (AKS) and any other public cloud providers.
 
 ## Helm
 
@@ -106,7 +109,7 @@ For detailed instructions on installing Helm, see these [instructions](docs/helm
 
 In short if you already have the `helm` cli installed on your development machine,
 you will need to execute these two commands and wait a few seconds for the
-`tiller-deploy` pod to be in the `Running` state.
+`tiller-deploy` pod in the `kube-system` namespace to be in the `Running` state.
 ```shell
 helm init
 kubectl create clusterrolebinding tiller-cluster-admin --clusterrole=cluster-admin --serviceaccount=kube-system:default
@@ -124,7 +127,7 @@ There are four deployment steps that are described in more
 detail below in the rest of this section.
 1. [Initial cluster setup](#initial-setup). You will create a
 Kubernetes namespace into which to deploy OpenWhisk and label the
-Kubernetes worker nodes to be used to execute user actions.
+Kubernetes worker nodes to indicate their intended usage by OpenWhisk.
 2. [Customize the deployment](#customize-the-deployment). You will
 create a `mycluster.yaml` that specifies key facts about your
 Kubernetes cluster and the OpenWhisk configuration you wish to
@@ -155,78 +158,32 @@ you want to be an invoker, execute
 $ kubectl label nodes <INVOKER_NODE_NAME> openwhisk-role=invoker
 ```
 
+For optimal scheduling of pods on a multi-node cluster, you can
+optionally label non-invoker worker nodes with `openwhisk-role=core`
+to indicate nodes which should run the OpenWhisk controller, kafka,
+zookeeeper, etc. and `openwhisk-role=edge` to indicate the node which
+should run the `nginx` frontdoor to OpenWhisk.
+
 ## Customize the Deployment
 
 You must create a `mycluster.yaml` file to record key aspects of your
 Kubernetes cluster that are needed to configure the deployment of
-OpenWhisk to your cluster. Most of the needed configuration is related
-to networking and is described in the [ingress discussion](./docs/ingress.md).
+OpenWhisk to your cluster. For details, see the documentation
+appropriate to your Kubernetes cluster:
+* [Docker for Mac](docs/k8s-docker-for-mac.md#configuring-openwhisk)
+* [kubeadm-dind-cluster](docs/k8s-dind-cluster.md#configuring-openwhisk)
+* [Minikube](docs/k8s-minikube.md#configuring-openwhisk)
+* [IBM (IKS)](docs/k8s-ibm-public.md#configuring-openwhisk)
+* [Google (GKE)](docs/k8s-google.md#configuring-openwhisk)
+* [Amazon (EKS)](docs/k8s-aws.md#configuring-openwhisk)
 
-Beyond specifying the ingress, the `mycluster.yaml` file is also used
+Beyond the Kubernetes cluster specific configuration information,
+the `mycluster.yaml` file is also used
 to customize your OpenWhisk deployment by enabling optional features
 and controlling the replication factor of the various microservices
 that make up the OpenWhisk implementation. See the [configuration
 choices documentation](./docs/configurationChoices.md) for a
 discussion of the primary options.
-
-### Sample mycluster.yaml for Docker for Mac
-
-Here is a sample file for a Docker for Mac deployment where
-`kubectl describe nodes | grep InternalIP` returns 192.168.65.3 and port 31001 is available to
-be used on your host machine.
-```yaml
-whisk:
-  ingress:
-    type: NodePort
-    apiHostName: 192.168.65.3
-    apiHostPort: 31001
-
-nginx:
-  httpsNodePort: 31001
-```
-
-### Sample mycluster.yaml for kubeadm-dind-cluster.sh
-
-Here is a sample file for a kubeadm-dind-cluster where `kubectl describe node kube-node-1 |
-grep InternalIP` returns 10.192.0.3 and port 31001 is available to
-be used on your host machine.
-```yaml
-whisk:
-  ingress:
-    type: NodePort
-    apiHostName: 10.192.0.3
-    apiHostPort: 31001
-
-nginx:
-  httpsNodePort: 31001
-
-invoker:
-  containerFactory:
-    dind: true
-```
-
-Note the stanza setting `invoker.containerFactory.dind` to `true`.
-This stanza is required; failure to override the default of `false` inherited
-from `helm/openwhisk/values.yaml` will result in a deployment
-of OpenWhisk with no healthy invokers (and thus a deployment that
-will not execute any user actions).
-
-### Sample mycluster.yaml for Minikube
-
-Here is a sample file appropriate for a Minikube cluster where
-`minikube ip` returns `192.168.99.100` and port 31001 is available to
-be used on your host machine.
-
-```yaml
-whisk:
-  ingress:
-    type: NodePort
-    apiHostName: 192.168.99.100
-    apiHostPort: 31001
-
-nginx:
-  httpsNodePort: 31001
-```
 
 ## Deploy With Helm
 

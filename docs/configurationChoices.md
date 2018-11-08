@@ -113,33 +113,35 @@ Optionally, if including this chart as a dependency of another chart where kafka
 
 ### Persistence
 
-The couchdb, zookeeper, kafka, and redis microservices can each be
-configured to use persistent volumes to store their data. Enabling
-persistence may allow the system to survive failures/restarts of these
-components without a complete loss of application state. By default,
-none of these services is configured to use persistent volumes.  To
-enable persistence, you can add stanzas like the following to your
-`mycluster.yaml` to enable persistence and to request an appropriately
-sized volume.
+Several of the OpenWhisk components that are deployed by the Helm
+chart utilize PersistentVolumes to store their data.  This enables
+that data to survive failures/restarts of those components without a
+complete loss of application state.  To support this, the
+couchdb, zookeeper, kafka, and redis deployments all generate
+PersistentVolumeClaims that must be satisfied to enable their pods to
+be scheduled.  If your Kubernetes cluster is properly configured to support
+[Dynamic Volume Provision](https://kubernetes.io/docs/concepts/storage/dynamic-provisioning/),
+including having a DefaultStorageClass admission controller and a
+designated default StorageClass, then this will all happen seamlessly.
 
+If your cluster is not properly configured, then you will need to
+manually create the necessary PersistentVolumes when deploying the
+Helm chart. In this case, you should also disable the use of dynamic
+provisioning by the Helm chart by adding the following stanza to your
+mycluster.yaml
 ```yaml
-redis:
+k8s:
   persistence:
-    enabled: true
-    size: 256Mi
-    storageClass: default
+    useDynamicProvisioning: false
 ```
-If you are deploying to `minikube`, use the storageClass `standard`.
-If you are deploying on a managed Kubernetes cluster, check the cloud
-provider's documentation to determine the appropriate `storageClass`
-and `size` to request.
 
-Note that the Helm charts do not explicitly create the
-PersistentVolumes to satisfy the PersistentVolumeClaims they
-instantiate. We assume that either your cluster is configured to
-support [Dynamic Volume Provision](https://kubernetes.io/docs/concepts/storage/dynamic-provisioning/)
-or that you will manually create any necessary PersistentVolumes when
-deploying the Helm chart.
+You may disable persistence entirely by adding the following stanza to
+your mycluster.yaml:
+```
+k8s:
+  persistence:
+    enabled: false
+```
 
 ### Invoker Container Factory
 

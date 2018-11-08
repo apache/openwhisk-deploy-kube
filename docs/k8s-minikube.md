@@ -121,9 +121,8 @@ minikube ssh -- sudo ip link set docker0 promisc on
 
 You will be using a NodePort ingress to access OpenWhisk. Assuming
 `minikube ip` returns `192.168.99.100` and port 31001 is available to
-be used on your host machine,  you can add the following stanzas of to
-your mycluster.yaml:
-
+be used on your host machine, a
+mycluster.yaml for a standard deployment of OpenWhisk would be:
 ```yaml
 whisk:
   ingress:
@@ -140,6 +139,10 @@ nginx:
 Using Minikube is only appropriate for development and testing
 purposes.  It is not recommended for production deployments of
 OpenWhisk.
+
+TLS termination will be handled by OpenWhisk's `nginx` service and
+will use self-signed certificates.  You will need to invoke `wsk` with
+the `-i` command line argument to bypass certificate checking.
 
 You must remember to put the docker network in promiscuous mode via
 ```

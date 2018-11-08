@@ -1,19 +1,19 @@
 # Licensed to the Apache Software Foundation (ASF) under one or more contributor
 # license agreements; and to You under the Apache License, Version 2.0.
 
-{{- if not .Values.kafka.external }}
-{{- if .Values.kafka.persistence.enabled }}
+{{- if and (not .Values.kafka.external) .Values.k8s.persistence.enabled }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: {{ .Values.kafka.persistence.pvcName | quote }}
   namespace: {{ .Release.Namespace | quote }}
 spec:
-  storageClassName: {{ .Values.kafka.persistence.storageClass }}
+{{- if .Values.k8s.persistence.useDynamicProvisioning }}
+  storageClassName: {{ .Values.k8s.persistence.defaultStorageClass }}
+{{- end }}
   accessModes:
-    - {{ .Values.kafka.persistence.accessMode }}
+    - ReadWriteOnce
   resources:
     requests:
       storage: {{ .Values.kafka.persistence.size }}
-{{- end }}
 {{- end }}
