@@ -9,6 +9,7 @@ metadata:
   namespace: {{ .Release.Namespace | quote }}
   labels:
     name: {{ .Values.zookeeper.name | quote }}
+{{ include "openwhisk.label_boilerplate" . | indent 4 }}
 spec:
   selector:
     name: {{ .Values.zookeeper.name | quote }}

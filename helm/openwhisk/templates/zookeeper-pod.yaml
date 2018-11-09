@@ -7,6 +7,9 @@ kind: StatefulSet
 metadata:
   name: {{ .Values.zookeeper.name | quote }}
   namespace: {{ .Release.Namespace | quote}}
+  labels:
+    name: {{ .Values.zookeeper.name | quote }}
+{{ include "openwhisk.label_boilerplate" . | indent 4 }}
 spec:
   serviceName: {{ .Values.zookeeper.name | quote }}
   podManagementPolicy: "Parallel"
@@ -18,13 +21,14 @@ spec:
     metadata:
       labels:
         name: {{ .Values.zookeeper.name | quote }}
+{{ include "openwhisk.label_boilerplate" . | indent 8 }}
     spec:
       restartPolicy: {{ .Values.zookeeper.restartPolicy | quote }}
 
 {{- if .Values.affinity.enabled }}
       affinity:
-{{ include "affinity.core" . | indent 8 }}
-{{ include "affinity.selfAntiAffinity" ( .Values.zookeeper.name | quote ) | indent 8 }}
+{{ include "openwhisk.affinity.core" . | indent 8 }}
+{{ include "openwhisk.affinity.selfAntiAffinity" ( .Values.zookeeper.name | quote ) | indent 8 }}
 {{- end }}
 
       volumes:

@@ -52,9 +52,9 @@ data:
 
         # Hack to convince nginx to dynamically resolve the dns entries.
         resolver {{ .Values.k8s.dns }};
-        set $controllers {{ include "controller_host" . }};
+        set $controllers {{ include "openwhisk.controller_host" . }};
 {{- if or (eq .Values.whisk.ingress.type "NodePort") (eq .Values.whisk.ingress.type "LoadBalancer") }}
-        set $apigw {{ include "apigw_host" . }};
+        set $apigw {{ include "openwhisk.apigw_host" . }};
 {{- end }}
 
 {{- if or (eq .Values.whisk.ingress.type "NodePort") (eq .Values.whisk.ingress.type "LoadBalancer") }}

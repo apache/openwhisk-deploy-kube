@@ -8,6 +8,7 @@ metadata:
   namespace: {{ .Release.Namespace | quote }}
   labels:
     name: {{ .Values.apigw.name | quote }}
+{{ include "openwhisk.label_boilerplate" . | indent 4 }}
 spec:
   replicas: {{ .Values.apigw.replicaCount }}
   selector:
@@ -17,13 +18,14 @@ spec:
     metadata:
       labels:
         name: {{ .Values.apigw.name | quote }}
+{{ include "openwhisk.label_boilerplate" . | indent 8 }}
     spec:
       restartPolicy: {{ .Values.apigw.restartPolicy }}
 
       {{- if .Values.affinity.enabled }}
       affinity:
-{{ include "affinity.core" . | indent 8 }}
-{{ include "affinity.selfAntiAffinity" ( .Values.apigw.name | quote ) | indent 8 }}
+{{ include "openwhisk.affinity.core" . | indent 8 }}
+{{ include "openwhisk.affinity.selfAntiAffinity" ( .Values.apigw.name | quote ) | indent 8 }}
       {{- end }}
 
       containers:
@@ -37,7 +39,7 @@ spec:
             containerPort: {{ .Values.apigw.apiPort }}
           env:
           - name: "REDIS_HOST"
-            value: "{{ include "redis_host" . }}"
+            value: "{{ include "openwhisk.redis_host" . }}"
           - name: "REDIS_PORT"
             value: {{ .Values.redis.port | quote }}
           - name: "PUBLIC_GATEWAY_URL"

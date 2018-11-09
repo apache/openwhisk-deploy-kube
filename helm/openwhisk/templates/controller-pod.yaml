@@ -8,6 +8,7 @@ metadata:
   namespace: {{ .Release.Namespace | quote }}
   labels:
     name: {{ .Values.controller.name | quote }}
+{{ include "openwhisk.label_boilerplate" . | indent 4 }}
 spec:
   serviceName: {{ .Values.controller.name | quote }}
   podManagementPolicy: "Parallel"
@@ -19,20 +20,21 @@ spec:
     metadata:
       labels:
         name: {{ .Values.controller.name | quote }}
+{{ include "openwhisk.label_boilerplate" . | indent 8 }}
     spec:
       serviceAccountName: ow-core
       restartPolicy: {{ .Values.controller.restartPolicy }}
 
       {{- if .Values.affinity.enabled }}
       affinity:
-{{ include "affinity.core" . | indent 8 }}
-{{ include "affinity.selfAntiAffinity" ( .Values.controller.name | quote ) | indent 8 }}
+{{ include "openwhisk.affinity.core" . | indent 8 }}
+{{ include "openwhisk.affinity.selfAntiAffinity" ( .Values.controller.name | quote ) | indent 8 }}
       {{- end }}
 
       initContainers:
       # The controller must wait for kafka and couchdb to be ready before it starts
-{{ include "readiness.waitForKafka" . | indent 6 }}
-{{ include "readiness.waitForCouchDB" . | indent 6 }}
+{{ include "openwhisk.readiness.waitForKafka" . | indent 6 }}
+{{ include "openwhisk.readiness.waitForCouchDB" . | indent 6 }}
 
       containers:
       - name: {{ .Values.controller.name | quote }}
@@ -79,19 +81,19 @@ spec:
 
         # action runtimes
         - name: "RUNTIMES_MANIFEST"
-          value: {{ template "runtimes_manifest" . }}
+          value: {{ template "openwhisk.runtimes_manifest" . }}
 
         - name: "CONFIG_whisk_loadbalancer_invokerUserMemory"
           value: {{ .Values.whisk.loadbalancer.invokerUserMemory | quote }}
 
         # Kafka properties
         - name: "KAFKA_HOSTS"
-          value: "{{ include "kafka_host" . }}:{{ .Values.kafka.port }}"
+          value: "{{ include "openwhisk.kafka_host" . }}:{{ .Values.kafka.port }}"
         - name: "KAFKA_HOST_PORT"
           value: {{ .Values.kafka.port | quote }}
 
         # properties for DB connection
-{{ include "whisk.dbEnvVars" . | indent 8 }}
+{{ include "openwhisk.dbEnvVars" . | indent 8 }}
 
         - name: "LIMITS_ACTIONS_SEQUENCE_MAXLENGTH"
           value: {{ .Values.controller.limits.actionsSequenceMaxlength | quote }}
