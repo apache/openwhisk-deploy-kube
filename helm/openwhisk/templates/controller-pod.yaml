@@ -83,8 +83,11 @@ spec:
         - name: "RUNTIMES_MANIFEST"
           value: {{ template "openwhisk.runtimes_manifest" . }}
 
-        - name: "CONFIG_whisk_loadbalancer_invokerUserMemory"
-          value: {{ .Values.whisk.loadbalancer.invokerUserMemory | quote }}
+        - name: "CONFIG_whisk_loadbalancer_blackboxFraction"
+          value: {{ .Values.whisk.loadbalancer.blackboxFraction | quote }}
+
+        - name: "CONFIG_whisk_loadbalancer_timeoutFactor"
+          value: {{ .Values.whisk.loadbalancer.timeoutFactor | quote }}
 
         # Kafka properties
         - name: "KAFKA_HOSTS"

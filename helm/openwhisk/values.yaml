@@ -37,7 +37,10 @@ whisk:
   systemNameSpace: "/whisk.system"
   runtimes: "runtimes.json"
   loadbalancer:
-    invokerUserMemory: "2048m"
+    blackboxFraction: "10%"
+    timeoutFactor: 2
+  containerPool:
+    userMemory: "2048m"
 
 # Properties of the Kubernetes cluster on which OpenWhisk is being deployed
 k8s:
