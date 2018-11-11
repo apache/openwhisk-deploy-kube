@@ -23,7 +23,7 @@
 
 IBM provides both a "Lite" and a "Standard" Kubernetes offering in its
 public cloud Kubernetes service (IKS). These differ in capabilities,
-so are described separately below.
+so they are described separately below.
 
 ## Initial setup
 

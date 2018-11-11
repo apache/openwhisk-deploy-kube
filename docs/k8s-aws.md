@@ -33,7 +33,7 @@ AWS's Elastic Kubernetes Service (EKS) does not support standard Kubernetes
 ingress.  Instead, it relies on provisioning Elastic Load
 Balancers (ELBs) outside of the EKS cluster to direct traffic to
 exposed services running in the cluster.  Because the `wsk` cli
-expects be able to use TLS to communicate securely with the OpenWhisk
+expects to be able to use TLS to communicate securely with the OpenWhisk
 server, you will first need to ensure that you have a certificate
 available for your ELB instance to use in AWS's IAM service. For
 development and testing purposes, you can use a self-signed
@@ -86,8 +86,8 @@ enabled and manually create the necessary persistent volumes using
 AWS/EKS instructions to do so.
 
 Shortly after you deploy your helm chart, an ELB should be
-automatically created. You will can determine its hostname by issuing
-the command `kubectl get services  -o wide`. Use the value in the
+automatically created. You can determine its hostname by issuing
+the command `kubectl get services -o wide`. Use the value in the
 the EXTERNAL-IP column for the nginx service and port 443 to define
 your wsk apihost.
 
