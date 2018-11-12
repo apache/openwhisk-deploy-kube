@@ -10,4 +10,4 @@ keywords:
 maintainers:
   - name: Apache OpenWhisk committers
     email: dev@openwhisk.apache.org
-tillerVersion: ">=2.10.0"
+tillerVersion: ">=2.9.0"
