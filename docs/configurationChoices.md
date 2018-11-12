@@ -22,6 +22,55 @@ supported by the OpenWhisk Helm chart.  In general, you customize your
 deployment by adding stanzas to `mycluster.yaml` that override default
 values in the `helm/values.yaml` file.
 
+### Deploying Event Providers
+
+OpenWhisk has several standard Event Providers that can be optionally enabled.
+The OpenWhisk Helm Chart currently includes optional support for
+deploying the alarm, cloudant, and kafka providers.
+To deploy a provider, you must add a stanza to your `mycluster.yaml` that enables it,
+for example:
+```yaml
+providers:
+  alarm:
+    enabled: true
+```
+
+The deployment of the event providers is not enabled by default because they
+are not fully functional with OpenWhisk's default
+`DockerContainerFactory` without additional configuration (the issue is that
+user action containers created by the DockerContainerFactory are not configured to
+themselves be able to invoke Kubernetes services). To work around this you must do one
+of the following three alternatives:
+1. Deploy a CouchDB instance external to your Kubernetes cluster and configure the event
+provider(s) to use it by adding stanzas like the following to your `mycluster.yaml`:
+```yaml
+providers:
+  alarm:
+    db:
+      external: true
+      prefix: "alm"
+      host: "0.0.0.0"
+      port: 5984
+      protocol: "http"
+      username: "admin"
+      password: "secret"
+```
+2. Configure the DNS lookup for the user containers created by DockerContainerFactory to
+use Kubernetes's DNS service.  For example, if your cluster uses kube-dns, then first
+get the IP address of Kubernetes DNS server by `echo $(kubectl get svc kube-dns -n kube-system -o 'jsonpath={.spec.clusterIP}')`
+and then add below stanza to your `mycluster.yaml`:
+```yaml
+invoker:
+  kubeDNS: "<IP_Address_Of_Kube_DNS>"
+```
+3. Use the lower performance `KubernetesContainerFactory` by adding the following stanza
+to your `mycluster.yaml`
+```yaml
+invoker:
+  containerFactory:
+    impl: "kubernetes"
+```
+
 ### Replication factor
 
 By default the OpenWhisk Helm Chart will deploy a single replica of each

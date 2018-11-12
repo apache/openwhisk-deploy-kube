@@ -1,50 +1,55 @@
 # Licensed to the Apache Software Foundation (ASF) under one or more contributor
 # license agreements; and to You under the Apache License, Version 2.0.
 
+{{- if .Values.providers.alarm.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.alarmprovider.name | quote }}
-  namespace: {{ .Release.Namespace | quote }}
+  name: {{ .Values.providers.alarm.name | quote }}
   labels:
     name: alarmprovider
+{{ include "openwhisk.label_boilerplate" . | indent 4 }}
 spec:
-  replicas: {{ .Values.alarmprovider.replicaCount }}
+  replicas: {{ .Values.providers.alarm.replicaCount }}
   selector:
     matchLabels:
-      name: {{ .Values.alarmprovider.name | quote }}
+      name: {{ .Values.providers.alarm.name | quote }}
   template:
     metadata:
       labels:
-        name: {{ .Values.alarmprovider.name | quote }}
+        name: {{ .Values.providers.alarm.name | quote }}
+{{ include "openwhisk.label_boilerplate" . | indent 8 }}
     spec:
-      restartPolicy: {{ .Values.alarmprovider.restartPolicy }}
+      restartPolicy: {{ .Values.providers.alarm.restartPolicy }}
       volumes:
         - name: alarm-logs
-{{- if ne .Values.alarmprovider.persistence.storageClass "none" }}
+{{- if .Values.k8s.persistence.enabled }}
           persistentVolumeClaim:
-            claimName: {{ .Values.alarmprovider.persistence.pvcName | quote }}
+            claimName: {{ .Values.providers.alarm.persistence.pvcName | quote }}
 {{- else }}
           emptyDir: {}
 {{- end }}
+      initContainers:
+      # Wait for a controller to be up (which implies couchdb is up as well).
+{{ include "openwhisk.readiness.waitForController" . | indent 6 }}
       containers:
-      - name: {{ .Values.alarmprovider.name | quote }}
-        imagePullPolicy: {{ .Values.alarmprovider.imagePullPolicy | quote }}
-        image: {{ .Values.alarmprovider.image | quote }}
+      - name: {{ .Values.providers.alarm.name | quote }}
+        imagePullPolicy: {{ .Values.providers.alarm.imagePullPolicy | quote }}
+        image: {{ .Values.providers.alarm.image | quote }}
         ports:
         - name: alarmprovider
-          containerPort: {{ .Values.alarmprovider.apiPort }}
+          containerPort: {{ .Values.providers.alarm.apiPort }}
         env:
-        {{- if .Values.alarmprovider.db.external }}
+        {{- if .Values.providers.db.external }}
         # Config database using the external instance
         - name: "DB_PROTOCOL"
-          value: {{ .Values.alarmprovider.db.protocol | quote }}
+          value: {{ .Values.providers.db.protocol | quote }}
         - name: "DB_HOST"
-          value: "{{ .Values.alarmprovider.db.host }}:{{ .Values.alarmprovider.db.port }}"
+          value: "{{ .Values.providers.db.host }}:{{ .Values.providers.db.port }}"
         - name: "DB_USERNAME"
-          value: {{ .Values.alarmprovider.db.username | quote }}
+          value: {{ .Values.providers.db.username | quote }}
         - name: "DB_PASSWORD"
-          value: {{ .Values.alarmprovider.db.password | quote }}
+          value: {{ .Values.providers.db.password | quote }}
         {{- else }}
         - name: "DB_PROTOCOL"
           valueFrom:
@@ -68,7 +73,7 @@ spec:
               key: db_password
         {{- end }}
         - name: "DB_PREFIX"
-          value: "{{- .Values.alarmprovider.db.prefix -}}"
+          value: {{ .Values.providers.alarm.dbPrefix | quote }}
         - name: "ROUTER_HOST"
           valueFrom:
             configMapKeyRef:
@@ -82,3 +87,4 @@ spec:
         volumeMounts:
           - name: alarm-logs
             mountPath: /logs
+{{- end }}
