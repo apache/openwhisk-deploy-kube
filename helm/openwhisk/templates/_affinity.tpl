@@ -4,7 +4,7 @@
 # This file defines template snippets for scheduler affinity and anti-affinity
 
 {{/* Generic core affinity */}}
-{{- define "affinity.core" -}}
+{{- define "openwhisk.affinity.core" -}}
 # prefer to not run on an invoker node (only prefer because of single node clusters)
 nodeAffinity:
   preferredDuringSchedulingIgnoredDuringExecution:
@@ -29,7 +29,7 @@ nodeAffinity:
 
 
 {{/* Generic edge affinity */}}
-{{- define "affinity.edge" -}}
+{{- define "openwhisk.affinity.edge" -}}
 # prefer to not run on an invoker node (only prefer because of single node clusters)
 nodeAffinity:
   preferredDuringSchedulingIgnoredDuringExecution:
@@ -54,7 +54,7 @@ nodeAffinity:
 
 
 {{/* Invoker node affinity */}}
-{{- define "affinity.invoker" -}}
+{{- define "openwhisk.affinity.invoker" -}}
 # run only on nodes labeled with openwhisk-role={{ .Values.affinity.invokerNodeLabel }}
 nodeAffinity:
   requiredDuringSchedulingIgnoredDuringExecution:
@@ -68,7 +68,7 @@ nodeAffinity:
 
 
 {{/* Self anti-affinity */}}
-{{- define "affinity.selfAntiAffinity" -}}
+{{- define "openwhisk.affinity.selfAntiAffinity" -}}
 # Fault tolerance: prevent multiple instances of {{ . }} from running on the same node
 podAntiAffinity:
   requiredDuringSchedulingIgnoredDuringExecution:
