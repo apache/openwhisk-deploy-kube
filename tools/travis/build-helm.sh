@@ -248,67 +248,25 @@ verifyHealthyInvoker
 jobHealthCheck "install-catalog"
 jobHealthCheck "install-routemgmt"
 
+
+###
 # Configure wsk CLI
+###
 WSK_AUTH=$(kubectl -n openwhisk get secret whisk.auth -o jsonpath='{.data.guest}' | base64 --decode)
 wsk property set --auth $WSK_AUTH --apihost $WSK_HOST:$WSK_PORT
 
-#################
-# Sniff test: create and invoke a simple Hello world action
-#################
 
-# create wsk action
-cat > /tmp/hello.js << EOL
-function main() {
-  return {body: 'Hello world'}
-}
-EOL
-wsk -i action create hello /tmp/hello.js --web true
-
-# first list actions and expect to see hello
-# Try several times to accommodate eventual consistency of CouchDB
-ACTION_LIST_PASSED=false
-ACTION_LIST_ATTEMPTS=0
-until $ACTION_LIST_PASSED; do
-  RESULT=$(wsk -i action list | grep hello)
-  if [ -z "$RESULT" ]; then
-    let ACTION_LIST_ATTEMPTS=ACTION_LIST_ATTEMPTS+1
-    if [ $ACTION_LIST_ATTEMPTS -gt 5 ]; then
-      echo "FAILED! Could not list hello action via CLI"
-      exit 1
-    fi
-    echo "wsk action list did not include hello; sleep 5 seconds and try again"
-    sleep 5
-  else
-      echo "success: wsk action list included hello"
-      ACTION_LIST_PASSED=true
-  fi
-done
-
-# next invoke the new hello world action via the CLI
-RESULT=$(wsk -i action invoke --blocking hello | grep "\"status\": \"success\"")
-if [ -z "$RESULT" ]; then
-  echo "FAILED! Could not invoke hello action via CLI"
-  exit 1
+###
+# Now run the tests provided in the Chart to sanity check the deployment
+###
+if helm test ow4travis; then
+    echo "PASSED! Deployment verification tests passed."
+else
+    echo "FAILED: Deployment verification tests failed."
+    kubectl logs -n openwhisk openwhisk-tests-smoketest
+    exit 1
 fi
 
-# now run it as a web action
-HELLO_URL=$(wsk -i action get hello --url | grep "https://")
-RESULT=$(wget --no-check-certificate -qO- $HELLO_URL | grep 'Hello world')
-if [ -z "$RESULT" ]; then
-  echo "FAILED! Could not invoke hello as a web action"
-  exit 1
-fi
-
-# now define it as an api and invoke it that way
-wsk -i api create /demo /hello get hello
-API_URL=$(wsk -i api list | grep hello | awk '{print $4}')
-RESULT=$(wget --no-check-certificate -qO- "$API_URL" | grep 'Hello world')
-if [ -z "$RESULT" ]; then
-  echo "FAILED! Could not invoke hello via apigateway"
-  exit 1
-fi
-
-echo "PASSED! Created Hello action and invoked via cli, web and apigateway"
 
 ###
 # Now install all the provider helm charts.

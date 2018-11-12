@@ -232,6 +232,9 @@ Your OpenWhisk installation should now be usable.  You can test it by following
 [these instructions](https://github.com/apache/incubator-openwhisk/blob/master/docs/actions.md)
 to define and invoke a sample OpenWhisk action in your favorite programming language.
 
+You can also issue the command `helm test owdev` to run the basic verification
+test suite included in the OpenWhisk Helm chart.
+
 Note: if you installed self-signed certificates, which is the default
 for the OpenWhisk Helm chart, you will need to use `wsk -i` to
 suppress certificate checking.  This works around `cannot validate
