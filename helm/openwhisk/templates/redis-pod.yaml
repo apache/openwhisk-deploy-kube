@@ -28,14 +28,14 @@ spec:
 {{ include "openwhisk.affinity.selfAntiAffinity" ( .Values.redis.name | quote ) | indent 8 }}
       {{- end }}
 
-{{- if .Values.redis.persistence.enabled }}
+{{- if .Values.k8s.persistence.enabled }}
       volumes:
       - name: redis-data
         persistentVolumeClaim:
           claimName: {{ .Values.redis.persistence.pvcName | quote }}
 {{- end }}
 
-{{- if .Values.redis.persistence.enabled }}
+{{- if .Values.k8s.persistence.enabled }}
       initContainers:
       - name: redis-init
         image: busybox
@@ -55,7 +55,7 @@ spec:
         - name: redis
           imagePullPolicy: {{ .Values.redis.imagePullPolicy | quote }}
           image: {{ .Values.redis.image | quote }}
-{{- if .Values.redis.persistence.enabled }}
+{{- if .Values.k8s.persistence.enabled }}
           volumeMounts:
           - mountPath: /data
             name: redis-data

@@ -35,6 +35,14 @@ spec:
         - name: zk-config
           configMap:
             name: {{ .Values.zookeeper.name | quote }}
+{{- if and .Values.k8s.persistence.enabled (eq (int .Values.zookeeper.replicaCount) 1) }}
+        - name: "{{- .Values.zookeeper.persistence.pvcName -}}-data"
+          persistentVolumeClaim:
+            claimName: "{{- .Values.zookeeper.persistence.pvcName -}}-data"
+        - name: "{{- .Values.zookeeper.persistence.pvcName -}}-datalog"
+          persistentVolumeClaim:
+            claimName: "{{- .Values.zookeeper.persistence.pvcName -}}-datalog"
+{{- end }}
 
       containers:
       - name: {{ .Values.zookeeper.name | quote }}
@@ -52,30 +60,35 @@ spec:
         volumeMounts:
         - mountPath: /conf
           name: zk-config
-{{- if .Values.zookeeper.persistence.enabled }}
+{{- if .Values.k8s.persistence.enabled }}
         - mountPath: {{ .Values.zookeeper.config.dataDir }}
           name: "{{- .Values.zookeeper.persistence.pvcName -}}-data"
         - mountPath: {{ .Values.zookeeper.config.dataLogDir }}
           name: "{{- .Values.zookeeper.persistence.pvcName -}}-datalog"
 {{- end }}
 
-{{- if .Values.zookeeper.persistence.enabled }}
+{{/* PVCs created by volumeClaimTemplates must be manually removed; only create them if we absolutely need them */}}
+{{- if and .Values.k8s.persistence.enabled (gt (int .Values.zookeeper.replicaCount) 1) }}
   volumeClaimTemplates:
   - metadata:
       name: "{{- .Values.zookeeper.persistence.pvcName -}}-data"
     spec:
-      storageClassName: {{ .Values.zookeeper.persistence.storageClass }}
+{{- if .Values.k8s.persistence.useDynamicProvisioning }}
+      storageClassName: {{ .Values.k8s.persistence.defaultStorageClass }}
+{{- end }}
       accessModes:
-        - {{ .Values.zookeeper.persistence.accessMode }}
+        - ReadWriteOnce
       resources:
         requests:
           storage: {{ .Values.zookeeper.persistence.size }}
   - metadata:
       name: "{{- .Values.zookeeper.persistence.pvcName -}}-datalog"
     spec:
-      storageClassName: {{ .Values.zookeeper.persistence.storageClass }}
+{{- if .Values.k8s.persistence.useDynamicProvisioning }}
+      storageClassName: {{ .Values.k8s.persistence.defaultStorageClass }}
+{{- end }}
       accessModes:
-        - {{ .Values.zookeeper.persistence.accessMode }}
+        - ReadWriteOnce
       resources:
         requests:
           storage: {{ .Values.zookeeper.persistence.size }}

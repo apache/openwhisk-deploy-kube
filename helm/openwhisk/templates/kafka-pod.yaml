@@ -31,7 +31,7 @@ spec:
 {{ include "openwhisk.affinity.selfAntiAffinity" ( .Values.kafka.name | quote ) | indent 8 }}
       {{- end }}
 
-{{- if .Values.kafka.persistence.enabled }}
+{{- if .Values.k8s.persistence.enabled }}
       volumes:
       - name: kafka-data
         persistentVolumeClaim:
@@ -45,7 +45,7 @@ spec:
       - name: {{ .Values.kafka.name | quote }}
         image: {{ .Values.kafka.image | quote }}
         imagePullPolicy: {{ .Values.kafka.imagePullPolicy | quote }}
-{{- if .Values.kafka.persistence.enabled }}
+{{- if .Values.k8s.persistence.enabled }}
         volumeMounts:
         - mountPath: /kafka
           name: kafka-data

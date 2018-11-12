@@ -51,8 +51,8 @@ might also have installed on your machine.  Finally, pick the
 
 You will be using a NodePort ingress to access OpenWhisk. Assuming
 `kubectl describe nodes | grep InternalIP` returns 192.168.65.3 and
-port 31001 is available to be used on your host machine, you can add
-the following stanzas of to your mycluster.yaml:
+port 31001 is available to be used on your host machine, a
+mycluster.yaml for a standard deployment of OpenWhisk would be:
 ```yaml
 whisk:
   ingress:
@@ -85,6 +85,10 @@ Using Kubernetes in Docker for Mac is only appropriate for development
 and testing purposes.  It is not recommended for production
 deployments of OpenWhisk.
 
+TLS termination will be handled by OpenWhisk's `nginx` service and
+will use self-signed certificates.  You will need to invoke `wsk` with
+the `-i` command line argument to bypass certificate checking.
+
 The docker network is not exposed to the host on MacOS. However, the
 exposed ports for NodePort services are forwarded from localhost.
 Therefore you must use different host names to connect to OpenWhisk
@@ -92,3 +96,4 @@ from outside the cluster (with the `wsk` cli) and from inside the
 cluster (in `mycluster.yaml`).  Continuing the example from above,
 when setting the `--apihost` for the `wsk` cli, you would use
 `localhost:31001`.
+

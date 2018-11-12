@@ -75,21 +75,11 @@ kubectl label node kube-worker-2 openwhisk-role=invoker
 
 ### Configuring OpenWhisk
 
-Because the container logs for docker containers running on the
-virtual worker nodes are in a non-standard location, you must
-configure the invoker to look for user action logs in a different
-path. You do that by adding the following required stanza to your
-mycluster.yaml.
-```yaml
-invoker:
-  containerFactory:
-    dind: true
-```
 
 You will be using a NodePort ingress to access OpenWhisk. Assuming
-w`kubectl describe node kube-node-1 | grep InternalIP` returns 10.192.0.3
-and port 31001 is available to be used on your host machine, you can
-add the following stanzas of to your mycluster.yaml:
+`kubectl describe node kube-node-1 | grep InternalIP` returns 10.192.0.3
+and port 31001 is available to be used on your host machine, a
+mycluster.yaml for a standard deployment of OpenWhisk would be:
 ```yaml
 whisk:
   ingress:
@@ -99,7 +89,26 @@ whisk:
 
 nginx:
   httpsNodePort: 31001
+
+invoker:
+  containerFactory:
+    dind: true
+
+k8s:
+  persistence:
+    enabled: false
 ```
+
+Note the stanza setting `invoker.containerFactory.dind` to true. This
+is needed because the logs for docker containers running on the
+virtual worker nodes are in a non-standard location, requiring special
+configuration of OpenWhisk's invoker pods. Failure to set this
+variable when running on kubeadm-dind-cluster will result in an
+OpenWhisk deployment that cannot execute user actions.
+
+For ease of deployment, you should also disable persistent volumes
+because kubeadm-dind-cluster does not configure a default
+StorageClass.
 
 ## Limitations
 
@@ -107,10 +116,14 @@ Using kubeadm-dind-cluster is only appropriate for development and
 testing purposes.  It is not recommended for production deployments of
 OpenWhisk.
 
+Without enabling persistence, it is not possible to restart the
+Kubernetes cluster without also re-installing Helm and OpenWhisk.
+
+TLS termination will be handled by OpenWhisk's `nginx` service and
+will use self-signed certificates.  You will need to invoke `wsk` with
+the `-i` command line argument to bypass certificate checking.
+
 Unlike using Kubernetes with Docker for Mac 18.06 and later, only the
 virtual master/worker nodes are visible to Docker on the host system. The
 individual pods running the OpenWhisk system are only visible using
 `kubectl` and not directly via host Docker commands.
-
-There does not appear to be a reliable way to restart the Kubernetes
-cluster without also re-installing Helm and OpenWhisk.

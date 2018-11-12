@@ -38,6 +38,14 @@ mounting`/sys/fs/cgroup`, `/run/runc`,`/var/lib/docker/containers`, or
 value in `helm/openwhisk/templates/_invoker-helpers.yaml` to match the host operating system
 running on your Kubernetes worker node.
 
+### Kafka, Redis, CouchDB, and Zookeeper pods stuck in Pending
+
+These pods all mount Volumes via PersistentVolumeClaims. If there is a
+misconfiguration related to the dynamic provisioning of
+PersistentVolumes, then these pods will not be scheduled.  See the
+Persistence section in the [configuration choices
+documentation](./configurationChoices.md) for more details.
+
 ### Controller and Invoker cannot connect to Kafka
 
 If services are having trouble connecting to Kafka, it may be that the

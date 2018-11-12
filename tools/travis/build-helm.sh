@@ -213,6 +213,11 @@ whisk:
     apiHostPort: $WSK_PORT
   runtimes: "runtimes-minimal-travis.json"
 
+# TODO: instead document how to enable dynamic volume provisioning for dind
+k8s:
+  persistence:
+    enabled: false
+
 invoker:
   containerFactory:
     dind: true
