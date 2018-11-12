@@ -200,7 +200,7 @@ apigw:
 # Redis (used by apigateway)
 redis:
   name: "redis"
-  image: "redis:3.2"
+  image: "redis:4.0"
   # NOTE: setting replicaCount > 1 will not work; need to add redis cluster configuration
   replicaCount: 1
   imagePullPolicy: "IfNotPresent"
