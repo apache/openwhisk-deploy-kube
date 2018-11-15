@@ -32,7 +32,6 @@ multi-node Kubernetes clusters.
 
 * [Prerequisites: Kubernetes and Helm](#prerequisites-kubernetes-and-helm)
 * [Deploying OpenWhisk](#deploying-openwhisk)
-* [Deploying OpenWhisk Providers](#deploying-openwhisk-providers)
 * [Development and Testing](#development-and-testing)
 * [Cleanup](#cleanup)
 * [Issues](#issues)
@@ -125,8 +124,7 @@ initialized Helm, you are ready to deploy OpenWhisk.
 You will use Helm to deploy OpenWhisk to your Kubernetes cluster.
 There are four deployment steps that are described in more
 detail below in the rest of this section.
-1. [Initial cluster setup](#initial-setup). You will create a
-Kubernetes namespace into which to deploy OpenWhisk and label the
+1. [Initial cluster setup](#initial-setup). You will label your
 Kubernetes worker nodes to indicate their intended usage by OpenWhisk.
 2. [Customize the deployment](#customize-the-deployment). You will
 create a `mycluster.yaml` that specifies key facts about your
@@ -139,14 +137,7 @@ tell the `wsk` CLI how to connect to your OpenWhisk deployment.
 
 ## Initial setup
 
-1. Resources in Kubernetes are organized into namespaces. You can use
-any name for the namespace you want, but we suggest using
-`openwhisk`. Create one by issuing the command:
-```shell
-kubectl create namespace openwhisk
-```
-
-2. Identify the Kubernetes worker nodes that should be used to execute
+Indicate the Kubernetes worker nodes that should be used to execute
 user containers.  Do this by labeling each node with
 `openwhisk-role=invoker`.  For a single node cluster, simply do
 ```shell
@@ -159,10 +150,13 @@ $ kubectl label nodes <INVOKER_NODE_NAME> openwhisk-role=invoker
 ```
 
 For optimal scheduling of pods on a multi-node cluster, you can
-optionally label non-invoker worker nodes with `openwhisk-role=core`
-to indicate nodes which should run the OpenWhisk controller, kafka,
-zookeeeper, etc. and `openwhisk-role=edge` to indicate the node which
-should run the `nginx` frontdoor to OpenWhisk.
+optionally also label non-invoker nodes to fine-tune Kubernetes's
+scheduling decisions. You can label with `openwhisk-role=core`
+to indicate nodes which should run the OpenWhisk control plan
+(the controller, kafka, zookeeeper, and couchdb pods).
+If you have a dedicated Ingress node, optionally label it with
+`openwhisk-role=edge`. Finally, if you want to run the OpenWhisk
+Event Providers on specific nodes, label them with `openwhisk-role=provider`.
 
 ## Customize the Deployment
 
@@ -191,8 +185,9 @@ Deployment can be done by using the following single command:
 ```shell
 helm install ./helm/openwhisk --namespace=openwhisk --name=owdev -f mycluster.yaml
 ```
-For simplicity, in this README, we have used `owdev` as the release name.
-You can use a different name, or not specify a name at all and let
+For simplicity, in this README, we have used `owdev` as the release name and
+`openwhisk` as the namespace into which the Chart's resources will be deployed.
+You can use different names, or not specify a release name at all and let
 Helm auto-generate one for you.
 
 You can use the command `helm status owdev` to get a summary
@@ -243,26 +238,6 @@ certificate` errors from the `wsk` CLI.
 If your deployment is not working, check our
 [troubleshooting guide](./docs/troubleshooting.md) for ideas.
 
-
-# Deploying OpenWhisk Providers
-
-Now that you have a working OpenWhisk installation, you may optionally
-deploy additional packages and event providers. A standard set of
-event providers is available as a collection of Helm charts in the
-`helm/providers` directory.  You may install all the providers in a
-single command with
-```shell
-helm install ./helm/openwhisk-providers --namespace=openwhisk --name=owdev-providers
-```
-or you may selectively install the charts for individual providers
-with commands like
-```shell
-helm install ./helm/openwhisk-providers/charts/ow-kafka --namespace=openwhisk --name=owdev-kafka-provider
-```
-
-Please see the `values.yaml` file and/or README.md in the individual
-charts for instructions on enabling any optional customizations of the
-providers.
 
 # Development and Testing
 

@@ -21,10 +21,12 @@ kubectl -n openwhisk logs -lname=controller >& logs/controller.log
 kubectl -n openwhisk logs -lname=invoker -c docker-pull-runtimes >& logs/invoker-docker-pull.log
 kubectl -n openwhisk logs -lname=invoker -c invoker >& logs/invoker-invoker.log
 kubectl -n openwhisk logs -lname=nginx >& logs/nginx.log
-kubectl -n openwhisk logs -lname=kafkaprovider >& logs/kafkaprovider.log
-kubectl -n openwhisk logs jobs/install-routemgmt >& logs/routemgmt.log
-kubectl -n openwhisk logs jobs/install-catalog >& logs/catalog.log
+kubectl -n openwhisk logs jobs/install-packages >& logs/install-packages.log
 kubectl -n openwhisk logs jobs/init-couchdb >& logs/init-couchdb.log
+kubectl logs -n openwhisk -low-testpod=true >& logs/helm-tests.log
+kubectl -n openwhisk logs -lname=alarmprovider >& logs/kafkaprovider.log
+kubectl -n openwhisk logs -lname=cloudantprovider >& logs/cloudantprovider.log
+kubectl -n openwhisk logs -lname=kafkaprovider >& logs/kafkaprovider.log
 kubectl get pods --all-namespaces -o wide --show-all >& logs/all-pods.txt
 
 # System level logs from kubernetes cluster
