@@ -110,33 +110,6 @@ jobHealthCheck () {
 }
 
 
-packageListingCheck() {
-  if [ -z "$1" ]; then
-    echo "Error, package listing check called without a package name"
-    exit 1
-  fi
-
-  # Try several times to accommodate eventual consistency of CouchDB
-  PACKAGE_LIST_PASSED=false
-  PACKAGE_LIST_ATTEMPTS=0
-  until $PACKAGE_LIST_PASSED; do
-      RESULT=$(wsk package list /whisk.system -i | grep "$1")
-      if [ -z "$RESULT" ]; then
-          let PACKAGE_LIST_ATTEMPTS=PACKAGE_LIST_ATTEMPTS+1
-          if [ $PACKAGE_LIST_ATTEMPTS -gt 5 ]; then
-              echo "FAILED! Could not list package $1"
-              exit 1
-          fi
-          echo "wsk package list did not find $1; sleep 5 seconds and try again"
-          sleep 5
-      else
-          echo "success: wsk package list included $1"
-          PACKAGE_LIST_PASSED=true
-      fi
-  done
-}
-
-
 verifyHealthyInvoker () {
   PASSED=false
   TIMEOUT=0
@@ -187,14 +160,10 @@ echo "Labeling nodes with openwhisk-role assignments"
 kubectl label nodes kube-node-1 openwhisk-role=core
 kubectl label nodes kube-node-2 openwhisk-role=invoker
 
-# Create namespace
-echo "Create openwhisk namespace"
-kubectl create namespace openwhisk
-
 # Configure a NodePort Ingress assuming kubeadm-dind-cluster conventions.
-# Use kube-node-1 as the ingress, since that is where nginx will actually
-# be running, but using kube-node-2 would also work because Kubernetes
-# exposes the same NodePort service on all worker nodes.
+# Use kube-node-1 as the ingress, since we labeled it as our core node above.
+# (But using kube-node-2 would also work because Kubernetes
+#  exposes the same NodePort service on all worker nodes.)
 WSK_PORT=31001
 WSK_HOST=$(kubectl describe node kube-node-1 | grep InternalIP: | awk '{print $2}')
 if [ -z "$WSK_HOST" ]; then
@@ -226,6 +195,14 @@ invoker:
       agent:
         enabled: false
 
+providers:
+  alarm:
+    enabled: true
+  cloudant:
+    enabled: true
+  kafka:
+    enabled: true
+
 nginx:
   httpsNodePort: $WSK_PORT
 EOF
@@ -244,16 +221,13 @@ deploymentHealthCheck "invoker"
 # Wait for the controller to confirm that it has at least one healthy invoker
 verifyHealthyInvoker
 
-# Wait for catalog and routemgmt jobs to complete successfully
-jobHealthCheck "install-catalog"
-jobHealthCheck "install-routemgmt"
+# Wait for install-packages job to complete successfully
+jobHealthCheck "install-packages"
 
-
-###
-# Configure wsk CLI
-###
-WSK_AUTH=$(kubectl -n openwhisk get secret whisk.auth -o jsonpath='{.data.guest}' | base64 --decode)
-wsk property set --auth $WSK_AUTH --apihost $WSK_HOST:$WSK_PORT
+# Verify that the providers deployed successfully
+deploymentHealthCheck "alarmprovider"
+deploymentHealthCheck "cloudantprovider"
+deploymentHealthCheck "kafkaprovider"
 
 
 ###
@@ -263,46 +237,9 @@ if helm test ow4travis; then
     echo "PASSED! Deployment verification tests passed."
 else
     echo "FAILED: Deployment verification tests failed."
-    kubectl logs -n openwhisk openwhisk-tests-smoketest
+    kubectl logs -n openwhisk -low-testpod=true
     exit 1
 fi
-
-
-###
-# Now install all the provider helm charts.
-# To reduce testing latency we first install all the charts,
-# then we check for correct deployment of each one.
-###
-helm install helm/openwhisk-providers/charts/ow-kafka --namespace=openwhisk --name=kafkap4travis  || exit 1
-helm install helm/openwhisk-providers/charts/ow-alarm --namespace=openwhisk --name alarmp4travis --set alarmprovider.persistence.storageClass=none || exit 1
-helm install helm/openwhisk-providers/charts/ow-cloudant --namespace=openwhisk --name cloudantp4travis --set cloudantprovider.persistence.storageClass=none || exit 1
-
-
-####
-# Verify kafka provider and messaging package
-####
-jobHealthCheck "install-package-kafka"
-deploymentHealthCheck "kafkaprovider"
-packageListingCheck "messaging"
-echo "PASSED! Deployed Kafka provider and package"
-
-
-####
-# Verify alarm provider and alarms package
-####
-jobHealthCheck "install-package-alarm"
-deploymentHealthCheck "alarmprovider"
-packageListingCheck "alarms"
-echo "PASSED! Deployed Alarms provider and package"
-
-
-####
-# Verify Cloudant provider and cloudant package
-####
-jobHealthCheck "install-package-cloudant"
-deploymentHealthCheck "cloudantprovider"
-packageListingCheck "cloudant"
-echo "PASSED! Deployed Cloudant provider and package"
 
 
 ###

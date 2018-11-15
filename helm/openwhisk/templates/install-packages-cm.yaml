@@ -4,7 +4,8 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: install-routemgmt
-  namespace: {{ .Release.Namespace | quote }}
+  name: install-packages-cm
+  labels:
+{{ include "openwhisk.label_boilerplate" . | indent 4 }}
 data:
-{{ (.Files.Glob "configMapFiles/installRouteMgmt/myTask.sh").AsConfig | indent 2 }}
+{{ (.Files.Glob "configMapFiles/installPackages/myTask.sh").AsConfig | indent 2 }}

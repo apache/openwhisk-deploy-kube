@@ -1,50 +1,55 @@
 # Licensed to the Apache Software Foundation (ASF) under one or more contributor
 # license agreements; and to You under the Apache License, Version 2.0.
 
+{{- if .Values.providers.cloudant.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.cloudantprovider.name | quote }}
-  namespace: {{ .Release.Namespace | quote }}
+  name: {{ .Values.providers.cloudant.name | quote }}
   labels:
     name: cloudantprovider
+{{ include "openwhisk.label_boilerplate" . | indent 4 }}
 spec:
-  replicas: {{ .Values.cloudantprovider.replicaCount }}
+  replicas: {{ .Values.providers.cloudant.replicaCount }}
   selector:
     matchLabels:
-      name: {{ .Values.cloudantprovider.name | quote }}
+      name: {{ .Values.providers.cloudant.name | quote }}
   template:
     metadata:
       labels:
-        name: {{ .Values.cloudantprovider.name | quote }}
+        name: {{ .Values.providers.cloudant.name | quote }}
+{{ include "openwhisk.label_boilerplate" . | indent 8 }}
     spec:
-      restartPolicy: {{ .Values.cloudantprovider.restartPolicy }}
+      restartPolicy: {{ .Values.providers.cloudant.restartPolicy }}
       volumes:
         - name: cloudant-logs
-{{- if ne .Values.cloudantprovider.persistence.storageClass "none" }}
+{{- if .Values.k8s.persistence.enabled }}
           persistentVolumeClaim:
-            claimName: {{ .Values.cloudantprovider.persistence.pvcName | quote }}
+            claimName: {{ .Values.providers.cloudant.persistence.pvcName | quote }}
 {{- else }}
           emptyDir: {}
 {{- end }}
+      initContainers:
+      # Wait for a controller to be up (which implies couchdb is up as well).
+{{ include "openwhisk.readiness.waitForController" . | indent 6 }}
       containers:
-      - name: {{ .Values.cloudantprovider.name | quote }}
-        imagePullPolicy: {{ .Values.cloudantprovider.imagePullPolicy | quote }}
-        image: {{ .Values.cloudantprovider.image | quote }}
+      - name: {{ .Values.providers.cloudant.name | quote }}
+        imagePullPolicy: {{ .Values.providers.cloudant.imagePullPolicy | quote }}
+        image: {{ .Values.providers.cloudant.image | quote }}
         ports:
         - name: cludntprovider
-          containerPort: {{ .Values.cloudantprovider.apiPort }}
+          containerPort: {{ .Values.providers.cloudant.apiPort }}
         env:
-        {{- if .Values.cloudantprovider.db.external }}
+        {{- if .Values.providers.db.external }}
         # Config database using the external instance
         - name: "DB_PROTOCOL"
-          value: {{ .Values.cloudantprovider.db.protocol | quote }}
+          value: {{ .Values.providers.db.protocol | quote }}
         - name: "DB_HOST"
-          value: "{{ .Values.cloudantprovider.db.host }}:{{ .Values.cloudantprovider.db.port }}"
+          value: "{{ .Values.providers.db.host }}:{{ .Values.providers.db.port }}"
         - name: "DB_USERNAME"
-          value: {{ .Values.cloudantprovider.db.username | quote }}
+          value: {{ .Values.providers.db.username | quote }}
         - name: "DB_PASSWORD"
-          value: {{ .Values.cloudantprovider.db.password | quote }}
+          value: {{ .Values.providers.db.password | quote }}
         {{- else }}
         # Config database using the same openwhisk cloudant instance
         - name: "DB_PROTOCOL"
@@ -69,7 +74,7 @@ spec:
               key: db_password
         {{- end }}
         - name: "DB_PREFIX"
-          value: {{ .Values.cloudantprovider.db.prefix | default "cldt" | quote }}
+          value: {{ .Values.providers.cloudant.dbPrefix | quote }}
         - name: "ROUTER_HOST"
           valueFrom:
             configMapKeyRef:
@@ -83,3 +88,4 @@ spec:
         volumeMounts:
           - name: cloudant-logs
             mountPath: /logs
+{{- end }}

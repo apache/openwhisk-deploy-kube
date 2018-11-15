@@ -1,40 +1,45 @@
 # Licensed to the Apache Software Foundation (ASF) under one or more contributor
 # license agreements; and to You under the Apache License, Version 2.0.
 
+{{- if .Values.providers.kafka.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.kafkaprovider.name | quote }}
-  namespace: {{ .Release.Namespace | quote }}
+  name: {{ .Values.providers.kafka.name | quote }}
   labels:
-    name: nginx
+    name: {{ .Values.providers.kafka.name | quote }}
+{{ include "openwhisk.label_boilerplate" . | indent 4 }}
 spec:
-  replicas: {{ .Values.kafkaprovider.replicaCount }}
+  replicas: {{ .Values.providers.kafka.replicaCount }}
   selector:
     matchLabels:
-      name: {{ .Values.kafkaprovider.name | quote }}
+      name: {{ .Values.providers.kafka.name | quote }}
   template:
     metadata:
       labels:
-        name: {{ .Values.kafkaprovider.name | quote }}
+        name: {{ .Values.providers.kafka.name | quote }}
+{{ include "openwhisk.label_boilerplate" . | indent 8 }}
     spec:
-      restartPolicy: {{ .Values.kafkaprovider.restartPolicy }}
+      restartPolicy: {{ .Values.providers.kafka.restartPolicy }}
+      initContainers:
+      # Wait for a controller to be up (which implies couchdb and kafka are up as well).
+{{ include "openwhisk.readiness.waitForController" . | indent 6 }}
       containers:
-      - name: {{ .Values.kafkaprovider.name | quote }}
-        imagePullPolicy: {{ .Values.kafkaprovider.imagePullPolicy | quote }}
-        image: {{ .Values.kafkaprovider.image | quote }}
+      - name: {{ .Values.providers.kafka.name | quote }}
+        imagePullPolicy: {{ .Values.providers.kafka.imagePullPolicy | quote }}
+        image: {{ .Values.providers.kafka.image | quote }}
         ports:
         - name: kafkaprovider
-          containerPort: {{ .Values.kafkaprovider.apiPort }}
+          containerPort: {{ .Values.providers.kafka.apiPort }}
         env:
-        {{- if .Values.kafkaprovider.db.external }}
+        {{- if .Values.providers.db.external }}
         # Config database using the external instance
         - name: "DB_URL"
-          value: {{ .Values.kafkaprovider.db.protocol }}://{{ .Values.kafkaprovider.db.host }}:{{ .Values.kafkaprovider.db.port }}
+          value: {{ .Values.providers.db.protocol }}://{{ .Values.providers.db.host }}:{{ .Values.providers.db.port }}
         - name: "DB_USER"
-          value: {{ .Values.kafkaprovider.db.username | quote }}
+          value: {{ .Values.providers.db.username | quote }}
         - name: "DB_PASS"
-          value: {{ .Values.kafkaprovider.db.password | quote }}
+          value: {{ .Values.providers.db.password | quote }}
         {{- else }}
         # Config database using the same openwhisk cloudant instance
         - name: "DB_URL"
@@ -54,7 +59,7 @@ spec:
               key: db_password
         {{- end }}
         - name: "DB_PREFIX"
-          value: "{{- .Values.kafkaprovider.db.prefix -}}"
+          value: {{ .Values.providers.kafka.dbPrefix | quote }}
         - name: "LOCAL_DEV"
           value: "true"
         - name: "ROUTER_HOST"
@@ -67,3 +72,4 @@ spec:
             configMapKeyRef:
               name: whisk.config
               key: whisk_api_host_nameAndPort
+{{- end }}
