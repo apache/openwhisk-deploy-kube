@@ -138,8 +138,11 @@ tell the `wsk` CLI how to connect to your OpenWhisk deployment.
 ## Initial setup
 
 Indicate the Kubernetes worker nodes that should be used to execute
-user containers.  Do this by labeling each node with
-`openwhisk-role=invoker`.  For a single node cluster, simply do
+user containers by OpenWhisk's invokers.  Do this by labeling each node with
+`openwhisk-role=invoker`. In its default configuration,
+OpenWhisk assumes it has exclusive use of these invoker nodes and
+will schedule work on them directly, completely bypassing the Kubernetes
+scheduler. For a single node cluster, simply do
 ```shell
 kubectl label nodes --all openwhisk-role=invoker
 ```
@@ -149,14 +152,15 @@ you want to be an invoker, execute
 $ kubectl label nodes <INVOKER_NODE_NAME> openwhisk-role=invoker
 ```
 
-For optimal scheduling of pods on a multi-node cluster, you can
-optionally also label non-invoker nodes to fine-tune Kubernetes's
-scheduling decisions. You can label with `openwhisk-role=core`
-to indicate nodes which should run the OpenWhisk control plan
+For more precise control of the placement of the rest of OpenWhisk's
+pods on a multi-node cluster, you can optionally label additional
+non-invoker worker nodes. Use the label `openwhisk-role=core`
+to indicate nodes which should run the OpenWhisk control plane
 (the controller, kafka, zookeeeper, and couchdb pods).
-If you have a dedicated Ingress node, optionally label it with
+If you have dedicated Ingress nodes, label them with
 `openwhisk-role=edge`. Finally, if you want to run the OpenWhisk
-Event Providers on specific nodes, label them with `openwhisk-role=provider`.
+Event Providers on specific nodes, label those nodes with
+`openwhisk-role=provider`.
 
 ## Customize the Deployment
 
@@ -192,9 +196,8 @@ Helm auto-generate one for you.
 
 You can use the command `helm status owdev` to get a summary
 of the various Kubernetes artifacts that make up your OpenWhisk
-deployment. Once all the pods shown by the status command are in
-either the `Running` or `Completed` state, your OpenWhisk deployment
-is ready to be used.
+deployment. Once the `install-packages` Pod is in the `Completed` state,
+your OpenWhisk deployment is ready to be used.
 
 ## Configure the wsk CLI
 
@@ -274,11 +277,11 @@ If you are using Kubernetes in Docker, it is
 straightforward to deploy local images by adding a stanza to your
 mycluster.yaml. For example, to use a locally built controller image,
 just add the stanza below to your `mycluster.yaml` to override the default
-behavior of pulling `openwhisk/controller:latest` from Docker Hub.
+behavior of pulling a stable `openwhisk/controller` image from Docker Hub.
 ```yaml
 controller:
-  image: "whisk/controller"
-  imagePullPolicy: "IfNotPresent"
+  imageName: "whisk/controller"
+  imageTag: "latest"
 ```
 
 ### Selectively redeploying using a locally built docker image
@@ -296,8 +299,8 @@ docker tag whisk/controller whisk/controller:v2
 Then, edit your `mycluster.yaml` to contain:
 ```yaml
 controller:
-  image: "whisk/controller:v2"
-  imagePullPolicy: "IfNotPresent"
+  imageName: "whisk/controller"
+  imageTag: "v2"
 ```
 Redeploy with Helm by executing this commaned in your
 openwhisk-deploy-kube directory:

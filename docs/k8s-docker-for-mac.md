@@ -72,11 +72,11 @@ visible/accessible via the usual Docker commands. Furthermore, it is
 straightforward to deploy local images by adding a stanza to your
 mycluster.yaml. For example, to use a locally built controller image,
 just add the stanza below to your `mycluster.yaml` to override the default
-behavior of pulling `openwhisk/controller:latest` from Docker Hub.
+behavior of pulling a stable `openwhisk/controller` image from Docker Hub.
 ```yaml
 controller:
-  image: "whisk/controller"
-  imagePullPolicy: "IfNotPresent"
+  imageName: "whisk/controller"
+  imageTag: "latest"
 ```
 
 ## Limitations
