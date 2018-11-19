@@ -41,7 +41,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-nodejs-v10",
-                    "tag": "d967ebe"
+                    "tag": "586f84e"
                 },
                 "deprecated": false,
                 "attached": {
