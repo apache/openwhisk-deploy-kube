@@ -23,10 +23,18 @@
 [![Build Status](https://travis-ci.org/apache/incubator-openwhisk-deploy-kube.svg?branch=master)](https://travis-ci.org/apache/incubator-openwhisk-deploy-kube)
 [![Join Slack](https://img.shields.io/badge/join-slack-9B69A0.svg)](http://slack.openwhisk.org/)
 
-This repository can be used to deploy OpenWhisk to Kubernetes.
-It contains Helm charts, documentation, and other supporting artifacts
-that can be used to deploy OpenWhisk to both single-node and
-multi-node Kubernetes clusters.
+Apache OpenWhisk is an open source, distributed Serverless platform
+that executes functions (fx) in response to events at any scale.  The
+OpenWhisk platform supports a programming model in which developers
+write functional logic (called Actions), in any supported programming
+language, that can be dynamically scheduled and run in response to
+associated events (via Triggers) from external sources (Feeds) or from
+HTTP requests.
+
+This repository supports deploying OpenWhisk to Kubernetes.
+It contains a Helm chart that can be used to deploy the core
+OpenWhisk platform and optionally some of its Event Providers
+to both single-node and multi-node Kubernetes clusters.
 
 # Table of Contents
 
@@ -42,9 +50,9 @@ multi-node Kubernetes clusters.
 platform that automates the deployment, scaling, and management of
 containerized applications. [Helm](https://helm.sh/) is a package
 manager for Kubernetes that simplifies the management of Kubernetes
-applications. You do not need to be an expert on either Kubernetes or
+applications. You do not need to have detailed knowledge of either Kubernetes or
 Helm to use this project, but you may find it useful to review their
-overview documentation at the links above to become familiar with
+basic documentation at the links above to become familiar with
 their key concepts and terminology.
 
 ## Kubernetes
@@ -101,7 +109,7 @@ We would welcome contributions of documentation for Azure (AKS) and any other pu
 [Helm](https://github.com/kubernetes/helm) is a tool to simplify the
 deployment and management of applications on Kubernetes clusters. Helm
 consists of the `helm` command line tool that you install on your
-development machine and the `tiller` runtime that you install on your
+development machine and the `tiller` runtime that is deployed on your
 Kubernetes cluster.
 
 For detailed instructions on installing Helm, see these [instructions](docs/helm.md).
@@ -134,6 +142,16 @@ deploy.
 `mycluster.yaml` to deploy OpenWhisk to your Kubernetes cluster.
 4. [Configure the `wsk` CLI](#configure-the-wsk-cli). You need to
 tell the `wsk` CLI how to connect to your OpenWhisk deployment.
+
+Although you are deploying OpenWhisk to Kubernetes, by default the
+executing actions will not be aware they are running on a Kubernetes
+cluster. In particular, they will not be configured to do DNS resolution
+of Kubernetes services.  However, if you want executing actions to
+easily access services in a Kubernetes-native way, you can configure
+your OpenWhisk deployment to enable that by either using the
+[KubernetesContainerFactory](docs/configurationChoices.md#invoker-container-factory)
+or setting the value of `invoker.DNS` when you create the `mycluster.yaml`
+to customize your deployment.
 
 ## Initial setup
 
