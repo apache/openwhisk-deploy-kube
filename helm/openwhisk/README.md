@@ -126,12 +126,12 @@ Please ensure that you have reviewed the [prerequisites](#prerequisites) and the
 To install the chart using helm cli:
 
 ```bash
-$ helm install --tls community/openwhisk --namespace <my-namespace> --name <my-release> --set whisk.ingress.apiHostName=<cluster-ip-address>
+$ helm install [--tls] openwhisk --namespace <my-namespace> --name <my-release> --set whisk.ingress.apiHostName=<cluster-ip-address>
 ```
 
 The command deploys OpenWhisk on the Kubernetes cluster in the default configuration.  The [configuration](#configuration) section lists the parameters that can be configured during installation.
 
-You can use the command ```helm status <my-release> --tls``` to get a summary of the various Kubernetes artifacts that make up your OpenWhisk deployment. Once the ```install-packages``` Pod is in the Completed state, your OpenWhisk deployment is ready to be used.
+You can use the command ```helm status <my-release> [--tls]``` to get a summary of the various Kubernetes artifacts that make up your OpenWhisk deployment. Once the ```install-packages``` Pod is in the Completed state, your OpenWhisk deployment is ready to be used.
 
 ### Configuration
 
@@ -141,7 +141,7 @@ You can use the command ```helm status <my-release> --tls``` to get a summary of
 
 To verify your deployment was successful, simply run:
 ```bash
-helm test <my-release> --tls --cleanup
+helm test <my-release> [--tls] --cleanup
 ```
 
 ## Uninstalling the Chart
@@ -149,7 +149,7 @@ helm test <my-release> --tls --cleanup
 To uninstall/delete the deployment:
 
 ```bash
-$ helm delete <my-release> --purge --tls
+$ helm delete <my-release> --purge [--tls]
 ```
 
 The command removes all the Kubernetes components associated with the chart and deletes the release.
