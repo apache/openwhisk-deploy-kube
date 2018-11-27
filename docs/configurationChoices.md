@@ -20,7 +20,7 @@
 This document outlines some of the configuration options that are
 supported by the OpenWhisk Helm chart.  In general, you customize your
 deployment by adding stanzas to `mycluster.yaml` that override default
-values in the `helm/values.yaml` file.
+values in the `helm/openwhisk/values.yaml` file.
 
 ### Deploying Event Providers
 
