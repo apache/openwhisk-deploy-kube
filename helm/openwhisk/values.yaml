@@ -28,6 +28,18 @@ whisk:
     apiHostPort: 31001
     apiHostProto: "https"
     type: NodePort
+    annotations:
+      key: value
+    domain: "domain"
+    tls:
+      enabled: false
+      secretenabled: false
+      createsecret: false
+      secretname: "ow-ingress-tls-secret"
+      secrettype: "type"
+      crt: "crt"
+      key: "key"
+
 
   # Production deployments _MUST_ override these default auth values
   auth:
@@ -197,7 +209,7 @@ invoker:
   containerFactory:
     dind: false
     useRunc: false
-    impl: "docker"
+    impl: "kubernetes"
     kubernetes:
       replicaCount: 1
       agent:
@@ -242,14 +254,14 @@ providers:
   db:
     external: false
     # Define the rest of these values if you are using external couchdb instance
-    # host: "10.10.10.10"
-    # port: 5984
-    # protocol: "http"
-    # username: "admin"
-    # password: "secret"
+    host: "10.10.10.10"
+    port: 5984
+    protocol: "http"
+    username: "admin"
+    password: "secret"
   # Alarm provider configurations
   alarm:
-    enabled: false
+    enabled: true
     name: "alarmprovider"
     imageName: "openwhisk/alarmprovider"
     imageTag: "1.10.2"
@@ -264,7 +276,7 @@ providers:
       size: 1Gi
   # Kafka provider configurations
   kafka:
-    enabled: false
+    enabled: true
     name: "kafkaprovider"
     imageName: "openwhisk/kafkaprovider"
     imageTag: "1.4.18"
@@ -276,7 +288,7 @@ providers:
     dbPrefix: "kp"
   # Cloudant provider configurations
   cloudant:
-    enabled: false
+    enabled: true
     name: "cloudantprovider"
     imageName: "openwhisk/cloudantprovider"
     imageTag: "1.7.1"
