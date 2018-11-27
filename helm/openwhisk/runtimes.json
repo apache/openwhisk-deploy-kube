@@ -7,7 +7,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "nodejs6action",
-                    "tag": "d967ebe"
+                    "tag": "586f84e"
                 },
                 "deprecated": false,
                 "attached": {
@@ -27,7 +27,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-nodejs-v8",
-                    "tag": "d967ebe"
+                    "tag": "586f84e"
                 },
                 "deprecated": false,
                 "attached": {
@@ -56,7 +56,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "python2action",
-                    "tag": "de60587"
+                    "tag": "cee010a"
                 },
                 "deprecated": false,
                 "attached": {
@@ -70,7 +70,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "python2action",
-                    "tag": "de60587"
+                    "tag": "cee010a"
                 },
                 "deprecated": false,
                 "attached": {
@@ -83,7 +83,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "python3action",
-                    "tag": "de60587"
+                    "tag": "cee010a"
                 },
                 "deprecated": false,
                 "attached": {
@@ -180,7 +180,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-ruby-v2.5",
-                    "tag": "78e1406"
+                    "tag": "092b5cf"
                 }
             }
         ],
@@ -205,7 +205,7 @@
         {
             "prefix": "openwhisk",
             "name": "dockerskeleton",
-            "tag": "8b2e205"
+            "tag": "c0073ab"
         }
     ]
 }

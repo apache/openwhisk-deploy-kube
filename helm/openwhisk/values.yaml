@@ -42,17 +42,17 @@ whisk:
   runtimes: "runtimes.json"
   versions:
     openwhisk:
-      buildDate: "2018-11-13-21:33:13Z"
-      buildNo: "20181113a"
-      gitTag: "775b757ac7555c8371a5e03497622531984bf4f4"
+      buildDate: "2018-11-26-16:11:11Z"
+      buildNo: "20181126a"
+      gitTag: "7bd49718232d0381b53794f9353c014a1abfef15"
     openwhiskCli:
-      tag: "2062905"
+      tag: "8da6e3b"
     openwhiskCatalog:
       gitTag: "3d6d69f3e2dba96c775d4b1a4d55b1fc158b1201"
     openwhiskPackageAlarms:
-      gitTag: "d3598dd4279b2675953eb3cdd3665694d254ac05"
+      gitTag: "d3846ad810ef9838fe849613af23dec53bd92676"
     openwhiskPackageCloudant:
-      gitTag: "1c340b85d0b29a5d3f1fd0df487c4dd2f9a7349b"
+      gitTag: "3e0a90be16be5fc9e17928d3d70e230bfe4771b3"
     openwhiskPackageKafka:
       gitTag: "e242c13d05a11c4d2df5968e13ba1e0f3ef95c72"
 
@@ -69,11 +69,11 @@ k8s:
 utility:
   ansibleRunner:
     imageName: "openwhisk/ansible-runner"
-    imageTag: "775b757"
+    imageTag: "7bd4971"
     imagePullPolicy: "IfNotPresent"
   scriptRunner:
     imageName: "openwhisk/script-runner"
-    imageTag: "775b757"
+    imageTag: "7bd4971"
     imagePullPolicy: "IfNotPresent"
 
 # Docker registry
@@ -169,7 +169,7 @@ nginx:
 controller:
   name: "controller"
   imageName: "openwhisk/controller"
-  imageTag: "775b757"
+  imageTag: "7bd4971"
   imagePullPolicy: "IfNotPresent"
   replicaCount: 1
   restartPolicy: "Always"
@@ -187,7 +187,7 @@ controller:
 invoker:
   name: "invoker"
   imageName: "openwhisk/invoker"
-  imageTag: "775b757"
+  imageTag: "7bd4971"
   imagePullPolicy: "IfNotPresent"
   restartPolicy: "Always"
   port: 8080
@@ -203,7 +203,7 @@ invoker:
       agent:
         name: "invoker-agent"
         imageName: "openwhisk/kube-invoker-agent"
-        imageTag: "fa67042"
+        imageTag: "e065c08"
         imagePullPolicy: "IfNotPresent"
         enabled: false
         port: 3233
@@ -252,7 +252,7 @@ providers:
     enabled: false
     name: "alarmprovider"
     imageName: "openwhisk/alarmprovider"
-    imageTag: "1.10.2"
+    imageTag: "1.10.3"
     imagePullPolicy: "IfNotPresent"
     # NOTE: replicaCount > 1 doesn't work because of the PVC
     replicaCount: 1
@@ -279,7 +279,7 @@ providers:
     enabled: false
     name: "cloudantprovider"
     imageName: "openwhisk/cloudantprovider"
-    imageTag: "1.7.1"
+    imageTag: "1.8.1"
     imagePullPolicy: "IfNotPresent"
     # NOTE: replicaCount > 1 doesn't work because of the PVC
     replicaCount: 1
