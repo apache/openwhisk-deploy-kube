@@ -55,13 +55,14 @@ providers:
       username: "admin"
       password: "secret"
 ```
-2. Configure the DNS lookup for the user containers created by DockerContainerFactory to
+2. Configure the DNS nameservers for the user containers created by DockerContainerFactory to
 use Kubernetes's DNS service.  For example, if your cluster uses kube-dns, then first
 get the IP address of Kubernetes DNS server by `echo $(kubectl get svc kube-dns -n kube-system -o 'jsonpath={.spec.clusterIP}')`
 and then add below stanza to your `mycluster.yaml`:
 ```yaml
 invoker:
-  kubeDNS: "<IP_Address_Of_Kube_DNS>"
+  containerFactory:
+    nameservers: "<IP_Address_Of_Kube_DNS>"
 ```
 3. Use the lower performance `KubernetesContainerFactory` by adding the following stanza
 to your `mycluster.yaml`

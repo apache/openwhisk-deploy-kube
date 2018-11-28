@@ -207,8 +207,9 @@ invoker:
         imagePullPolicy: "IfNotPresent"
         enabled: false
         port: 3233
-  containerNetwork: "bridge"
-  kubeDNS: nil
+    containerNetwork: "bridge"
+    # nameservers is an empty string or a colon separated list of IP addresses of DNS servers.
+    nameservers: ""
 
 # API Gateway configurations
 apigw:
