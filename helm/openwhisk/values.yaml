@@ -28,6 +28,18 @@ whisk:
     apiHostPort: 31001
     apiHostProto: "https"
     type: NodePort
+    annotations:
+      key: value
+    domain: "domain"
+    tls:
+      enabled: false
+      secretenabled: false
+      createsecret: false
+      secretname: "ow-ingress-tls-secret"
+      secrettype: "type"
+      crt: "crt"
+      key: "key"
+
 
   # Production deployments _MUST_ override these default auth values
   auth:
@@ -243,11 +255,11 @@ providers:
   db:
     external: false
     # Define the rest of these values if you are using external couchdb instance
-    # host: "10.10.10.10"
-    # port: 5984
-    # protocol: "http"
-    # username: "admin"
-    # password: "secret"
+    host: "10.10.10.10"
+    port: 5984
+    protocol: "http"
+    username: "admin"
+    password: "secret"
   # Alarm provider configurations
   alarm:
     enabled: false
