@@ -152,7 +152,8 @@ whisk:
 
 k8s:
   persistence:
-    defaultStorageClass: openwhisk
+    hasDefaultStorageClass: false
+    explicitStorageClass: openwhisk
 ```
 
 ICP does not (by default) provide a properly configured DefaultStorageClass,
@@ -178,7 +179,8 @@ nginx:
 
 k8s:
   persistence:
-    defaultStorageClass: openwhisk
+    hasDefaultStorageClass: false
+    explicitStorageClass: openwhisk
 ```
 
 ICP does not (by default) provide a properly configured DefaultStorageClass,

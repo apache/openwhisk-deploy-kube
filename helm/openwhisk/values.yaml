@@ -74,8 +74,8 @@ k8s:
   dns: kube-dns.kube-system
   persistence:
     enabled: true
-    useDynamicProvisioning: true
-    defaultStorageClass:               # intentionally left blank, which will result in using the default storageclass
+    hasDefaultStorageClass: true
+    explicitStorageClass: nil
 
 # Images used to run auxillary tasks/jobs
 utility:
