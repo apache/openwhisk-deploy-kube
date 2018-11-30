@@ -190,7 +190,7 @@ appropriate to your Kubernetes cluster:
 * [kubeadm-dind-cluster](docs/k8s-dind-cluster.md#configuring-openwhisk)
 * [Minikube](docs/k8s-minikube.md#configuring-openwhisk)
 * [IBM Kubernetes Service (IKS)](docs/k8s-ibm-public.md#configuring-openwhisk)
-* [IBM Private Cloud (ICP)](docs/k8s-ibm-public.md#configuring-openwhisk)
+* [IBM Cloud Private (ICP)](docs/k8s-ibm-private.md#configuring-openwhisk)
 * [Google (GKE)](docs/k8s-google.md#configuring-openwhisk)
 * [Amazon (EKS)](docs/k8s-aws.md#configuring-openwhisk)
 
