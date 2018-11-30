@@ -174,6 +174,10 @@ be scheduled.  If your Kubernetes cluster is properly configured to support
 including having a DefaultStorageClass admission controller and a
 designated default StorageClass, then this will all happen seamlessly.
 
+See [NFS Dynamis Storage Provisioning](./k8s-nfs-dynamic-storage.md) for one
+approach to provisioning dynamic storage if it's not already provisioned
+on your cluster.
+
 If your cluster is not properly configured, then you will need to
 manually create the necessary PersistentVolumes when deploying the
 Helm chart. In this case, you should also disable the use of dynamic
