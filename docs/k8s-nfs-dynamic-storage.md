@@ -57,5 +57,7 @@ helm install --namespace openwhisk \
   stable/nfs-client-provisioner
 ```
 
-When you configure OpenWhisk, do remember to set the `k8s.persistence.defaultStorageClass`
-to be `openwhisk`.  And then you should be off to the races.
+When you configure OpenWhisk, do remember to set
+`k8s.persistence.hasDefaultStorageClass` to `false` and set
+`k8s.persistence.explicitStorageClass` to be `openwhisk`.
+And then you should be off to the races.

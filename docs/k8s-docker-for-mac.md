@@ -64,29 +64,6 @@ nginx:
   httpsNodePort: 31001
 ```
 
-#### Additional Configuration for Docker for Mac 18.06
-
-If you are using Docker for Mac 18.06, you will need
-to add an additional stanza to your mycluster.yaml because
-this version does not have out-of-the-box support for automatic
-dynamic provisioning of persistent volumes. This additional
-configuration is not needed if you are using Docker for Mac 2.0.0
-or later.
-
-For 18.06 you should either set the defaultStorageClass
-by adding the stanza below to mycluster.yaml:
-```yaml
-k8s:
-  persistence:
-    defaultStorageClass: hostpath
-```
-or completely disable the use of persistence by adding the stanza below:
-```yaml
-k8s:
-  persistence:
-    enabled: false
-```
-
 ## Hints and Tips
 
 One nice feature of using Kubernetes in Docker, is that the
