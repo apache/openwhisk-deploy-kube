@@ -34,7 +34,7 @@ Follow IBM Cloud Private instructions to provision your cluster.  Include
 GlusterFS provisioning, add
 [dynamic NFS provisioning](./k8s-nfs-dynamic-storage.md),
 or be prepared to provision volumes manually for OpenWhisk
-(see [here](./configurationChoices#persistence)).
+(see [here](./configurationChoices.md#persistence)).
 
 ### Configuring OpenWhisk
 
