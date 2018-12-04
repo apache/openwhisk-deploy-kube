@@ -19,8 +19,9 @@ spec:
       name: openwhisk-tests-smoketest-cm
   containers:
   - name: smoketest
-    image: "{{- .Values.utility.scriptRunner.imageName -}}:{{- .Values.utility.scriptRunner.imageTag -}}"
-    imagePullPolicy: {{ .Values.utility.scriptRunner.imagePullPolicy | quote }}
+    image: "{{- .Values.utility.imageName -}}:{{- .Values.utility.imageTag -}}"
+    imagePullPolicy: {{ .Values.utility.imagePullPolicy | quote }}
+    command: ["/bin/bash", "-c", "set -e; . /task/myTask.sh"]
     volumeMounts:
     - name: task-dir
       mountPath: "/task/myTask.sh"

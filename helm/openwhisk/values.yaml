@@ -86,14 +86,9 @@ k8s:
 
 # Images used to run auxillary tasks/jobs
 utility:
-  ansibleRunner:
-    imageName: "openwhisk/ansible-runner"
-    imageTag: "7bd4971"
-    imagePullPolicy: "IfNotPresent"
-  scriptRunner:
-    imageName: "openwhisk/script-runner"
-    imageTag: "7bd4971"
-    imagePullPolicy: "IfNotPresent"
+  imageName: "openwhisk/ow-utils"
+  imageTag: "570c044"
+  imagePullPolicy: "IfNotPresent"
 
 # Docker registry
 docker:

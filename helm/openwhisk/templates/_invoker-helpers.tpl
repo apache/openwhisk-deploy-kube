@@ -33,8 +33,9 @@
 
 {{- define "openwhisk.docker_pull_runtimes" -}}
 - name: docker-pull-runtimes
-  imagePullPolicy: {{ .Values.utility.ansibleRunner.imagePullPolicy | quote }}
-  image: "{{- .Values.utility.ansibleRunner.imageName -}}:{{- .Values.utility.ansibleRunner.imageTag -}}"
+  imagePullPolicy: {{ .Values.utility.imagePullPolicy | quote }}
+  image: "{{- .Values.utility.imageName -}}:{{- .Values.utility.imageTag -}}"
+  command: ["/usr/local/bin/ansible-playbook", "/task/playbook.yml"]
   volumeMounts:
   - name: dockersock
     mountPath: "/var/run/docker.sock"
