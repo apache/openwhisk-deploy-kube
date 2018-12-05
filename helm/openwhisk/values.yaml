@@ -174,7 +174,7 @@ db:
 nginx:
   name: "nginx"
   imageName: "nginx"
-  imageTag: "1.11"
+  imageTag: "1.13"
   imagePullPolicy: "IfNotPresent"
   # NOTE: setting replicaCount > 1 is not tested and may not work
   replicaCount: 1
