@@ -69,8 +69,8 @@ labeling the two worker nodes for OpenWhisk so that you have 1 invoker
 node for running user actions and 1 core node for running the rest of
 the OpenWhisk system.
 ```shell
-kubectl label node kube-worker-1 openwhisk-role=core
-kubectl label node kube-worker-2 openwhisk-role=invoker
+kubectl label node kube-node-1 openwhisk-role=core
+kubectl label node kube-node-2 openwhisk-role=invoker
 ```
 
 ### Configuring OpenWhisk
