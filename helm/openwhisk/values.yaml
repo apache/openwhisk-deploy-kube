@@ -6,9 +6,16 @@
 # used in the OpenWhisk Helm Chart.  The variables are grouped
 # by component into subtrees.
 #
-# You _MUST_ override the default values of whisk.ingress.apiHostName
-# and whisk.ingress.apiHostPort (see docs/ingress.md for a discussion
-# of how to determine values for these variables).
+# You _MUST_ override the default value of some of the whisk.ingress variables
+# to reflect your specific Kubernetes cluster.  For details, see the appropriate
+# one of these files:
+#   docs/k8s-docker-for-mac.md
+#   docs/k8s-dind-cluster.md
+#   docs/k8s-aws.md
+#   docs/k8s-ibm-public.md
+#   docs/k8s-ibm-private.md
+#   docs/k8s-google.md
+#   docs/k8s-minikube.md
 #
 # Production deployments _MUST_ override the default credentials
 # that are used in whisk.auth and db.auth.
@@ -74,8 +81,8 @@ k8s:
   dns: kube-dns.kube-system
   persistence:
     enabled: true
-    useDynamicProvisioning: true
-    defaultStorageClass:               # intentionally left blank, which will result in using the default storageclass
+    hasDefaultStorageClass: true
+    explicitStorageClass: nil
 
 # Images used to run auxillary tasks/jobs
 utility:
@@ -167,7 +174,7 @@ db:
 nginx:
   name: "nginx"
   imageName: "nginx"
-  imageTag: "1.11"
+  imageTag: "1.13"
   imagePullPolicy: "IfNotPresent"
   # NOTE: setting replicaCount > 1 is not tested and may not work
   replicaCount: 1

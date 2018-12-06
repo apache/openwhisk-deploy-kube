@@ -64,21 +64,6 @@ nginx:
   httpsNodePort: 31001
 ```
 
-Since OpenWhisk deployment enables PersistentVolumes by default, you
-should set the defaultStorageClass for your Kubernetes in Docker by adding
-below configuration to mycluster.yaml:
-```yaml
-k8s:
-  persistence:
-    defaultStorageClass: hostpath
-```
-or disable the default persistence by below configuration:
-```yaml
-k8s:
-  persistence:
-    enabled: false
-```
-
 ## Hints and Tips
 
 One nice feature of using Kubernetes in Docker, is that the

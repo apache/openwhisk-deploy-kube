@@ -72,8 +72,8 @@ spec:
   - metadata:
       name: "{{- .Values.zookeeper.persistence.pvcName -}}-data"
     spec:
-{{- if .Values.k8s.persistence.useDynamicProvisioning }}
-      storageClassName: {{ .Values.k8s.persistence.defaultStorageClass }}
+{{- if not .Values.k8s.persistence.hasDefaultStorageClass }}
+      storageClassName: {{ .Values.k8s.persistence.explicitStorageClass }}
 {{- end }}
       accessModes:
         - ReadWriteOnce
@@ -83,8 +83,8 @@ spec:
   - metadata:
       name: "{{- .Values.zookeeper.persistence.pvcName -}}-datalog"
     spec:
-{{- if .Values.k8s.persistence.useDynamicProvisioning }}
-      storageClassName: {{ .Values.k8s.persistence.defaultStorageClass }}
+{{- if not .Values.k8s.persistence.hasDefaultStorageClass }}
+      storageClassName: {{ .Values.k8s.persistence.explicitStorageClass }}
 {{- end }}
       accessModes:
         - ReadWriteOnce

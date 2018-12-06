@@ -97,12 +97,17 @@ whisk:
 
 k8s:
   persistence:
-    defaultStorageClass: default
+    hasDefaultStorageClass: false
+    explicitStorageClass: default
 ```
 
 IKS does not provide a properly configured DefaultStorageClass,
 instead you need to tell the Helm chart to use the `default`
-StorageClassName as shown above.
+StorageClassName as shown above. This StorageClass does have
+a dynamic provisioner, so it is not necessary to manually create
+the PersistentVolumes. Note that it is not unusual for it to take
+several minutes for your PersistentVolumes to be created
+(dependent resources will be in `Pending` state).
 
 ####  IBM Cloud Lite cluster
 
@@ -125,12 +130,17 @@ nginx:
 
 k8s:
   persistence:
-    defaultStorageClass: default
+    hasDefaultStorageClass: false
+    explicitStorageClass: default
 ```
 
 IKS does not provide a properly configured DefaultStorageClass,
 instead you need to tell the Helm chart to use the `default`
-StorageClassName as shown above.
+StorageClassName as shown above. This StorageClass does have
+a dynamic provisioner, so it is not necessary to manually create
+the PersistentVolumes. Note that it is not unusual for it to take
+several minutes for your PersistentVolumes to be created
+(dependent resources will be in `Pending` state).
 
 ## Hints and Tips
 

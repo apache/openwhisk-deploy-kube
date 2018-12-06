@@ -174,20 +174,26 @@ be scheduled.  If your Kubernetes cluster is properly configured to support
 including having a DefaultStorageClass admission controller and a
 designated default StorageClass, then this will all happen seamlessly.
 
-If your cluster is not properly configured, then you will need to
-manually create the necessary PersistentVolumes when deploying the
-Helm chart. In this case, you should also disable the use of dynamic
-provisioning by the Helm chart by adding the following stanza to your
-mycluster.yaml
+See [NFS Dynamis Storage Provisioning](./k8s-nfs-dynamic-storage.md) for one
+approach to provisioning dynamic storage if it's not already provisioned
+on your cluster.
+
+If your cluster is not thus configured and you want to use persistence,
+then you will need to add the following stanza to your mycluster.yaml.
 ```yaml
 k8s:
   persistence:
-    useDynamicProvisioning: false
+    hasDefaultStorageClass: false
+    explicitStorageClass: <DESIRED_STORAGE_CLASS_NAME>
 ```
+If <DESIRED_STORAGE_CLASS_NAME> has a dynamic provisioner, deploying
+the Helm chart will automatically create the required PersistentVolumes.
+If <DESIRED_STORAGE_CLASS_NAME> does not have a dynamic provisioner,
+then you will need to manually create the required persistent volumes.
 
-You may disable persistence entirely by adding the following stanza to
-your mycluster.yaml:
-```
+Alternatively, you may also entirely disable the usage of persistence
+by adding the following stanza to your mycluster.yaml:
+```yaml
 k8s:
   persistence:
     enabled: false

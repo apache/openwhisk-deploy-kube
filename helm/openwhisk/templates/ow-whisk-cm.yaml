@@ -1,15 +1,6 @@
 # Licensed to the Apache Software Foundation (ASF) under one or more contributor
 # license agreements; and to You under the Apache License, Version 2.0.
 
-# There are some variables that a user must define for their deployment.
-# Check for those values here and attempt to give helpful error messages.
-#
-{{- if ne .Values.whisk.ingress.type "LoadBalancer" }}
-# whisk.ingress.type is {{ required "You must provide a value for whisk.ingress.type (See docs/ingress.md)" .Values.whisk.ingress.type }}
-# whisk.ingress.apiHostName is {{ required "You must provide a value for whisk.ingress.apiHostName (See docs/ingress.md)" .Values.whisk.ingress.apiHostName }}
-# whisk.ingress.apiHostPort is {{ required "You must provide a value for whisk.ingress.apiHostPort (See docs/ingress.md)" .Values.whisk.ingress.apiHostPort }}
-{{- end }}
-
 apiVersion: v1
 kind: ConfigMap
 metadata:

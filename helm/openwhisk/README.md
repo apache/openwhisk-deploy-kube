@@ -72,7 +72,7 @@ This chart requires 5 Persistent Volumes to be created to avoid loss of data.  O
 
 * When the chart is deployed, the value `k8s.persistence.enabled` is set to false to disable usage of Persistent Volumes (for development and test activities).
 * The Kubernetes cluster supports Dynamic Volume Provisioning and has a default StorageClass defined with an associated provisioner.
-* The Kubernetes cluster supports Dynamic Volume Provisioning and when the chart is deployed, the value `k8s.persistence.defaultStorageClass` is set to a StorageClass which has an associated provisioner.
+* The Kubernetes cluster supports Dynamic Volume Provisioning and when the chart is deployed, the value `k8s.persistence.hasDefaultStorageClass` is set to `false` and `k8s.persistence.explicitStorageClass` is set to a StorageClass which has an associated provisioner.
 
 ### PodSecurityPolicy Requirements
 
