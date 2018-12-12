@@ -226,9 +226,9 @@ component on Kubernetes (selected by picking a
       create, schedule, and manage the Pods that contain the user function
       containers. The pros and cons of this design are roughly the
       inverse of `DockerContainerFactory`.  Kubernetes pod management
-      operations have higher latency and exercise newer code paths in
-      the Invoker.  However, this design fully leverages Kubernetes to
-      manage the execution resources for user functions.
+      operations have higher latency and without additional configuration
+      (see below) can result in poor performance. However, this design
+      fully leverages Kubernetes to manage the execution resources for user functions.
 
 You can control the selection of the ContainerFactory by adding either
 ```yaml
@@ -244,9 +244,29 @@ invoker:
 ```
 to your `mycluster.yaml`
 
+For scalability, you will probably want to use `replicaCount` to
+deploy more than one Invoker when using the KubernetesContainerFactory.
+You will also need to override the value of `whisk.containerPool.userMemory`
+to a significantly larger value when using the KubernetesContainerFactory
+to better match the overall memory available on invoker worker nodes divided by
+the number of Invokers you are creating.
+
+When using the KubernetesContainerFactory, the invoker uses the Kubernetes
+API server to extract logs from the user action containers.  This operation has
+high overhead and if user actions produce non-trivial amounts of logging output
+can result in a severe performance degradation. To mitigate this, you should
+configure an alternate implementation of the LoggingProvider SPI.
+For example, you can completely disable OpenWhisk's log processing and rely
+on Kubernetes-level logs of the action containers by adding the following
+to your `mycluster.yaml`:
+```yaml
+invoker:
+  options: "-Dwhisk.spi.LogStoreProvider=org.apache.openwhisk.core.containerpool.logging.LogDriverLogStoreProvider"
+```
+
 The KubernetesContainerFactory can be deployed with an additional
 invokerAgent that implements container suspend/resume operations on
-behalf of a remote Invoker.  To enable this, add
+behalf of a remote Invoker. To enable this experimental configuration, add
 ```yaml
 invoker:
   containerFactory:
@@ -256,9 +276,20 @@ invoker:
 ```
 to your `mycluster.yaml`
 
-For scalability, you will probably want to use `replicaCount` to
-deploy more than one Invoker when using the KubernetesContainerFactory.
-You will also need to override the value of `whisk.containerPool.userMemory`
-to a significantly larger value when using the KubernetesContainerFactory
-to better match the overall memory available on invoker worker nodes divided by
-the number of Invokers you are creating.
+### User action container DNS
+
+If you are using the DockerContainerFactory, by default your user actions will
+not be able to connect to other Kubernetes services running in your cluster.
+To enable a more Kubernetes-native variant of the DockerContainerFactory, you
+need to configure the DNS nameservers for the user containers to use Kubernetes's
+DNS service.  Currently this requires you to discover the InternalIP
+used for the DNS service and record this numeric ip address in `values.yaml`.
+
+For example, if your cluster uses kube-dns, then first
+get the IP address of Kubernetes DNS server by `echo $(kubectl get svc kube-dns -n kube-system -o 'jsonpath={.spec.clusterIP}')`
+and then add below stanza to your `mycluster.yaml`:
+```yaml
+invoker:
+  containerFactory:
+    nameservers: "<IP_Address_Of_Kube_DNS>"
+```
