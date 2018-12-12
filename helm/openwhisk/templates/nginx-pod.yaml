@@ -46,8 +46,6 @@ spec:
           containerPort: {{ .Values.nginx.httpPort }}
         - name: http-api
           containerPort: {{ .Values.nginx.httpsPort }}
-        - name: https-admin
-          containerPort: {{ .Values.nginx.httpsAdminPort }}
         volumeMounts:
         - name: nginx-conf
           mountPath: "/etc/nginx/nginx.conf"
