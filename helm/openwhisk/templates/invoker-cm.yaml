@@ -4,8 +4,9 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Release.Name }}-docker-pull-runtimes
+  name: {{ .Release.Name }}-invoker-scripts
   labels:
 {{ include "openwhisk.label_boilerplate" .| indent 4 }}
 data:
 {{ (.Files.Glob "configMapFiles/dockerPullRuntimes/playbook.yml").AsConfig | indent 2 }}
+{{ (.Files.Glob "configMapFiles/configureDNS/configureDNS.sh").AsConfig | indent 2 }}

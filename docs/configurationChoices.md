@@ -22,54 +22,6 @@ supported by the OpenWhisk Helm chart.  In general, you customize your
 deployment by adding stanzas to `mycluster.yaml` that override default
 values in the `helm/openwhisk/values.yaml` file.
 
-### Deploying Event Providers
-
-OpenWhisk has several standard Event Providers that can be optionally enabled.
-The OpenWhisk Helm Chart currently includes optional support for
-deploying the alarm, cloudant, and kafka providers.
-To deploy a provider, you must add a stanza to your `mycluster.yaml` that enables it,
-for example:
-```yaml
-providers:
-  alarm:
-    enabled: true
-```
-
-The deployment of the event providers is not enabled by default because they
-are not fully functional with OpenWhisk's default
-`DockerContainerFactory` without additional configuration (the issue is that
-user action containers created by the DockerContainerFactory are not configured to
-themselves be able to invoke Kubernetes services). To work around this you must do one
-of the following three alternatives:
-1. Deploy a CouchDB instance external to your Kubernetes cluster and configure the event
-providers to use it by adding a stanza like the following to your `mycluster.yaml`:
-```yaml
-providers:
-  db:
-    external: true
-    host: "0.0.0.0"
-    port: 5984
-    protocol: "http"
-    username: "admin"
-    password: "secret"
-```
-2. Configure the DNS nameservers for the user containers created by DockerContainerFactory to
-use Kubernetes's DNS service.  For example, if your cluster uses kube-dns, then first
-get the IP address of Kubernetes DNS server by `echo $(kubectl get svc kube-dns -n kube-system -o 'jsonpath={.spec.clusterIP}')`
-and then add below stanza to your `mycluster.yaml`:
-```yaml
-invoker:
-  containerFactory:
-    nameservers: "<IP_Address_Of_Kube_DNS>"
-```
-3. Use the lower performance `KubernetesContainerFactory` by adding the following stanza
-to your `mycluster.yaml`
-```yaml
-invoker:
-  containerFactory:
-    impl: "kubernetes"
-```
-
 ### Replication factor
 
 By default the OpenWhisk Helm Chart will deploy a single replica of each
@@ -157,6 +109,19 @@ k8s:
     enabled: false
 ```
 
+### Selectively Deploying Event Providers
+
+The default settings of the Helm chart will deploy OpenWhisk's alarm,
+cloudant, and kafka event providers. If you want to disable the
+deployment of one or more event providers, you can add
+a stanza to your `mycluster.yaml` for example:
+```yaml
+providers:
+  alarm:
+    enabled: false
+```
+will disable the deployment of the alarm provider.
+
 ### Invoker Container Factory
 
 The Invoker is responsible for creating and managing the containers
@@ -236,18 +201,9 @@ to your `mycluster.yaml`
 
 ### User action container DNS
 
-If you are using the DockerContainerFactory, by default your user actions will
-not be able to connect to other Kubernetes services running in your cluster.
-To enable a more Kubernetes-native variant of the DockerContainerFactory, you
-need to configure the DNS nameservers for the user containers to use Kubernetes's
-DNS service.  Currently this requires you to discover the InternalIP
-used for the DNS service and record this numeric ip address in `values.yaml`.
-
-For example, if your cluster uses kube-dns, then first
-get the IP address of Kubernetes DNS server by `echo $(kubectl get svc kube-dns -n kube-system -o 'jsonpath={.spec.clusterIP}')`
-and then add below stanza to your `mycluster.yaml`:
-```yaml
-invoker:
-  containerFactory:
-    nameservers: "<IP_Address_Of_Kube_DNS>"
-```
+By default, your user actions containers will be configured to use the same
+DNS nameservers, search path, and options as the Invoker pod that spawned them.
+If you want to override this default when using the DockerContainerFactory,
+you can set `invoker.containerFactory.networkConfig.dns.inheritInvokerConfig` to `false`
+and explicitly configure the child values of `invoker.containerFactory.networkConfig.dns.overrides`
+instead.
