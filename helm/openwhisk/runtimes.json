@@ -209,7 +209,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-dotnet-v2.2",
-                    "tag": "latest"
+                    "tag": "52eac6c"
                 },
                 "attached": {
                     "attachmentName": "codefile",
