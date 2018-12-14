@@ -199,6 +199,23 @@
                     "tag": "e7fb79c"
                 }
             }
+        ],
+        "dotnet": [
+            {
+                "kind": "dotnet:2.2",
+                "default": true,
+                "deprecated": false,
+                "requireMain": true,
+                "image": {
+                    "prefix": "openwhisk",
+                    "name": "action-dotnet-v2.2",
+                    "tag": "52eac6c"
+                },
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                }
+            }
         ]
     },
     "blackboxes": [
