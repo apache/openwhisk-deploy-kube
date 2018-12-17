@@ -46,16 +46,63 @@ whisk:
       secrettype: "type"
       crt: "crt"
       key: "key"
-
-
   # Production deployments _MUST_ override these default auth values
   auth:
     system: "789c46b1-71f6-4ed5-8c54-816aa4f8c502:abczO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP"
     guest: "23bc46b1-71f6-4ed5-8c54-816aa4f8c502:123zO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP"
   systemNameSpace: "/whisk.system"
+  limits:
+    actionsInvokesPerminute: 60
+    actionsInvokesConcurrent: 30
+    triggersFiresPerminute: 60
+    actionsSequenceMaxlength: 50
+    actions:
+      time:
+        min: "100ms"
+        max: "5m"
+        std: "1m"
+      memory:
+        min: "128m"
+        max: "512m"
+        std: "256m"
+      concurrency:
+        min: 1
+        max: 1
+        std: 1
+      log:
+        min: "0m"
+        max: "10m"
+        std: "10m"
+    activation:
+      payload:
+        max: "1048576"
   loadbalancer:
     blackboxFraction: "10%"
     timeoutFactor: 2
+  # Kafka configuration. For all sub-fields a value of "" means use the default from application.conf
+  kafka:
+    replicationFactor: ""
+    topics:
+      cacheInvalidation:
+        segmentBytes: ""
+        retentionBytes: ""
+        retentionMs: ""
+      completed:
+        segmentBytes: ""
+        retentionBytes: ""
+        retentionMs: ""
+      events:
+        segmentBytes: ""
+        retentionBytes: ""
+        retentionMs: ""
+      health:
+        segmentBytes: ""
+        retentionBytes: ""
+        retentionMs: ""
+      invoker:
+        segmentBytes: ""
+        retentionBytes: ""
+        retentionMs: ""
   containerPool:
     userMemory: "2048m"
   runtimes: "runtimes.json"
@@ -98,6 +145,7 @@ docker:
     name: ""
     username: ""
     password: ""
+  timezone: "UTC"
 
 # zookeeper configurations
 zookeeper:
@@ -178,7 +226,6 @@ nginx:
   restartPolicy: "Always"
   httpPort: 80
   httpsPort: 443
-  httpsAdminPort: 8443
   httpsNodePort: 31001
 
 # Controller configurations
@@ -193,11 +240,6 @@ controller:
   options: ""
   jvmHeapMB: "1024"
   jvmOptions: ""
-  limits:
-    actionsSequenceMaxlength: 50
-    triggersFiresPerminute: 60
-    actionsInvokesPerminute: 60
-    actionsInvokesConcurrent: 30
 
 # Invoker configurations
 invoker:

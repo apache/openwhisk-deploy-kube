@@ -24,5 +24,3 @@ spec:
       nodePort: {{ .Values.nginx.httpsNodePort }}
       {{- end }}
       name: https-api
-    - port: {{ .Values.nginx.httpsAdminPort }}
-      name: https-admin

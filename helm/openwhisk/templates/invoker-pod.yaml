@@ -121,6 +121,9 @@ spec:
           - name: "RUNTIMES_MANIFEST"
             value: {{ template "openwhisk.runtimes_manifest" . }}
 
+          # Action limits
+{{ include "openwhisk.limitsEnvVars" . | indent 10 }}
+
           # Default to empty logs dir. This is because logs should go to stdout
           - name: "WHISK_LOGS_DIR"
             value: ""
@@ -138,6 +141,7 @@ spec:
           # properties for kafka connection
           - name: "KAFKA_HOSTS"
             value: "{{ include "openwhisk.kafka_host" . }}:{{ .Values.kafka.port }}"
+{{ include "openwhisk.kafkaConfigEnvVars" . | indent 10 }}
 
           # properties for zookeeper connection
           - name: "ZOOKEEPER_HOSTS"
