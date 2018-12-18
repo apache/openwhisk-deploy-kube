@@ -3,7 +3,7 @@
 
 ## Metadata for OpenWhisk configuration
 ## This metadata is used to augment the value.yaml to drive IPC UI for configuration of the Helm chart installation
-     
+
 ## apiHostName configuration metadata
 whisk:
   __metadata:
@@ -16,19 +16,19 @@ whisk:
         description: "Please specify Ingress name"
         type: "string"
         required: true
-    apiHostName: 
+    apiHostName:
       __metadata:
         label: "API host name"
         description: "Please specify the hostname / IP address of your cluster"
         type: "string"
         required: true
-    apiHostPort: 
+    apiHostPort:
       __metadata:
         label: "API host port"
         description: "Please specify API host port"
         type: "string"
         required: true
-    apiHostProto: 
+    apiHostProto:
       __metadata:
         label: "API host protocol"
         description: "Please specify API host protocol"
@@ -42,11 +42,11 @@ whisk:
         required: true
     annotations:
       __metadata:
-        label: "Annotations"    
+        label: "Annotations"
         description: "Please specify annotations as key: value pairs"
         type: "string"
         multiline: true
-        required: false   
+        required: false
     domain:
       __metadata:
         label: "Domain"
@@ -54,7 +54,7 @@ whisk:
         type: "string"
         required: true
     tls:
-      enabled: 
+      enabled:
         __metadata:
           label: "TLS enabled"
           description: "Please specify if TLS is enabled"
@@ -97,19 +97,19 @@ whisk:
           type: "string"
           required: true
   auth:
-    system: 
+    system:
       __metadata:
         label: "Auth system"
         description: "Please specify auth system"
         type: "string"
         required: true
-    guest: 
+    guest:
       __metadata:
         label: "Auth guest"
         description: "Please specify auth guest"
         type: "string"
         required: true
-  systemNameSpace: 
+  systemNameSpace:
     __metadata:
       label: "System namespace"
       description: "Please specify system namespace"
@@ -133,7 +133,7 @@ whisk:
         label: "Maximum triggers fired per minute"
         description: "Please specify maximum triggers fired per minute"
         type: "number"
-        required: true    
+        required: true
     actionsSequenceMaxlength:
       __metadata:
         label: "Maximum length of action sequence"
@@ -204,19 +204,19 @@ whisk:
             label: "Mimimum action log size"
             description: "Please specify mimimum action log size"
             type: "string"
-            required: true        
+            required: true
         max:
           __metadata:
             label: "Maximum action log size"
             description: "Please specify maximum action log size"
             type: "string"
-            required: true   
+            required: true
         std:
           __metadata:
             label: "Standard action log size"
             description: "Please specify standard action log size"
             type: "string"
-            required: true         
+            required: true
     activation:
       payload:
         max:
@@ -224,15 +224,15 @@ whisk:
             label: "Maximum activation payload"
             description: "Please specify maximum activation payload"
             type: "string"
-            required: true         
+            required: true
   loadbalancer:
-    blackboxFraction: 
+    blackboxFraction:
       __metadata:
         label: "Loadbalancer blackbox fraction"
         description: "Please specify loadbalancer blackbox fraction"
         type: "string"
         required: true
-    timeoutFactor: 
+    timeoutFactor:
       __metadata:
         label: "Loadbalancer timeout factor"
         description: "Please specify loadbalancer timeout factor"
@@ -244,7 +244,7 @@ whisk:
         label: "Kafka replication factor"
         description: "Please specify kafka replication factor"
         type: "string"
-        required: false    
+        required: false
     topics:
       cacheInvalidation:
         segmentBytes:
@@ -252,103 +252,103 @@ whisk:
             label: "Kafka topic cache invalidation segment bytes"
             description: "Please specify Kafka topic cache invalidation segment bytes"
             type: "string"
-            required: false   
+            required: false
         retentionBytes:
           __metadata:
             label: "Kafka topic cache invalidation retention bytes"
             description: "Please specify Kafka topic cache invalidation retention bytes"
             type: "string"
-            required: false   
+            required: false
         retentionMs:
           __metadata:
             label: "Kafka topic cache invalidation retention ms"
             description: "Please specify Kafka topic cache invalidation retention ms"
             type: "string"
-            required: false           
+            required: false
       completed:
-        segmentBytes: 
+        segmentBytes:
           __metadata:
             label: "Kafka topic completed segment bytes"
             description: "Please specify Kafka topic completed segment bytes"
             type: "string"
-            required: false  
+            required: false
         retentionBytes:
           __metadata:
             label: "Kafka topic completed retention bytes"
             description: "Please specify Kafka topic completed retention bytes"
             type: "string"
-            required: false  
+            required: false
         retentionMs:
           __metadata:
             label: "Kafka topic completed retention ms"
             description: "Please specify Kafka topic completed retention ms"
             type: "string"
-            required: false          
+            required: false
       events:
         segmentBytes:
           __metadata:
             label: "Kafka topic events segment bytes"
             description: "Please specify Kafka topic events segment bytes"
             type: "string"
-            required: false  
+            required: false
         retentionBytes:
           __metadata:
             label: "Kafka topic events retention bytes"
             description: "Please specify Kafka topic events retention bytes"
             type: "string"
-            required: false  
-        retentionMs: 
+            required: false
+        retentionMs:
           __metadata:
             label: "Kafka topic events retention ms"
             description: "Please specify Kafka topic events retention ms"
             type: "string"
-            required: false  
+            required: false
       health:
         segmentBytes:
           __metadata:
             label: "Kafka topic health segment bytes"
             description: "Please specify Kafka topic health segment bytes"
             type: "string"
-            required: false  
+            required: false
         retentionBytes:
           __metadata:
             label: "Kafka topic health retention bytes"
             description: "Please specify Kafka topic health retention bytes"
             type: "string"
-            required: false  
-        retentionMs: 
+            required: false
+        retentionMs:
           __metadata:
             label: "Kafka topic health retention ms"
             description: "Please specify Kafka topic health retention ms"
             type: "string"
-            required: false              
+            required: false
       invoker:
         segmentBytes:
           __metadata:
             label: "Kafka topic invoker segment bytes"
             description: "Please specify Kafka topic invoker segment bytes"
             type: "string"
-            required: false  
+            required: false
         retentionBytes:
           __metadata:
             label: "Kafka topic invoker retention bytes"
             description: "Please specify Kafka topic invoker retention bytes"
             type: "string"
-            required: false  
-        retentionMs: 
+            required: false
+        retentionMs:
           __metadata:
             label: "Kafka topic invoker retention ms"
             description: "Please specify Kafka topic invoker retention ms"
             type: "string"
-            required: false  
+            required: false
   containerPool:
-    userMemory: 
+    userMemory:
       __metadata:
         label: "Comtainerpool user memory"
         description: "Please specify container pool user memory"
         type: "string"
         required: true
-  runtimes: 
+  runtimes:
     __metadata:
       label: "Runtimes"
       description: "Please specify runtimes"
@@ -363,26 +363,26 @@ whisk:
         required: true
   versions:
     openwhisk:
-      buildDate: 
+      buildDate:
         __metadata:
           label: "OpenWhisk build date"
           description: "Please specify OpenWhisk build date"
           type: "string"
           required: true
-      buildNo: 
+      buildNo:
         __metadata:
           label: "OpenWhisk build number"
           description: "Please specify OpenWhisk build number"
           type: "string"
           required: true
-      gitTag: 
+      gitTag:
         __metadata:
           label: "OpenWhisk git tag"
           description: "Please specify OpenWhisk git tag"
           type: "string"
           required: true
     openwhiskCli:
-      tag: 
+      tag:
         __metadata:
           label: "CLI tag"
           description: "Please specify CLI tag"
@@ -416,18 +416,18 @@ whisk:
           description: "Please specify Kafka git tag"
           type: "string"
           required: true
-      
+
 k8s:
   __metadata:
     label: "Kubernetes configuration"
     description: "Please update the folllowing default values to configure Kubernetes"
-  domain: 
+  domain:
     __metadata:
       label: "Domain"
       description: "Please specify domain"
       type: "string"
       required: true
-  dns: 
+  dns:
     __metadata:
       label: "DNS"
       description: "Please specify DNS"
@@ -452,7 +452,7 @@ k8s:
         description: "Please specify explicit storage class"
         type: "string"
         required: false
-        
+
 utility:
   __metadata:
     label: "Utility configuration"
@@ -463,13 +463,13 @@ utility:
       description: "Please specify image name"
       type: "string"
       required: true
-  imageTag: 
+  imageTag:
     __metadata:
       label: "Image tag"
       description: "Please specify image tag"
       type: "string"
       required: true
-  imagePullPolicy: 
+  imagePullPolicy:
     __metadata:
       label: "Image pull policy"
       description: "Please specify image pull policy"
@@ -478,7 +478,7 @@ utility:
 
 
 docker:
-  __metadata: 
+  __metadata:
     label: "Docker configuration"
     description: "Please update the folllowing default values to configure Docker"
   registry:
@@ -508,7 +508,7 @@ docker:
       required: false
 
 zookeeper:
-  __metadata: 
+  __metadata:
     label: "Zookeeper configuration"
     description: "PPlease update the folllowing default values to configure Zookeeper"
   external:
@@ -617,7 +617,7 @@ zookeeper:
         required: true
 
 kafka:
-  __metadata: 
+  __metadata:
     label: "Kafka configuration"
     description: "Please update the folllowing default values to configure Kafka"
   external:
@@ -683,7 +683,7 @@ kafka:
         required: true
 
 db:
-  __metadata: 
+  __metadata:
     label: "Database configuration"
     description: "Please update the folllowing default values to configure the database"
   external:
@@ -810,22 +810,22 @@ db:
         required: true
 
 nginx:
-  __metadata: 
+  __metadata:
     label: "NGINX Configuration"
     description: "Please update the folllowing default values to configure NGINX"
-  name: 
+  name:
     __metadata:
       label: "Name"
       description: "Please specify name"
       type: "string"
       required: true
-  imageName: 
+  imageName:
     __metadata:
       label: "Image name"
       description: "Please specify image name"
       type: "string"
       required: true
-  imageTag: 
+  imageTag:
     __metadata:
       label: "Image tag"
       description: "Please specify image tag"
@@ -849,20 +849,20 @@ nginx:
       description: "Please specify restart policy"
       type: "string"
       required: true
-  httpPort: 
+  httpPort:
     __metadata:
       label: "HTTP port"
       description: "Please specify HTTP port"
       type: "string"
       required: true
-  httpsPort: 
+  httpsPort:
     __metadata:
       label: "HTTPS port"
       description: "Please specify HTTPS port"
       type: "string"
       required: true
   httpsNodePort:
-    __metadata: 
+    __metadata:
       label: "HTTPS node port"
       description: "Please specify HTTPS node port"
       type: "string"
@@ -872,19 +872,19 @@ controller:
   __metadata:
     label: "Controller configuration"
     description: "Please update the folllowing default values to configure Controller"
-  name: 
+  name:
     __metadata:
       label: "Name"
       description: "Please specify name"
       type: "string"
       required: true
-  imageName: 
+  imageName:
     __metadata:
       label: "Image name"
       description: "Please specify image name"
       type: "string"
       required: true
-  imageTag: 
+  imageTag:
     __metadata:
       label: "Image tag"
       description: "Please specify image tag"
@@ -909,19 +909,19 @@ controller:
       type: "string"
       required: true
   port:
-    __metadata: 
+    __metadata:
       label: "Port"
       description: "Please specify port"
       type: "string"
       required: true
   options:
-    __metadata: 
+    __metadata:
       label: "Options"
       description: "Please specify options"
       type: "string"
       required: false
-  jvmHeapMB: 
-    __metadata: 
+  jvmHeapMB:
+    __metadata:
       label: "JVM heap memory (MB)"
       description: "Please specify the maximum Java heap size in megabytes (MB)"
       type: "string"
@@ -938,19 +938,19 @@ invoker:
   __metadata:
     label: "Invoker Configuration"
     description: "Please update the folllowing default values to configure Invoker"
-  name: 
+  name:
     __metadata:
       label: "Name"
       description: "Please specify name"
       type: "string"
       required: true
-  imageName: 
+  imageName:
     __metadata:
       label: "Image name"
       description: "Please specify image name"
       type: "string"
       required: true
-  imageTag: 
+  imageTag:
     __metadata:
       label: "Image tag"
       description: "Please specify image tag"
@@ -969,29 +969,29 @@ invoker:
       type: "string"
       required: true
   port:
-    __metadata: 
+    __metadata:
       label: "Port"
       description: "Please specify port"
       type: "string"
       required: true
   options:
-    __metadata: 
+    __metadata:
       label: "Additional options"
       description: "Please specify additional options"
       type: "string"
       required: false
-  jvmHeapMB: 
-    __metadata: 
+  jvmHeapMB:
+    __metadata:
       label: "JVM heap memory (MB)"
       description: "Please specify the maximum Java heap size in megabytes (MB)"
       type: "string"
-      required: true  
+      required: true
   jvmOptions:
     __metadata:
       label: "JVM options"
       description: "Please specify JVM options"
       type: "string"
-      required: false 
+      required: false
   containerFactory:
     dind:
       __metadata:
@@ -1005,7 +1005,7 @@ invoker:
         description: "Please specify if Runc should be used"
         type: "boolean"
         required: true
-    impl: 
+    impl:
       __metadata:
         label: "impl"
         description: "Please specify the implementation to be used"
@@ -1020,7 +1020,7 @@ invoker:
           required: true
       agent:
         name:
-          __metadata: 
+          __metadata:
             label: "Agent name"
             description: "Please specify agent name"
             type: "string"
@@ -1031,7 +1031,7 @@ invoker:
             description: "Please specify agent image name"
             type: "string"
             required: true
-        imageTag: 
+        imageTag:
           __metadata:
             label: "Agent image tag"
             description: "Please specify agent image tag"
@@ -1043,8 +1043,8 @@ invoker:
             description: "Please specify agent image pull policy"
             type: "string"
             required: true
-        enabled: 
-          __metadata: 
+        enabled:
+          __metadata:
             label: "Agent enabled"
             description: "Please specify if agent should be enabled"
             type: "boolean"
@@ -1073,19 +1073,19 @@ apigw:
   __metadata:
     label: "API gateway configuration"
     description: "Please update the folllowing default values to configure API gateway"
-  name: 
+  name:
     __metadata:
       label: "Name"
       description: "Please specify name"
       type: "string"
       required: true
-  imageName: 
+  imageName:
     __metadata:
       label: "Image name"
       description: "Please specify image name"
       type: "string"
       required: true
-  imageTag: 
+  imageTag:
     __metadata:
       label: "Image tag"
       description: "Please specify image tag"
@@ -1110,13 +1110,13 @@ apigw:
       type: "string"
       required: true
   apiPort:
-    __metadata: 
+    __metadata:
       label: "API port"
       description: "Please specify API port"
       type: "string"
       required: true
   mgmtPort:
-    __metadata: 
+    __metadata:
       label: "Management port"
       description: "Please specify management port"
       type: "string"
@@ -1150,7 +1150,7 @@ redis:
       description: "Please specify image pull policy"
       type: "string"
       required: true
-  replicaCount: 
+  replicaCount:
     __metadata:
       label: "Replica count"
       description: "Please specify replica count"
@@ -1160,7 +1160,7 @@ redis:
     __metadata:
       label: "Restart policy"
       description: "Please specify restart policy"
-      type: "string" 
+      type: "string"
       required: true
   port:
     __metadata:
@@ -1181,7 +1181,7 @@ redis:
         description: "Please specify size"
         type: "string"
         required: true
- 
+
 providers:
   __metadata:
     label: "OpenWhisk providers configuration"
@@ -1256,7 +1256,7 @@ providers:
         description: "Please specify Alarm image pull policy"
         type: "string"
         required: true
-    replicaCount: 
+    replicaCount:
       __metadata:
         label: "Alarm replica count"
         description: "Please specify Alarm replica count"
@@ -1281,7 +1281,7 @@ providers:
         type: "string"
         required: true
     persistence:
-      pvcName: 
+      pvcName:
         __metadata:
           label: "Alarm PVC name"
           description: "Please specify Alarm PVC name"
@@ -1337,7 +1337,7 @@ providers:
         description: "Please specify Kafka restart policy"
         type: "string"
         required: true
-    apiPort: 
+    apiPort:
       __metadata:
         label: "Kafka API port"
         description: "Please specify Kafka API port"
@@ -1381,7 +1381,7 @@ providers:
         description: "Please specify Cloudant image pull policy"
         type: "string"
         required: true
-    replicaCount: 
+    replicaCount:
       __metadata:
         label: "Cloudant replica count"
         description: "Please specify Cloudant replica count"
