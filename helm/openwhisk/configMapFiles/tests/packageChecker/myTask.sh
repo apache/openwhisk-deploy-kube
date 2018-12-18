@@ -5,6 +5,7 @@
 # installed and is accessible using the guest auth.
 
 packageListingCheck() {
+  echo "Looking for package $1"
   if [ -z "$1" ]; then
     echo "Error, package listing check called without a package name"
     exit 1

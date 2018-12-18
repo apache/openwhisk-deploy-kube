@@ -151,6 +151,9 @@ ROOTDIR="$SCRIPTDIR/../../"
 # Default to docker container factory if not specified
 OW_CONTAINER_FACTORY=${OW_CONTAINER_FACTORY:="docker"}
 
+# Default to not including system tests in helm test suite
+OW_INCLUDE_SYSTEM_TESTS=${$OW_INCLUDE_SYSTEM_TESTS:="false"}
+
 # Default timeout limit to 60 steps
 TIMEOUT_STEP_LIMIT=${TIMEOUT_STEP_LIMIT:=60}
 
@@ -181,6 +184,8 @@ whisk:
     apiHostName: $WSK_HOST
     apiHostPort: $WSK_PORT
   runtimes: "runtimes-minimal-travis.json"
+  testing:
+    includeSystemTests: $OW_INCLUDE_SYSTEM_TESTS
 
 # TODO: instead document how to enable dynamic volume provisioning for dind
 k8s:
@@ -229,27 +234,3 @@ deploymentHealthCheck "alarmprovider"
 deploymentHealthCheck "cloudantprovider"
 deploymentHealthCheck "kafkaprovider"
 
-
-###
-# Now run the tests provided in the Chart to sanity check the deployment
-###
-if helm test ow4travis; then
-    echo "PASSED! Deployment verification tests passed."
-else
-    echo "FAILED: Deployment verification tests failed."
-    kubectl logs -n openwhisk -low-testpod=true
-    exit 1
-fi
-
-
-###
-# Finally, clone the main openwhisk repo to get the test suite and run tests:testSystemBasic
-# TODO: The following tests have issues under the KubernetesContainerFactory
-#   1. WskActionTest "not be able to use 'ping' in an action" -- fails because user actions are full fledged pods with unrestricted network
-#   2. Tests that read activation logs in retry loops fail; perhaps because log extraction is so slow
-###
-if [ "$OW_RUN_SYSTEM_TESTS" == "yes" ]; then
-    (git clone https://github.com/apache/incubator-openwhisk openwhisk && cd openwhisk && \
-         TERM=dumb ./gradlew install && \
-         TERM=dumb ./gradlew :tests:testSystemBasic -Dwhisk.auth="$WSK_AUTH" -Dwhisk.server=https://$WSK_HOST:$WSK_PORT -Dopenwhisk.home=`pwd`) || exit 1
-fi

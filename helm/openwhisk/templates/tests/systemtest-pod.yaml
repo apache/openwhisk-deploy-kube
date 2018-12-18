@@ -1,12 +1,13 @@
 # Licensed to the Apache Software Foundation (ASF) under one or more contributor
 # license agreements; and to You under the Apache License, Version 2.0.
 
+{{- if .Values.whisk.testing.includeSystemTests }}
 apiVersion: v1
 kind: Pod
 metadata:
-  name: openwhisk-tests-package-checker
+  name: openwhisk-tests-systemtest
   labels:
-    name: openwhisk-tests-package-checker
+    name: openwhisk-tests-systemtest
     ow-testpod: "true"
 {{ include "openwhisk.label_boilerplate" . | indent 4 }}
   annotations:
@@ -16,9 +17,9 @@ spec:
   volumes:
   - name: task-dir
     configMap:
-      name: openwhisk-tests-package-checker-cm
+      name: openwhisk-tests-systemtest-cm
   containers:
-  - name: package-checker
+  - name: systemtest
     image: "{{- .Values.utility.imageName -}}:{{- .Values.utility.imageTag -}}"
     imagePullPolicy: {{ .Values.utility.imagePullPolicy | quote }}
     command: ["/bin/bash", "/task/myTask.sh"]
@@ -37,11 +38,6 @@ spec:
           configMapKeyRef:
             name: whisk.config
             key: whisk_api_host_url
-
-      # Which of the providers was installed (and thus should be checked)?
-      - name: "OW_INSTALL_ALARM_PROVIDER"
-        value: {{ if .Values.providers.alarm.enabled }} "yes" {{ else }} "no" {{ end }}
-      - name: "OW_INSTALL_CLOUDANT_PROVIDER"
-        value: {{ if .Values.providers.cloudant.enabled }} "yes" {{ else }} "no" {{ end }}
-      - name: "OW_INSTALL_KAFKA_PROVIDER"
-        value: {{ if .Values.providers.kafka.enabled }} "yes" {{ else }} "no" {{ end }}
+      - name: "OW_GIT_TAG_OPENWHISK"
+        value: {{ .Values.whisk.versions.openwhisk.gitTag | quote }}
+{{- end }}

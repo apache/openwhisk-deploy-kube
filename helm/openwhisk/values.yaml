@@ -46,34 +46,83 @@ whisk:
       secrettype: "type"
       crt: "crt"
       key: "key"
-
-
   # Production deployments _MUST_ override these default auth values
   auth:
     system: "789c46b1-71f6-4ed5-8c54-816aa4f8c502:abczO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP"
     guest: "23bc46b1-71f6-4ed5-8c54-816aa4f8c502:123zO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP"
   systemNameSpace: "/whisk.system"
+  limits:
+    actionsInvokesPerminute: 60
+    actionsInvokesConcurrent: 30
+    triggersFiresPerminute: 60
+    actionsSequenceMaxlength: 50
+    actions:
+      time:
+        min: "100ms"
+        max: "5m"
+        std: "1m"
+      memory:
+        min: "128m"
+        max: "512m"
+        std: "256m"
+      concurrency:
+        min: 1
+        max: 1
+        std: 1
+      log:
+        min: "0m"
+        max: "10m"
+        std: "10m"
+    activation:
+      payload:
+        max: "1048576"
   loadbalancer:
     blackboxFraction: "10%"
     timeoutFactor: 2
+  # Kafka configuration. For all sub-fields a value of "" means use the default from application.conf
+  kafka:
+    replicationFactor: ""
+    topics:
+      cacheInvalidation:
+        segmentBytes: ""
+        retentionBytes: ""
+        retentionMs: ""
+      completed:
+        segmentBytes: ""
+        retentionBytes: ""
+        retentionMs: ""
+      events:
+        segmentBytes: ""
+        retentionBytes: ""
+        retentionMs: ""
+      health:
+        segmentBytes: ""
+        retentionBytes: ""
+        retentionMs: ""
+      invoker:
+        segmentBytes: ""
+        retentionBytes: ""
+        retentionMs: ""
   containerPool:
     userMemory: "2048m"
   runtimes: "runtimes.json"
+  testing:
+    includeSystemTests: false
   versions:
     openwhisk:
-      buildDate: "2018-11-26-16:11:11Z"
-      buildNo: "20181126a"
-      gitTag: "7bd49718232d0381b53794f9353c014a1abfef15"
+      buildDate: "2018-12-13-03:18:39Z"
+      buildNo: "20181213a"
+      gitTag: "9f66633aa930547b0ea7caa36d4c46d935d6224d"
     openwhiskCli:
-      tag: "8da6e3b"
+      tag: "a596544"
     openwhiskCatalog:
       gitTag: "3d6d69f3e2dba96c775d4b1a4d55b1fc158b1201"
     openwhiskPackageAlarms:
-      gitTag: "d3846ad810ef9838fe849613af23dec53bd92676"
+      gitTag: "7693072f37d4ae215bf89bd721053b3cad341fec"
     openwhiskPackageCloudant:
-      gitTag: "3e0a90be16be5fc9e17928d3d70e230bfe4771b3"
+      gitTag: "cc9f35151b7b471f74e7f032c1f3342168687ca2"
     openwhiskPackageKafka:
-      gitTag: "e242c13d05a11c4d2df5968e13ba1e0f3ef95c72"
+      gitTag: "6dbafc49107567185ee3a55781c8b3144fad6f63"
 
 # Properties of the Kubernetes cluster on which OpenWhisk is being deployed
 k8s:
@@ -86,14 +135,9 @@ k8s:
 
 # Images used to run auxillary tasks/jobs
 utility:
-  ansibleRunner:
-    imageName: "openwhisk/ansible-runner"
-    imageTag: "7bd4971"
-    imagePullPolicy: "IfNotPresent"
-  scriptRunner:
-    imageName: "openwhisk/script-runner"
-    imageTag: "7bd4971"
-    imagePullPolicy: "IfNotPresent"
+  imageName: "openwhisk/ow-utils"
+  imageTag: "9f66633"
+  imagePullPolicy: "IfNotPresent"
 
 # Docker registry
 docker:
@@ -101,6 +145,7 @@ docker:
     name: ""
     username: ""
     password: ""
+  timezone: "UTC"
 
 # zookeeper configurations
 zookeeper:
@@ -181,14 +226,13 @@ nginx:
   restartPolicy: "Always"
   httpPort: 80
   httpsPort: 443
-  httpsAdminPort: 8443
   httpsNodePort: 31001
 
 # Controller configurations
 controller:
   name: "controller"
   imageName: "openwhisk/controller"
-  imageTag: "7bd4971"
+  imageTag: "9f66633"
   imagePullPolicy: "IfNotPresent"
   replicaCount: 1
   restartPolicy: "Always"
@@ -196,17 +240,12 @@ controller:
   options: ""
   jvmHeapMB: "1024"
   jvmOptions: ""
-  limits:
-    actionsSequenceMaxlength: 50
-    triggersFiresPerminute: 60
-    actionsInvokesPerminute: 60
-    actionsInvokesConcurrent: 30
 
 # Invoker configurations
 invoker:
   name: "invoker"
   imageName: "openwhisk/invoker"
-  imageTag: "7bd4971"
+  imageTag: "9f66633"
   imagePullPolicy: "IfNotPresent"
   restartPolicy: "Always"
   port: 8080
@@ -222,7 +261,7 @@ invoker:
       agent:
         name: "invoker-agent"
         imageName: "openwhisk/kube-invoker-agent"
-        imageTag: "e065c08"
+        imageTag: "eb92751"
         imagePullPolicy: "IfNotPresent"
         enabled: false
         port: 3233
@@ -234,7 +273,7 @@ invoker:
 apigw:
   name: "apigateway"
   imageName: "openwhisk/apigateway"
-  imageTag: "a996221"
+  imageTag: "bed6e65"
   imagePullPolicy: "IfNotPresent"
   # NOTE: setting replicaCount > 1 is not tested and may not work
   replicaCount: 1
@@ -272,7 +311,7 @@ providers:
     enabled: false
     name: "alarmprovider"
     imageName: "openwhisk/alarmprovider"
-    imageTag: "1.10.3"
+    imageTag: "1.12.0"
     imagePullPolicy: "IfNotPresent"
     # NOTE: replicaCount > 1 doesn't work because of the PVC
     replicaCount: 1
@@ -299,7 +338,7 @@ providers:
     enabled: false
     name: "cloudantprovider"
     imageName: "openwhisk/cloudantprovider"
-    imageTag: "1.8.1"
+    imageTag: "1.9.0"
     imagePullPolicy: "IfNotPresent"
     # NOTE: replicaCount > 1 doesn't work because of the PVC
     replicaCount: 1

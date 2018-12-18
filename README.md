@@ -52,8 +52,7 @@ containerized applications. [Helm](https://helm.sh/) is a package
 manager for Kubernetes that simplifies the management of Kubernetes
 applications. You do not need to have detailed knowledge of either Kubernetes or
 Helm to use this project, but you may find it useful to review their
-basic documentation at the links above to become familiar with
-their key concepts and terminology.
+basic documentation to become familiar with their key concepts and terminology.
 
 ## Kubernetes
 
@@ -78,10 +77,9 @@ your cluster.
 [setup instructions](docs/k8s-dind-cluster.md) because the default
 setup of kubeadm-dind-cluster does *not* meet the requirements for
 running OpenWhisk.
-3. Windows: We believe that just like with MacOS, the built-in
-Kubernetes support in Docker for Windows version 18.06 or later should
-be sufficient to run OpenWhisk.  We would welcome a pull request with
-provide detailed setup instructions for Windows.
+3. Windows: You should be able to use the built-in Kubernetes support
+in Docker for Windows version 18.06 or later.
+We would welcome a pull request with detailed setup instructions for Windows.
 
 ### Using Minikube
 
@@ -98,7 +96,7 @@ subject to the cluster meeting the [technical
 requirements](docs/k8s-technical-requirements.md).  We have
 detailed documentation on using Kubernetes clusters from the following
 major cloud providers:
-* [IBM (IKS)](docs/k8s-ibm-public.md)
+* [IBM (IKS)](docs/k8s-ibm-public.md) and [IBM (ICP)](docs/k8s-ibm-private.md)
 * [Google (GKE)](docs/k8s-google.md)
 * [Amazon (EKS)](docs/k8s-aws.md)
 
@@ -112,7 +110,7 @@ consists of the `helm` command line tool that you install on your
 development machine and the `tiller` runtime that is deployed on your
 Kubernetes cluster.
 
-For detailed instructions on installing Helm, see these [instructions](docs/helm.md).
+For details on installing Helm, see these [instructions](docs/helm.md).
 
 In short if you already have the `helm` cli installed on your development machine,
 you will need to execute these two commands and wait a few seconds for the
@@ -151,7 +149,7 @@ easily access services in a Kubernetes-native way, you can configure
 your OpenWhisk deployment to enable that by either using the
 [KubernetesContainerFactory](docs/configurationChoices.md#invoker-container-factory)
 or setting the value of `invoker.DNS` when you create the `mycluster.yaml`
-to customize your deployment.
+to customize your deployment ([see DNS options](docs/configurationChoices.md#user-action-container-dns)).
 
 ## Initial setup
 
@@ -164,7 +162,7 @@ scheduler. For a single node cluster, simply do
 ```shell
 kubectl label nodes --all openwhisk-role=invoker
 ```
-If you have a multi-node cluster, for each node <INVOKER_NODE_NAME>
+If you have a multi-node cluster, then for each node <INVOKER_NODE_NAME>
 you want to be an invoker, execute
 ```shell
 $ kubectl label nodes <INVOKER_NODE_NAME> openwhisk-role=invoker

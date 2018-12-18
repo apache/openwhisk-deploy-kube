@@ -128,6 +128,79 @@ app: {{ template "openwhisk.fullname" . }}
       key: db_whisk_auths
 {{- end -}}
 
+{{/* Environment variables for specifying action limits */}}
+{{- define "openwhisk.limitsEnvVars" -}}
+- name: "LIMITS_ACTIONS_INVOKES_PERMINUTE"
+  value: {{ .Values.whisk.limits.actionsInvokesPerminute | quote }}
+- name: "LIMITS_ACTIONS_INVOKES_CONCURRENT"
+  value: {{ .Values.whisk.limits.actionsInvokesConcurrent | quote }}
+- name: "LIMITS_TRIGGERS_FIRES_PERMINUTE"
+  value: {{ .Values.whisk.limits.triggersFiresPerminute | quote }}
+- name: "LIMITS_ACTIONS_SEQUENCE_MAXLENGTH"
+  value: {{ .Values.whisk.limits.actionsSequenceMaxlength | quote }}
+- name: "CONFIG_whisk_timeLimit_min"
+  value: {{ .Values.whisk.limits.actions.time.min | quote }}
+- name: "CONFIG_whisk_timeLimit_max"
+  value: {{ .Values.whisk.limits.actions.time.max | quote }}
+- name: "CONFIG_whisk_timeLimit_std"
+  value: {{ .Values.whisk.limits.actions.time.std | quote }}
+- name: "CONFIG_whisk_memory_min"
+  value: {{ .Values.whisk.limits.actions.memory.min | quote }}
+- name: "CONFIG_whisk_memory_max"
+  value: {{ .Values.whisk.limits.actions.memory.max | quote }}
+- name: "CONFIG_whisk_memory_std"
+  value: {{ .Values.whisk.limits.actions.memory.std | quote }}
+- name: "CONFIG_whisk_concurrencyLimit_min"
+  value: {{ .Values.whisk.limits.actions.concurrency.min | quote }}
+- name: "CONFIG_whisk_concurrencyLimit_max"
+  value: {{ .Values.whisk.limits.actions.concurrency.max | quote }}
+- name: "CONFIG_whisk_concurrencyLimit_std"
+  value: {{ .Values.whisk.limits.actions.concurrency.std | quote }}
+- name: "CONFIG_whisk_logLimit_min"
+  value: {{ .Values.whisk.limits.actions.log.min | quote }}
+- name: "CONFIG_whisk_logLimit_max"
+  value: {{ .Values.whisk.limits.actions.log.max | quote }}
+- name: "CONFIG_whisk_logLimit_std"
+  value: {{ .Values.whisk.limits.actions.log.std | quote }}
+- name: "CONFIG_whisk_activation_payload_max"
+  value: {{ .Values.whisk.limits.activation.payload.max | quote }}
+{{- end -}}
+
+{{/* Environment variables for configuring kafka topics */}}
+{{- define "openwhisk.kafkaConfigEnvVars" -}}
+- name: "CONFIG_whisk_kafka_replicationFactor"
+  value: {{ .Values.whisk.kafka.replicationFactor | quote }}
+- name: "CONFIG_whisk_kafka_topics_cacheInvalidation_retentionBytes"
+  value: {{ .Values.whisk.kafka.topics.cacheInvalidation.retentionBytes | quote }}
+- name: "CONFIG_whisk_kafka_topics_cacheInvalidation_retentionMs"
+  value: {{ .Values.whisk.kafka.topics.cacheInvalidation.retentionMs | quote }}
+- name: "CONFIG_whisk_kafka_topics_cacheInvalidation_segmentBytes"
+  value: {{ .Values.whisk.kafka.topics.cacheInvalidation.segmentBytes | quote }}
+- name: "CONFIG_whisk_kafka_topics_completed_retentionBytes"
+  value: {{ .Values.whisk.kafka.topics.completed.retentionBytes | quote }}
+- name: "CONFIG_whisk_kafka_topics_completed_retentionMs"
+  value: {{ .Values.whisk.kafka.topics.completed.retentionMs | quote }}
+- name: "CONFIG_whisk_kafka_topics_completed_segmentBytes"
+  value: {{ .Values.whisk.kafka.topics.completed.segmentBytes | quote }}
+- name: "CONFIG_whisk_kafka_topics_events_retentionBytes"
+  value: {{ .Values.whisk.kafka.topics.events.retentionBytes | quote }}
+- name: "CONFIG_whisk_kafka_topics_events_retentionMs"
+  value: {{ .Values.whisk.kafka.topics.events.retentionMs | quote }}
+- name: "CONFIG_whisk_kafka_topics_events_segmentBytes"
+  value: {{ .Values.whisk.kafka.topics.events.segmentBytes | quote }}
+- name: "CONFIG_whisk_kafka_topics_health_retentionBytes"
+  value: {{ .Values.whisk.kafka.topics.health.retentionBytes | quote }}
+- name: "CONFIG_whisk_kafka_topics_health_retentionMs"
+  value: {{ .Values.whisk.kafka.topics.health.retentionMs | quote }}
+- name: "CONFIG_whisk_kafka_topics_health_segmentBytes"
+  value: {{ .Values.whisk.kafka.topics.health.segmentBytes | quote }}
+- name: "CONFIG_whisk_kafka_topics_invoker_retentionBytes"
+  value: {{ .Values.whisk.kafka.topics.invoker.retentionBytes | quote }}
+- name: "CONFIG_whisk_kafka_topics_invoker_retentionMs"
+  value: {{ .Values.whisk.kafka.topics.invoker.retentionMs | quote }}
+- name: "CONFIG_whisk_kafka_topics_invoker_segmentBytes"
+  value: {{ .Values.whisk.kafka.topics.invoker.segmentBytes | quote }}
+{{- end -}}
 
 {{/* tlssecretname for ingress */}}
 {{- define "openwhisk.tls_secret_name" -}}
