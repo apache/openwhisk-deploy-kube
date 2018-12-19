@@ -8,137 +8,155 @@
 ## apiHostName configuration metadata
 whisk:
   __metadata:
-    label: "OpenWhisk configuration"
-    description: "Please update the folllowing default values to configure OpenWhisk"
+    label: "General OpenWhisk configuration"
+    description: "System-wide configuration parameters for your OpenWhisk deployment"
   ingress:
+    __metadata:
+      label: "Ingress Specification"
+      description: "Configuration of the Ingress to be used to access OpenWhisk"
     name:
       __metadata:
         label: "Ingress name"
-        description: "Please specify Ingress name"
+        description: "a name for the Ingress resource"
         type: "string"
         required: true
     apiHostName:
       __metadata:
         label: "API host name"
-        description: "Please specify the hostname / IP address of your cluster"
+        description: "the external hostname or IP address of your Kubernetes cluster"
         type: "string"
         required: true
     apiHostPort:
       __metadata:
         label: "API host port"
-        description: "Please specify API host port"
+        description: "The external port of the Ingress"
         type: "string"
         required: true
     apiHostProto:
       __metadata:
         label: "API host protocol"
-        description: "Please specify API host protocol"
+        description: "The protocol (http or https) to be used to connect to the Ingress"
         type: "string"
         required: true
+        options:
+        - label: "http"
+          value: "http"
+        - label: "https"
+          value: "https"
     type:
       __metadata:
         label: "Ingress type"
-        description: "Please specify Ingress type"
+        description: "The type of Ingress being deployed (NodePort, LoadBalancer, Standard)"
         type: "string"
         required: true
+        options:
+        - label: "NodePort"
+          value: "NodePort"
+        - label: "LoadBalancer"
+          value: "LoadBalancer"
+        - label: "Standard"
+          value: "Standard"
     annotations:
       __metadata:
-        label: "Annotations"
-        description: "Please specify annotations as key: value pairs"
+        label: "Ingress Annotations"
+        description: "Annotations to add to Ingress resource. Specify as a list of key: value pairs"
         type: "string"
         multiline: true
         required: false
     domain:
       __metadata:
-        label: "Domain"
-        description: "Please specify domain"
+        label: "Ingress Domain"
+        description: "The Fully Qualified Host Name for the Ingress domain"
         type: "string"
         required: true
     tls:
+      __metadata:
+        label: "TLS configuration"
+        description: "Configuration of Ingress TLS"
       enabled:
         __metadata:
           label: "TLS enabled"
-          description: "Please specify if TLS is enabled"
+          description: "if TLS is enabled"
           type: "boolean"
           required: true
       secretenabled:
         __metadata:
           label: "Secret enabled"
-          description: "Please specify if secret is enabled"
+          description: "if secret is enabled"
           type: "boolean"
           required: true
       createsecret:
         __metadata:
           label: "Create secret"
-          description: "Please specify if secret should be created"
+          description: "if secret should be auto-created when chart is deployed"
           type: "boolean"
           required: true
       secretname:
         __metadata:
           label: "TLS Secret name"
-          description: "Please specify TLS secret name"
+          description: "TLS secret name"
           type: "string"
           required: true
       secrettype:
         __metadata:
           label: "TLS Secret type"
-          description: "Please specify TLS secret type"
+          description: "TLS secret type"
           type: "string"
           required: true
       crt:
         __metadata:
           label: "TLS crt"
-          description: "Please specify TLS crt"
+          description: "TLS crt"
           type: "string"
           required: true
       key:
         __metadata:
           label: "TLS Key"
-          description: "Please specify TLS Key"
+          description: "TLS Key"
           type: "string"
           required: true
   auth:
     system:
       __metadata:
-        label: "Auth system"
-        description: "Please specify auth system"
+        label: "System auth"
+        description: "Auth secret for system namespace"
         type: "string"
         required: true
     guest:
       __metadata:
-        label: "Auth guest"
-        description: "Please specify auth guest"
+        label: "Guest auth"
+        description: "Auth secret for guest namespace"
         type: "string"
         required: true
   systemNameSpace:
     __metadata:
       label: "System namespace"
-      description: "Please specify system namespace"
+      description: "The namespace to install OpenWhisk system actions and packages"
       type: "string"
       required: true
   limits:
     actionsInvokesPerminute:
       __metadata:
         label: "Maximum actions invoked per minute"
-        description: "Please specify maximum actions invoked per minute"
+        description: "maximum actions invoked per minute by a single namespace"
         type: "number"
         required: true
     actionsInvokesConcurrent:
       __metadata:
         label: "Maximum concurrent action invocations"
-        description: "Please specify maximum concurrent action invocations"
+        description: "maximum concurrent action invocations by a single namespace"
         type: "number"
         required: true
     triggersFiresPerminute:
       __metadata:
         label: "Maximum triggers fired per minute"
-        description: "Please specify maximum triggers fired per minute"
+        description: "maximum triggers fired per minute for a single namespace"
         type: "number"
         required: true
     actionsSequenceMaxlength:
       __metadata:
         label: "Maximum length of action sequence"
-        description: "Please specify maximum length of action sequence"
+        description: "maximum length of an action sequence"
         type: "number"
         required: true
     actions:
@@ -146,76 +164,76 @@ whisk:
         min:
           __metadata:
             label: "Minimum action time"
-            description: "Please specify minimum action time"
+            description: "Minimum billing granularity for action execution time"
             type: "string"
             required: true
         max:
           __metadata:
             label: "Maximum action time"
-            description: "Please specify maximum action time"
+            description: "maximum allowed execution time for any action"
             type: "string"
             required: true
         std:
           __metadata:
             label: "Standard action time"
-            description: "Please specify standard action time"
+            description: "Default maximum execution time for an action"
             type: "string"
             required: true
       memory:
         min:
           __metadata:
             label: "Minimum action memory"
-            description: "Please specify minimum action memory"
+            description: "Minimum memory allocation for an action"
             type: "string"
             required: true
         max:
           __metadata:
             label: "Maximum action memory"
-            description: "Please specify maximum action memory"
+            description: "Maximum allowed memory allocation for an action"
             type: "string"
             required: true
         std:
           __metadata:
             label: "Standard action memory"
-            description: "Please specify standard action memory"
+            description: "Standard memory allocation for an action"
             type: "string"
             required: true
       concurrency:
         min:
           __metadata:
             label: "Minimum action concurrency"
-            description: "Please specify minimum action concurrency"
-            type: "string"
+            description: "Minimum number of concurrent requests supported by a single action container"
+            type: "number"
             required: true
         max:
           __metadata:
             label: "Maximum action concurrency"
-            description: "Please specify maximum action concurrency"
-            type: "string"
+            description: "Maximum number of concurrent requests supported by a single action container"
+            type: "number"
             required: true
         std:
           __metadata:
             label: "Standard action concurrency"
-            description: "Please specify standard action concurrency"
-            type: "string"
+            description: "Standard number of concurrent requests supported by a single action container"
+            type: "number"
             required: true
       log:
         min:
           __metadata:
-            label: "Mimimum action log size"
-            description: "Please specify mimimum action log size"
+            label: "Mimimum log size for an action"
+            description: "mimimum action log size"
             type: "string"
             required: true
         max:
           __metadata:
-            label: "Maximum action log size"
-            description: "Please specify maximum action log size"
+            label: "Maximum allowed log size for an action"
+            description: "maximum action log size"
             type: "string"
             required: true
         std:
           __metadata:
-            label: "Standard action log size"
-            description: "Please specify standard action log size"
+            label: "Standard allowed log size for an action"
+            description: "standard action log size"
             type: "string"
             required: true
     activation:
@@ -223,143 +241,156 @@ whisk:
         max:
           __metadata:
             label: "Maximum activation payload"
-            description: "Please specify maximum activation payload"
+            description: "Maximum size of an activation payload"
             type: "string"
             required: true
   loadbalancer:
     blackboxFraction:
       __metadata:
         label: "Loadbalancer blackbox fraction"
-        description: "Please specify loadbalancer blackbox fraction"
+        description: "Fraction of invokers reserved to execute blackbox actions"
         type: "string"
         required: true
     timeoutFactor:
       __metadata:
         label: "Loadbalancer timeout factor"
-        description: "Please specify loadbalancer timeout factor"
+        description: "loadbalancer timeout factor"
         type: "number"
         required: true
   kafka:
+    __metadata:
+      label: "Kafka Topic Configuration"
+      description: "Configuration of Kafka topics used for controller/invoker communication"
     replicationFactor:
       __metadata:
         label: "Kafka replication factor"
-        description: "Please specify kafka replication factor"
+        description: "kafka replication factor"
         type: "string"
         required: false
     topics:
       cacheInvalidation:
+        __metadata:
+        label: "Configuration of the cacheInvalidation topic"
         segmentBytes:
           __metadata:
             label: "Kafka topic cache invalidation segment bytes"
-            description: "Please specify Kafka topic cache invalidation segment bytes"
+            description: "Kafka topic cache invalidation segment bytes"
             type: "string"
             required: false
         retentionBytes:
           __metadata:
             label: "Kafka topic cache invalidation retention bytes"
-            description: "Please specify Kafka topic cache invalidation retention bytes"
+            description: "Kafka topic cache invalidation retention bytes"
             type: "string"
             required: false
         retentionMs:
           __metadata:
             label: "Kafka topic cache invalidation retention ms"
-            description: "Please specify Kafka topic cache invalidation retention ms"
+            description: "Kafka topic cache invalidation retention ms"
             type: "string"
             required: false
       completed:
+        __metadata:
+        label: "Configuration of the completed-N topics"
         segmentBytes:
           __metadata:
             label: "Kafka topic completed segment bytes"
-            description: "Please specify Kafka topic completed segment bytes"
+            description: "Kafka topic completed segment bytes"
             type: "string"
             required: false
         retentionBytes:
           __metadata:
             label: "Kafka topic completed retention bytes"
-            description: "Please specify Kafka topic completed retention bytes"
+            description: "Kafka topic completed retention bytes"
             type: "string"
             required: false
         retentionMs:
           __metadata:
             label: "Kafka topic completed retention ms"
-            description: "Please specify Kafka topic completed retention ms"
+            description: "Kafka topic completed retention ms"
             type: "string"
             required: false
       events:
+        __metadata:
+        label: "Configuration of the events topic"
         segmentBytes:
           __metadata:
             label: "Kafka topic events segment bytes"
-            description: "Please specify Kafka topic events segment bytes"
+            description: "Kafka topic events segment bytes"
             type: "string"
             required: false
         retentionBytes:
           __metadata:
             label: "Kafka topic events retention bytes"
-            description: "Please specify Kafka topic events retention bytes"
+            description: "Kafka topic events retention bytes"
             type: "string"
             required: false
         retentionMs:
           __metadata:
             label: "Kafka topic events retention ms"
-            description: "Please specify Kafka topic events retention ms"
+            description: "Kafka topic events retention ms"
             type: "string"
             required: false
       health:
+        __metadata:
+        label: "Configuration of the health-N topics"
         segmentBytes:
           __metadata:
             label: "Kafka topic health segment bytes"
-            description: "Please specify Kafka topic health segment bytes"
+            description: "Kafka topic health segment bytes"
             type: "string"
             required: false
         retentionBytes:
           __metadata:
             label: "Kafka topic health retention bytes"
-            description: "Please specify Kafka topic health retention bytes"
+            description: "Kafka topic health retention bytes"
             type: "string"
             required: false
         retentionMs:
           __metadata:
             label: "Kafka topic health retention ms"
-            description: "Please specify Kafka topic health retention ms"
+            description: "Kafka topic health retention ms"
             type: "string"
             required: false
       invoker:
+        __metadata:
+        label: "Configuration of the invoker-N topics"
         segmentBytes:
           __metadata:
             label: "Kafka topic invoker segment bytes"
-            description: "Please specify Kafka topic invoker segment bytes"
+            description: "Kafka topic invoker segment bytes"
             type: "string"
             required: false
         retentionBytes:
           __metadata:
             label: "Kafka topic invoker retention bytes"
-            description: "Please specify Kafka topic invoker retention bytes"
+            description: "Kafka topic invoker retention bytes"
             type: "string"
             required: false
         retentionMs:
           __metadata:
             label: "Kafka topic invoker retention ms"
-            description: "Please specify Kafka topic invoker retention ms"
+            description: "Kafka topic invoker retention ms"
             type: "string"
             required: false
   containerPool:
     userMemory:
       __metadata:
         label: "Comtainerpool user memory"
-        description: "Please specify container pool user memory"
+        description: "The total memory available to a single Invoker for executing user actions"
         type: "string"
         required: true
   runtimes:
     __metadata:
       label: "Runtimes"
-      description: "Please specify runtimes"
+      description: "The JSON file containing the runtimes manifest for this deployment"
       type: "string"
       required: true
   testing:
     includeSystemTests:
       __metadata:
         label: "Include system tests"
-        description: "Please specify if systems tests should be included"
+        description: "if systems tests should be included"
         type: "boolean"
         required: true
   versions:
@@ -367,570 +398,628 @@ whisk:
       buildDate:
         __metadata:
           label: "OpenWhisk build date"
-          description: "Please specify OpenWhisk build date"
+          description: "OpenWhisk build date"
           type: "string"
           required: true
       buildNo:
         __metadata:
           label: "OpenWhisk build number"
-          description: "Please specify OpenWhisk build number"
+          description: "OpenWhisk build number"
           type: "string"
           required: true
       gitTag:
         __metadata:
           label: "OpenWhisk git tag"
-          description: "Please specify OpenWhisk git tag"
+          description: "git tag for incubator-openwhisk"
           type: "string"
           required: true
     openwhiskCli:
       tag:
         __metadata:
           label: "CLI tag"
-          description: "Please specify CLI tag"
+          description: "git tag for incubator-openwhisk-cli"
           type: "string"
           required: true
     openwhiskCatalog:
       gitTag:
         __metadata:
           label: "Catalog git tag"
-          description: "Please specify Catalog git tag"
+          description: "git tag for incubator-openwhisk-catalog"
           type: "string"
           required: true
     openwhiskPackageAlarms:
       gitTag:
         __metadata:
           label: "Alarms git tag"
-          description: "Please specify Alarms git tag"
+          description: "git tag for incubator-openwhisk-package-alarms"
           type: "string"
           required: true
     openwhiskPackageCloudant:
       gitTag:
         __metadata:
           label: "Cloudant git tag"
-          description: "Please specify Cloudant git tag"
+          description: "git tag for incubator-openwhisk-package-cloudant"
           type: "string"
           required: true
     openwhiskPackageKafka:
       gitTag:
         __metadata:
           label: "Kafka git tag"
-          description: "Please specify Kafka git tag"
+          description: "git tag for incubator-openwhisk-package-kafka"
           type: "string"
           required: true
 
 k8s:
   __metadata:
     label: "Kubernetes configuration"
-    description: "Please update the folllowing default values to configure Kubernetes"
+    description: "Configuration values to describe your Kubernetes cluster"
   domain:
     __metadata:
       label: "Domain"
-      description: "Please specify domain"
+      description: "The DNS suffix for services in your cluster (eg. \"cluster.local\")"
       type: "string"
       required: true
   dns:
     __metadata:
-      label: "DNS"
-      description: "Please specify DNS"
+      label: "DNS nameserver"
+      description: "The IP address of the DNS nameserver to use"
       type: "string"
       required: true
   persistence:
     enabled:
       __metadata:
         label: "Persistence enabled"
-        description: "Please specify if persistence should be enabled"
+        description: "if persistence should be enabled"
         type: "boolean"
         required: true
     hasDefaultStorageClass:
       __metadata:
         label: "Has default storage class"
-        description: "Please specify if default storage class is configured"
+        description: "if default storage class is configured"
         type: "boolean"
         required: true
     explicitStorageClass:
       __metadata:
         label: "Explicit storage class"
-        description: "Please specify explicit storage class"
+        description: "Name of the StorageClass to use if not using the default StorageClass"
         type: "string"
         required: false
 
 utility:
   __metadata:
     label: "Utility configuration"
-    description: "Please update the folllowing default values to configure utilities"
+    description: "Update these default values to configure utilities"
   imageName:
     __metadata:
       label: "Image name"
-      description: "Please specify image name"
+      description: "Name of the OpenWhisk utility image"
       type: "string"
       required: true
   imageTag:
     __metadata:
       label: "Image tag"
-      description: "Please specify image tag"
+      description: "Tag of the OpenWhisk utility image"
       type: "string"
       required: true
   imagePullPolicy:
     __metadata:
       label: "Image pull policy"
-      description: "Please specify image pull policy"
+      description: "The image pull policy to apply for this image."
       type: "string"
       required: true
-
+      options:
+      - label: "Always"
+        value: "Always"
+      - label: "Never"
+        value: "Never"
+      - label: "IfNotPresent"
+        value: "IfNotPresent"
 
 docker:
   __metadata:
-    label: "Docker configuration"
-    description: "Please update the folllowing default values to configure Docker"
+    label: "Docker registry configuration"
+    description: "Update these default values to configure the docker registry"
   registry:
     name:
       __metadata:
         label: "Registry name"
-        description: "Please specify registry name"
+        description: "registry name"
         type: "string"
         required: false
     username:
       __metadata:
         label: "Username"
-        description: "Please specify username"
+        description: "username"
         type: "string"
         required: false
     password:
       __metadata:
         label: "Password"
-        description: "Please specify password"
+        description: "password"
         type: "password"
         required: false
   timezone:
     __metadata:
       label: "Timezone"
-      description: "Please specify timezone"
+      description: "timezone"
       type: "string"
       required: false
 
 zookeeper:
   __metadata:
     label: "Zookeeper configuration"
-    description: "PPlease update the folllowing default values to configure Zookeeper"
+    description: "Update these default values to customize the Zookeeper deployment"
   external:
     __metadata:
       label: "External"
-      description: "Please specify if Zookeeper is external"
+      description: "if Zookeeper is external"
       type: "boolean"
       required: true
   name:
     __metadata:
       label: "Name"
-      description: "Please specify name"
+      description: "name"
       type: "string"
       required: true
   imageName:
     __metadata:
       label: "Image name"
-      description: "Please specify image name"
+      description: "image name"
       type: "string"
       required: true
   imageTag:
     __metadata:
       label: "Image tag"
-      description: "Please specify image tag"
+      description: "image tag"
       type: "string"
       required: true
   imagePullPolicy:
     __metadata:
       label: "Image pull policy"
-      description: "Please specify image pull policy"
+      description: "The image pull policy to apply for this image."
       type: "string"
       required: true
+      options:
+      - label: "Always"
+        value: "Always"
+      - label: "Never"
+        value: "Never"
+      - label: "IfNotPresent"
+        value: "IfNotPresent"
   replicaCount:
     __metadata:
       label: "Replica count"
-      description: "Please specify replica count"
+      description: "Number of zookeeper instances to deploy; must be an odd number."
       type: "number"
       required: true
+      options:
+      - label: "1"
+        value: "1"
+      - label: "3"
+        value: "3"
+      - label: "5"
+        value: "5"
   restartPolicy:
     __metadata:
       label: "Restart policy"
-      description: "Please specify restart policy"
+      description: "restart policy"
       type: "string"
       required: true
   port:
     __metadata:
       label: "Port"
-      description: "Please specify port"
+      description: "port"
       type: "string"
       required: true
   serverPort:
     __metadata:
       label: "Server port"
-      description: "Please specify server port"
+      description: "server port"
       type: "string"
       required: true
   leaderElectionPort:
     __metadata:
       label: "Leader election port"
-      description: "Please specify leader election port"
+      description: "leader election port"
       type: "string"
       required: true
   persistence:
     pvcName:
       __metadata:
         label: "PVC name"
-        description: "Please specify PVC name"
+        description: "PVC name"
         type: "string"
         required: true
     size:
       __metadata:
         label: "Size"
-        description: "Please specify size"
+        description: "size"
         type: "string"
         required: true
   config:
     tickTime:
       __metadata:
         label: "Tick time"
-        description: "Please specify Tick time"
+        description: "Tick time"
         type: "number"
         required: true
     initLimit:
       __metadata:
         label: "Init limit"
-        description: "Please specify Init limit"
+        description: "Init limit"
         type: "number"
         required: true
     syncLimit:
       __metadata:
         label: "Sync limit"
-        description: "Please specify Sync limit"
+        description: "Sync limit"
         type: "number"
         required: true
     dataDir:
       __metadata:
         label: "Data directory"
-        description: "Please specify Data directory"
+        description: "Data directory"
         type: "string"
         required: true
     dataLogDir:
       __metadata:
         label: "Data log directory"
-        description: "Please specify Data log directory"
+        description: "Data log directory"
         type: "string"
         required: true
 
 kafka:
   __metadata:
     label: "Kafka configuration"
-    description: "Please update the folllowing default values to configure Kafka"
+    description: "Update these default values to customize the Kafka deployment"
   external:
     __metadata:
       label: "External"
-      description: "Please specify if Kafka is external"
+      description: "if Kafka is external"
       type: "boolean"
       required: true
   name:
     __metadata:
       label: "Name"
-      description: "Please specify name"
+      description: "name"
       type: "string"
       required: true
   imageName:
     __metadata:
       label: "Image name"
-      description: "Please specify image name"
+      description: "image name"
       type: "string"
       required: true
   imageTag:
     __metadata:
       label: "Image tag"
-      description: "Please specify image tag"
+      description: "image tag"
       type: "string"
       required: true
   imagePullPolicy:
     __metadata:
       label: "Image pull policy"
-      description: "Please specify image pull policy"
+      description: "The image pull policy to apply for this image."
       type: "string"
       required: true
+      options:
+      - label: "Always"
+        value: "Always"
+      - label: "Never"
+        value: "Never"
+      - label: "IfNotPresent"
+        value: "IfNotPresent"
   replicaCount:
     __metadata:
       label: "Replica count"
-      description: "Please specify replica count"
+      description: "replica count"
       type: "number"
       required: true
   restartPolicy:
     __metadata:
       label: "Restart policy"
-      description: "Please specify restart policy"
+      description: "restart policy"
       type: "string"
       required: true
   port:
     __metadata:
       label: "Port"
-      description: "Please specify port"
+      description: "port"
       type: "string"
       required: true
   persistence:
     pvcName:
       __metadata:
         label: "PVC name"
-        description: "Please specify PVC name"
+        description: "PVC name"
         type: "string"
         required: true
     size:
       __metadata:
         label: "Size"
-        description: "Please specify size"
+        description: "size"
         type: "string"
         required: true
 
 db:
   __metadata:
     label: "Database configuration"
-    description: "Please update the folllowing default values to configure the database"
+    description: "Update these default values to customize the CouchDB deployment"
   external:
     __metadata:
       label: "External"
-      description: "Please specify if database is external"
+      description: "if database is external"
       type: "boolean"
       required: true
   wipeAndInit:
     __metadata:
       label: "wipe and initialise"
-      description: "Please specify if database should be wiped and initialised"
+      description: "if database should be wiped and initialised when OpenWhisk is deployed"
       type: "boolean"
       required: true
   name:
     __metadata:
       label: "Name"
-      description: "Please specify name"
+      description: "name"
       type: "string"
       required: true
   imageName:
     __metadata:
       label: "Image name"
-      description: "Please specify image name"
+      description: "image name"
       type: "string"
       required: true
   imageTag:
     __metadata:
       label: "Image tag"
-      description: "Please specify image tag"
+      description: "image tag"
       type: "string"
       required: true
   imagePullPolicy:
     __metadata:
       label: "Image pull policy"
-      description: "Please specify image pull policy"
+      description: "The image pull policy to apply for this image."
       type: "string"
       required: true
+      options:
+      - label: "Always"
+        value: "Always"
+      - label: "Never"
+        value: "Never"
+      - label: "IfNotPresent"
+        value: "IfNotPresent"
   replicaCount:
     __metadata:
       label: "Replica count"
-      description: "Please specify replica count"
+      description: "Number of database instances to deploy. Currently must be 1"
       type: "number"
       required: true
   restartPolicy:
     __metadata:
       label: "Restart policy"
-      description: "Please specify restart policy"
+      description: "restart policy"
       type: "string"
       required: true
   host:
     __metadata:
       label: "Host"
-      description: "Please specify Host"
+      description: "If using an external database, the hostname or IP address to use to connect to the database"
       type: "string"
       required: true
   port:
     __metadata:
       label: "Port"
-      description: "Please specify port"
+      description: "If using an external database, the port to use to connect to the database"
       type: "string"
       required: true
   provider:
     __metadata:
       label: "Provider"
-      description: "Please specify Provider"
+      description: "If using an external database, whether it is Cloudant or CouchDB"
       type: "string"
       required: true
+      options:
+      - label: "CouchDB"
+        value: "CouchDB"
+      - label: "Cloudant"
+        value: "Cloudant"
   protocol:
     __metadata:
       label: "Protocol"
-      description: "Please specify Protocol"
+      description: "If using an external database, the protocol to use to connect to the database"
       type: "string"
       required: true
+      options:
+      - label: "http"
+        value: "http"
+      - label: "https"
+        value: "https"
   auth:
     username:
       __metadata:
         label: "Username"
-        description: "Please specify Username"
+        description: "Username"
         type: "string"
         required: true
     password:
       __metadata:
         label: "Password"
-        description: "Please specify Password"
+        description: "Password"
         type: "password"
         required: true
   dbPrefix:
     __metadata:
       label: "Prefix"
-      description: "Please specify Prefix"
+      description: "Prefix"
       type: "string"
       required: true
   activationsTable:
     __metadata:
       label: "Activations table"
-      description: "Please specify Activations table"
+      description: "Activations table"
       type: "string"
       required: true
   actionsTable:
     __metadata:
       label: "Actions table"
-      description: "Please specify actions table"
+      description: "actions table"
       type: "string"
       required: true
   authsTable:
     __metadata:
       label: "Auths table"
-      description: "Please specify Auths table"
+      description: "Auths table"
       type: "string"
       required: true
   persistence:
     pvcName:
       __metadata:
         label: "PVC name"
-        description: "Please specify PVC name"
+        description: "PVC name"
         type: "string"
         required: true
     size:
       __metadata:
         label: "Size"
-        description: "Please specify size"
+        description: "size"
         type: "string"
         required: true
 
 nginx:
   __metadata:
     label: "NGINX Configuration"
-    description: "Please update the folllowing default values to configure NGINX"
+    description: "Update these default values to customize the NGINX deployment"
   name:
     __metadata:
       label: "Name"
-      description: "Please specify name"
+      description: "name"
       type: "string"
       required: true
   imageName:
     __metadata:
       label: "Image name"
-      description: "Please specify image name"
+      description: "image name"
       type: "string"
       required: true
   imageTag:
     __metadata:
       label: "Image tag"
-      description: "Please specify image tag"
+      description: "image tag"
       type: "string"
       required: true
   imagePullPolicy:
     __metadata:
       label: "Image pull policy"
-      description: "Please specify image pull policy"
+      description: "The image pull policy to apply for this image."
       type: "string"
       required: true
+      options:
+      - label: "Always"
+        value: "Always"
+      - label: "Never"
+        value: "Never"
+      - label: "IfNotPresent"
+        value: "IfNotPresent"
   replicaCount:
     __metadata:
       label: "Replica count"
-      description: "Please specify replica count"
+      description: "replica count"
       type: "string"
       required: true
   restartPolicy:
     __metadata:
       label: "Restart policy"
-      description: "Please specify restart policy"
+      description: "restart policy"
       type: "string"
       required: true
   httpPort:
     __metadata:
       label: "HTTP port"
-      description: "Please specify HTTP port"
+      description: "HTTP port"
       type: "string"
       required: true
   httpsPort:
     __metadata:
       label: "HTTPS port"
-      description: "Please specify HTTPS port"
+      description: "HTTPS port"
       type: "string"
       required: true
   httpsNodePort:
     __metadata:
       label: "HTTPS node port"
-      description: "Please specify HTTPS node port"
+      description: "HTTPS node port"
       type: "string"
       required: true
 
 controller:
   __metadata:
     label: "Controller configuration"
-    description: "Please update the folllowing default values to configure Controller"
+    description: "Update these default values to customize the OpenWhisk Controller deployment"
   name:
     __metadata:
       label: "Name"
-      description: "Please specify name"
+      description: "name"
       type: "string"
       required: true
   imageName:
     __metadata:
       label: "Image name"
-      description: "Please specify image name"
+      description: "image name"
       type: "string"
       required: true
   imageTag:
     __metadata:
       label: "Image tag"
-      description: "Please specify image tag"
+      description: "image tag"
       type: "string"
       required: true
   imagePullPolicy:
     __metadata:
       label: "Image pull policy"
-      description: "Please specify image pull policy"
+      description: "The image pull policy to apply for this image."
       type: "string"
       required: true
+      options:
+      - label: "Always"
+        value: "Always"
+      - label: "Never"
+        value: "Never"
+      - label: "IfNotPresent"
+        value: "IfNotPresent"
   replicaCount:
     __metadata:
       label: "Replica count"
-      description: "Please specify replica count"
-      type: "string"
+      description: "The number of controller instances to deploy"
+      type: "number"
       required: true
   restartPolicy:
     __metadata:
       label: "Restart policy"
-      description: "Please specify restart policy"
+      description: "restart policy"
       type: "string"
       required: true
   port:
     __metadata:
       label: "Port"
-      description: "Please specify port"
+      description: "port"
       type: "string"
       required: true
   options:
     __metadata:
       label: "Options"
-      description: "Please specify options"
+      description: "Additional controller command line options"
       type: "string"
       required: false
   jvmHeapMB:
     __metadata:
       label: "JVM heap memory (MB)"
-      description: "Please specify the maximum Java heap size in megabytes (MB)"
+      description: "the maximum Java heap size in megabytes (MB)"
       type: "string"
       required: true
   jvmOptions:
     __metadata:
       label: "JVM options"
-      description: "Please specify JVM options"
+      description: "Additional JVM command line options"
       type: "string"
       required: false
 
@@ -938,134 +1027,156 @@ controller:
 invoker:
   __metadata:
     label: "Invoker Configuration"
-    description: "Please update the folllowing default values to configure Invoker"
+    description: "Update these default values to customize the OpenWhisk Invoker deployment"
   name:
     __metadata:
       label: "Name"
-      description: "Please specify name"
+      description: "name"
       type: "string"
       required: true
   imageName:
     __metadata:
       label: "Image name"
-      description: "Please specify image name"
+      description: "Docker image name for the Invoker"
       type: "string"
       required: true
   imageTag:
     __metadata:
       label: "Image tag"
-      description: "Please specify image tag"
+      description: "image tag"
       type: "string"
       required: true
   imagePullPolicy:
     __metadata:
       label: "Image pull policy"
-      description: "Please specify image pull policy"
+      description: "The image pull policy to apply for this image."
       type: "string"
       required: true
+      options:
+      - label: "Always"
+        value: "Always"
+      - label: "Never"
+        value: "Never"
+      - label: "IfNotPresent"
+        value: "IfNotPresent"
   restartPolicy:
     __metadata:
       label: "Restart policy"
-      description: "Please specify restart policy"
+      description: "restart policy"
       type: "string"
       required: true
   port:
     __metadata:
       label: "Port"
-      description: "Please specify port"
+      description: "port"
       type: "string"
       required: true
   options:
     __metadata:
       label: "Additional options"
-      description: "Please specify additional options"
+      description: "Additional command line options to give to the invoker"
       type: "string"
       required: false
   jvmHeapMB:
     __metadata:
       label: "JVM heap memory (MB)"
-      description: "Please specify the maximum Java heap size in megabytes (MB)"
+      description: "the maximum Java heap size in megabytes (MB)"
       type: "string"
       required: true
   jvmOptions:
     __metadata:
       label: "JVM options"
-      description: "Please specify JVM options"
+      description: "Additional JVM command line options"
       type: "string"
       required: false
   containerFactory:
     dind:
       __metadata:
         label: "dind"
-        description: "Please specify if dind shoud be used"
+        description: "if using Docker-in-Docker to run your Kubernetes cluster"
         type: "boolean"
         required: true
     useRunc:
       __metadata:
         label: "useRunc"
-        description: "Please specify if Runc should be used"
+        description: "Should the invoker use runc to pause/unpause idle action containers"
         type: "boolean"
         required: true
     impl:
       __metadata:
         label: "impl"
-        description: "Please specify the implementation to be used"
+        description: "Which ContainerFactory shold be used"
         type: "string"
         required: true
+        options:
+        - label: "docker"
+          value: "docker"
+        - label: "kubernetes"
+          value: "kubernetes"
     kubernetes:
+      __metadata:
+        label: "Configuration for KubernetesContainerFactory"
+        description: "Additional optional configuration of the KubernetesContainerFactory"
       replicaCount:
         __metadata:
-          label: "Kubernetes replica count"
-          description: "Please specify Kubernetes replica count"
-          type: "string"
+          label: "ContainerFactory replica count"
+          description: "How many instances of the KubernetesContainerFactory should be deployed?"
+          type: "number"
           required: true
       agent:
         name:
           __metadata:
-            label: "Agent name"
-            description: "Please specify agent name"
+            label: "name of InvokerAgent"
+            description: "agent name"
             type: "string"
             required: true
         imageName:
           __metadata:
-            label: "Agent image name"
-            description: "Please specify agent image name"
+            label: "InvokerAgent image name"
+            description: "agent image name"
             type: "string"
             required: true
         imageTag:
           __metadata:
-            label: "Agent image tag"
-            description: "Please specify agent image tag"
+            label: "InvokerAgent image tag"
+            description: "agent image tag"
             type: "string"
             required: true
         imagePullPolicy:
           __metadata:
-            label: "Agent image pull policy"
-            description: "Please specify agent image pull policy"
+            label: "Image pull policy"
+            description: "The image pull policy to apply for this image."
             type: "string"
             required: true
+            options:
+            - label: "Always"
+              value: "Always"
+            - label: "Never"
+              value: "Never"
+            - label: "IfNotPresent"
+              value: "IfNotPresent"
         enabled:
           __metadata:
             label: "Agent enabled"
-            description: "Please specify if agent should be enabled"
+            description: "if agent should be enabled"
             type: "boolean"
             required: true
         port:
           __metadata:
             label: "Agent port"
-            description: "Please specify agent port"
+            description: "agent port"
             type: "string"
             required: true
     containerNetwork:
       __metadata:
         label: "Container Network"
-        description: "Please specify container network"
+        description: "Docker network to be used by user action containers"
         type: "string"
         required: false
     nameservers:
       __metadata:
         label: "Nameservers"
-        description: "Please specify nameservers"
+        description: "The DNS nameserver to be used by user action containers"
         type: "string"
         required: false
 
@@ -1073,384 +1184,433 @@ invoker:
 apigw:
   __metadata:
     label: "API gateway configuration"
-    description: "Please update the folllowing default values to configure API gateway"
+    description: "Update these default values to customize the API Gateway deployment"
   name:
     __metadata:
       label: "Name"
-      description: "Please specify name"
+      description: "name"
       type: "string"
       required: true
   imageName:
     __metadata:
       label: "Image name"
-      description: "Please specify image name"
+      description: "image name"
       type: "string"
       required: true
   imageTag:
     __metadata:
       label: "Image tag"
-      description: "Please specify image tag"
+      description: "image tag"
       type: "string"
       required: true
   imagePullPolicy:
     __metadata:
       label: "Image pull policy"
-      description: "Please specify image pull policy"
+      description: "The image pull policy to apply for this image."
       type: "string"
       required: true
+      options:
+      - label: "Always"
+        value: "Always"
+      - label: "Never"
+        value: "Never"
+      - label: "IfNotPresent"
+        value: "IfNotPresent"
   replicaCount:
     __metadata:
       label: "Replica count"
-      description: "Please specify replica count"
+      description: "replica count"
       type: "string"
       required: true
   restartPolicy:
     __metadata:
       label: "Restart policy"
-      description: "Please specify restart policy"
+      description: "restart policy"
       type: "string"
       required: true
   apiPort:
     __metadata:
       label: "API port"
-      description: "Please specify API port"
+      description: "API port"
       type: "string"
       required: true
   mgmtPort:
     __metadata:
       label: "Management port"
-      description: "Please specify management port"
+      description: "management port"
       type: "string"
       required: true
 
 redis:
   __metadata:
     label: "Redis configuration"
-    description: "Please update the folllowing default values to configure Redis"
+    description: "Update these default values to customize the Redis deployment"
   name:
     __metadata:
       label: "Name"
-      description: "Please specify name"
+      description: "name"
       type: "string"
       required: true
   imageName:
     __metadata:
       label: "Image name"
-      description: "Please specify image name"
+      description: "image name"
       type: "string"
       required: true
   imageTag:
     __metadata:
       label: "Image tag"
-      description: "Please specify image tag"
+      description: "image tag"
       type: "string"
       required: true
   imagePullPolicy:
     __metadata:
       label: "Image pull policy"
-      description: "Please specify image pull policy"
+      description: "The image pull policy to apply for this image."
       type: "string"
       required: true
+      options:
+      - label: "Always"
+        value: "Always"
+      - label: "Never"
+        value: "Never"
+      - label: "IfNotPresent"
+        value: "IfNotPresent"
   replicaCount:
     __metadata:
       label: "Replica count"
-      description: "Please specify replica count"
+      description: "replica count"
       type: "string"
       required: true
   restartPolicy:
     __metadata:
       label: "Restart policy"
-      description: "Please specify restart policy"
+      description: "restart policy"
       type: "string"
       required: true
   port:
     __metadata:
       label: "Port"
-      description: "Please specify port"
+      description: "port"
       type: "string"
       required: true
   persistence:
     pvcName:
       __metadata:
         label: "PVC name"
-        description: "Please specify PVC name"
+        description: "PVC name"
         type: "string"
         required: true
     size:
       __metadata:
         label: "Size"
-        description: "Please specify size"
+        description: "size"
         type: "string"
         required: true
 
 providers:
   __metadata:
     label: "OpenWhisk providers configuration"
-    description: "Please update the folllowing default values to configure OpenWhisk providers (Alarm, Cloudant and Kafka)"
+    description: "Update these default values to customize OpenWhisk providers (Alarm, Cloudant and Kafka)"
   db:
+    __metadata:
+      label: "OpenWhisk providers' database configuration"
+      description: "You only need to update change these values if you want to use a different database for event providers than you are using for the rest of your OpenWhisk deployment"
     external:
       __metadata:
         label: "Databsae external"
-        description: "Please specify if databsae is external"
+        description: "if the event providers database is external"
         type: "boolean"
         required: true
     host:
       __metadata:
         label: "Database host"
-        description: "Please specify database host"
+        description: "event providers database host"
         type: "string"
         required: true
         required: true
     port:
       __metadata:
         label: "Database port"
-        description: "Please specify database port"
+        description: "event providers database port"
         type: "string"
         required: true
     protocol:
       __metadata:
         label: "Database protocol"
-        description: "Please specify database protocol"
+        description: "event providers database protocol"
         type: "string"
         required: true
+        options:
+        - label: "http"
+          value: "http"
+        - label: "https"
+          value: "https"
     username:
       __metadata:
         label: "Database username"
-        description: "Please specify database username"
+        description: "event providers database username"
         type: "string"
         required: true
     password:
       __metadata:
         label: "Database password"
-        description: "Please specify database password"
+        description: "event providers database password"
         type: "password"
         required: true
 
   alarm:
+    __metadata:
+      label: "Alarm provider configuration"
     enabled:
       __metadata:
         label: "Alarm enabled"
-        description: "Please specify if alarm provider should be enabled"
+        description: "if alarm provider should be enabled"
         type: "boolean"
         required: true
     name:
       __metadata:
         label: "Alarm name"
-        description: "Please specify Alarm name"
+        description: "Alarm name"
         type: "string"
         required: true
     imageName:
       __metadata:
         label: "Alarm image name"
-        description: "Please specify Alarm image name"
+        description: "Alarm image name"
         type: "string"
         required: true
     imageTag:
       __metadata:
         label: "Alarm image tag"
-        description: "Please specify Alarm image tag"
+        description: "Alarm image tag"
         type: "string"
         required: true
     imagePullPolicy:
       __metadata:
-        label: "Alarm image pull policy"
-        description: "Please specify Alarm image pull policy"
+        label: "Image pull policy"
+        description: "The image pull policy to apply for this image."
         type: "string"
         required: true
+        options:
+        - label: "Always"
+          value: "Always"
+        - label: "Never"
+          value: "Never"
+        - label: "IfNotPresent"
+          value: "IfNotPresent"
     replicaCount:
       __metadata:
         label: "Alarm replica count"
-        description: "Please specify Alarm replica count"
+        description: "Alarm replica count"
         type: "string"
         required: true
     restartPolicy:
       __metadata:
         label: "Alarm restart policy"
-        description: "Please specify Alarm restart policy"
+        description: "Alarm restart policy"
         type: "string"
         required: true
     apiPort:
       __metadata:
         label: "Alarm API port"
-        description: "Please specify Alarm API port"
+        description: "Alarm API port"
         type: "string"
         required: true
     dbPrefix:
       __metadata:
         label: "Alarm DB prefix"
-        description: "Please specify Alarm DB prefix"
+        description: "Alarm DB prefix"
         type: "string"
         required: true
     persistence:
       pvcName:
         __metadata:
           label: "Alarm PVC name"
-          description: "Please specify Alarm PVC name"
+          description: "Alarm PVC name"
           type: "string"
           required: true
       size:
         __metadata:
           label: "Alarm persistence size"
-          description: "Please specify Alarm persistence size"
+          description: "Alarm persistence size"
           type: "string"
           required: true
 
-  kafka:
-    enabled:
-      __metadata:
-        label: "Kafka enabled"
-        description: "Please specify if Kafka provider should be enabled"
-        type: "boolean"
-        required: true
-    name:
-      __metadata:
-        label: "Kafka name"
-        description: "Please specify Kafka name"
-        type: "string"
-        required: true
-    imageName:
-      __metadata:
-        label: "Kafka image name"
-        description: "Please specify Kafka image name"
-        type: "string"
-        required: true
-    imageTag:
-      __metadata:
-        label: "Kafka image tag"
-        description: "Please specify Kafka image tag"
-        type: "string"
-        required: true
-    imagePullPolicy:
-      __metadata:
-        label: "Kafka image pull policy"
-        description: "Please specify Kafka image pull policy"
-        type: "string"
-        required: true
-    replicaCount:
-      __metadata:
-        label: "Kafka replica count"
-        description: "Please specify Kafka replica count"
-        type: "string"
-        required: true
-    restartPolicy:
-      __metadata:
-        label: "Kafka restart policy"
-        description: "Please specify Kafka restart policy"
-        type: "string"
-        required: true
-    apiPort:
-      __metadata:
-        label: "Kafka API port"
-        description: "Please specify Kafka API port"
-        type: "string"
-        required: true
-    dbPrefix:
-      __metadata:
-        label: "Kafka DB prefix"
-        description: "Please specify Kafka DB prefix"
-        type: "string"
-        required: true
-
   cloudant:
+    __metadata:
+      label: "Cloudant provider configuration"
     enabled:
       __metadata:
         label: "Cloudant enabled"
-        description: "Please specify if Cloudant provider should be enabled"
+        description: "if Cloudant provider should be enabled"
         type: "boolean"
         required: true
     name:
       __metadata:
         label: "Cloudant name"
-        description: "Please specify Cloudant name"
+        description: "Cloudant name"
         type: "string"
         required: true
     imageName:
       __metadata:
         label: "Cloudant image name"
-        description: "Please specify Cloudant image name"
+        description: "Cloudant image name"
         type: "string"
         required: true
     imageTag:
       __metadata:
         label: "Cloudant image tag"
-        description: "Please specify Cloudant image tag"
+        description: "Cloudant image tag"
         type: "string"
         required: true
     imagePullPolicy:
       __metadata:
-        label: "Cloudant image pull policy"
-        description: "Please specify Cloudant image pull policy"
+        label: "Image pull policy"
+        description: "The image pull policy to apply for this image."
         type: "string"
         required: true
+        options:
+        - label: "Always"
+          value: "Always"
+        - label: "Never"
+          value: "Never"
+        - label: "IfNotPresent"
+          value: "IfNotPresent"
     replicaCount:
       __metadata:
         label: "Cloudant replica count"
-        description: "Please specify Cloudant replica count"
+        description: "Cloudant replica count"
         type: "string"
         required: true
     restartPolicy:
       __metadata:
         label: "Cloudant restart policy"
-        description: "Please specify Cloudant restart policy"
+        description: "Cloudant restart policy"
         type: "string"
         required: true
     apiPort:
       __metadata:
         label: "Cloudant API port"
-        description: "Please specify Cloudant API port"
+        description: "Cloudant API port"
         type: "string"
         required: true
     dbPrefix:
       __metadata:
         label: "Cloudant DB prefix"
-        description: "Please specify Cloudant DB prefix"
+        description: "Cloudant DB prefix"
         type: "string"
         required: true
     persistence:
       pvcName:
         __metadata:
           label: "Cloudant PVC name"
-          description: "Please specify Cloudant PVC name"
+          description: "Cloudant PVC name"
           type: "string"
           required: true
       size:
         __metadata:
           label: "Cloudant persistence size"
-          description: "Please specify Cloudant persistence size"
+          description: "Cloudant persistence size"
           type: "string"
           required: true
 
+  kafka:
+    __metadata:
+      label: "Kafka provider configuration"
+    enabled:
+      __metadata:
+        label: "Kafka enabled"
+        description: "if Kafka provider should be enabled"
+        type: "boolean"
+        required: true
+    name:
+      __metadata:
+        label: "Kafka name"
+        description: "Kafka name"
+        type: "string"
+        required: true
+    imageName:
+      __metadata:
+        label: "Kafka image name"
+        description: "Kafka image name"
+        type: "string"
+        required: true
+    imageTag:
+      __metadata:
+        label: "Kafka image tag"
+        description: "Kafka image tag"
+        type: "string"
+        required: true
+    imagePullPolicy:
+      __metadata:
+        label: "Image pull policy"
+        description: "The image pull policy to apply for this image."
+        type: "string"
+        required: true
+        options:
+        - label: "Always"
+          value: "Always"
+        - label: "Never"
+          value: "Never"
+        - label: "IfNotPresent"
+          value: "IfNotPresent"
+    replicaCount:
+      __metadata:
+        label: "Kafka replica count"
+        description: "Kafka replica count"
+        type: "string"
+        required: true
+    restartPolicy:
+      __metadata:
+        label: "Kafka restart policy"
+        description: "Kafka restart policy"
+        type: "string"
+        required: true
+    apiPort:
+      __metadata:
+        label: "Kafka API port"
+        description: "Kafka API port"
+        type: "string"
+        required: true
+    dbPrefix:
+      __metadata:
+        label: "Kafka DB prefix"
+        description: "Kafka DB prefix"
+        type: "string"
+        required: true
+
 affinity:
   __metadata:
-    label: "Affinity configuration"
-    description: "Please update the folllowing default values to configure Affinity"
+    label: "Node affinity configuration"
+    description: "Labels used to tag Kubernetes worker nodes to enable scheduling affinity"
   enabled:
     __metadata:
       label: "Affinity enabled"
-      description: "Please specify if affinity should be enabled"
+      description: "if affinity should be enabled"
       type: "boolean"
       required: true
   coreNodeLabel:
     __metadata:
       label: "Core node label"
-      description: "Please specify core node label"
+      description: "Label used for worker nodes that should execute OpenWhisk core pods"
       type: "string"
       required: true
   edgeNodeLabel:
     __metadata:
       label: "Edge node label"
-      description: "Please specify edge node label"
+      description: "Label used for worker nodes that should execute OpenWhisk Ingress pods"
       type: "string"
       required: true
   invokerNodeLabel:
     __metadata:
       label: "Invoker node label"
-      description: "Please specify invoker node label"
+      description: "Label used for worker nodes that should execute OpenWhisk Invoker pods and user actions"
       type: "string"
       required: true
   providerNodeLabel:
     __metadata:
       label: "Provider node label"
-      description: "Please specify provider node label"
+      description: "Label used for worker nodes that should execute OpenWhisk event provider pods"
       type: "string"
       required: true

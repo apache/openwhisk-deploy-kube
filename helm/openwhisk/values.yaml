@@ -23,7 +23,10 @@
 # The file docs/configurationChoices.md discusses other common
 # configuration options for OpenWhisk and which variables to override
 # to enable them.
-
+#
+# The file values-metadata.yaml contains a description of each
+# of these variables and must also be updated when any changes are
+# made to this file.
 
 # Overall configuration of OpenWhisk deployment
 whisk:
@@ -123,7 +126,6 @@ whisk:
     openwhiskPackageKafka:
       gitTag: "6dbafc49107567185ee3a55781c8b3144fad6f63"
 
-# Properties of the Kubernetes cluster on which OpenWhisk is being deployed
 k8s:
   domain: cluster.local
   dns: kube-dns.kube-system
@@ -177,7 +179,7 @@ kafka:
   imageName: "wurstmeister/kafka"
   imageTag: "0.11.0.1"
   imagePullPolicy: "IfNotPresent"
-  # NOTE: setting replicaCount > 1 will not work...actively being worked on.
+  # NOTE: setting replicaCount > 1 will not work (Issue #354)
   replicaCount: 1
   restartPolicy: "Always"
   port: 9092
@@ -320,18 +322,6 @@ providers:
     persistence:
       pvcName: alarmprovider-pvc
       size: 1Gi
-  # Kafka provider configurations
-  kafka:
-    enabled: false
-    name: "kafkaprovider"
-    imageName: "openwhisk/kafkaprovider"
-    imageTag: "1.4.18"
-    imagePullPolicy: "IfNotPresent"
-    # NOTE: setting replicaCount > 1 has not been tested and may not work
-    replicaCount: 1
-    restartPolicy: "Always"
-    apiPort: 8080
-    dbPrefix: "kp"
   # Cloudant provider configurations
   cloudant:
     enabled: false
@@ -347,6 +337,18 @@ providers:
     persistence:
       pvcName: cloudntprovider-pvc
       size: 1Gi
+  # Kafka provider configurations
+  kafka:
+    enabled: false
+    name: "kafkaprovider"
+    imageName: "openwhisk/kafkaprovider"
+    imageTag: "1.4.18"
+    imagePullPolicy: "IfNotPresent"
+    # NOTE: setting replicaCount > 1 has not been tested and may not work
+    replicaCount: 1
+    restartPolicy: "Always"
+    apiPort: 8080
+    dbPrefix: "kp"
 
 
 # Used to define pod affinity and anti-affinity for the Kubernetes scheduler.

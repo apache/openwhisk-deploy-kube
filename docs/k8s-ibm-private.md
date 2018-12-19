@@ -122,7 +122,7 @@ whisk:
     apiHostName: <your fqdn>
     apiHostPort: 443
     apiHostProto: https
-    type: standard
+    type: Standard
     domain: <your fqdn>
     tls:
       enabled: true

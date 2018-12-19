@@ -75,7 +75,7 @@ whisk:
     apiHostName: openwhisk.<domain>
     apiHostPort: 443
     apiHostProto: https
-    type: standard
+    type: Standard
     domain: openwhisk.<domain>
     tls:
       enabled: true
