@@ -36,6 +36,7 @@ Follow IBM's instructions to provision your cluster.
 ####  IBM Cloud Standard cluster
 
 An IBM Cloud Standard cluster has full support for TLS
+including a wild-card certificate for subdomains
 and can be configured with additional annotations to
 fine tune ingress performance.
 
@@ -59,16 +60,23 @@ Ingress secret:  <ibmtlssecret>
 Workers:  3
 ```
 
+As described in [IBM's ingress documentation](https://cloud.ibm.com/docs/containers/cs_ingress.html#ingress),
+to enable applications deployed in multiple namespaces to share the ingress resource,
+you should use a unique subdomain name for each namespace.  We suggest
+a convention of using the namespace name as the subdomain name.  So if you
+are deploying openwhisk into the `openwhisk` namespace, use `openwhisk`
+as your subdomain (as shown below in the example `mycluster.yaml`).
+
 Now define `mycluster.yaml` as below (substituting the real values for
 `<domain>` and `<ibmtlssecret>`).
 ```yaml
 whisk:
   ingress:
-    apiHostName: <domain>
+    apiHostName: openwhisk.<domain>
     apiHostPort: 443
     apiHostProto: https
     type: standard
-    domain: <domain>
+    domain: openwhisk.<domain>
     tls:
       enabled: true
       secretenabled: true
