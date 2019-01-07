@@ -84,8 +84,8 @@ jobHealthCheck () {
   PASSED=false
   TIMEOUT=0
   until $PASSED || [ $TIMEOUT -eq $TIMEOUT_STEP_LIMIT ]; do
-    KUBE_SUCCESSFUL_JOB=$(kubectl -n openwhisk get jobs -o wide | grep "$1" | awk '{print $3}')
-    if [ "$KUBE_SUCCESSFUL_JOB" == "1" ]; then
+    KUBE_DEPLOY_STATUS=$(kubectl -n openwhisk get pods -l name="$1" -o wide | grep "$1" | awk '{print $3}')
+    if [ "$KUBE_DEPLOY_STATUS" == "Completed" ]; then
       PASSED=true
       echo "The job $1 has completed"
       break
@@ -100,7 +100,7 @@ jobHealthCheck () {
   if [ "$PASSED" == "false" ]; then
     echo "Failed to finish running $1"
     # Dump all namespaces in case the problem is with a pod in the kube-system namespace
-    kubectl get jobs --all-namespaces -o wide --show-all
+    kubectl get pods --all-namespaces -o wide
 
     kubectl -n openwhisk logs jobs/$1
     exit 1
@@ -130,7 +130,7 @@ verifyHealthyInvoker () {
 
   if [ "$PASSED" == "false" ]; then
     # Dump all namespaces in case the problem is with a pod in the kube-system namespace
-    kubectl get pods --all-namespaces -o wide --show-all
+    kubectl get pods --all-namespaces -o wide
     echo "No healthy invokers available"
 
     exit 1
