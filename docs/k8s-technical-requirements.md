@@ -21,11 +21,8 @@
 
 The Kubernetes cluster on which you are deploying OpenWhisk must meet
 the following requirements:
-* [Kubernetes](https://github.com/kubernetes/kubernetes) version
-  1.9+. However, version 1.9.4 will not work for OpenWhisk due to a
-  bug with volume mount subpaths
-  (see[[kubernetes-61076](https://github.com/kubernetes/kubernetes/issues/61076)]). This
-  bug will surface as a failure when deploying the nginx container.
+* [Kubernetes](https://github.com/kubernetes/kubernetes) version 1.10+.
+  Our automated testing currently covers Kubernetes versions 1.10, 1.11 and 1.12.
 * The ability to create Ingresses to make a Kubernetes service
   available outside of the cluster so you can actually use OpenWhisk.
 * Unless you disable persistence (see

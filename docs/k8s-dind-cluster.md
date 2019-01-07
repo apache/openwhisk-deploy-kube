@@ -39,8 +39,8 @@ There are "fixed" scripts
 [available](https://github.com/kubernetes-sigs/kubeadm-dind-cluster/tree/master/fixed)
 for each major release of Kubernetes.
 Our TravisCI testing uses kubeadm-dind-cluster.sh on an ubuntu 16.04
-host.  The `fixed` `dind-cluster` scripts for Kubernetes version 1.10
-and 1.11 are known to work for deploying OpenWhisk.
+host.  The `fixed` `dind-cluster` scripts for Kubernetes version 1.10,
+1.11, and 1.12 are known to work for deploying OpenWhisk.
 
 ### Creating the Kubernetes Cluster
 
