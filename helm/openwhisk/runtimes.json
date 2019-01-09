@@ -108,11 +108,25 @@
             },
             {
                 "kind": "swift:4.1",
-                "default": true,
+                "default": false,
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-swift-v4.1",
                     "tag": "1.0.8"
+                },
+                "deprecated": false,
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                }
+            },
+            {
+                "kind": "swift:4.2",
+                "default": true,
+                "image": {
+                    "prefix": "openwhisk",
+                    "name": "action-swift-v4.2",
+                    "tag": "f870916"
                 },
                 "deprecated": false,
                 "attached": {
