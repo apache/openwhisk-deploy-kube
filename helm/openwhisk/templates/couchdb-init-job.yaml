@@ -5,27 +5,27 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: init-couchdb
+  name: {{ .Release.Name }}-init-couchdb
   labels:
-    name: init-couchdb
+    name: {{ .Release.Name }}-init-couchdb
 {{ include "openwhisk.label_boilerplate" . | indent 4 }}
 spec:
   activeDeadlineSeconds: 600
   template:
     metadata:
-      name: init-couchdb
+      name: {{ .Release.Name }}-init-couchdb
       labels:
-        name: init-couchdb
+        name: {{ .Release.Name }}-init-couchdb
 {{ include "openwhisk.label_boilerplate" . | indent 8 }}
     spec:
       restartPolicy: Never
       volumes:
       - name: task-dir
         configMap:
-          name: init-couchdb
+          name: {{ .Release.Name }}-init-couchdb
       - name: whisk-auth
         secret:
-          secretName: whisk.auth
+          secretName: {{ .Release.Name }}-whisk.auth
       containers:
       - name: init-couchdb
         image: "{{- .Values.utility.imageName -}}:{{- .Values.utility.imageTag -}}"
@@ -41,32 +41,32 @@ spec:
         - name: "DB_PROTOCOL"
           valueFrom:
             configMapKeyRef:
-              name: db.config
+              name: {{ .Release.Name }}-db.config
               key: db_protocol
         - name: "DB_HOST"
           valueFrom:
             configMapKeyRef:
-              name: db.config
+              name: {{ .Release.Name }}-db.config
               key: db_host
         - name: "DB_PORT"
           valueFrom:
             configMapKeyRef:
-              name: db.config
+              name: {{ .Release.Name }}-db.config
               key: db_port
         - name: "DB_PREFIX"
           valueFrom:
             configMapKeyRef:
-              name: db.config
+              name: {{ .Release.Name }}-db.config
               key: db_prefix
         - name: "COUCHDB_USER"
           valueFrom:
             secretKeyRef:
-              name: db.auth
+              name: {{ .Release.Name }}-db.auth
               key: db_username
         - name: "COUCHDB_PASSWORD"
           valueFrom:
             secretKeyRef:
-              name: db.auth
+              name: {{ .Release.Name }}-db.auth
               key: db_password
         - name: "NODENAME"
           value: "couchdb0"

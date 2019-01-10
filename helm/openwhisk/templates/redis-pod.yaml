@@ -4,19 +4,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.redis.name | quote }}
+  name: {{ .Release.Name }}-redis
   labels:
-    name: {{ .Values.redis.name | quote }}
+    name: {{ .Release.Name }}-redis
 {{ include "openwhisk.label_boilerplate" . | indent 4 }}
 spec:
   replicas: {{ .Values.redis.replicaCount }}
   selector:
     matchLabels:
-      name: {{ .Values.redis.name | quote }}
+      name: {{ .Release.Name }}-redis
   template:
     metadata:
       labels:
-        name: {{ .Values.redis.name | quote }}
+        name: {{ .Release.Name }}-redis
 {{ include "openwhisk.label_boilerplate" . | indent 8 }}
     spec:
       restartPolicy: {{ .Values.redis.restartPolicy }}
@@ -24,14 +24,14 @@ spec:
       {{- if .Values.affinity.enabled }}
       affinity:
 {{ include "openwhisk.affinity.core" . | indent 8 }}
-{{ include "openwhisk.affinity.selfAntiAffinity" ( .Values.redis.name | quote ) | indent 8 }}
+{{ include "openwhisk.affinity.selfAntiAffinity" ( printf "%s-redis" .Release.Name | quote ) | indent 8 }}
       {{- end }}
 
 {{- if .Values.k8s.persistence.enabled }}
       volumes:
       - name: redis-data
         persistentVolumeClaim:
-          claimName: {{ .Values.redis.persistence.pvcName | quote }}
+          claimName: {{ .Release.Name }}-redis-pvc
 {{- end }}
 
 {{- if .Values.k8s.persistence.enabled }}

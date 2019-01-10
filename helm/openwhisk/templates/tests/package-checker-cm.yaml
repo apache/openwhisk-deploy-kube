@@ -4,7 +4,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: openwhisk-tests-package-checker-cm
+  name: {{ .Release.Name }}-tests-package-checker
   labels:
 {{ include "openwhisk.label_boilerplate" . | indent 4 }}
 data:

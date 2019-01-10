@@ -4,9 +4,9 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: openwhisk-tests-smoketest
+  name: {{ .Release.Name }}-tests-smoketest
   labels:
-    name: openwhisk-tests-smoketest
+    name: {{ .Release.Name }}-tests-smoketest
     ow-testpod: "true"
 {{ include "openwhisk.label_boilerplate" . | indent 4 }}
   annotations:
@@ -16,7 +16,7 @@ spec:
   volumes:
   - name: task-dir
     configMap:
-      name: openwhisk-tests-smoketest-cm
+      name: {{ .Release.Name }}-tests-smoketest
   containers:
   - name: smoketest
     image: "{{- .Values.utility.imageName -}}:{{- .Values.utility.imageTag -}}"
@@ -30,10 +30,10 @@ spec:
       - name: "WSK_AUTH"
         valueFrom:
           secretKeyRef:
-            name: whisk.auth
+            name: {{ .Release.Name }}-whisk.auth
             key: guest
       - name: "WSK_API_HOST_URL"
         valueFrom:
           configMapKeyRef:
-            name: whisk.config
+            name: {{ .Release.Name }}-whisk.config
             key: whisk_api_host_url

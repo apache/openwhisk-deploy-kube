@@ -5,7 +5,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ .Values.db.persistence.pvcName | quote }}
+  name: {{ .Release.Name }}-couchdb-pvc
   labels:
 {{ include "openwhisk.label_boilerplate" . | indent 4 }}
 spec:

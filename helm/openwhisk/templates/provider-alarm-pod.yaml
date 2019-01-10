@@ -5,19 +5,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.providers.alarm.name | quote }}
+  name: {{ .Release.Name }}-alarmprovider
   labels:
-    name: alarmprovider
+    name: {{ .Release.Name }}-alarmprovider
 {{ include "openwhisk.label_boilerplate" . | indent 4 }}
 spec:
   replicas: {{ .Values.providers.alarm.replicaCount }}
   selector:
     matchLabels:
-      name: {{ .Values.providers.alarm.name | quote }}
+      name: {{ .Release.Name }}-alarmprovider
   template:
     metadata:
       labels:
-        name: {{ .Values.providers.alarm.name | quote }}
+        name: {{ .Release.Name }}-alarmprovider
 {{ include "openwhisk.label_boilerplate" . | indent 8 }}
     spec:
       restartPolicy: {{ .Values.providers.alarm.restartPolicy }}
@@ -25,7 +25,7 @@ spec:
         - name: alarm-logs
 {{- if .Values.k8s.persistence.enabled }}
           persistentVolumeClaim:
-            claimName: {{ .Values.providers.alarm.persistence.pvcName | quote }}
+            claimName: {{ .Release.Name }}-alarmprovider-pvc
 {{- else }}
           emptyDir: {}
 {{- end }}
@@ -33,7 +33,7 @@ spec:
       # Wait for a controller to be up (which implies couchdb is up as well).
 {{ include "openwhisk.readiness.waitForController" . | indent 6 }}
       containers:
-      - name: {{ .Values.providers.alarm.name | quote }}
+      - name: alarmprovider
         image: "{{- .Values.providers.alarm.imageName -}}:{{- .Values.providers.alarm.imageTag -}}"
         imagePullPolicy: {{ .Values.providers.alarm.imagePullPolicy | quote }}
         ports:
@@ -54,22 +54,22 @@ spec:
         - name: "DB_PROTOCOL"
           valueFrom:
             configMapKeyRef:
-              name: db.config
+              name: {{ .Release.Name }}-db.config
               key: db_protocol
         - name: "DB_HOST"
           valueFrom:
             configMapKeyRef:
-              name: db.config
+              name: {{ .Release.Name }}-db.config
               key: db_host_port
         - name: "DB_USERNAME"
           valueFrom:
             secretKeyRef:
-              name: db.auth
+              name: {{ .Release.Name }}-db.auth
               key: db_username
         - name: "DB_PASSWORD"
           valueFrom:
             secretKeyRef:
-              name: db.auth
+              name: {{ .Release.Name }}-db.auth
               key: db_password
         {{- end }}
         - name: "DB_PREFIX"
@@ -77,12 +77,12 @@ spec:
         - name: "ROUTER_HOST"
           valueFrom:
             configMapKeyRef:
-              name: whisk.config
+              name: {{ .Release.Name }}-whisk.config
               key: whisk_api_host_nameAndPort
         - name: "ENDPOINT_AUTH"
           valueFrom:
             configMapKeyRef:
-              name: whisk.config
+              name: {{ .Release.Name }}-whisk.config
               key: whisk_api_host_nameAndPort
         volumeMounts:
           - name: alarm-logs

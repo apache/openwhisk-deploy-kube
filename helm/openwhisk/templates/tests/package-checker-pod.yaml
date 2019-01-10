@@ -4,9 +4,9 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: openwhisk-tests-package-checker
+  name: {{ .Release.Name }}-tests-package-checker
   labels:
-    name: openwhisk-tests-package-checker
+    name: {{ .Release.Name }}-tests-package-checker
     ow-testpod: "true"
 {{ include "openwhisk.label_boilerplate" . | indent 4 }}
   annotations:
@@ -16,7 +16,7 @@ spec:
   volumes:
   - name: task-dir
     configMap:
-      name: openwhisk-tests-package-checker-cm
+      name: {{ .Release.Name }}-tests-package-checker
   containers:
   - name: package-checker
     image: "{{- .Values.utility.imageName -}}:{{- .Values.utility.imageTag -}}"
@@ -30,12 +30,12 @@ spec:
       - name: "WSK_AUTH"
         valueFrom:
           secretKeyRef:
-            name: whisk.auth
+            name: {{ .Release.Name }}-whisk.auth
             key: guest
       - name: "WSK_API_HOST_URL"
         valueFrom:
           configMapKeyRef:
-            name: whisk.config
+            name: {{ .Release.Name }}-whisk.config
             key: whisk_api_host_url
 
       # Which of the providers was installed (and thus should be checked)?

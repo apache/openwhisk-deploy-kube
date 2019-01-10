@@ -5,19 +5,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.db.name | quote }}
+  name: {{ .Release.Name }}-couchdb
   labels:
-    name: {{ .Values.db.name | quote }}
+    name: {{ .Release.Name }}-couchdb
 {{ include "openwhisk.label_boilerplate" . | indent 4 }}
 spec:
   replicas: {{ .Values.db.replicaCount }}
   selector:
     matchLabels:
-      name: {{ .Values.db.name | quote }}
+      name: {{ .Release.Name }}-couchdb
   template:
     metadata:
       labels:
-        name: {{ .Values.db.name | quote }}
+        name: {{ .Release.Name }}-couchdb
 {{ include "openwhisk.label_boilerplate" . | indent 8 }}
     spec:
       restartPolicy: {{ .Values.db.restartPolicy }}
@@ -25,11 +25,11 @@ spec:
       {{- if .Values.affinity.enabled }}
       affinity:
 {{ include "openwhisk.affinity.core" . | indent 8 }}
-{{ include "openwhisk.affinity.selfAntiAffinity" ( .Values.db.name ) | indent 8 }}
+{{ include "openwhisk.affinity.selfAntiAffinity" ( printf "%s-couchdb" .Release.Name ) | indent 8 }}
       {{- end }}
 
       containers:
-      - name: {{ .Values.db.name | quote }}
+      - name: couchdb
         image: "{{- .Values.db.imageName -}}:{{- .Values.db.imageTag -}}"
         imagePullPolicy: {{ .Values.db.imagePullPolicy | quote }}
         ports:
@@ -39,12 +39,12 @@ spec:
         - name: "COUCHDB_USER"
           valueFrom:
             secretKeyRef:
-              name: db.auth
+              name: {{ .Release.Name }}-db.auth
               key: db_username
         - name: "COUCHDB_PASSWORD"
           valueFrom:
             secretKeyRef:
-              name: db.auth
+              name: {{ .Release.Name }}-db.auth
               key: db_password
         - name: "NODENAME"
           value: "couchdb0"
@@ -57,6 +57,6 @@ spec:
       volumes:
         - name: database-storage
           persistentVolumeClaim:
-            claimName: {{ .Values.db.persistence.pvcName | quote }}
+            claimName: {{ .Release.Name }}-couchdb-pvc
       {{- end }}
 {{ end }}

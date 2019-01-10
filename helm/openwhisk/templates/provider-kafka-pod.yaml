@@ -5,19 +5,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.providers.kafka.name | quote }}
+  name: {{ .Release.Name }}-kafkaprovider
   labels:
-    name: {{ .Values.providers.kafka.name | quote }}
+    name: {{ .Release.Name }}-kafkaprovider
 {{ include "openwhisk.label_boilerplate" . | indent 4 }}
 spec:
   replicas: {{ .Values.providers.kafka.replicaCount }}
   selector:
     matchLabels:
-      name: {{ .Values.providers.kafka.name | quote }}
+      name: {{ .Release.Name }}-kafkaprovider
   template:
     metadata:
       labels:
-        name: {{ .Values.providers.kafka.name | quote }}
+        name: {{ .Release.Name }}-kafkaprovider
 {{ include "openwhisk.label_boilerplate" . | indent 8 }}
     spec:
       restartPolicy: {{ .Values.providers.kafka.restartPolicy }}
@@ -25,7 +25,7 @@ spec:
       # Wait for a controller to be up (which implies couchdb and kafka are up as well).
 {{ include "openwhisk.readiness.waitForController" . | indent 6 }}
       containers:
-      - name: {{ .Values.providers.kafka.name | quote }}
+      - name: kafkaprovider
         image: "{{- .Values.providers.kafka.imageName -}}:{{- .Values.providers.kafka.imageTag -}}"
         imagePullPolicy: {{ .Values.providers.kafka.imagePullPolicy | quote }}
         ports:
@@ -45,17 +45,17 @@ spec:
         - name: "DB_URL"
           valueFrom:
             configMapKeyRef:
-              name: db.config
+              name: {{ .Release.Name }}-db.config
               key: db_url
         - name: "DB_USER"
           valueFrom:
             secretKeyRef:
-              name: db.auth
+              name: {{ .Release.Name }}-db.auth
               key: db_username
         - name: "DB_PASS"
           valueFrom:
             secretKeyRef:
-              name: db.auth
+              name: {{ .Release.Name }}-db.auth
               key: db_password
         {{- end }}
         - name: "DB_PREFIX"
@@ -65,11 +65,11 @@ spec:
         - name: "ROUTER_HOST"
           valueFrom:
             configMapKeyRef:
-              name: whisk.config
+              name: {{ .Release.Name }}-whisk.config
               key: whisk_api_host_nameAndPort
         - name: "ENDPOINT_AUTH"
           valueFrom:
             configMapKeyRef:
-              name: whisk.config
+              name: {{ .Release.Name }}-whisk.config
               key: whisk_api_host_nameAndPort
 {{- end }}

@@ -218,19 +218,19 @@ cat mycluster.yaml
 helm install helm/openwhisk --namespace=openwhisk --name=ow4travis -f mycluster.yaml || exit 1
 
 # Wait for controller to be up
-statefulsetHealthCheck "controller"
+statefulsetHealthCheck "ow4travis-controller"
 
 # Wait for invoker to be up
-deploymentHealthCheck "invoker"
+deploymentHealthCheck "ow4travis-invoker"
 
 # Wait for the controller to confirm that it has at least one healthy invoker
 verifyHealthyInvoker
 
 # Wait for install-packages job to complete successfully
-jobHealthCheck "install-packages"
+jobHealthCheck "ow4travis-install-packages"
 
 # Verify that the providers deployed successfully
-deploymentHealthCheck "alarmprovider"
-deploymentHealthCheck "cloudantprovider"
-deploymentHealthCheck "kafkaprovider"
+deploymentHealthCheck "ow4travis-alarmprovider"
+deploymentHealthCheck "ow4travis-cloudantprovider"
+deploymentHealthCheck "ow4travis-kafkaprovider"
 

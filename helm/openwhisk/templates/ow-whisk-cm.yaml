@@ -4,7 +4,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: whisk.config
+  name: {{ .Release.Name }}-whisk.config
   labels:
 {{ include "openwhisk.label_boilerplate" . | indent 4 }}
 data:
@@ -15,9 +15,9 @@ data:
 {{- if eq .Values.whisk.ingress.type "LoadBalancer" }}
   whisk_api_host_proto: "https"
   whisk_api_host_port: {{ .Values.nginx.httpsPort | quote }}
-  whisk_api_host_name: "{{ .Values.nginx.name }}.{{ .Release.Namespace }}.svc.{{ .Values.k8s.domain }}"
-  whisk_api_host_nameAndPort: "{{ .Values.nginx.name }}.{{ .Release.Namespace }}.svc.{{ .Values.k8s.domain }}:{{ .Values.nginx.httpsPort }}"
-  whisk_api_host_url: "https://{{ .Values.nginx.name }}.{{ .Release.Namespace }}.svc.{{ .Values.k8s.domain }}:{{ .Values.nginx.httpsPort }}"
+  whisk_api_host_name: "{{ .Release.Name }}-nginx.{{ .Release.Namespace }}.svc.{{ .Values.k8s.domain }}"
+  whisk_api_host_nameAndPort: "{{ .Release.Name }}-nginx.{{ .Release.Namespace }}.svc.{{ .Values.k8s.domain }}:{{ .Values.nginx.httpsPort }}"
+  whisk_api_host_url: "https://{{ .Release.Name }}-nginx.{{ .Release.Namespace }}.svc.{{ .Values.k8s.domain }}:{{ .Values.nginx.httpsPort }}"
 {{- else }}
   whisk_api_host_proto: {{ .Values.whisk.ingress.apiHostProto | quote }}
   whisk_api_host_port: {{ .Values.whisk.ingress.apiHostPort | quote }}

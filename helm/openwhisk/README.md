@@ -150,7 +150,7 @@ $ helm install [--tls] openwhisk --namespace <my-namespace> --name <my-release> 
 
 The command deploys OpenWhisk on the Kubernetes cluster in the default configuration.  The [configuration](#configuration) section lists the parameters that can be configured during installation.
 
-You can use the command ```helm status <my-release> [--tls]``` to get a summary of the various Kubernetes artifacts that make up your OpenWhisk deployment. Once the ```install-packages``` Pod is in the Completed state, your OpenWhisk deployment is ready to be used.
+You can use the command ```helm status <my-release> [--tls]``` to get a summary of the various Kubernetes artifacts that make up your OpenWhisk deployment. Once the ```<my-release>-install-packages``` Pod is in the Completed state, your OpenWhisk deployment is ready to be used.
 
 ### Configuration
 

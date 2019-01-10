@@ -33,7 +33,6 @@ whisk:
   # Ingress defines how to access OpenWhisk from outside the Kubernetes cluster.
   # See docs/ingress.md for a discussion of how to provide these values.
   ingress:
-    name: "ow-ingress"
     apiHostName: ""
     apiHostPort: 31001
     apiHostProto: "https"
@@ -150,8 +149,6 @@ docker:
 
 # zookeeper configurations
 zookeeper:
-  external: false
-  name: "zookeeper"
   imageName: "zookeeper"
   imageTag: "3.4"
   imagePullPolicy: "IfNotPresent"
@@ -162,7 +159,6 @@ zookeeper:
   serverPort: 2888
   leaderElectionPort: 3888
   persistence:
-    pvcName: zookeeper-pvc
     size: 256Mi
   # Default values for entries in zoo.cfg (see Apache Zookeeper documentation for semantics)
   config:
@@ -174,8 +170,6 @@ zookeeper:
 
 # kafka configurations
 kafka:
-  external: false
-  name: "kafka"
   imageName: "wurstmeister/kafka"
   imageTag: "0.11.0.1"
   imagePullPolicy: "IfNotPresent"
@@ -184,7 +178,6 @@ kafka:
   restartPolicy: "Always"
   port: 9092
   persistence:
-    pvcName: kafka-pvc
     size: 512Mi
 
 # Database configuration
@@ -193,7 +186,6 @@ db:
   # Should we run a Job to wipe and re-initialize the database when the chart is deployed?
   # This should always be true if external is false.
   wipeAndInit: true
-  name: "couchdb"
   imageName: "apache/couchdb"
   imageTag: "2.1"
   imagePullPolicy: "IfNotPresent"
@@ -213,12 +205,10 @@ db:
   actionsTable: "test_whisks"
   authsTable: "test_subjects"
   persistence:
-    pvcName: couchdb-pvc
     size: 2Gi
 
 # Nginx configurations
 nginx:
-  name: "nginx"
   imageName: "nginx"
   imageTag: "1.13"
   imagePullPolicy: "IfNotPresent"
@@ -231,7 +221,6 @@ nginx:
 
 # Controller configurations
 controller:
-  name: "controller"
   imageName: "openwhisk/controller"
   imageTag: "9f66633"
   imagePullPolicy: "IfNotPresent"
@@ -244,7 +233,6 @@ controller:
 
 # Invoker configurations
 invoker:
-  name: "invoker"
   imageName: "openwhisk/invoker"
   imageTag: "9f66633"
   imagePullPolicy: "IfNotPresent"
@@ -260,7 +248,6 @@ invoker:
     kubernetes:
       replicaCount: 1
       agent:
-        name: "invoker-agent"
         imageName: "openwhisk/kube-invoker-agent"
         imageTag: "eb92751"
         imagePullPolicy: "IfNotPresent"
@@ -272,7 +259,6 @@ invoker:
 
 # API Gateway configurations
 apigw:
-  name: "apigateway"
   imageName: "openwhisk/apigateway"
   imageTag: "bed6e65"
   imagePullPolicy: "IfNotPresent"
@@ -284,7 +270,6 @@ apigw:
 
 # Redis (used by apigateway)
 redis:
-  name: "redis"
   imageName: "redis"
   imageTag: "4.0"
   imagePullPolicy: "IfNotPresent"
@@ -293,7 +278,6 @@ redis:
   restartPolicy: "Always"
   port: 6379
   persistence:
-    pvcName: redis-pvc
     size: 256Mi
 
 # Configuration of OpenWhisk event providers
@@ -310,7 +294,6 @@ providers:
   # Alarm provider configurations
   alarm:
     enabled: false
-    name: "alarmprovider"
     imageName: "openwhisk/alarmprovider"
     imageTag: "1.12.0"
     imagePullPolicy: "IfNotPresent"
@@ -320,12 +303,10 @@ providers:
     apiPort: 8080
     dbPrefix: "alm"
     persistence:
-      pvcName: alarmprovider-pvc
       size: 1Gi
   # Cloudant provider configurations
   cloudant:
     enabled: false
-    name: "cloudantprovider"
     imageName: "openwhisk/cloudantprovider"
     imageTag: "1.9.0"
     imagePullPolicy: "IfNotPresent"
@@ -335,12 +316,10 @@ providers:
     apiPort: 8080
     dbPrefix: "cldt"
     persistence:
-      pvcName: cloudntprovider-pvc
       size: 1Gi
   # Kafka provider configurations
   kafka:
     enabled: false
-    name: "kafkaprovider"
     imageName: "openwhisk/kafkaprovider"
     imageTag: "1.4.18"
     imagePullPolicy: "IfNotPresent"

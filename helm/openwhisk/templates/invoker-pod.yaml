@@ -9,9 +9,9 @@ apiVersion: apps/v1
 kind: StatefulSet
 {{- end }}
 metadata:
-  name: {{ .Values.invoker.name | quote }}
+  name: {{ .Release.Name }}-invoker
   labels:
-    name: {{ .Values.invoker.name | quote }}
+    name: {{ .Release.Name }}-invoker
 {{ include "openwhisk.label_boilerplate" . | indent 4 }}
 spec:
 {{- if eq .Values.invoker.containerFactory.impl "kubernetes" }}
@@ -20,22 +20,22 @@ spec:
 {{- end }}
   selector:
     matchLabels:
-      name: {{ .Values.invoker.name | quote }}
+      name: {{ .Release.Name }}-invoker
   template:
     metadata:
       labels:
-        name: {{ .Values.invoker.name | quote }}
+        name: {{ .Release.Name }}-invoker
 {{ include "openwhisk.label_boilerplate" . | indent 8 }}
     spec:
 {{- if eq .Values.invoker.containerFactory.impl "kubernetes" }}
-      serviceAccountName: {{ .Values.invoker.name | quote }}
+      serviceAccountName: {{ .Release.Name }}-invoker
 {{- end }}
       restartPolicy: {{ .Values.invoker.restartPolicy }}
 
       affinity:
 {{ include "openwhisk.affinity.invoker" . | indent 8 }}
 {{- if eq .Values.invoker.containerFactory.impl "kubernetes" }}
-{{ include "openwhisk.affinity.selfAntiAffinity" ( .Values.invoker.name | quote ) | indent 8 }}
+{{ include "openwhisk.affinity.selfAntiAffinity" ( printf "%s-invoker" .Release.Name ) | indent 8 }}
 {{- end }}
 
 {{- if eq .Values.invoker.containerFactory.impl "docker" }}
@@ -43,7 +43,7 @@ spec:
 {{ include "openwhisk.docker_volumes" . | indent 6 }}
       - name: task-dir
         configMap:
-          name: docker-pull-runtimes
+          name: {{ .Release.Name }}-docker-pull-runtimes
 {{- end }}
 
       initContainers:
@@ -55,7 +55,7 @@ spec:
 {{ include "openwhisk.readiness.waitForController" . | indent 6 }}
 
       containers:
-      - name: {{ .Values.invoker.name | quote }}
+      - name: invoker
         image: "{{- .Values.invoker.imageName -}}:{{- .Values.invoker.imageTag -}}"
         imagePullPolicy: {{ .Values.invoker.imagePullPolicy | quote }}
         command: [ "/bin/bash", "-c", "/init.sh --uniqueName $INVOKER_NAME" ]
@@ -67,17 +67,17 @@ spec:
           - name: "WHISK_API_HOST_PROTO"
             valueFrom:
               configMapKeyRef:
-                name: whisk.config
+                name: {{ .Release.Name }}-whisk.config
                 key: whisk_api_host_proto
           - name: "WHISK_API_HOST_PORT"
             valueFrom:
               configMapKeyRef:
-                name: whisk.config
+                name: {{ .Release.Name }}-whisk.config
                 key: whisk_api_host_port
           - name: "WHISK_API_HOST_NAME"
             valueFrom:
               configMapKeyRef:
-                name: whisk.config
+                name: {{ .Release.Name }}-whisk.config
                 key: whisk_api_host_name
 
           - name: "CONFIG_whisk_docker_containerFactory_useRunc"
@@ -132,7 +132,7 @@ spec:
           - name:  "CONFIG_whisk_info_date"
             valueFrom:
               configMapKeyRef:
-                name: whisk.config
+                name: {{ .Release.Name }}-whisk.config
                 key: whisk_info_date
 
           # properties for DB connection

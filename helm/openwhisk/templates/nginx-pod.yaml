@@ -4,19 +4,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.nginx.name | quote }}
+  name: {{ .Release.Name }}-nginx
   labels:
-    name: {{ .Values.nginx.name | quote }}
+    name: {{ .Release.Name }}-nginx
 {{ include "openwhisk.label_boilerplate" . | indent 4 }}
 spec:
   replicas: {{ .Values.nginx.replicaCount }}
   selector:
     matchLabels:
-      name: {{ .Values.nginx.name | quote }}
+      name: {{ .Release.Name }}-nginx
   template:
     metadata:
       labels:
-        name: {{ .Values.nginx.name | quote }}
+        name: {{ .Release.Name }}-nginx
 {{ include "openwhisk.label_boilerplate" . | indent 8 }}
     spec:
       restartPolicy: {{ .Values.nginx.restartPolicy }}
@@ -24,21 +24,21 @@ spec:
       {{- if .Values.affinity.enabled }}
       affinity:
 {{ include "openwhisk.affinity.edge" . | indent 8 }}
-{{ include "openwhisk.affinity.selfAntiAffinity" ( .Values.nginx.name | quote ) | indent 8 }}
+{{ include "openwhisk.affinity.selfAntiAffinity" ( printf "%s-nginx" .Release.Name ) | indent 8 }}
       {{- end }}
 
       volumes:
       - name: nginx-certs
         secret:
-          secretName: {{ .Values.nginx.name | quote }}
+          secretName: {{ .Release.Name }}-nginx
       - name: nginx-conf
         configMap:
-          name: {{ .Values.nginx.name | quote }}
+          name: {{ .Release.Name }}-nginx
       - name: logs
         emptyDir: {}
 
       containers:
-      - name: {{ .Values.nginx.name | quote }}
+      - name: nginx
         image: "{{- .Values.nginx.imageName -}}:{{- .Values.nginx.imageTag -}}"
         imagePullPolicy: {{ .Values.nginx.imagePullPolicy | quote }}
         ports:

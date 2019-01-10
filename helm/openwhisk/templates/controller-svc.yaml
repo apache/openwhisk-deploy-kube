@@ -4,13 +4,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Values.controller.name | quote }}
+  name: {{ .Release.Name }}-controller
   labels:
-    name: {{ .Values.controller.name | quote }}
+    name: {{ .Release.Name }}-controller
 {{ include "openwhisk.label_boilerplate" . | indent 4 }}
 spec:
   selector:
-    name: {{ .Values.controller.name | quote }}
+    name: {{ .Release.Name }}-controller
   ports:
     - port: {{ .Values.controller.port }}
       name: http
