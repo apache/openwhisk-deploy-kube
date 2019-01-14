@@ -26,7 +26,7 @@ the following requirements:
 * The ability to create Ingresses to make a Kubernetes service
   available outside of the cluster so you can actually use OpenWhisk.
 * Unless you disable persistence (see
-  [docs/configurationChoices.md](./docs/configurationChoices.md)),
+  [configurationChoices.md](configurationChoices.md)),
   either your cluster must be configured to support [Dynamic Volume
   Provision](https://kubernetes.io/docs/concepts/storage/dynamic-provisioning/)
   and you must have a DefaultStorageClass admission controller enabled
