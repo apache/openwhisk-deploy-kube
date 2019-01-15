@@ -42,18 +42,16 @@ user action containers created by the DockerContainerFactory are not configured 
 themselves be able to invoke Kubernetes services). To work around this you must do one
 of the following three alternatives:
 1. Deploy a CouchDB instance external to your Kubernetes cluster and configure the event
-provider(s) to use it by adding stanzas like the following to your `mycluster.yaml`:
+providers to use it by adding a stanza like the following to your `mycluster.yaml`:
 ```yaml
 providers:
-  alarm:
-    db:
-      external: true
-      prefix: "alm"
-      host: "0.0.0.0"
-      port: 5984
-      protocol: "http"
-      username: "admin"
-      password: "secret"
+  db:
+    external: true
+    host: "0.0.0.0"
+    port: 5984
+    protocol: "http"
+    username: "admin"
+    password: "secret"
 ```
 2. Configure the DNS nameservers for the user containers created by DockerContainerFactory to
 use Kubernetes's DNS service.  For example, if your cluster uses kube-dns, then first
