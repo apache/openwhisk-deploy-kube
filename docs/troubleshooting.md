@@ -95,3 +95,10 @@ the nginx pod entering a CrashLoopBackOff with an error message like the one bel
 018/09/27 23:33:48 [emerg] 1#1: host not found in resolver "kube-dns.kube-system" in /etc/nginx/nginx.conf:41
 nginx: [emerg] host not found in resolver "kube-dns.kube-system" in /etc/nginx/nginx.conf:41
 ```
+
+### Install packages error `error: Package update failed`
+If the install-packages-* pod Errors with a message like the below, ensure the `apiHost` you specify within `cluster.yaml` is resolvable within the cluster. You can check using `kubectl run --rm busybox-lookup -ti --image busybox -- nslookup <apiHost>`
+```
+Installing apimgmt package
+error: Package update failed: Put https://...
+```
