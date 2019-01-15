@@ -34,9 +34,22 @@ else
 fi
 
 pushd $OPENWHISK_HOME/ansible/roles/routemgmt/files
-    ./installRouteMgmt.sh $WHISK_AUTH $WHISK_API_HOST $WHISK_SYSTEM_NAMESPACE /usr/local/bin/wsk
+    # This operation is unreliable in a TravisCI environment (for unknown reasons),
+    # so try multiple times before giving up.
+    PASSED=false
+    TRIES=0
+    until $PASSED || [ $TRIES -eq 10 ]; do
+        if ./installRouteMgmt.sh $WHISK_AUTH $WHISK_API_HOST $WHISK_SYSTEM_NAMESPACE /usr/local/bin/wsk; then
+            PASSED=true
+            echo "Successfully deployed routemgmt package"
+        else
+            echo "Failed to deploy routemgmt package; will pause, uninstall, and try again"
+            let TRIES=TRIES+1
+            sleep 10
+            ./uninstallRouteMgmt.sh
+        fi
+    done
 popd
-
 
 #####
 # Install the OpenWhisk Catalog
