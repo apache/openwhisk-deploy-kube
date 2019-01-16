@@ -4,19 +4,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.apigw.name | quote }}
+  name: {{ .Release.Name }}-apigateway
   labels:
-    name: {{ .Values.apigw.name | quote }}
+    name: {{ .Release.Name }}-apigateway
 {{ include "openwhisk.label_boilerplate" . | indent 4 }}
 spec:
   replicas: {{ .Values.apigw.replicaCount }}
   selector:
     matchLabels:
-      name: {{ .Values.apigw.name | quote }}
+      name: {{ .Release.Name }}-apigateway
   template:
     metadata:
       labels:
-        name: {{ .Values.apigw.name | quote }}
+        name: {{ .Release.Name }}-apigateway
 {{ include "openwhisk.label_boilerplate" . | indent 8 }}
     spec:
       restartPolicy: {{ .Values.apigw.restartPolicy }}
@@ -24,7 +24,7 @@ spec:
       {{- if .Values.affinity.enabled }}
       affinity:
 {{ include "openwhisk.affinity.core" . | indent 8 }}
-{{ include "openwhisk.affinity.selfAntiAffinity" ( .Values.apigw.name | quote ) | indent 8 }}
+{{ include "openwhisk.affinity.selfAntiAffinity" ( printf "%s-apigateway" .Release.Name ) | indent 8 }}
       {{- end }}
 
       containers:
@@ -44,5 +44,5 @@ spec:
           - name: "PUBLIC_GATEWAY_URL"
             valueFrom:
               configMapKeyRef:
-                name: whisk.config
+                name: {{ .Release.Name }}-whisk.config
                 key: whisk_api_host_url

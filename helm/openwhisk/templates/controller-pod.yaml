@@ -4,30 +4,30 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ .Values.controller.name | quote }}
+  name: {{ .Release.Name }}-controller
   labels:
-    name: {{ .Values.controller.name | quote }}
+    name: {{ .Release.Name }}-controller
 {{ include "openwhisk.label_boilerplate" . | indent 4 }}
 spec:
-  serviceName: {{ .Values.controller.name | quote }}
+  serviceName: {{ .Release.Name }}-controller
   podManagementPolicy: "Parallel"
   replicas: {{ .Values.controller.replicaCount }}
   selector:
     matchLabels:
-      name: {{ .Values.controller.name | quote }}
+      name: {{ .Release.Name }}-controller
   template:
     metadata:
       labels:
-        name: {{ .Values.controller.name | quote }}
+        name: {{ .Release.Name }}-controller
 {{ include "openwhisk.label_boilerplate" . | indent 8 }}
     spec:
-      serviceAccountName: ow-core
+      serviceAccountName: {{ .Release.Name }}-core
       restartPolicy: {{ .Values.controller.restartPolicy }}
 
       {{- if .Values.affinity.enabled }}
       affinity:
 {{ include "openwhisk.affinity.core" . | indent 8 }}
-{{ include "openwhisk.affinity.selfAntiAffinity" ( .Values.controller.name | quote ) | indent 8 }}
+{{ include "openwhisk.affinity.selfAntiAffinity" ( printf "%s-controller" .Release.Name ) | indent 8 }}
       {{- end }}
 
       initContainers:
@@ -36,10 +36,10 @@ spec:
 {{ include "openwhisk.readiness.waitForCouchDB" . | indent 6 }}
 
       containers:
-      - name: {{ .Values.controller.name | quote }}
+      - name: controller
         imagePullPolicy: {{ .Values.controller.imagePullPolicy | quote }}
         image: "{{- .Values.controller.imageName -}}:{{- .Values.controller.imageTag -}}"
-        command: ["/bin/bash", "-c", "/init.sh `hostname | cut -d'-' -f2`"]
+        command: ["/bin/bash", "-c", "/init.sh `hostname | cut -d'-' -f3`"]
         ports:
         - name: controller
           containerPort: {{ .Values.controller.port }}
@@ -65,12 +65,12 @@ spec:
         - name:  "CONFIG_whisk_info_date"
           valueFrom:
             configMapKeyRef:
-              name: whisk.config
+              name: {{ .Release.Name }}-whisk.config
               key: whisk_info_date
         - name: "CONFIG_whisk_info_buildNo"
           valueFrom:
             configMapKeyRef:
-              name: whisk.config
+              name: {{ .Release.Name }}-whisk.config
               key: whisk_info_buildNo
 
         # Java options
@@ -116,7 +116,7 @@ spec:
         - name: "CONFIG_akka_discovery_kubernetesApi_podNamespace"
           value: {{ .Release.Namespace | quote }}
         - name: "CONFIG_akka_discovery_kubernetesApi_podLabelSelector"
-          value: "name={{ .Values.controller.name }}"
+          value: "name={{ .Release.Name }}-controller"
         - name: "CONFIG_akka_discovery_kubernetesApi_podPortName"
           value: "akka-mgmt-http"
 {{- end }}

@@ -10,7 +10,7 @@
 kind: Role
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: {{ .Values.invoker.name | quote }}
+  name: {{ .Release.Name }}-invoker
   labels:
 {{ include "openwhisk.label_boilerplate" . | indent 4 }}
 rules:

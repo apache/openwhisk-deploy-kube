@@ -5,7 +5,7 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: allow-view
+  name: {{ .Release.Name }}-allow-view
   labels:
 {{ include "openwhisk.label_boilerplate" . | indent 4 }}
 roleRef:
@@ -14,5 +14,5 @@ roleRef:
   name: view
 subjects:
   - kind: ServiceAccount
-    name: ow-core
+    name: {{ .Release.Name }}-core
     namespace: {{ .Release.Namespace | quote }}

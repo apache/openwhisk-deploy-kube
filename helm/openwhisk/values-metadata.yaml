@@ -11,12 +11,6 @@ whisk:
     label: "General OpenWhisk configuration"
     description: "System-wide configuration parameters for your OpenWhisk deployment"
   ingress:
-    name:
-      __metadata:
-        label: "Ingress name"
-        description: "A name for the Ingress resource"
-        type: "string"
-        required: true
     apiHostName:
       __metadata:
         label: "API host name"
@@ -530,18 +524,6 @@ zookeeper:
   __metadata:
     label: "Zookeeper configuration"
     description: "Update these default values to customize the Zookeeper deployment"
-  external:
-    __metadata:
-      label: "External"
-      description: "If using an externally deployed Zookeeper"
-      type: "boolean"
-      required: true
-  name:
-    __metadata:
-      label: "Name"
-      description: "The service name"
-      type: "string"
-      required: true
   imageName:
     __metadata:
       label: "Image name"
@@ -605,12 +587,6 @@ zookeeper:
       type: "string"
       required: true
   persistence:
-    pvcName:
-      __metadata:
-        label: "PVC name"
-        description: "The PVC name"
-        type: "string"
-        required: true
     size:
       __metadata:
         label: "Size"
@@ -653,18 +629,6 @@ kafka:
   __metadata:
     label: "Kafka configuration"
     description: "Update these default values to customize the Kafka deployment"
-  external:
-    __metadata:
-      label: "External"
-      description: "If using an externally deployed Kafka"
-      type: "boolean"
-      required: true
-  name:
-    __metadata:
-      label: "Name"
-      description: "The service name"
-      type: "string"
-      required: true
   imageName:
     __metadata:
       label: "Image name"
@@ -709,12 +673,6 @@ kafka:
       type: "string"
       required: true
   persistence:
-    pvcName:
-      __metadata:
-        label: "PVC name"
-        description: "The name of the PersistentVolumeClaim for Kafka"
-        type: "string"
-        required: true
     size:
       __metadata:
         label: "Size"
@@ -737,12 +695,6 @@ db:
       label: "wipe and initialise"
       description: "If the database should be wiped and initialised when OpenWhisk is deployed"
       type: "boolean"
-      required: true
-  name:
-    __metadata:
-      label: "Name"
-      description: "The service name"
-      type: "string"
       required: true
   imageName:
     __metadata:
@@ -853,12 +805,6 @@ db:
       type: "string"
       required: true
   persistence:
-    pvcName:
-      __metadata:
-        label: "PVC name"
-        description: "The PersistentVolumeClaim name for CouchDB"
-        type: "string"
-        required: true
     size:
       __metadata:
         label: "Size"
@@ -870,12 +816,6 @@ nginx:
   __metadata:
     label: "NGINX Configuration"
     description: "Update these default values to customize the NGINX deployment"
-  name:
-    __metadata:
-      label: "Name"
-      description: "The service name"
-      type: "string"
-      required: true
   imageName:
     __metadata:
       label: "Image name"
@@ -936,12 +876,6 @@ controller:
   __metadata:
     label: "Controller configuration"
     description: "Update these default values to customize the OpenWhisk Controller deployment"
-  name:
-    __metadata:
-      label: "Name"
-      description: "The service name"
-      type: "string"
-      required: true
   imageName:
     __metadata:
       label: "Image name"
@@ -1009,12 +943,6 @@ invoker:
   __metadata:
     label: "Invoker Configuration"
     description: "Update these default values to customize the OpenWhisk Invoker deployment"
-  name:
-    __metadata:
-      label: "Name"
-      description: "The service name"
-      type: "string"
-      required: true
   imageName:
     __metadata:
       label: "Image name"
@@ -1102,12 +1030,6 @@ invoker:
           type: "number"
           required: true
       agent:
-        name:
-          __metadata:
-            label: "name of InvokerAgent"
-            description: "The name of the invoker agent daemonset"
-            type: "string"
-            required: true
         imageName:
           __metadata:
             label: "InvokerAgent image name"
@@ -1163,12 +1085,6 @@ apigw:
   __metadata:
     label: "API gateway configuration"
     description: "Update these default values to customize the API Gateway deployment"
-  name:
-    __metadata:
-      label: "Name"
-      description: "The service name"
-      type: "string"
-      required: true
   imageName:
     __metadata:
       label: "Image name"
@@ -1223,12 +1139,6 @@ redis:
   __metadata:
     label: "Redis configuration"
     description: "Update these default values to customize the Redis deployment"
-  name:
-    __metadata:
-      label: "Name"
-      description: "The service name"
-      type: "string"
-      required: true
   imageName:
     __metadata:
       label: "Image name"
@@ -1273,12 +1183,6 @@ redis:
       type: "string"
       required: true
   persistence:
-    pvcName:
-      __metadata:
-        label: "PVC name"
-        description: "The name of the PersistentVolumeClaim for redis"
-        type: "string"
-        required: true
     size:
       __metadata:
         label: "Size"
@@ -1341,12 +1245,6 @@ providers:
         description: "If alarm provider should be enabled"
         type: "boolean"
         required: true
-    name:
-      __metadata:
-        label: "Alarm name"
-        description: "The Alarm service name"
-        type: "string"
-        required: true
     imageName:
       __metadata:
         label: "Alarm image name"
@@ -1397,12 +1295,6 @@ providers:
         type: "string"
         required: true
     persistence:
-      pvcName:
-        __metadata:
-          label: "Alarm PVC name"
-          description: "The name of the PersistentVolumeClaim for the Alarm provider"
-          type: "string"
-          required: true
       size:
         __metadata:
           label: "Alarm persistence size"
@@ -1416,12 +1308,6 @@ providers:
         label: "Cloudant enabled"
         description: "if Cloudant provider should be enabled"
         type: "boolean"
-        required: true
-    name:
-      __metadata:
-        label: "Cloudant name"
-        description: "The service name for the Cloudant provider"
-        type: "string"
         required: true
     imageName:
       __metadata:
@@ -1473,12 +1359,6 @@ providers:
         type: "string"
         required: true
     persistence:
-      pvcName:
-        __metadata:
-          label: "Cloudant PVC name"
-          description: "The PersistentVolumeClaim name for the Cloudant provider"
-          type: "string"
-          required: true
       size:
         __metadata:
           label: "Cloudant persistence size"
@@ -1492,12 +1372,6 @@ providers:
         label: "Kafka enabled"
         description: "If the Kafka provider should be enabled"
         type: "boolean"
-        required: true
-    name:
-      __metadata:
-        label: "Kafka name"
-        description: "The Kafka provider service name"
-        type: "string"
         required: true
     imageName:
       __metadata:

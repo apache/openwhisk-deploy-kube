@@ -5,7 +5,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: init-couchdb
+  name: {{ .Release.Name }}-init-couchdb
   labels:
 {{ include "openwhisk.label_boilerplate" . | indent 4 }}
 data:

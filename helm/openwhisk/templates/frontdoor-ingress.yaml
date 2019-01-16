@@ -5,7 +5,7 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: {{ .Values.whisk.ingress.name | quote }}
+  name: {{ .Release.Name }}-ingress
   labels:
 {{ include "openwhisk.label_boilerplate" . | indent 4 }}
   annotations:
@@ -27,29 +27,29 @@ spec:
       paths:
       - path: /api/v1/web
         backend:
-          serviceName: controller
+          serviceName: {{ .Release.Name }}-controller
           servicePort: http
       - path: /api/v1
         backend:
-          serviceName: controller
+          serviceName: {{ .Release.Name }}-controller
           servicePort: http
       # API GW generated API invocation
       - path: /api
         backend:
-          serviceName: apigateway
+          serviceName: {{ .Release.Name }}-apigateway
           servicePort: mgmt
       # API GW health status
       - path: /v1/health-check
         backend:
-          serviceName: apigateway
+          serviceName: {{ .Release.Name }}-apigateway
           servicePort: api
       # API management REST APIs
       - path: /v2
         backend:
-          serviceName: apigateway
+          serviceName: {{ .Release.Name }}-apigateway
           servicePort: api
       - path: /
         backend:
-          serviceName: nginx
+          serviceName: {{ .Release.Name }}-nginx
           servicePort: http
 {{- end }}

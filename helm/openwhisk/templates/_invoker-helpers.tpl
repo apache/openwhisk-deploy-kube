@@ -52,12 +52,12 @@
     - name: "RUNTIMES_REGISTRY_USERNAME"
       valueFrom:
         secretKeyRef:
-          name: docker.registry.auth
+          name: {{ .Release.Name }}-docker.registry.auth
           key: docker_registry_username
     - name: "RUNTIMES_REGISTRY_PASSWORD"
       valueFrom:
         secretKeyRef:
-          name: docker.registry.auth
+          name: {{ .Release.Name }}-docker.registry.auth
           key: docker_registry_password
 {{- end -}}
 {{- end -}}

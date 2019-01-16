@@ -5,9 +5,9 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: openwhisk-tests-systemtest
+  name: {{ .Release.Name }}-tests-systemtest
   labels:
-    name: openwhisk-tests-systemtest
+    name: {{ .Release.Name }}-tests-systemtest
     ow-testpod: "true"
 {{ include "openwhisk.label_boilerplate" . | indent 4 }}
   annotations:
@@ -17,7 +17,7 @@ spec:
   volumes:
   - name: task-dir
     configMap:
-      name: openwhisk-tests-systemtest-cm
+      name: {{ .Release.Name }}-tests-systemtest
   containers:
   - name: systemtest
     image: "{{- .Values.utility.imageName -}}:{{- .Values.utility.imageTag -}}"
@@ -31,12 +31,12 @@ spec:
       - name: "WSK_AUTH"
         valueFrom:
           secretKeyRef:
-            name: whisk.auth
+            name: {{ .Release.Name }}-whisk.auth
             key: guest
       - name: "WSK_API_HOST_URL"
         valueFrom:
           configMapKeyRef:
-            name: whisk.config
+            name: {{ .Release.Name }}-whisk.config
             key: whisk_api_host_url
       - name: "OW_GIT_TAG_OPENWHISK"
         value: {{ .Values.whisk.versions.openwhisk.gitTag | quote }}

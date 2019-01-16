@@ -5,18 +5,18 @@
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: {{ .Values.invoker.containerFactory.kubernetes.agent.name | quote }}
+  name: {{ .Release.Name }}-invoker-agent
   labels:
-    name: {{ .Values.invoker.containerFactory.kubernetes.agent.name | quote }}
+    name: {{ .Release.Name }}-invoker-agent
 {{ include "openwhisk.label_boilerplate" .| indent 4 }}
 spec:
   selector:
     matchLabels:
-      name: {{ .Values.invoker.containerFactory.kubernetes.agent.name | quote }}
+      name: {{ .Release.Name }}-invoker-agent
   template:
     metadata:
       labels:
-        name: {{ .Values.invoker.containerFactory.kubernetes.agent.name | quote }}
+        name: {{ .Release.Name }}-invoker-agent
 {{ include "openwhisk.label_boilerplate" . | indent 8 }}
     spec:
       restartPolicy: Always
@@ -31,14 +31,14 @@ spec:
         emptyDir: {}
       - name: task-dir
         configMap:
-          name: docker-pull-runtimes
+          name: {{ .Release.Name }}-docker-pull-runtimes
 
       initContainers:
       # Pull images for all default runtimes before starting invoker
 {{ include "openwhisk.docker_pull_runtimes" . | indent 6 }}
 
       containers:
-      - name: {{ .Values.invoker.containerFactory.kubernetes.agent.name | quote }}
+      - name: invoker-agent
         image: "{{- .Values.invoker.containerFactory.kubernetes.agent.imageName -}}:{{- .Values.invoker.containerFactory.kubernetes.agent.imageTag -}}"
         imagePullPolicy: {{ .Values.invoker.containerFactory.kubernetes.agent.imagePullPolicy | quote }}
         securityContext:

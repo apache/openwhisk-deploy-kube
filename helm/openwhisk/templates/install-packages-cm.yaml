@@ -4,7 +4,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: install-packages-cm
+  name: {{ .Release.Name }}-install-packages-cm
   labels:
 {{ include "openwhisk.label_boilerplate" . | indent 4 }}
 data:
