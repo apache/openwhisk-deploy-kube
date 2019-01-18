@@ -46,9 +46,13 @@ pushd $OPENWHISK_HOME/ansible/roles/routemgmt/files
             echo "Failed to deploy routemgmt package; will pause, uninstall, and try again"
             let TRIES=TRIES+1
             sleep 10
-            ./uninstallRouteMgmt.sh
+            ./uninstallRouteMgmt.sh $WHISK_AUTH $WHISK_API_HOST $WHISK_SYSTEM_NAMESPACE /usr/local/bin/wsk;
         fi
     done
+    if ! $PASSED; then
+        echo "Giving up after 10 failed attempts to install the routemgmt package"
+        exit 1
+    fi
 popd
 
 #####
@@ -60,7 +64,7 @@ pushd openwhisk-catalog
 popd
 
 pushd openwhisk-catalog/packages
-    ./installCatalog.sh $WHISK_AUTH $WHISK_API_HOST /usr/local/bin/wsk
+    ./installCatalog.sh $WHISK_AUTH $WHISK_API_HOST /usr/local/bin/wsk || exit 1
 popd
 
 
@@ -82,7 +86,7 @@ if [ "$OW_INSTALL_ALARM_PROVIDER" == "yes" ]; then
 
     pushd /incubator-openwhisk-package-alarms
         git checkout $OW_GIT_TAG_OPENWHISK_PACKAGE_ALARMS
-        ./installCatalog.sh $WHISK_AUTH $WHISK_API_HOST $PROVIDER_DB_URL $ALARM_DB_PREFIX $WHISK_API_HOST
+        ./installCatalog.sh $WHISK_AUTH $WHISK_API_HOST $PROVIDER_DB_URL $ALARM_DB_PREFIX $WHISK_API_HOST || exit 1
     popd
 fi
 
@@ -97,7 +101,7 @@ if [ "$OW_INSTALL_CLOUDANT_PROVIDER" == "yes" ]; then
 
     pushd /incubator-openwhisk-package-cloudant
         git checkout $OW_GIT_TAG_OPENWHISK_PACKAGE_CLOUDANT
-        ./installCatalog.sh $WHISK_AUTH $WHISK_API_HOST $PROVIDER_DB_URL $CLOUDANT_DB_PREFIX $WHISK_API_HOST
+        ./installCatalog.sh $WHISK_AUTH $WHISK_API_HOST $PROVIDER_DB_URL $CLOUDANT_DB_PREFIX $WHISK_API_HOST || exit 1
     popd
 fi
 
@@ -112,8 +116,8 @@ if [ "$OW_INSTALL_KAFKA_PROVIDER" == "yes" ]; then
 
     pushd /incubator-openwhisk-package-kafka
         git checkout $OW_GIT_TAG_OPENWHISK_PACKAGE_KAFKA
-        ./installKafka.sh $WHISK_AUTH $WHISK_API_HOST $PROVIDER_DB_URL $KAFKA_DB_PREFIX $WHISK_API_HOST
-        ./installCatalog.sh $WHISK_AUTH $WHISK_API_HOST $PROVIDER_DB_URL $KAFKA_DB_PREFIX $WHISK_API_HOST
+        ./installKafka.sh $WHISK_AUTH $WHISK_API_HOST $PROVIDER_DB_URL $KAFKA_DB_PREFIX $WHISK_API_HOST || exit 1
+        ./installCatalog.sh $WHISK_AUTH $WHISK_API_HOST $PROVIDER_DB_URL $KAFKA_DB_PREFIX $WHISK_API_HOST || exit 1
     popd
 fi
 
