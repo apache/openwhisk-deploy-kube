@@ -111,19 +111,19 @@ whisk:
     includeSystemTests: false
   versions:
     openwhisk:
-      buildDate: "2018-12-13-03:18:39Z"
-      buildNo: "20181213a"
-      gitTag: "9f66633aa930547b0ea7caa36d4c46d935d6224d"
+      buildDate: "2019-01-18-18:58:16Z"
+      buildNo: "20190118a"
+      gitTag: "00fad9520342a83ea6adf83c511e5bf25f47109a"
     openwhiskCli:
-      tag: "a596544"
+      tag: "b9b3ae9"
     openwhiskCatalog:
       gitTag: "3d6d69f3e2dba96c775d4b1a4d55b1fc158b1201"
     openwhiskPackageAlarms:
-      gitTag: "7693072f37d4ae215bf89bd721053b3cad341fec"
+      gitTag: "3ec558efd1669ac5c9ddba00028746696772ab25"
     openwhiskPackageCloudant:
-      gitTag: "cc9f35151b7b471f74e7f032c1f3342168687ca2"
+      gitTag: "c2b023518d981a1fb59f8c39cae0b5753153299f"
     openwhiskPackageKafka:
-      gitTag: "6dbafc49107567185ee3a55781c8b3144fad6f63"
+      gitTag: "a0428e65011c61c73546d250ce3123dbac946ff6"
 
 k8s:
   domain: cluster.local
@@ -136,7 +136,7 @@ k8s:
 # Images used to run auxillary tasks/jobs
 utility:
   imageName: "openwhisk/ow-utils"
-  imageTag: "9f66633"
+  imageTag: "00fad95"
   imagePullPolicy: "IfNotPresent"
 
 # Docker registry
@@ -222,7 +222,7 @@ nginx:
 # Controller configurations
 controller:
   imageName: "openwhisk/controller"
-  imageTag: "9f66633"
+  imageTag: "00fad95"
   imagePullPolicy: "IfNotPresent"
   replicaCount: 1
   restartPolicy: "Always"
@@ -234,7 +234,7 @@ controller:
 # Invoker configurations
 invoker:
   imageName: "openwhisk/invoker"
-  imageTag: "9f66633"
+  imageTag: "00fad95"
   imagePullPolicy: "IfNotPresent"
   restartPolicy: "Always"
   port: 8080
@@ -295,7 +295,7 @@ providers:
   alarm:
     enabled: false
     imageName: "openwhisk/alarmprovider"
-    imageTag: "1.12.0"
+    imageTag: "1.12.2"
     imagePullPolicy: "IfNotPresent"
     # NOTE: replicaCount > 1 doesn't work because of the PVC
     replicaCount: 1
@@ -308,7 +308,7 @@ providers:
   cloudant:
     enabled: false
     imageName: "openwhisk/cloudantprovider"
-    imageTag: "1.9.0"
+    imageTag: "1.9.2"
     imagePullPolicy: "IfNotPresent"
     # NOTE: replicaCount > 1 doesn't work because of the PVC
     replicaCount: 1
@@ -321,7 +321,7 @@ providers:
   kafka:
     enabled: false
     imageName: "openwhisk/kafkaprovider"
-    imageTag: "1.4.18"
+    imageTag: "1.4.20"
     imagePullPolicy: "IfNotPresent"
     # NOTE: setting replicaCount > 1 has not been tested and may not work
     replicaCount: 1
