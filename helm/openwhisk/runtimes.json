@@ -7,7 +7,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "nodejs6action",
-                    "tag": "92503cb"
+                    "tag": "2c5c075"
                 },
                 "deprecated": false,
                 "attached": {
@@ -27,7 +27,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-nodejs-v8",
-                    "tag": "92503cb"
+                    "tag": "2c5c075"
                 },
                 "deprecated": false,
                 "attached": {
@@ -41,7 +41,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-nodejs-v10",
-                    "tag": "92503cb"
+                    "tag": "2c5c075"
                 },
                 "deprecated": false,
                 "attached": {
@@ -56,7 +56,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "python2action",
-                    "tag": "de60587"
+                    "tag": "d6a8920"
                 },
                 "deprecated": false,
                 "attached": {
@@ -70,7 +70,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "python2action",
-                    "tag": "de60587"
+                    "tag": "d6a8920"
                 },
                 "deprecated": false,
                 "attached": {
@@ -83,7 +83,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "python3action",
-                    "tag": "de60587"
+                    "tag": "d6a8920"
                 },
                 "deprecated": false,
                 "attached": {
@@ -112,7 +112,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-swift-v4.1",
-                    "tag": "1.0.8"
+                    "tag": "5aacba1"
                 },
                 "deprecated": false,
                 "attached": {
@@ -126,7 +126,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-swift-v4.2",
-                    "tag": "f870916"
+                    "tag": "5aacba1"
                 },
                 "deprecated": false,
                 "attached": {
@@ -142,7 +142,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "java8action",
-                    "tag": "1.1.2"
+                    "tag": "7290453"
                 },
                 "deprecated": false,
                 "attached": {
@@ -160,7 +160,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-php-v7.1",
-                    "tag": "0d082e2"
+                    "tag": "a68bb79"
                 },
                 "attached": {
                     "attachmentName": "codefile",
@@ -174,7 +174,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-php-v7.2",
-                    "tag": "0d082e2"
+                    "tag": "a68bb79"
                 },
                 "attached": {
                     "attachmentName": "codefile",
@@ -188,7 +188,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-php-v7.3",
-                    "tag": "0d082e2"
+                    "tag": "a68bb79"
                 },
                 "attached": {
                     "attachmentName": "codefile",
@@ -208,7 +208,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-ruby-v2.5",
-                    "tag": "78e1406"
+                    "tag": "092b5cf"
                 }
             }
         ],
@@ -224,7 +224,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "actionloop-golang-v1.11",
-                    "tag": "a62a3d0"
+                    "tag": "dbc0e34"
                 }
             }
         ],
@@ -250,7 +250,7 @@
         {
             "prefix": "openwhisk",
             "name": "dockerskeleton",
-            "tag": "8b2e205"
+            "tag": "13361f9"
         }
     ]
 }

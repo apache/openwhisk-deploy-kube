@@ -7,7 +7,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "nodejs6action",
-                    "tag": "586f84e"
+                    "tag": "2c5c075"
                 },
                 "deprecated": false,
                 "stemCells": [{
@@ -22,7 +22,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "python3action",
-                    "tag": "cee010a"
+                    "tag": "d6a8920"
                 },
                 "deprecated": false
             }
@@ -32,7 +32,7 @@
         {
             "prefix": "openwhisk",
             "name": "dockerskeleton",
-            "tag": "8b2e205"
+            "tag": "13361f9"
         }
     ]
 }
