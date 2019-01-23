@@ -7,10 +7,18 @@ pushd /openwhisk
     git checkout $OW_GIT_TAG_OPENWHISK
 popd
 
-# Copy the secrets whisk.auth.guest and whisk.auth.system into the cloned tree
-# overwriting the default values we cloned from git
+# Install the secrets whisk.auth.guest and whisk.auth.system into the cloned tree
+# after removing the defaults inherited from the checkout of openwhisk
+rm -f /openwhisk/ansible/files/auth.guest /openwhisk/ansible/files/auth.whisk.system
 cp -f /etc/whisk-auth/guest /openwhisk/ansible/files/auth.guest
 cp -f /etc/whisk-auth/system /openwhisk/ansible/files/auth.whisk.system
+
+# Sanity check: all subjects must have unique keys
+if cmp -s /openwhisk/ansible/files/auth.guest /openwhisk/ansible/files/auth.whisk.system; then
+    echo "FATAL ERROR: unable to initialize the OpenWhisk subjects database."
+    echo "Cannot use identical keys for whisk.auth.system and whisk.auth.guest."
+    exit 1
+fi
 
 # generate db_local.ini so the ansible jobs know how to access the database
 pushd /openwhisk/ansible

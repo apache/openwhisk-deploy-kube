@@ -13,6 +13,7 @@ export PROVIDER_DB_URL=$PROVIDER_DB_PROTOCOL://$PROVIDER_DB_USERNAME:$PROVIDER_D
 git clone https://github.com/apache/incubator-openwhisk openwhisk
 pushd openwhisk
     git checkout $OW_GIT_TAG_OPENWHISK
+    rm -f /openwhisk/ansible/files/auth.guest /openwhisk/ansible/files/auth.whisk.system
 popd
 
 # Setup env for installRouteMgmt.sh
