@@ -32,11 +32,11 @@ done
 
 # Enable single node mode (this also creates the system databases)
 echo "Enabling single node cluster"
-curl --silent -X POST -H "Content-Type: application/json" $DB_PROTOCOL://$COUCHDB_USER:$COUCHDB_PASSWORD@$DB_HOST:$DB_PORT/_cluster_setup -d '{"action": "enable_single_node"}'
+curl --silent -X POST -H "Content-Type: application/json" -u "$COUCHDB_USER:$COUCHDB_PASSWORD" $DB_PROTOCOL://$DB_HOST:$DB_PORT/_cluster_setup -d '{"action": "enable_single_node"}' || exit 1
 
 # disable reduce limits on views
 echo "Disabling reduce limits on views"
-curl --silent -X PUT $DB_PROTOCOL://$COUCHDB_USER:$COUCHDB_PASSWORD@$DB_HOST:$DB_PORT/_node/couchdb@$NODENAME/_config/query_server_config/reduce_limit -d '"false"'
+curl --silent -X PUT -u "$COUCHDB_USER:$COUCHDB_PASSWORD" $DB_PROTOCOL://$DB_HOST:$DB_PORT/_node/couchdb@$NODENAME/_config/query_server_config/reduce_limit -d '"false"' || exit 1
 
 
 # initialize the DB tables for OpenWhisk
@@ -59,6 +59,6 @@ pushd /openwhisk/ansible
 popd
 
 echo "Creating ow_kube_couchdb_initialized_marker database"
-curl --silent -X PUT $DB_PROTOCOL://$COUCHDB_USER:$COUCHDB_PASSWORD@$DB_HOST:$DB_PORT/ow_kube_couchdb_initialized_marker
+curl --silent -X PUT -u "$COUCHDB_USER:$COUCHDB_PASSWORD" $DB_PROTOCOL://$DB_HOST:$DB_PORT/ow_kube_couchdb_initialized_marker || exit 1
 
 echo "successfully initialized CouchDB for OpenWhisk"
