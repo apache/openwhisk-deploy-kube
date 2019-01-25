@@ -139,6 +139,13 @@ utility:
   imageTag: "00fad95"
   imagePullPolicy: "IfNotPresent"
 
+# Images used to run auxillary tasks/jobs
+wskadmin:
+  imageName: "actionloop/wskadmin"
+  imageTag: "latest"
+  imagePullPolicy: "IfNotPresent"
+
+
 # Docker registry
 docker:
   registry:
