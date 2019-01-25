@@ -139,12 +139,6 @@ utility:
   imageTag: "3a6f6a7"
   imagePullPolicy: "IfNotPresent"
 
-# Images used to run auxillary tasks/jobs
-wskadmin:
-  imageName: "openwhisk/ow-utils"
-  imageTag: "3a6f6a7"
-  imagePullPolicy: "IfNotPresent"
-
 # Docker registry
 docker:
   registry:
