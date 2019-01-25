@@ -261,8 +261,9 @@ If your deployment is not working, check our
 
 # Administering OpenWhisk
 
-[Wskadmin](https://github.com/apache/incubator-openwhisk/tree/master/tools/admin) is the tool to perform various administrative operations against an OpenWhisk deployment. 
-Since wskadmin requires credentials for direct access to the database (that is not normally accessible to the outside), it is deployed in a pod inside Kubernetes that is configured to access it. You can run `wskadmin` with `kubectl`. You need to know the namespace and the deployment name. 
+[Wskadmin](https://github.com/apache/incubator-openwhisk/tree/master/tools/admin) is the tool to perform various administrative operations against an OpenWhisk deployment.
+
+Since wskadmin requires credentials for direct access to the database (that is not normally accessible to the outside), it is deployed in a pod inside Kubernetes that is configured to access it. You can run `wskadmin` with `kubectl`. You need to know the namespace and the deployment name.
 
 You can then invoke it with:
 
