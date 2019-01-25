@@ -40,6 +40,7 @@ to both single-node and multi-node Kubernetes clusters.
 
 * [Prerequisites: Kubernetes and Helm](#prerequisites-kubernetes-and-helm)
 * [Deploying OpenWhisk](#deploying-openwhisk)
+* [Administering OpenWhisk](#administering-openwhisk)
 * [Development and Testing](#development-and-testing)
 * [Cleanup](#cleanup)
 * [Issues](#issues)
@@ -258,6 +259,26 @@ certificate` errors from the `wsk` CLI.
 If your deployment is not working, check our
 [troubleshooting guide](./docs/troubleshooting.md) for ideas.
 
+# Administering OpenWhisk
+
+[Wskadmin](https://github.com/apache/incubator-openwhisk/tree/master/tools/admin) is the tool to perform various administrative operations against an OpenWhisk deployment.
+
+Since wskadmin requires credentials for direct access to the database (that is not normally accessible to the outside), it is deployed in a pod inside Kubernetes that is configured with the proper parameters. You can run `wskadmin` with `kubectl`. You need to use the `<namespace>` and the deployment `<name>` that you configured with `--namespace` and `--name` when deploying.
+
+You can then invoke `wskadmin` with:
+
+```
+kubectl -n <namespace> -ti exec <name>-wskadmin -- wskadmin <parameters>
+```
+
+For example, is your deployment name is `owdev` and the namespace is `openwhisk` you can list users in the `guest` namespace with:
+
+```
+$ kubectl -n openwhisk  -ti exec owdev-wskadmin -- wskadmin user list guest
+23bc46b1-71f6-4ed5-8c54-816aa4f8c502:123zO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP
+```
+
+Check [here](https://github.com/apache/incubator-openwhisk/tree/master/tools/admin) for details about the available commands.
 
 # Development and Testing
 
