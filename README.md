@@ -263,12 +263,12 @@ If your deployment is not working, check our
 
 [Wskadmin](https://github.com/apache/incubator-openwhisk/tree/master/tools/admin) is the tool to perform various administrative operations against an OpenWhisk deployment.
 
-Since wskadmin requires credentials for direct access to the database (that is not normally accessible to the outside), it is deployed in a pod inside Kubernetes that is configured to access it. You can run `wskadmin` with `kubectl`. You need to know the namespace and the deployment name.
+Since wskadmin requires credentials for direct access to the database (that is not normally accessible to the outside), it is deployed in a pod inside Kubernetes that is configured with the proper parameters. You can run `wskadmin` with `kubectl`. You need to use the `<namespace>` and the deployment `<name>` that you configured with `--namespace` and `--name` when deploying.
 
-You can then invoke it with:
+You can then invoke `wskadmin` with:
 
 ```
-kubectl -n <namespace> -ti <deployment> -- wskadmin <parameters>
+kubectl -n <namespace> -ti exec <name>-wskadmin -- wskadmin <parameters>
 ```
 
 For example, is your deployment name is `owdev` and the namespace is `openwhisk` you can list users in the `guest` namespace with:

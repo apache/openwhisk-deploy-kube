@@ -12,8 +12,8 @@ spec:
   restartPolicy: Always
   containers:
   - name: wskadmin
-    image: "{{- .Values.wskadmin.imageName -}}:{{- .Values.wskadmin.imageTag -}}"
-    imagePullPolicy: {{ .Values.wskadmin.imagePullPolicy | quote }}
+    image: "{{- .Values.utility.imageName -}}:{{- .Values.utility.imageTag -}}"
+    imagePullPolicy: {{ .Values.utility.imagePullPolicy | quote }}
     command: ["/bin/bash", "-c", "tail -f /dev/null"]
     env:
     - name: "WHISK_LOGS_DIR"

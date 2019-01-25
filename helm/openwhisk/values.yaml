@@ -136,15 +136,14 @@ k8s:
 # Images used to run auxillary tasks/jobs
 utility:
   imageName: "openwhisk/ow-utils"
-  imageTag: "00fad95"
+  imageTag: "3a6f6a7"
   imagePullPolicy: "IfNotPresent"
 
 # Images used to run auxillary tasks/jobs
 wskadmin:
-  imageName: "actionloop/wskadmin"
-  imageTag: "latest"
+  imageName: "openwhisk/ow-utils"
+  imageTag: "3a6f6a7"
   imagePullPolicy: "IfNotPresent"
-
 
 # Docker registry
 docker:
