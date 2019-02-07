@@ -13,4 +13,4 @@ maintainers:
   - name: Apache OpenWhisk committers
     email: dev@openwhisk.apache.org
 tillerVersion: ">=2.9.0"
-kubeVersion: ">=1.10.0"
+kubeVersion: ">=v1.10.11-eks"
