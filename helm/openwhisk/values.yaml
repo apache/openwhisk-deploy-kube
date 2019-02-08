@@ -187,7 +187,7 @@ db:
   # This should always be true if external is false.
   wipeAndInit: true
   imageName: "apache/couchdb"
-  imageTag: "2.1"
+  imageTag: "2.3"
   imagePullPolicy: "IfNotPresent"
   # NOTE: must be 1 (because initdb.sh enables single node mode)
   replicaCount: 1
