@@ -436,8 +436,8 @@ k8s:
       required: true
   dns:
     __metadata:
-      label: "DNS nameserver"
-      description: "The Internal IP of your clusters DNS service"
+      label: "Kubernetes DNS service"
+      description: "The name of your cluster's DNS service"
       type: "string"
       required: true
   persistence:
@@ -1022,6 +1022,39 @@ invoker:
           value: "docker"
         - label: "kubernetes"
           value: "kubernetes"
+    networkConfig:
+      name:
+        __metadata:
+          label: "Container Network Name"
+          description: "Name of the Docker network to be used by user action containers"
+          type: "string"
+          required: false
+      dns:
+        inheritInvokerConfig:
+          __metadata:
+            label: "Inherit Invoker DNS Configuration"
+            description: "Should the user action containers use the same DNS configuration as the Invoker's container?"
+            type: "boolean"
+            required: false
+        overrides:
+          nameservers:
+            __metadata:
+              label: "DNS nameservers"
+              description: "A list of IP addresses of DNS nameserver(s) to be used by user action containers"
+              type: "string"
+              required: false
+          search:
+            __metadata:
+              label: "DNS search domains"
+              description: "A list of DNS search domains to be used by user action containers"
+              type: "string"
+              required: false
+          options:
+            __metadata:
+              label: "options"
+              description: "A list of DNS options to be used by user action containers"
+              type: "string"
+          required: false
     kubernetes:
       replicaCount:
         __metadata:
@@ -1067,19 +1100,6 @@ invoker:
             description: "The primary invoker agent port"
             type: "string"
             required: true
-    containerNetwork:
-      __metadata:
-        label: "Container Network"
-        description: "Docker network to be used by user action containers"
-        type: "string"
-        required: false
-    nameservers:
-      __metadata:
-        label: "Nameservers"
-        description: "The DNS nameserver to be used by user action containers"
-        type: "string"
-        required: false
-
 
 apigw:
   __metadata:

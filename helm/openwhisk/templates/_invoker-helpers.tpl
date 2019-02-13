@@ -35,12 +35,12 @@
 - name: docker-pull-runtimes
   imagePullPolicy: {{ .Values.utility.imagePullPolicy | quote }}
   image: "{{- .Values.utility.imageName -}}:{{- .Values.utility.imageTag -}}"
-  command: ["/usr/local/bin/ansible-playbook", "/task/playbook.yml"]
+  command: ["/usr/local/bin/ansible-playbook", "/invoker-scripts/playbook.yml"]
   volumeMounts:
   - name: dockersock
     mountPath: "/var/run/docker.sock"
-  - name: task-dir
-    mountPath: "/task/playbook.yml"
+  - name: scripts-dir
+    mountPath: "/invoker-scripts/playbook.yml"
     subPath: "playbook.yml"
   env:
     # action runtimes

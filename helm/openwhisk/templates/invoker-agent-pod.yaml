@@ -29,9 +29,9 @@ spec:
 {{ include "openwhisk.docker_volumes" . | indent 6 }}
       - name: userlogs
         emptyDir: {}
-      - name: task-dir
+      - name: scripts-dir
         configMap:
-          name: {{ .Release.Name }}-docker-pull-runtimes
+          name: {{ .Release.Name }}-invoker-scripts
 
       initContainers:
       # Pull images for all default runtimes before starting invoker

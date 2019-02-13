@@ -200,14 +200,6 @@ invoker:
       agent:
         enabled: false
 
-providers:
-  alarm:
-    enabled: true
-  cloudant:
-    enabled: true
-  kafka:
-    enabled: true
-
 nginx:
   httpsNodePort: $WSK_PORT
 EOF

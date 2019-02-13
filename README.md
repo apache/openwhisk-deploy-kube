@@ -142,16 +142,6 @@ deploy.
 4. [Configure the `wsk` CLI](#configure-the-wsk-cli). You need to
 tell the `wsk` CLI how to connect to your OpenWhisk deployment.
 
-Although you are deploying OpenWhisk to Kubernetes, by default the
-executing actions will not be aware they are running on a Kubernetes
-cluster. In particular, they will not be configured to do DNS resolution
-of Kubernetes services.  However, if you want executing actions to
-easily access services in a Kubernetes-native way, you can configure
-your OpenWhisk deployment to enable that by either using the
-[KubernetesContainerFactory](docs/configurationChoices.md#invoker-container-factory)
-or setting the value of `invoker.DNS` when you create the `mycluster.yaml`
-to customize your deployment ([see DNS options](docs/configurationChoices.md#user-action-container-dns)).
-
 ## Initial setup
 
 Indicate the Kubernetes worker nodes that should be used to execute
@@ -280,7 +270,7 @@ $ kubectl -n openwhisk  -ti exec owdev-wskadmin -- wskadmin user list guest
 
 Check [here](https://github.com/apache/incubator-openwhisk/tree/master/tools/admin) for details about the available commands.
 
-# Development and Testing
+# Development and Testing OpenWhisk on Kubernetes
 
 This section outlines how common OpenWhisk development tasks are
 supported when OpenWhisk is deployed on Kubernetes using Helm.
