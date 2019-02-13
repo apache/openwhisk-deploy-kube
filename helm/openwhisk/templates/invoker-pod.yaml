@@ -41,9 +41,9 @@ spec:
 {{- if eq .Values.invoker.containerFactory.impl "docker" }}
       volumes:
 {{ include "openwhisk.docker_volumes" . | indent 6 }}
-      - name: task-dir
+      - name: scripts-dir
         configMap:
-          name: {{ .Release.Name }}-docker-pull-runtimes
+          name: {{ .Release.Name }}-invoker-scripts
 {{- end }}
 
       initContainers:
@@ -58,7 +58,11 @@ spec:
       - name: invoker
         image: "{{- .Values.invoker.imageName -}}:{{- .Values.invoker.imageTag -}}"
         imagePullPolicy: {{ .Values.invoker.imagePullPolicy | quote }}
+{{- if and (eq .Values.invoker.containerFactory.impl "docker") .Values.invoker.containerFactory.networkConfig.dns.inheritInvokerConfig }}
+        command: [ "/bin/bash", "-c", ". /invoker-scripts/configureDNS.sh && /init.sh --uniqueName $INVOKER_NAME" ]
+{{- else }}
         command: [ "/bin/bash", "-c", "/init.sh --uniqueName $INVOKER_NAME" ]
+{{- end }}
         env:
           - name: "PORT"
             value: {{ .Values.invoker.port | quote }}
@@ -86,15 +90,31 @@ spec:
           - name: "CONFIG_whisk_containerPool_userMemory"
             value: {{ .Values.whisk.containerPool.userMemory | quote }}
 
-{{- if ne .Values.invoker.containerFactory.nameservers "" }}
+{{- if not .Values.invoker.containerFactory.networkConfig.dns.inheritInvokerConfig }}
+{{- if ne .Values.invoker.containerFactory.networkConfig.dns.overrides.nameservers "" }}
           # DNS Server(s) to be used by action containers
-  {{- range $index, $element := splitList ":" .Values.invoker.containerFactory.nameservers }}
+  {{- range $index, $element := splitList " " .Values.invoker.containerFactory.networkConfig.dns.overrides.nameservers }}
           - name: "CONFIG_whisk_containerFactory_containerArgs_dnsServers_{{ $index }}"
             value: {{ $element | quote }}
   {{- end }}
 {{- end }}
+{{- if ne .Values.invoker.containerFactory.networkConfig.dns.overrides.search "" }}
+          # DNS search path to be used by action containers
+  {{- range $index, $element := splitList " " .Values.invoker.containerFactory.networkConfig.dns.overrides.search }}
+          - name: "CONFIG_whisk_containerFactory_containerArgs_dnsSearch_{{ $index }}"
+            value: {{ $element | quote }}
+  {{- end }}
+{{- end }}
+{{- if ne .Values.invoker.containerFactory.networkConfig.dns.overrides.options "" }}
+          # DNS options to be used by action containers
+  {{- range $index, $element := splitList " " .Values.invoker.containerFactory.networkConfig.dns.overrides.options }}
+          - name: "CONFIG_whisk_containerFactory_containerArgs_dnsOptions_{{ $index }}"
+            value: {{ $element | quote }}
+  {{- end }}
+{{- end }}
+{{- end }}
           - name: "CONFIG_whisk_docker_containerFactory_containerArgs_network"
-            value: {{ .Values.invoker.containerFactory.containerNetwork | quote }}
+            value: {{ .Values.invoker.containerFactory.networkConfig.name | quote }}
 
           # Invoker name is the name of the node (DaemonSet) or pod (StatefulSet)
           - name: "INVOKER_NAME"
@@ -153,4 +173,9 @@ spec:
 {{- if eq .Values.invoker.containerFactory.impl "docker" }}
         volumeMounts:
 {{ include "openwhisk.docker_volume_mounts" . | indent 8 }}
+{{- if .Values.invoker.containerFactory.networkConfig.dns.inheritInvokerConfig }}
+        - name: scripts-dir
+          mountPath: "/invoker-scripts/configureDNS.sh"
+          subPath: "configureDNS.sh"
+{{- end }}
 {{- end }}
