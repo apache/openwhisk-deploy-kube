@@ -111,19 +111,19 @@ whisk:
     includeSystemTests: false
   versions:
     openwhisk:
-      buildDate: "2019-01-18-18:58:16Z"
-      buildNo: "20190118a"
-      gitTag: "00fad9520342a83ea6adf83c511e5bf25f47109a"
+      buildDate: "2019-02-20-21:05:39Z"
+      buildNo: "20190220a"
+      gitTag: "38e4b05a20bdc6d76e1cf78c6e0203d47078a2b7"
     openwhiskCli:
-      tag: "b9b3ae9"
+      tag: "42cb87f"
     openwhiskCatalog:
-      gitTag: "3d6d69f3e2dba96c775d4b1a4d55b1fc158b1201"
+      gitTag: "2df3794b0aa72e4410da229f4c39f0e70d1bbc97"
     openwhiskPackageAlarms:
-      gitTag: "3ec558efd1669ac5c9ddba00028746696772ab25"
+      gitTag: "a57c21a10cc5fe53f8c60308b766dc2d3c12f38f"
     openwhiskPackageCloudant:
-      gitTag: "c2b023518d981a1fb59f8c39cae0b5753153299f"
+      gitTag: "41f88762d9d12c7ae39642bcac5ba0cdf7c43c50"
     openwhiskPackageKafka:
-      gitTag: "a0428e65011c61c73546d250ce3123dbac946ff6"
+      gitTag: "b563eefaf29c93dc07022ffc29ffb828b6419c4c"
 
 k8s:
   domain: cluster.local
@@ -136,7 +136,7 @@ k8s:
 # Images used to run auxillary tasks/jobs
 utility:
   imageName: "openwhisk/ow-utils"
-  imageTag: "3a6f6a7"
+  imageTag: "38e4b05"
   imagePullPolicy: "IfNotPresent"
 
 # Docker registry
@@ -222,7 +222,7 @@ nginx:
 # Controller configurations
 controller:
   imageName: "openwhisk/controller"
-  imageTag: "00fad95"
+  imageTag: "38e4b05"
   imagePullPolicy: "IfNotPresent"
   replicaCount: 1
   restartPolicy: "Always"
@@ -234,7 +234,7 @@ controller:
 # Invoker configurations
 invoker:
   imageName: "openwhisk/invoker"
-  imageTag: "00fad95"
+  imageTag: "38e4b05"
   imagePullPolicy: "IfNotPresent"
   restartPolicy: "Always"
   port: 8080
@@ -259,7 +259,7 @@ invoker:
       replicaCount: 1
       agent:
         imageName: "openwhisk/kube-invoker-agent"
-        imageTag: "eb92751"
+        imageTag: "89f1787"
         imagePullPolicy: "IfNotPresent"
         enabled: false
         port: 3233
@@ -302,7 +302,7 @@ providers:
   alarm:
     enabled: true
     imageName: "openwhisk/alarmprovider"
-    imageTag: "1.12.2"
+    imageTag: "1.12.3"
     imagePullPolicy: "IfNotPresent"
     # NOTE: replicaCount > 1 doesn't work because of the PVC
     replicaCount: 1

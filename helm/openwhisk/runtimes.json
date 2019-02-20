@@ -7,7 +7,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "nodejs6action",
-                    "tag": "2c5c075"
+                    "tag": "b99d71e"
                 },
                 "deprecated": false,
                 "attached": {
@@ -27,7 +27,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-nodejs-v8",
-                    "tag": "2c5c075"
+                    "tag": "b99d71e"
                 },
                 "deprecated": false,
                 "attached": {
@@ -41,7 +41,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-nodejs-v10",
-                    "tag": "2c5c075"
+                    "tag": "b99d71e"
                 },
                 "deprecated": false,
                 "attached": {
@@ -87,7 +87,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-swift-v4.2",
-                    "tag": "5aacba1"
+                    "tag": "5bb0409"
                 },
                 "deprecated": false,
                 "attached": {
@@ -121,7 +121,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-php-v7.3",
-                    "tag": "a68bb79"
+                    "tag": "7375a15"
                 },
                 "attached": {
                     "attachmentName": "codefile",
@@ -157,7 +157,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "actionloop-golang-v1.11",
-                    "tag": "dbc0e34"
+                    "tag": "d787163"
                 }
             }
         ],
@@ -185,7 +185,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-ballerina-v0.990.2",
-                    "tag": "latest"
+                    "tag": "0f7df9c"
                 },
                 "deprecated": false,
                 "attached": {
