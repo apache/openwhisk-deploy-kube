@@ -104,11 +104,21 @@ whisk:
           'X-Request-ID' $request_id;
         }
 
+# not required on IKS 1.10; required on IKS 1.11 and newer
+invoker:
+  containerFactory:
+    impl: kubernetes
+
 k8s:
   persistence:
     hasDefaultStorageClass: false
     explicitStorageClass: default
 ```
+
+Starting with IKS 1.11, the underlying container runtime is now
+containerd instead of docker. As a result, you cannot use the
+DockerContainerFactory on IKS and must use the
+KubernetesContainerFactory.
 
 IKS does not provide a properly configured DefaultStorageClass,
 instead you need to tell the Helm chart to use the `default`
