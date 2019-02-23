@@ -55,6 +55,20 @@ spec:
         - name: leader-election
           containerPort: {{ .Values.zookeeper.leaderElectionPort }}
 
+        livenessProbe:
+          tcpSocket:
+            port: {{ .Values.zookeeper.port }}
+            initialDelaySeconds: 5
+            periodSeconds: 10
+        readinessProbe:
+          exec:
+            command:
+            - /bin/bash
+            - -c
+            - "echo ruok | nc -w 1 localhost:{{ .Values.zookeeper.port }} | grep imok"
+            initialDelaySeconds: 5
+            periodSeconds: 10
+
         volumeMounts:
         - mountPath: /conf
           name: zk-config
