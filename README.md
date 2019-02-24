@@ -78,9 +78,10 @@ your cluster.
 [setup instructions](docs/k8s-dind-cluster.md) because the default
 setup of kubeadm-dind-cluster does *not* meet the requirements for
 running OpenWhisk.
-3. Windows: You should be able to use the built-in Kubernetes support
-in Docker for Windows version 18.06 or later.
-We would welcome a pull request with detailed setup instructions for Windows.
+3. Windows: Use the built-in Kubernetes support in Docker for Windows
+version 18.06 or later. Please follow our
+[setup instructions](docs/k8s-docker-for-windows.md) to initially create
+your cluster.
 
 ### Using Minikube
 
@@ -218,9 +219,9 @@ with the actual values from your mycluster.yaml.
 wsk property set --apihost <whisk.ingress.apiHostName>:<whisk.ingress.apiHostPort>
 wsk property set --auth 23bc46b1-71f6-4ed5-8c54-816aa4f8c502:123zO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP
 ```
-### Configuring the CLI for Kubernetes on Docker for Mac
+### Configuring the CLI for Kubernetes on Docker for Mac and Windows
 
-The `docker0` network interface does not exist in the Docker for Mac
+The `docker0` network interface does not exist in the Docker for Mac/Windows
 host environment. Instead, exposed NodePorts are forwarded from localhost
 to the appropriate containers.  This means that you will use `localhost`
 instead of `whisk.ingress.apiHostName` when configuring
