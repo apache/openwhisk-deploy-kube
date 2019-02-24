@@ -32,7 +32,7 @@ to install Minikube or otherwise run inside a virtual machine.
 
 ### Chocolatey
 
-You can use the Chocolatey package manager to quickly set up your Docker 
+You can use the Chocolatey package manager to quickly set up your Docker
 cluster on Windows.
 
 - [Install Chocolatey](https://chocolatey.org/install)
@@ -77,7 +77,7 @@ nginx:
 
 ### Using helm to install OpenWhisk
 
-Execute these two commands and wait a few seconds for the tiller-deploy pod 
+Execute these two commands and wait a few seconds for the tiller-deploy pod
 in the kube-system namespace to be in the Running state:
 
 ```cmd
@@ -85,13 +85,13 @@ helm init
 kubectl create clusterrolebinding tiller-cluster-admin --clusterrole=cluster-admin --serviceaccount=kube-system:default
 ```
 
-Indicate the Kubernetes worker nodes that should be used to execute user 
-containers by OpenWhisk's invokers. For a single node development cluster, 
+Indicate the Kubernetes worker nodes that should be used to execute user
+containers by OpenWhisk's invokers. For a single node development cluster,
 simply run:
 
 `kubectl label nodes --all openwhisk-role=invoker`
 
-Now you're ready to run helm to set up OpenWhisk. Make sure you created your 
+Now you're ready to run helm to set up OpenWhisk. Make sure you created your
 `mycluster.yaml` file as described above, and run:
 
 ```cmd
@@ -99,18 +99,18 @@ cd incubator-openwhisk-deploy-kube
 helm install ./helm/openwhisk --namespace=openwhisk --name=owdev -f mycluster.yaml
 ```
 
-You can use the command `helm status owdev` to get a summary of the various 
-Kubernetes artifacts that make up your OpenWhisk deployment. Once the 
-`install-packages` Pod is in the Completed state, your OpenWhisk deployment 
+You can use the command `helm status owdev` to get a summary of the various
+Kubernetes artifacts that make up your OpenWhisk deployment. Once the
+`install-packages` Pod is in the Completed state, your OpenWhisk deployment
 is ready to be used.
 
-Tip: If you notice errors or pods stuck in the pending state (`init-couchdb` 
-as an example), try running `kubectl get pvc --all-namespaces`. If you notice 
-that claims are stuck in the Pending state, you may need to follow the 
+Tip: If you notice errors or pods stuck in the pending state (`init-couchdb`
+as an example), try running `kubectl get pvc --all-namespaces`. If you notice
+that claims are stuck in the Pending state, you may need to follow the
 workaround mentioned in this [Docker for Windows Github Issue](https://github.com/docker/for-win/issues/1758#issuecomment-376054370).
 
-You are now ready to set up the wsk cli. Further instructions can be 
-[found here](https://github.com/apache/incubator-openwhisk-deploy-kube#https://github.com/apache/incubator-openwhisk-deploy-kube#configure-the-wsk-cli). 
+You are now ready to set up the wsk cli. Further instructions can be
+[found here](https://github.com/apache/incubator-openwhisk-deploy-kube#https://github.com/apache/incubator-openwhisk-deploy-kube#configure-the-wsk-cli).
 Follow the Docker for Windows instructions.
 
 ## Hints and Tips
