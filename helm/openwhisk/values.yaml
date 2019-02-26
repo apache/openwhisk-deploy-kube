@@ -245,6 +245,7 @@ invoker:
     dind: false
     useRunc: false
     impl: "docker"
+    enableConcurrency: false
     networkConfig:
       name: "bridge"
       dns:
