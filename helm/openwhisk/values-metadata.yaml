@@ -1022,6 +1022,12 @@ invoker:
           value: "docker"
         - label: "kubernetes"
           value: "kubernetes"
+    enableConcurrency:
+      __metadata:
+        label: "Enable concurrency"
+        description: "Should the invoker pass `__OW_ALLOW_CONCURRENT=true` to action containers, enabling concurrent execution in supporting runtimes"
+        type: "boolean"
+        required: true
     networkConfig:
       name:
         __metadata:
