@@ -1,0 +1,11 @@
+--- dind-cluster.sh	2019-03-11 17:37:22.000000000 -0400
++++ dind-cluster.sh	2019-03-11 17:38:23.000000000 -0400
+@@ -1099,7 +1099,7 @@
+     --server="http://${host}:$(dind::apiserver-port)" \
+     --insecure-skip-tls-verify=true
+   "${kubectl}" config set-context "$context_name" --cluster="$cluster_name"
+-  if [[ ${DIND_LABEL} = ${DEFAULT_DIND_LABEL} ]]; then
++  if [[ "${DIND_LABEL}" = "${DEFAULT_DIND_LABEL}" ]]; then
+       # Single cluster mode
+       "${kubectl}" config use-context "$context_name"
+   fi
