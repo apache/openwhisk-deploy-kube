@@ -5,7 +5,11 @@
 set -x
 
 # Install kubernetes-dind-cluster and boot it
-wget https://cdn.rawgit.com/kubernetes-sigs/kubeadm-dind-cluster/master/fixed/dind-cluster-v$TRAVIS_KUBE_VERSION.sh -O $HOME/dind-cluster.sh && chmod +x $HOME/dind-cluster.sh && USE_HAIRPIN=true $HOME/dind-cluster.sh up
+wget https://github.com/kubernetes-sigs/kubeadm-dind-cluster/releases/download/v0.1.0/dind-cluster-v$TRAVIS_KUBE_VERSION.sh -O $HOME/dind-cluster.sh && chmod +x $HOME/dind-cluster.sh
+if [[ "$TRAVIS_KUBE_VERSION" == "1.12" ]]; then
+    patch $HOME/dind-cluster.sh ./tools/travis/dind-cluster-v12.patch
+fi
+USE_HAIRPIN=true $HOME/dind-cluster.sh up
 
 # Install kubectl in /usr/local/bin so subsequent scripts can find it
 sudo cp $HOME/.kubeadm-dind-cluster/kubectl-v$TRAVIS_KUBE_VERSION* /usr/local/bin/kubectl
