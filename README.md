@@ -68,8 +68,9 @@ acceptable.
 The simplest way to get a small Kubernetes cluster suitable for
 development and testing is to use one of the Docker-in-Docker
 approaches for running Kubernetes directly on top of Docker on your
-development machine. Depending on your host operating system, we
-recommend the following:
+development machine.  Configuring Docker with 4GB of memory and
+2 virtual CPUs is sufficient for the default settings of OpenWhisk.
+Depending on your host operating system, we recommend the following:
 1. MacOS: Use the built-in Kubernetes support in Docker for Mac
 version 18.06 or later. Please follow our
 [setup instructions](docs/k8s-docker-for-mac.md) to initially create
@@ -88,14 +89,20 @@ your cluster.
 Minikube provides a Kubernetes cluster running inside a virtual
 machine (for example VirtualBox). It can be used on MacOS, Linux, or
 Windows to run OpenWhisk, but is somewhat less flexible than the
-docker-in-docker options described above. For details on setting up
+docker-in-docker options described above. Configuring the Minikube VM
+with 4GB of memory and 2 virtual CPUs is sufficient for the default
+settings of OpenWhisk. For details on setting up
 Minikube, see these [setup instructions](docs/k8s-minikube.md).
 
 ### Using a Kubernetes cluster from a cloud provider
 
 You can also provision a Kubernetes cluster from a cloud provider,
 subject to the cluster meeting the [technical
-requirements](docs/k8s-technical-requirements.md).  We have
+requirements](docs/k8s-technical-requirements.md). You will need at least
+1 worker node with 4GB of memory and 2 virtual CPUs to deploy the default
+configuration of OpenWhisk.  You can deploy to significantly larger clusters
+by scaling up the replica count of the various components and labeling multiple
+nodes as invoker nodes. We have
 detailed documentation on using Kubernetes clusters from the following
 major cloud providers:
 * [IBM (IKS)](docs/k8s-ibm-public.md) and [IBM (ICP)](docs/k8s-ibm-private.md)
