@@ -40,8 +40,8 @@ NOTE: The Helm-based deployment does not yet support setting the replicaCount
 to be greater than 1 for the following components:
 - apigateway
 - couchdb
-- kakfa
-- kakfaprovider
+- kafka
+- kafkaprovider
 - nginx
 - redis
 We are actively working on reducing this list and would welcome PRs to help.
