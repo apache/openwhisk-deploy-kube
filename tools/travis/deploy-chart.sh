@@ -85,7 +85,7 @@ jobHealthCheck () {
   TIMEOUT=0
   until $PASSED || [ $TIMEOUT -eq $TIMEOUT_STEP_LIMIT ]; do
     KUBE_DEPLOY_STATUS=$(kubectl -n openwhisk get pods -l name="$1" -o wide | grep "$1" | awk '{print $3}')
-    if [ "$KUBE_DEPLOY_STATUS" == "Completed" ]; then
+    if [[ $KUBE_DEPLOY_STATUS == *Completed* ]]; then
       PASSED=true
       echo "The job $1 has completed"
       break
@@ -202,6 +202,9 @@ invoker:
 
 nginx:
   httpsNodePort: $WSK_PORT
+
+controller:
+  lean: ${OW_LEAN_MODE:-false}
 EOF
 
 echo "Contents of mycluster.yaml are:"
@@ -213,10 +216,14 @@ helm install helm/openwhisk --namespace=openwhisk --name=ow4travis -f mycluster.
 statefulsetHealthCheck "ow4travis-controller"
 
 # Wait for invoker to be up
-deploymentHealthCheck "ow4travis-invoker"
+if [ "${OW_LEAN_MODE:-false}" == "false" ]; then
 
-# Wait for the controller to confirm that it has at least one healthy invoker
-verifyHealthyInvoker
+  # Wait for invoker to be up
+  deploymentHealthCheck "ow4travis-invoker"
+
+  # Wait for the controller to confirm that it has at least one healthy invoker
+  verifyHealthyInvoker
+fi
 
 # Wait for install-packages job to complete successfully
 jobHealthCheck "ow4travis-install-packages"

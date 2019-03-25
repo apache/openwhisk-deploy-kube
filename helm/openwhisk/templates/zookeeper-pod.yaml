@@ -1,6 +1,8 @@
 # Licensed to the Apache Software Foundation (ASF) under one or more contributor
 # license agreements; and to You under the Apache License, Version 2.0.
 
+{{- if not .Values.controller.lean }}
+---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -103,4 +105,5 @@ spec:
       resources:
         requests:
           storage: {{ .Values.zookeeper.persistence.size }}
+{{- end }}
 {{- end }}

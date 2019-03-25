@@ -16,7 +16,7 @@ metadata:
 subjects:
 - kind: ServiceAccount
   namespace: {{ .Release.Namespace | quote }}
-  name: {{ .Release.Name }}-invoker
+  name: {{ if .Values.controller.lean }} {{ .Release.Name }}-core {{ else }} {{ .Release.Name }}-invoker {{ end }}
 roleRef:
   kind: Role
   name: {{ .Release.Name }}-invoker
