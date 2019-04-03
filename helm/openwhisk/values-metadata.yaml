@@ -519,6 +519,12 @@ docker:
       description: "The timezone to use when performing Docker operations"
       type: "string"
       required: false
+  usePrivateRegistry:
+    __metadata:
+      label: "Use Private Registry as Docker Image Repository"
+      description: "If enabled, all images will be pulled from Private Docker Registry"
+      type: "boolean"
+      required: false
 
 zookeeper:
   __metadata:

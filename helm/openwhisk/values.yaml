@@ -146,6 +146,7 @@ docker:
     username: ""
     password: ""
   timezone: "UTC"
+  usePrivateRegistry: false
 
 # zookeeper configurations
 zookeeper:

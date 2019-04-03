@@ -26,11 +26,18 @@ spec:
 {{ include "openwhisk.affinity.core" . | indent 8 }}
 {{ include "openwhisk.affinity.selfAntiAffinity" ( printf "%s-apigateway" .Release.Name ) | indent 8 }}
       {{- end }}
-
+{{- if .Values.docker.usePrivateRegistry }}
+      imagePullSecrets:
+      - name: {{ .Release.Name }}-private-registry.auth
+{{- end }}
       containers:
         - name: apigateway
           imagePullPolicy: {{ .Values.apigw.imagePullPolicy | quote }}
+{{- if .Values.docker.usePrivateRegistry }}
+          image: "{{- .Values.docker.registry.name -}}{{- .Values.apigw.imageName -}}:{{- .Values.apigw.imageTag -}}"
+{{- else }}
           image: "{{- .Values.apigw.imageName -}}:{{- .Values.apigw.imageTag -}}"
+{{- end }}
           ports:
           - name: mgmt
             containerPort: {{ .Values.apigw.mgmtPort }}
