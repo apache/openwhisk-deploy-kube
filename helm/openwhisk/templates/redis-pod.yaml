@@ -37,7 +37,11 @@ spec:
 {{- if .Values.k8s.persistence.enabled }}
       initContainers:
       - name: redis-init
-        image: busybox
+{{- if .Values.docker.usePrivateRegistry }}
+        image: "{{- .Values.docker.registry.name -}}busybox"
+{{- else }}
+        image: "busybox"
+{{- end }}
         command:
           - chown
           - -v
@@ -49,10 +53,17 @@ spec:
           name: redis-data
           readOnly: false
 {{- end }}
-
+{{- if .Values.docker.usePrivateRegistry }}
+      imagePullSecrets:
+      - name: {{ .Release.Name }}-private-registry.auth
+{{- end }}
       containers:
         - name: redis
+{{- if .Values.docker.usePrivateRegistry }}
+          image: "{{- .Values.docker.registry.name -}}{{- .Values.redis.imageName -}}:{{- .Values.redis.imageTag -}}"
+{{- else }}
           image: "{{- .Values.redis.imageName -}}:{{- .Values.redis.imageTag -}}"
+{{- end }}
           imagePullPolicy: {{ .Values.redis.imagePullPolicy | quote }}
 {{- if .Values.k8s.persistence.enabled }}
           volumeMounts:

@@ -32,9 +32,17 @@ spec:
       initContainers:
       # Wait for a controller to be up (which implies couchdb is up as well).
 {{ include "openwhisk.readiness.waitForController" . | indent 6 }}
+{{- if .Values.docker.usePrivateRegistry }}
+      imagePullSecrets:
+      - name: {{ .Release.Name }}-private-registry.auth
+{{- end }}
       containers:
       - name: alarmprovider
+{{- if .Values.docker.usePrivateRegistry }}
+        image: "{{- .Values.docker.registry.name -}}{{- .Values.providers.alarm.imageName -}}:{{- .Values.providers.alarm.imageTag -}}"
+{{- else }}
         image: "{{- .Values.providers.alarm.imageName -}}:{{- .Values.providers.alarm.imageTag -}}"
+{{- end }}
         imagePullPolicy: {{ .Values.providers.alarm.imagePullPolicy | quote }}
         ports:
         - name: alarmprovider

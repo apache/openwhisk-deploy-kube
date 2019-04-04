@@ -34,11 +34,18 @@ spec:
       # The controller must wait for kafka and couchdb to be ready before it starts
 {{ include "openwhisk.readiness.waitForKafka" . | indent 6 }}
 {{ include "openwhisk.readiness.waitForCouchDB" . | indent 6 }}
-
+{{- if .Values.docker.usePrivateRegistry }}
+      imagePullSecrets:
+      - name: {{ .Release.Name }}-private-registry.auth
+{{- end }}
       containers:
       - name: controller
         imagePullPolicy: {{ .Values.controller.imagePullPolicy | quote }}
+{{- if .Values.docker.usePrivateRegistry }}
+        image: "{{- .Values.docker.registry.name -}}{{- .Values.controller.imageName -}}:{{- .Values.controller.imageTag -}}"
+{{- else }}
         image: "{{- .Values.controller.imageName -}}:{{- .Values.controller.imageTag -}}"
+{{- end }}
         command: ["/bin/bash", "-c", "/init.sh `hostname | cut -d'-' -f3`"]
         ports:
         - name: controller

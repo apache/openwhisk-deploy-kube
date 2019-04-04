@@ -24,9 +24,17 @@ spec:
       initContainers:
       # Wait for a controller to be up (which implies couchdb and kafka are up as well).
 {{ include "openwhisk.readiness.waitForController" . | indent 6 }}
+{{- if .Values.docker.usePrivateRegistry }}
+      imagePullSecrets:
+      - name: {{ .Release.Name }}-private-registry.auth
+{{- end }}
       containers:
       - name: kafkaprovider
+{{- if .Values.docker.usePrivateRegistry }}
+        image: "{{- .Values.docker.registry.name -}}{{- .Values.providers.kafka.imageName -}}:{{- .Values.providers.kafka.imageTag -}}"
+{{- else }}
         image: "{{- .Values.providers.kafka.imageName -}}:{{- .Values.providers.kafka.imageTag -}}"
+{{- end }}
         imagePullPolicy: {{ .Values.providers.kafka.imagePullPolicy | quote }}
         ports:
         - name: kafkaprovider

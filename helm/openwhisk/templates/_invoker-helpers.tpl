@@ -33,8 +33,12 @@
 
 {{- define "openwhisk.docker_pull_runtimes" -}}
 - name: docker-pull-runtimes
-  imagePullPolicy: {{ .Values.utility.imagePullPolicy | quote }}
+{{- if .Values.docker.usePrivateRegistry }}
+  image: "{{- .Values.docker.registry.name -}}{{- .Values.utility.imageName -}}:{{- .Values.utility.imageTag -}}"
+{{- else }}
   image: "{{- .Values.utility.imageName -}}:{{- .Values.utility.imageTag -}}"
+{{- end }}
+  imagePullPolicy: {{ .Values.utility.imagePullPolicy | quote }}
   command: ["/usr/local/bin/ansible-playbook", "/invoker-scripts/playbook.yml"]
   volumeMounts:
   - name: dockersock

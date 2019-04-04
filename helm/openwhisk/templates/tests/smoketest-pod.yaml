@@ -17,9 +17,17 @@ spec:
   - name: task-dir
     configMap:
       name: {{ .Release.Name }}-tests-smoketest
+{{- if .Values.docker.usePrivateRegistry }}
+  imagePullSecrets:
+  - name: {{ .Release.Name }}-private-registry.auth
+{{- end }}
   containers:
   - name: smoketest
+{{- if .Values.docker.usePrivateRegistry }}
+    image: "{{- .Values.docker.registry.name -}}{{- .Values.utility.imageName -}}:{{- .Values.utility.imageTag -}}"
+{{- else }}
     image: "{{- .Values.utility.imageName -}}:{{- .Values.utility.imageTag -}}"
+{{- end }}
     imagePullPolicy: {{ .Values.utility.imagePullPolicy | quote }}
     command: ["/bin/bash", "/task/myTask.sh"]
     volumeMounts:
