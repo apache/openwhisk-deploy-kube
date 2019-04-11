@@ -111,19 +111,19 @@ whisk:
     includeSystemTests: false
   versions:
     openwhisk:
-      buildDate: "2019-02-20-21:05:39Z"
-      buildNo: "20190220a"
-      gitTag: "38e4b05a20bdc6d76e1cf78c6e0203d47078a2b7"
+      buildDate: "2019-04-05-18:03:02Z"
+      buildNo: "20190405a"
+      gitTag: "9ef3975419cf68dc3dc7fa6cc0db47d69dbcc2f8"
     openwhiskCli:
-      tag: "42cb87f"
+      tag: "eaf64ae"
     openwhiskCatalog:
-      gitTag: "2df3794b0aa72e4410da229f4c39f0e70d1bbc97"
+      gitTag: "879b85a6f0692a5038456033ff9fbe9b4dd74f7f"
     openwhiskPackageAlarms:
-      gitTag: "a57c21a10cc5fe53f8c60308b766dc2d3c12f38f"
+      gitTag: "0e62ca60704e79e57f48ff525d79f536a8f9a1e3"
     openwhiskPackageCloudant:
-      gitTag: "41f88762d9d12c7ae39642bcac5ba0cdf7c43c50"
+      gitTag: "e4eddc0b99b6c00648266d0e6f4940bd1c3748a7"
     openwhiskPackageKafka:
-      gitTag: "b563eefaf29c93dc07022ffc29ffb828b6419c4c"
+      gitTag: "90da0152c95492af6c8b1fb908a701a3493f45ed"
 
 k8s:
   domain: cluster.local
@@ -136,7 +136,7 @@ k8s:
 # Images used to run auxillary tasks/jobs
 utility:
   imageName: "openwhisk/ow-utils"
-  imageTag: "38e4b05"
+  imageTag: "9ef3975"
   imagePullPolicy: "IfNotPresent"
 
 # Docker registry
@@ -221,7 +221,7 @@ nginx:
 # Controller configurations
 controller:
   imageName: "openwhisk/controller"
-  imageTag: "38e4b05"
+  imageTag: "9ef3975"
   imagePullPolicy: "IfNotPresent"
   replicaCount: 1
   restartPolicy: "Always"
@@ -233,7 +233,7 @@ controller:
 # Invoker configurations
 invoker:
   imageName: "openwhisk/invoker"
-  imageTag: "38e4b05"
+  imageTag: "9ef3975"
   imagePullPolicy: "IfNotPresent"
   restartPolicy: "Always"
   port: 8080
@@ -259,7 +259,7 @@ invoker:
       replicaCount: 1
       agent:
         imageName: "openwhisk/kube-invoker-agent"
-        imageTag: "89f1787"
+        imageTag: "7314d75"
         imagePullPolicy: "IfNotPresent"
         enabled: false
         port: 3233
@@ -267,7 +267,7 @@ invoker:
 # API Gateway configurations
 apigw:
   imageName: "openwhisk/apigateway"
-  imageTag: "bed6e65"
+  imageTag: "993dda2"
   imagePullPolicy: "IfNotPresent"
   # NOTE: setting replicaCount > 1 is not tested and may not work
   replicaCount: 1
@@ -302,7 +302,7 @@ providers:
   alarm:
     enabled: true
     imageName: "openwhisk/alarmprovider"
-    imageTag: "1.12.3"
+    imageTag: "2.0.0-incubating"
     imagePullPolicy: "IfNotPresent"
     # NOTE: replicaCount > 1 doesn't work because of the PVC
     replicaCount: 1
@@ -315,7 +315,7 @@ providers:
   cloudant:
     enabled: true
     imageName: "openwhisk/cloudantprovider"
-    imageTag: "1.9.2"
+    imageTag: "2.0.0-incubating"
     imagePullPolicy: "IfNotPresent"
     # NOTE: replicaCount > 1 doesn't work because of the PVC
     replicaCount: 1
@@ -328,7 +328,7 @@ providers:
   kafka:
     enabled: true
     imageName: "openwhisk/kafkaprovider"
-    imageTag: "1.4.20"
+    imageTag: "2.0.0-incubating"
     imagePullPolicy: "IfNotPresent"
     # NOTE: setting replicaCount > 1 has not been tested and may not work
     replicaCount: 1
