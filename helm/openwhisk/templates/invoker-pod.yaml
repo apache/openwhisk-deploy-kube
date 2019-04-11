@@ -163,7 +163,7 @@ spec:
 
           # properties for kafka connection
           - name: "KAFKA_HOSTS"
-            value: "{{ include "openwhisk.kafka_host" . }}:{{ .Values.kafka.port }}"
+            value: "{{ include "openwhisk.kafka_connect" . }}"
 {{ include "openwhisk.kafkaConfigEnvVars" . | indent 10 }}
 
           # properties for zookeeper connection

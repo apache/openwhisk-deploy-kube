@@ -36,14 +36,14 @@ controller:
   replicaCount: 2
 ```
 
-NOTE: The Helm-based deployment does not yet support setting the replicaCount
-to be greater than 1 for the following components:
-- apigateway
-- couchdb
-- kafka
-- kafkaprovider
-- redis
-We are actively working on reducing this list and would welcome PRs to help.
+NOTE: setting the replicaCount to be greater than 1 for the following
+components is not currently supported:
+- apigateway and redis. Running only a single replica of these services is
+  unlikely to be a significant scalability bottleneck.
+- couchdb. For production deployments of OpenWhisk on Kubernetes, we strongly recomend running
+  CouchDB externally to OpenWhisk as described below. An external CouchDB instance enables
+  better management of the database and decouples its lifecycle from that of the OpenWhisk deployment.
+- The event providers: alarmprovider, cloudantprovider, and kafkaprovider.
 
 ### Using an external database
 

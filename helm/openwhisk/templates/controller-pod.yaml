@@ -96,9 +96,7 @@ spec:
 
         # Kafka properties
         - name: "KAFKA_HOSTS"
-          value: "{{ include "openwhisk.kafka_host" . }}:{{ .Values.kafka.port }}"
-        - name: "KAFKA_HOST_PORT"
-          value: {{ .Values.kafka.port | quote }}
+          value: "{{ include "openwhisk.kafka_connect" . }}"
 {{ include "openwhisk.kafkaConfigEnvVars" . | indent 8 }}
 
         # properties for DB connection

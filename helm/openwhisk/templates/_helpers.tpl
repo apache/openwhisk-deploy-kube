@@ -41,17 +41,12 @@ app: {{ template "openwhisk.fullname" . }}
 {{ .Values.db.auth.username }}:{{ .Values.db.auth.password }}
 {{- end -}}
 
-{{/* hostname for kafka */}}
-{{- define "openwhisk.kafka_host" -}}
-{{ .Release.Name }}-kafka.{{ .Release.Namespace }}.svc.{{ .Values.k8s.domain }}
-{{- end -}}
-
 {{/* hostname for redis */}}
 {{- define "openwhisk.redis_host" -}}
 {{ .Release.Name }}-redis.{{ .Release.Namespace }}.svc.{{ .Values.k8s.domain }}
 {{- end -}}
 
-{{/* client connection string for zookeeper cluster (server1:port server2:port ... serverN:port)*/}}
+{{/* client connection string for zookeeper cluster (server1:port,server2:port, ... serverN:port)*/}}
 {{- define "openwhisk.zookeeper_connect" -}}
 {{- $zkname := printf "%s-zookeeper" .Release.Name }}
 {{- $zkport := .Values.zookeeper.port }}
@@ -65,6 +60,19 @@ app: {{ template "openwhisk.fullname" . }}
 {{ $zkname }}-0.{{ $zkname }}.{{ $.Release.Namespace }}.svc.{{ .Values.k8s.domain }}
 {{- end -}}
 
+{{/* client connection string for kafka cluster (server1:port,server2:port, ... serverN:port)*/}}
+{{- define "openwhisk.kafka_connect" -}}
+{{- $kname := printf "%s-kafka" .Release.Name }}
+{{- $kport := .Values.kafka.port }}
+{{- $kubeDomain := .Values.k8s.domain }}
+{{- range $i, $e := until (int .Values.kafka.replicaCount) -}}{{ if ne $i 0 }},{{ end }}{{ $kname }}-{{ . }}.{{ $kname }}.{{ $.Release.Namespace }}.svc.{{ $kubeDomain }}:{{ $kport }}{{ end }}
+{{- end -}}
+
+{{/* host name for server.0 in kafka cluster */}}
+{{- define "openwhisk.kafka_zero_host" -}}
+{{- $kname := printf "%s-kafka" .Release.Name }}
+{{ $kname }}-0.{{ $kname }}.{{ $.Release.Namespace }}.svc.{{ .Values.k8s.domain }}
+{{- end -}}
 
 {{/* Runtimes manifest */}}
 {{- define "openwhisk.runtimes_manifest" -}}

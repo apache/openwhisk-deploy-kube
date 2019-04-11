@@ -9,8 +9,9 @@ metadata:
     name: {{ .Release.Name }}-kafka
 {{ include "openwhisk.label_boilerplate" . | indent 4 }}
 spec:
+  selector:
+    name: {{ .Release.Name }}-kafka
+  clusterIP: None
   ports:
   - name: broker
     port: {{ .Values.kafka.port }}
-  selector:
-    name: {{ .Release.Name }}-kafka
