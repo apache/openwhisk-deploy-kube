@@ -37,11 +37,7 @@ spec:
 {{- if .Values.k8s.persistence.enabled }}
       initContainers:
       - name: redis-init
-{{- if .Values.docker.usePrivateRegistry }}
         image: "{{- .Values.docker.registry.name -}}busybox"
-{{- else }}
-        image: "busybox"
-{{- end }}
         command:
           - chown
           - -v
