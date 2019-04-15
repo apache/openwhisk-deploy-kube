@@ -10,17 +10,10 @@ metadata:
 {{ include "openwhisk.label_boilerplate" . | indent 4 }}
 spec:
   restartPolicy: Always
-{{- if .Values.docker.usePrivateRegistry }}
-  imagePullSecrets:
-  - name: {{ .Release.Name }}-private-registry.auth
-{{- end }}
+{{ include "openwhisk.docker.imagePullSecrets" . | indent 2 }}
   containers:
   - name: wskadmin
-{{- if .Values.docker.usePrivateRegistry }}
     image: "{{- .Values.docker.registry.name -}}{{- .Values.utility.imageName -}}:{{- .Values.utility.imageTag -}}"
-{{- else }}
-    image: "{{- .Values.utility.imageName -}}:{{- .Values.utility.imageTag -}}"
-{{- end }}
     imagePullPolicy: {{ .Values.utility.imagePullPolicy | quote }}
     command: ["/bin/bash", "-c", "tail -f /dev/null"]
     env:

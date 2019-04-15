@@ -38,17 +38,10 @@ spec:
 
       initContainers:
 {{ include "openwhisk.readiness.waitForZookeeper" . | indent 6 }}
-{{- if .Values.docker.usePrivateRegistry }}
-      imagePullSecrets:
-      - name: {{ .Release.Name }}-private-registry.auth
-{{- end }}
+{{ include "openwhisk.docker.imagePullSecrets" . | indent 6 }}
       containers:
       - name: kafka
-{{- if .Values.docker.usePrivateRegistry }}
         image: "{{- .Values.docker.registry.name -}}{{- .Values.kafka.imageName -}}:{{- .Values.kafka.imageTag -}}"
-{{- else }}
-        image: "{{- .Values.kafka.imageName -}}:{{- .Values.kafka.imageTag -}}"
-{{- end }}
         imagePullPolicy: {{ .Values.kafka.imagePullPolicy | quote }}
 {{- if .Values.k8s.persistence.enabled }}
         volumeMounts:

@@ -36,7 +36,7 @@ By default, helm charts currently use docker hub to download images to deploy op
   - openwhisk/kafkaprovider
   - openwhisk/cloudantprovider
 
-- Add details of your docker registry information in mycluster.yml and enable *usePrivateRegistry*.
+- Add details of your docker registry information in mycluster.yml.
 
   ```yaml
   docker:
@@ -44,13 +44,12 @@ By default, helm charts currently use docker hub to download images to deploy op
       name: "registry-name/"
       username: username
       password: "Passowrd"
-    usePrivateRegistry: true
   ```
 
-  > - enabling usePrivateRegisrty will cause all your images to be pulled from private docker registry only.
+  > - enabling registry information will cause all your images to be pulled from private docker registry only.
   > - Append / in your docker registry name.
 
-Enabling *usePrivateRegisty* will create a docker-registry secret as *{ReleaseName}-private-registry.auth* in kubernetes which will be used in pod/jobs as *imagePullSecrets*.
+Enabling *registry.name* will create a docker-registry secret as *{ReleaseName}-private-registry.auth* in kubernetes which will be used in pod/jobs as *imagePullSecrets*.
 
 ```yaml
 # If ReleaseName is owdev and namespace is openwhisk

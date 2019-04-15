@@ -53,17 +53,10 @@ spec:
 {{- end }}
       # Wait for a controller to be up (which implies kafka, zookeeper, couchdb are all up as well).
 {{ include "openwhisk.readiness.waitForController" . | indent 6 }}
-{{- if .Values.docker.usePrivateRegistry }}
-      imagePullSecrets:
-      - name: {{ .Release.Name }}-private-registry.auth
-{{- end }}
+{{ include "openwhisk.docker.imagePullSecrets" . | indent 6 }}
       containers:
       - name: invoker
-{{- if .Values.docker.usePrivateRegistry }}
         image: "{{- .Values.docker.registry.name -}}{{- .Values.invoker.imageName -}}:{{- .Values.invoker.imageTag -}}"
-{{- else }}
-        image: "{{- .Values.invoker.imageName -}}:{{- .Values.invoker.imageTag -}}"
-{{- end }}
         imagePullPolicy: {{ .Values.invoker.imagePullPolicy | quote }}
 {{- if and (eq .Values.invoker.containerFactory.impl "docker") .Values.invoker.containerFactory.networkConfig.dns.inheritInvokerConfig }}
         command: [ "/bin/bash", "-c", ". /invoker-scripts/configureDNS.sh && /init.sh --uniqueName $INVOKER_NAME" ]

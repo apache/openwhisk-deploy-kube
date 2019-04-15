@@ -32,17 +32,10 @@ spec:
       initContainers:
       # Wait for a controller to be up (which implies couchdb is up as well).
 {{ include "openwhisk.readiness.waitForController" . | indent 6 }}
-{{- if .Values.docker.usePrivateRegistry }}
-      imagePullSecrets:
-      - name: {{ .Release.Name }}-private-registry.auth
-{{- end }}
+{{ include "openwhisk.docker.imagePullSecrets" . | indent 6 }}
       containers:
       - name: cloudantprovider
-{{- if .Values.docker.usePrivateRegistry }}
         image: "{{- .Values.docker.registry.name -}}{{- .Values.providers.cloudant.imageName -}}:{{- .Values.providers.cloudant.imageTag -}}"
-{{- else }}
-        image: "{{- .Values.providers.cloudant.imageName -}}:{{- .Values.providers.cloudant.imageTag -}}"
-{{- end }}
         imagePullPolicy: {{ .Values.providers.cloudant.imagePullPolicy | quote }}
         ports:
         - name: cludntprovider

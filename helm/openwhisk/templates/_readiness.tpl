@@ -7,11 +7,7 @@
 # if not db.wipeAndInit, the external db must already be ready; so no need for init container
 {{- else -}}
 - name: "wait-for-couchdb"
-{{- if .Values.docker.usePrivateRegistry }}
   image: "{{- .Values.docker.registry.name -}}busybox"
-{{- else }}
-  image: "busybox"
-{{- end }}
   imagePullPolicy: "IfNotPresent"
   env:
   - name: "READINESS_URL"
@@ -23,11 +19,7 @@
 {{/* Init container that waits for kafka to be ready */}}
 {{- define "openwhisk.readiness.waitForKafka" -}}
 - name: "wait-for-kafka"
-{{- if .Values.docker.usePrivateRegistry }}
   image: "{{- .Values.docker.registry.name -}}busybox"
-{{- else }}
-  image: "busybox"
-{{- end }}
   imagePullPolicy: "IfNotPresent"
   # TODO: I haven't found an easy external test to determine that kafka is up, so as a hack we wait for zookeeper and then sleep for 10 seconds and cross our fingers!
   command: ["sh", "-c", 'result=1; until [ $result -eq 0 ]; do OK=$(echo ruok | nc -w 1 {{ include "openwhisk.zookeeper_zero_host" . }} {{ .Values.zookeeper.port }}); if [ "$OK" == "imok" ]; then result=0; echo "zookeeper returned imok!"; else echo waiting for zookeeper to be ready; sleep 1; fi done; echo "Zookeeper is up; will wait for 10 seconds to give kafka time to initialize"; sleep 10;']
@@ -36,11 +28,7 @@
 {{/* Init container that waits for zookeeper to be ready */}}
 {{- define "openwhisk.readiness.waitForZookeeper" -}}
 - name: "wait-for-zookeeper"
-{{- if .Values.docker.usePrivateRegistry }}
   image: "{{- .Values.docker.registry.name -}}busybox"
-{{- else }}
-  image: "busybox"
-{{- end }}
   imagePullPolicy: "IfNotPresent"
   command: ["sh", "-c", 'result=1; until [ $result -eq 0 ]; do OK=$(echo ruok | nc -w 1 {{ include "openwhisk.zookeeper_zero_host" . }} {{ .Values.zookeeper.port }}); if [ "$OK" == "imok" ]; then result=0; echo "zookeeper returned imok!"; else echo waiting for zookeeper to be ready; sleep 1; fi; done; echo "Success: zookeeper is up"']
 {{- end -}}
@@ -48,11 +36,7 @@
 {{/* Init container that waits for controller to be ready */}}
 {{- define "openwhisk.readiness.waitForController" -}}
 - name: "wait-for-controller"
-{{- if .Values.docker.usePrivateRegistry }}
   image: "{{- .Values.docker.registry.name -}}busybox"
-{{- else }}
-  image: "busybox"
-{{- end }}
   imagePullPolicy: "IfNotPresent"
   env:
   - name: "READINESS_URL"
@@ -63,11 +47,7 @@
 {{/* Init container that waits for at least 1 healthy invoker */}}
 {{- define "openwhisk.readiness.waitForHealthyInvoker" -}}
 - name: "wait-for-healthy-invoker"
-{{- if .Values.docker.usePrivateRegistry }}
   image: "{{- .Values.docker.registry.name -}}busybox"
-{{- else }}
-  image: "busybox"
-{{- end }}
   imagePullPolicy: "IfNotPresent"
   env:
   - name: "READINESS_URL"

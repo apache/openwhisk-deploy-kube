@@ -36,18 +36,10 @@ spec:
           name: {{ .Release.Name }}-nginx
       - name: logs
         emptyDir: {}
-{{- if .Values.docker.usePrivateRegistry }}
-      imagePullSecrets:
-      - name: {{ .Release.Name }}-private-registry.auth
-{{- end }}
+{{ include "openwhisk.docker.imagePullSecrets" . | indent 6 }}
       containers:
       - name: nginx
-{{- if .Values.docker.usePrivateRegistry }}
         image: "{{- .Values.docker.registry.name -}}{{- .Values.nginx.imageName -}}:{{- .Values.nginx.imageTag -}}"
-{{- else }}
-        image: "{{- .Values.nginx.imageName -}}:{{- .Values.nginx.imageTag -}}"
-{{- end }}
-
         imagePullPolicy: {{ .Values.nginx.imagePullPolicy | quote }}
         ports:
         - name: http

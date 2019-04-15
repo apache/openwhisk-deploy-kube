@@ -53,17 +53,10 @@ spec:
           name: redis-data
           readOnly: false
 {{- end }}
-{{- if .Values.docker.usePrivateRegistry }}
-      imagePullSecrets:
-      - name: {{ .Release.Name }}-private-registry.auth
-{{- end }}
+{{ include "openwhisk.docker.imagePullSecrets" . | indent 6 }}
       containers:
         - name: redis
-{{- if .Values.docker.usePrivateRegistry }}
           image: "{{- .Values.docker.registry.name -}}{{- .Values.redis.imageName -}}:{{- .Values.redis.imageTag -}}"
-{{- else }}
-          image: "{{- .Values.redis.imageName -}}:{{- .Values.redis.imageTag -}}"
-{{- end }}
           imagePullPolicy: {{ .Values.redis.imagePullPolicy | quote }}
 {{- if .Values.k8s.persistence.enabled }}
           volumeMounts:
