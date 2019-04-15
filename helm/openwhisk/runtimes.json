@@ -7,7 +7,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "nodejs6action",
-                    "tag": "b99d71e"
+                    "tag": "c173d64"
                 },
                 "deprecated": false,
                 "attached": {
@@ -27,7 +27,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-nodejs-v8",
-                    "tag": "b99d71e"
+                    "tag": "c173d64"
                 },
                 "deprecated": false,
                 "attached": {
@@ -41,7 +41,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-nodejs-v10",
-                    "tag": "b99d71e"
+                    "tag": "c173d64"
                 },
                 "deprecated": false,
                 "attached": {
@@ -71,7 +71,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "python3action",
-                    "tag": "d6a8920"
+                    "tag": "aaeb2ff"
                 },
                 "deprecated": false,
                 "attached": {
@@ -87,7 +87,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-swift-v4.2",
-                    "tag": "5bb0409"
+                    "tag": "019024d"
                 },
                 "deprecated": false,
                 "attached": {
@@ -103,7 +103,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "java8action",
-                    "tag": "7290453"
+                    "tag": "9f27bab"
                 },
                 "deprecated": false,
                 "attached": {
@@ -121,7 +121,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-php-v7.3",
-                    "tag": "7375a15"
+                    "tag": "9c5d3d7"
                 },
                 "attached": {
                     "attachmentName": "codefile",
@@ -141,7 +141,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-ruby-v2.5",
-                    "tag": "092b5cf"
+                    "tag": "b1afb74"
                 }
             }
         ],
@@ -157,7 +157,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "actionloop-golang-v1.11",
-                    "tag": "d787163"
+                    "tag": "ddd3299"
                 }
             }
         ],
@@ -170,7 +170,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-dotnet-v2.2",
-                    "tag": "52eac6c"
+                    "tag": "50df3ba"
                 },
                 "attached": {
                     "attachmentName": "codefile",
@@ -185,7 +185,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-ballerina-v0.990.2",
-                    "tag": "0f7df9c"
+                    "tag": "d049638"
                 },
                 "deprecated": false,
                 "attached": {
@@ -199,7 +199,7 @@
         {
             "prefix": "openwhisk",
             "name": "dockerskeleton",
-            "tag": "13361f9"
+            "tag": "3d6ee06"
         }
     ]
 }

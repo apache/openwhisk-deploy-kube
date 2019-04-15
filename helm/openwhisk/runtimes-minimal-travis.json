@@ -1,3 +1,4 @@
+
 {
     "runtimes": {
         "nodejs": [
@@ -7,7 +8,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "nodejs6action",
-                    "tag": "2c5c075"
+                    "tag": "c173d64"
                 },
                 "deprecated": false,
                 "stemCells": [{
@@ -32,7 +33,7 @@
         {
             "prefix": "openwhisk",
             "name": "dockerskeleton",
-            "tag": "13361f9"
+            "tag": "3d6ee06"
         }
     ]
 }

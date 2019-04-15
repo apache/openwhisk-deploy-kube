@@ -42,7 +42,6 @@ to be greater than 1 for the following components:
 - couchdb
 - kafka
 - kafkaprovider
-- nginx
 - redis
 We are actively working on reducing this list and would welcome PRs to help.
 
