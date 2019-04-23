@@ -38,10 +38,10 @@ spec:
 
       initContainers:
 {{ include "openwhisk.readiness.waitForZookeeper" . | indent 6 }}
-
+{{ include "openwhisk.docker.imagePullSecrets" . | indent 6 }}
       containers:
       - name: kafka
-        image: "{{- .Values.kafka.imageName -}}:{{- .Values.kafka.imageTag -}}"
+        image: "{{- .Values.docker.registry.name -}}{{- .Values.kafka.imageName -}}:{{- .Values.kafka.imageTag -}}"
         imagePullPolicy: {{ .Values.kafka.imagePullPolicy | quote }}
 {{- if .Values.k8s.persistence.enabled }}
         volumeMounts:

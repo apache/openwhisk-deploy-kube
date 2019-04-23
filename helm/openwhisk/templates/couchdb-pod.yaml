@@ -27,10 +27,10 @@ spec:
 {{ include "openwhisk.affinity.core" . | indent 8 }}
 {{ include "openwhisk.affinity.selfAntiAffinity" ( printf "%s-couchdb" .Release.Name ) | indent 8 }}
       {{- end }}
-
+{{ include "openwhisk.docker.imagePullSecrets" . | indent 6 }}
       containers:
       - name: couchdb
-        image: "{{- .Values.db.imageName -}}:{{- .Values.db.imageTag -}}"
+        image: "{{- .Values.docker.registry.name -}}{{- .Values.db.imageName -}}:{{- .Values.db.imageTag -}}"
         imagePullPolicy: {{ .Values.db.imagePullPolicy | quote }}
         ports:
         - name: couchdb

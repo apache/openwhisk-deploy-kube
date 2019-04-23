@@ -26,9 +26,10 @@ spec:
       - name: whisk-auth
         secret:
           secretName: {{ .Release.Name }}-whisk.auth
+{{ include "openwhisk.docker.imagePullSecrets" . | indent 6 }}
       containers:
       - name: init-couchdb
-        image: "{{- .Values.utility.imageName -}}:{{- .Values.utility.imageTag -}}"
+        image: "{{- .Values.docker.registry.name -}}{{- .Values.utility.imageName -}}:{{- .Values.utility.imageTag -}}"
         imagePullPolicy: {{ .Values.utility.imagePullPolicy | quote }}
         command: ["/bin/bash", "-c", "set -e; . /task/initdb.sh"]
         volumeMounts:

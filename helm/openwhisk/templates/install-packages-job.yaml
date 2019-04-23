@@ -24,9 +24,10 @@ spec:
           name: {{ .Release.Name }}-install-packages-cm
       initContainers:
 {{ include "openwhisk.readiness.waitForHealthyInvoker" . | indent 6 }}
+{{ include "openwhisk.docker.imagePullSecrets" . | indent 6 }}
       containers:
       - name: install-packages
-        image: "{{- .Values.utility.imageName -}}:{{- .Values.utility.imageTag -}}"
+        image: "{{- .Values.docker.registry.name -}}{{- .Values.utility.imageName -}}:{{- .Values.utility.imageTag -}}"
         imagePullPolicy: {{ .Values.utility.imagePullPolicy | quote }}
         command: ["/bin/bash", "-c", "set -e; . /task/myTask.sh"]
         volumeMounts:

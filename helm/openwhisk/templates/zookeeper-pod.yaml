@@ -41,10 +41,10 @@ spec:
           persistentVolumeClaim:
             claimName: "{{ .Release.Name }}-zookeeper-pvc-datalog"
 {{- end }}
-
+{{ include "openwhisk.docker.imagePullSecrets" . | indent 6 }}
       containers:
       - name: zookeeper
-        image: "{{- .Values.zookeeper.imageName -}}:{{- .Values.zookeeper.imageTag -}}"
+        image: "{{- .Values.docker.registry.name -}}{{- .Values.zookeeper.imageName -}}:{{- .Values.zookeeper.imageTag -}}"
         imagePullPolicy: {{ .Values.zookeeper.imagePullPolicy | quote }}
         command: ["/bin/bash", "-c", "hostname -s | cut -d'-' -f3 > {{ .Values.zookeeper.config.dataDir }}/myid; cat {{ .Values.zookeeper.config.dataDir }}/myid; cat /conf/zoo.cfg; zkServer.sh start-foreground"]
         ports:
@@ -58,17 +58,16 @@ spec:
         livenessProbe:
           tcpSocket:
             port: {{ .Values.zookeeper.port }}
-            initialDelaySeconds: 5
-            periodSeconds: 10
+          initialDelaySeconds: 5
+          periodSeconds: 10
         readinessProbe:
           exec:
             command:
             - /bin/bash
             - -c
             - "echo ruok | nc -w 1 localhost:{{ .Values.zookeeper.port }} | grep imok"
-            initialDelaySeconds: 5
-            periodSeconds: 10
-
+          initialDelaySeconds: 5
+          periodSeconds: 10
         volumeMounts:
         - mountPath: /conf
           name: zk-config

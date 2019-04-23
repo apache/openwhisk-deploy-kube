@@ -36,10 +36,10 @@ spec:
           name: {{ .Release.Name }}-nginx
       - name: logs
         emptyDir: {}
-
+{{ include "openwhisk.docker.imagePullSecrets" . | indent 6 }}
       containers:
       - name: nginx
-        image: "{{- .Values.nginx.imageName -}}:{{- .Values.nginx.imageTag -}}"
+        image: "{{- .Values.docker.registry.name -}}{{- .Values.nginx.imageName -}}:{{- .Values.nginx.imageTag -}}"
         imagePullPolicy: {{ .Values.nginx.imagePullPolicy | quote }}
         ports:
         - name: http

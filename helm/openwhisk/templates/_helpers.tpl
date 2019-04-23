@@ -195,3 +195,18 @@ app: {{ template "openwhisk.fullname" . }}
 {{- define "openwhisk.tls_secret_name" -}}
 {{ .Values.whisk.ingress.tls.secretname | default "ow-ingress-tls-secret" | quote }}
 {{- end -}}
+
+{{/* Create imagePullSecrets for private docker-registry*/}}
+{{- define "openwhisk.dockerRegistrySecret" -}}
+{{- if ne .Values.docker.registry.name "" }}
+{{- printf "{\"auths\": {\"%s\": {\"auth\": \"%s\"}}}" .Values.docker.registry.name (printf "%s:%s" .Values.docker.registry.username .Values.docker.registry.password | b64enc) | b64enc }}
+{{- end }}
+{{- end -}}
+
+{{/* ImagePullSecrets in pods and job*/}}
+{{- define "openwhisk.docker.imagePullSecrets" -}}
+{{- if ne .Values.docker.registry.name "" }}
+imagePullSecrets:
+- name: {{ .Release.Name }}-private-registry.auth
+{{- end }}
+{{- end -}}

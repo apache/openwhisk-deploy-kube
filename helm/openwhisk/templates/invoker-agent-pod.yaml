@@ -36,10 +36,10 @@ spec:
       initContainers:
       # Pull images for all default runtimes before starting invoker
 {{ include "openwhisk.docker_pull_runtimes" . | indent 6 }}
-
+{{ include "openwhisk.docker.imagePullSecrets" . | indent 6 }}
       containers:
       - name: invoker-agent
-        image: "{{- .Values.invoker.containerFactory.kubernetes.agent.imageName -}}:{{- .Values.invoker.containerFactory.kubernetes.agent.imageTag -}}"
+        image: "{{- .Values.docker.registry.name -}}{{- .Values.invoker.containerFactory.kubernetes.agent.imageName -}}:{{- .Values.invoker.containerFactory.kubernetes.agent.imageTag -}}"
         imagePullPolicy: {{ .Values.invoker.containerFactory.kubernetes.agent.imagePullPolicy | quote }}
         securityContext:
           privileged: true

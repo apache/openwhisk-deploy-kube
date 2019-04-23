@@ -37,7 +37,7 @@ spec:
 {{- if .Values.k8s.persistence.enabled }}
       initContainers:
       - name: redis-init
-        image: busybox
+        image: "{{- .Values.docker.registry.name -}}busybox"
         command:
           - chown
           - -v
@@ -49,10 +49,10 @@ spec:
           name: redis-data
           readOnly: false
 {{- end }}
-
+{{ include "openwhisk.docker.imagePullSecrets" . | indent 6 }}
       containers:
         - name: redis
-          image: "{{- .Values.redis.imageName -}}:{{- .Values.redis.imageTag -}}"
+          image: "{{- .Values.docker.registry.name -}}{{- .Values.redis.imageName -}}:{{- .Values.redis.imageTag -}}"
           imagePullPolicy: {{ .Values.redis.imagePullPolicy | quote }}
 {{- if .Values.k8s.persistence.enabled }}
           volumeMounts:

@@ -18,9 +18,10 @@ spec:
   - name: task-dir
     configMap:
       name: {{ .Release.Name }}-tests-systemtest
+{{ include "openwhisk.docker.imagePullSecrets" . | indent 2 }}
   containers:
   - name: systemtest
-    image: "{{- .Values.utility.imageName -}}:{{- .Values.utility.imageTag -}}"
+    image: "{{- .Values.docker.registry.name -}}{{- .Values.utility.imageName -}}:{{- .Values.utility.imageTag -}}"
     imagePullPolicy: {{ .Values.utility.imagePullPolicy | quote }}
     command: ["/bin/bash", "/task/myTask.sh"]
     volumeMounts:
