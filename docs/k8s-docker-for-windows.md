@@ -17,7 +17,7 @@
 #
 -->
 
-# Using Kubernetes in Docker for Windows for OpenWhisk
+# Deploying OpenWhisk on Kubernetes in Docker for Windows
 
 ## Overview
 

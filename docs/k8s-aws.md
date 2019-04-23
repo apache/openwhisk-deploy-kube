@@ -17,7 +17,7 @@
 #
 -->
 
-# Amazon EKS for OpenWhisk
+# Deploying OpenWhisk on Amazon EKS
 
 ## Overview
 

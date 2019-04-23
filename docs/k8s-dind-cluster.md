@@ -18,7 +18,7 @@
 -->
 
 
-# Using kubeadm-dind-cluster for OpenWhisk
+# Deploying OpenWhisk on kubeadm-dind-cluster
 
 ## Overview
 

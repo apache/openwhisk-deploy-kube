@@ -17,7 +17,7 @@
 #
 -->
 
-# Google GKE for OpenWhisk
+# Deploying OpenWhisk on Google GKE
 
 ## Overview
 
