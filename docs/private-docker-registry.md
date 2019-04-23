@@ -19,7 +19,7 @@
 
 # Using private docker registry
 
-By default, helm charts currently use docker hub to download images to deploy openwhisk components on kubernetes. If your Kubernetes provider does not allow public docker registry, you can use your hosted docker image registry to deploy openwhisk on kubernetes.
+By default, helm charts currently use docker hub to download images to deploy OpenWhisk components on Kubernetes. If your Kubernetes provider does not allow public docker registry, you can use your hosted docker image registry to deploy OpenWhisk on Kubernetes.
 
 - All openwhisk images should be uploaded to your hosted docker registry server.
   - openwhisk/apigateway
@@ -49,7 +49,7 @@ By default, helm charts currently use docker hub to download images to deploy op
   > - enabling registry information will cause all your images to be pulled from private docker registry only.
   > - Append / in your docker registry name.
 
-Enabling *registry.name* will create a docker-registry secret as *{ReleaseName}-private-registry.auth* in kubernetes which will be used in pod/jobs as *imagePullSecrets*.
+Enabling *registry.name* will create a docker-registry secret as *{ReleaseName}-private-registry.auth* in Kubernetes which will be used in pod/jobs as *imagePullSecrets*.
 
 ```yaml
 # If ReleaseName is owdev and namespace is openwhisk
