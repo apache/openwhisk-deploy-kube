@@ -17,7 +17,7 @@
 #
 -->
 
-# Using Minikube for OpenWhisk
+# Deploying OpenWhisk on Minikube
 
 ## Overview
 

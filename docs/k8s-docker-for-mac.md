@@ -17,7 +17,7 @@
 #
 -->
 
-# Using Kubernetes in Docker for Mac for OpenWhisk
+# Deploying OpenWhisk on Kubernetes in Docker for Mac
 
 ## Overview
 

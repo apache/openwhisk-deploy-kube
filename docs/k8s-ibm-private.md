@@ -17,7 +17,7 @@
 #
 -->
 
-# IBM IKS for OpenWhisk
+# Deploying OpenWhisk on IBM Cloud Private (ICP)
 
 ## Overview
 
