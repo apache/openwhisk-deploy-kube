@@ -48,9 +48,17 @@ We are actively working on reducing this list and would welcome PRs to help.
 ### Using an external database
 
 You may want to use an external CouchDB or Cloudant instance instead
-of deploying a CouchDB instance as a Kubernetes pod.  You can do this
-by adding a stanza like the one below to your `mycluster.yaml`,
-substituting in the appropriate values for `<...>`
+of deploying a CouchDB instance as a Kubernetes pod as part of the
+same `helm install` as the rest of OpenWhisk. Using an external
+database is especially useful in production scenarios as it decouples
+the management of the database from that of the rest of the
+system. Decoupling the database increases operational flexibility, for
+example by enabling blue/green deployments of OpenWhisk using a shared
+database instance.
+
+To use an externally deployed database, add a stanza like the one
+below to your `mycluster.yaml`, substituting in the appropriate values
+for `<...>`
 ```yaml
 db:
   external: true
