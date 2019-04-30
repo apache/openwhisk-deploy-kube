@@ -173,7 +173,6 @@ kafka:
   imageName: "wurstmeister/kafka"
   imageTag: "0.11.0.1"
   imagePullPolicy: "IfNotPresent"
-  # NOTE: setting replicaCount > 1 will not work (Issue #354)
   replicaCount: 1
   restartPolicy: "Always"
   port: 9092
