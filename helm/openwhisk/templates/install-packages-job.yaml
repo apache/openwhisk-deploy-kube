@@ -9,7 +9,7 @@ metadata:
     name: {{ .Release.Name }}-install-packages
 {{ include "openwhisk.label_boilerplate" . | indent 4 }}
 spec:
-  activeDeadlineSeconds: 900
+  backoffLimit: 3
   template:
     metadata:
       name: {{ .Release.Name }}-install-packages

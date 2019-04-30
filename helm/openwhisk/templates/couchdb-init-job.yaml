@@ -10,7 +10,7 @@ metadata:
     name: {{ .Release.Name }}-init-couchdb
 {{ include "openwhisk.label_boilerplate" . | indent 4 }}
 spec:
-  activeDeadlineSeconds: 600
+  backoffLimit: 3
   template:
     metadata:
       name: {{ .Release.Name }}-init-couchdb
