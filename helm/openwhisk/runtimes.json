@@ -3,7 +3,7 @@
         "nodejs": [
             {
                 "kind": "nodejs:6",
-                "default": true,
+                "default": false,
                 "image": {
                     "prefix": "openwhisk",
                     "name": "nodejs6action",
@@ -13,13 +13,7 @@
                 "attached": {
                     "attachmentName": "codefile",
                     "attachmentType": "text/plain"
-                },
-                "stemCells": [
-                    {
-                        "count": 2,
-                        "memory": "256 MB"
-                    }
-                ]
+                }
             },
             {
                 "kind": "nodejs:8",
@@ -37,7 +31,7 @@
             },
             {
                 "kind": "nodejs:10",
-                "default": false,
+                "default": true,
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-nodejs-v10",
@@ -47,7 +41,13 @@
                 "attached": {
                     "attachmentName": "codefile",
                     "attachmentType": "text/plain"
-                }
+                },
+                "stemCells": [
+                    {
+                        "count": 2,
+                        "memory": "256 MB"
+                    }
+                ]
             },
             {
                 "kind": "nodejs:12",
