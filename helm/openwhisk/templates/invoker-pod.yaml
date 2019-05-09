@@ -16,6 +16,7 @@ metadata:
 spec:
 {{- if eq .Values.invoker.containerFactory.impl "kubernetes" }}
   podManagementPolicy: "Parallel"
+  serviceName: {{ .Release.Name }}-invoker
   replicas: {{ .Values.invoker.containerFactory.kubernetes.replicaCount }}
 {{- end }}
   selector:
