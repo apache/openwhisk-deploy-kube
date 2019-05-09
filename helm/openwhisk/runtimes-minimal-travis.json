@@ -4,17 +4,27 @@
         "nodejs": [
             {
                 "kind": "nodejs:6",
-                "default": true,
+                "default": false,
                 "image": {
                     "prefix": "openwhisk",
                     "name": "nodejs6action",
-                    "tag": "c173d64"
+                    "tag": "ab224ab"
+                },
+                "deprecated": false
+            },
+            {
+                "kind": "nodejs:10",
+                "default": true,
+                "image": {
+                    "prefix": "openwhisk",
+                    "name": "action-nodejs-v10",
+                    "tag": "ab224ab"
                 },
                 "deprecated": false,
-                "stemCells": [{
-                    "count": 2,
-                    "memory": "256 MB"
-                }]
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                }
             }
         ],
         "python": [

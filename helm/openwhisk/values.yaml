@@ -113,7 +113,7 @@ whisk:
     openwhisk:
       buildDate: "2019-04-05-18:03:02Z"
       buildNo: "20190405a"
-      gitTag: "9ef3975419cf68dc3dc7fa6cc0db47d69dbcc2f8"
+      gitTag: "95afbb32aef61f8d278ee142d1cea7cead96a0ff"
     openwhiskCli:
       tag: "eaf64ae"
     openwhiskCatalog:
@@ -136,7 +136,7 @@ k8s:
 # Images used to run auxillary tasks/jobs
 utility:
   imageName: "openwhisk/ow-utils"
-  imageTag: "9ef3975"
+  imageTag: "95afbb3"
   imagePullPolicy: "IfNotPresent"
 
 # Docker registry
@@ -220,7 +220,7 @@ nginx:
 # Controller configurations
 controller:
   imageName: "openwhisk/controller"
-  imageTag: "9ef3975"
+  imageTag: "95afbb3"
   imagePullPolicy: "IfNotPresent"
   replicaCount: 1
   restartPolicy: "Always"
@@ -232,7 +232,7 @@ controller:
 # Invoker configurations
 invoker:
   imageName: "openwhisk/invoker"
-  imageTag: "9ef3975"
+  imageTag: "95afbb3"
   imagePullPolicy: "IfNotPresent"
   restartPolicy: "Always"
   port: 8080
