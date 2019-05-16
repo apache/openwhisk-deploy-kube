@@ -32,7 +32,7 @@ before_install:
 
 script:
   - ./tools/travis/deploy-chart.sh
-  - travis_wait 25 ./tools/travis/run-tests.sh
+  - travis_wait 42 ./tools/travis/run-tests.sh
   - ./tools/travis/collect-logs.sh
   - ./tools/travis/box-upload.py "logs" "deploy-kube-$TRAVIS_BUILD_ID-$TRAVIS_BRANCH-$TRAVIS_JOB_NUMBER.tar.gz"
 
