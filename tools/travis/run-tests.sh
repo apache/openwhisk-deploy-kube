@@ -5,7 +5,7 @@
 ###
 # Now run the tests provided in the Chart to verify the deployment
 ###
-if helm test ow4travis --timeout 1200; then
+if helm test ow4travis --timeout 2400; then
     echo "PASSED! Deployment verification tests passed."
 else
     echo "FAILED: Deployment verification tests failed."
