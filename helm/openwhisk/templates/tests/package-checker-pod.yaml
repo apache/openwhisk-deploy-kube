@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 
+{{- if .Values.whisk.testing.includeTests }}
 apiVersion: v1
 kind: Pod
 metadata:
@@ -60,3 +61,4 @@ spec:
         value: {{ if .Values.providers.cloudant.enabled }} "yes" {{ else }} "no" {{ end }}
       - name: "OW_INSTALL_KAFKA_PROVIDER"
         value: {{ if .Values.providers.kafka.enabled }} "yes" {{ else }} "no" {{ end }}
+{{- end }}

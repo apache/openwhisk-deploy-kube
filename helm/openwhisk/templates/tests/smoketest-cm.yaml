@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 
+{{- if .Values.whisk.testing.includeTests }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -23,3 +24,4 @@ metadata:
 {{ include "openwhisk.label_boilerplate" . | indent 4 }}
 data:
 {{ (.Files.Glob "configMapFiles/tests/smoketest/myTask.sh").AsConfig | indent 2 }}
+{{- end }}

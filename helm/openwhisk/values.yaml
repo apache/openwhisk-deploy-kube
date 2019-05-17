@@ -125,6 +125,7 @@ whisk:
     userMemory: "2048m"
   runtimes: "runtimes.json"
   testing:
+    includeTests: true
     includeSystemTests: false
   versions:
     openwhisk:

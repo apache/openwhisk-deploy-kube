@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 
+{{- if ne .Values.whisk.ingress.type "OpenShift" }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -73,3 +74,4 @@ spec:
           mountPath: "/etc/nginx/certs"
         - name: logs
           mountPath: "/logs"
+{{- end }}

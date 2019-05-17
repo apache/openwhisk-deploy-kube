@@ -376,6 +376,12 @@ whisk:
       type: "string"
       required: true
   testing:
+    includeTests:
+      __metadata:
+        label: "Include basic tests"
+        description: "If basic tests should be included in the Helm test suite"
+        type: "boolean"
+        required: true
     includeSystemTests:
       __metadata:
         label: "Include system tests"
