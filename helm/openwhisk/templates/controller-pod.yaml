@@ -30,12 +30,14 @@ spec:
 {{ include "openwhisk.affinity.selfAntiAffinity" ( printf "%s-controller" .Release.Name ) | indent 8 }}
       {{- end }}
 
-{{- if not .Values.controller.lean }}
       initContainers:
-      # The controller must wait for kafka and couchdb to be ready before it starts
+{{- if not .Values.controller.lean }}
+      # The controller must wait for kafka and/or couchdb to be ready before it starts
 {{ include "openwhisk.readiness.waitForKafka" . | indent 6 }}
+{{- end }}
 {{ include "openwhisk.readiness.waitForCouchDB" . | indent 6 }}
-{{- else }}
+      # The lean controller requires invoker volumes mounts
+{{- if .Values.controller.lean }}
 {{ include "openwhisk.invoker.volumes" . }}
 {{- end }}
 {{ include "openwhisk.docker.imagePullSecrets" . | indent 6 }}
