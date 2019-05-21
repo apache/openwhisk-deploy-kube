@@ -344,6 +344,14 @@ openwhisk-deploy-kube directory:
 helm upgrade ./helm/openwhisk --namespace=openwhisk --name=owdev -f mycluster.yaml
 ```
 
+### Deploying Lean Openwhisk version.
+
+To have a lean setup (no Kafka, Zookeeper and no Invokers as separate entities):
+```yaml
+controller:
+  lean: true
+```
+
 # Cleanup
 
 Use the following command to remove all the deployed OpenWhisk components:

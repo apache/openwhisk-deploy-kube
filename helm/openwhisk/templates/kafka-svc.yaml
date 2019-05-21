@@ -1,6 +1,8 @@
 # Licensed to the Apache Software Foundation (ASF) under one or more contributor
 # license agreements; and to You under the Apache License, Version 2.0.
 
+{{- if not .Values.controller.lean }}
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -15,3 +17,4 @@ spec:
   ports:
   - name: broker
     port: {{ .Values.kafka.port }}
+{{- end }}

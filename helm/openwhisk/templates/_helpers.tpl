@@ -218,3 +218,69 @@ imagePullSecrets:
 - name: {{ .Release.Name }}-private-registry.auth
 {{- end }}
 {{- end -}}
+
+{{/* Environment variables required for Lean OW configuration */}}
+{{- define "openwhisk.lean.provider" -}}
+{{- if .Values.controller.lean -}}
+- name: "CONFIG_whisk_spi_MessagingProvider"
+  value: "org.apache.openwhisk.connector.lean.LeanMessagingProvider"
+- name: "CONFIG_whisk_spi_LoadBalancerProvider"
+  value: "org.apache.openwhisk.core.loadBalancer.LeanBalancer"
+{{- end -}}
+{{- end -}}
+
+{{/* Environment variables required for invoker API HOST configuration */}}
+{{- define "openwhisk.invoker.apihost" -}}
+- name: "WHISK_API_HOST_PROTO"
+  valueFrom:
+    configMapKeyRef:
+      name: {{ .Release.Name }}-whisk.config
+      key: whisk_api_host_proto
+- name: "WHISK_API_HOST_PORT"
+  valueFrom:
+    configMapKeyRef:
+      name: {{ .Release.Name }}-whisk.config
+      key: whisk_api_host_port
+- name: "WHISK_API_HOST_NAME"
+  valueFrom:
+    configMapKeyRef:
+      name: {{ .Release.Name }}-whisk.config
+      key: whisk_api_host_name
+- name: "CONFIG_whisk_docker_containerFactory_useRunc"
+  value: {{ .Values.invoker.containerFactory.useRunc | quote }}
+- name: "CONFIG_whisk_containerPool_userMemory"
+  value: {{ .Values.whisk.containerPool.userMemory | quote }}
+{{- end -}}
+
+{{/* Environment variables required for invoker volumes configuration */}}
+{{- define "openwhisk.invoker.volumes" -}}
+{{- if eq .Values.invoker.containerFactory.impl "docker" }}
+      volumes:
+{{ include "openwhisk.docker_volumes" . | indent 6 }}
+      - name: scripts-dir
+        configMap:
+          name: {{ .Release.Name }}-invoker-scripts
+{{- end }}
+{{- end }}
+
+{{/* Environment variables required for invoker volumes configuration */}}
+{{- define "openwhisk.invoker.volume_mounts" -}}
+{{- if (eq .Values.invoker.containerFactory.impl "docker") }}
+        volumeMounts:
+{{ include "openwhisk.docker_volume_mounts" . | indent 8 }}
+{{- if .Values.invoker.containerFactory.networkConfig.dns.inheritInvokerConfig }}
+        - name: scripts-dir
+          mountPath: "/invoker-scripts/configureDNS.sh"
+          subPath: "configureDNS.sh"
+{{- end }}
+{{- end }}
+{{- end }}
+
+{{/* invoker additional options */}}
+{{- define "openwhisk.invoker.add_opts" -}}
+{{- if eq .Values.invoker.containerFactory.impl "docker" -}}
+-Dwhisk.spi.ContainerFactoryProvider=org.apache.openwhisk.core.containerpool.docker.DockerContainerFactoryProvider
+{{- else -}}
+-Dkubernetes.master=https://$KUBERNETES_SERVICE_HOST -Dwhisk.spi.ContainerFactoryProvider=org.apache.openwhisk.core.containerpool.kubernetes.KubernetesContainerFactoryProvider
+{{- end -}}
+{{- end -}}

@@ -31,14 +31,25 @@ spec:
       {{- end }}
 
       initContainers:
-      # The controller must wait for kafka and couchdb to be ready before it starts
+{{- if not .Values.controller.lean }}
+      # The controller must wait for kafka and/or couchdb to be ready before it starts
 {{ include "openwhisk.readiness.waitForKafka" . | indent 6 }}
+{{- end }}
 {{ include "openwhisk.readiness.waitForCouchDB" . | indent 6 }}
+      # The lean controller requires invoker volumes mounts
+{{- if .Values.controller.lean }}
+{{ include "openwhisk.invoker.volumes" . }}
+{{- end }}
 {{ include "openwhisk.docker.imagePullSecrets" . | indent 6 }}
+
       containers:
       - name: controller
         imagePullPolicy: {{ .Values.controller.imagePullPolicy | quote }}
         image: "{{- .Values.docker.registry.name -}}{{- .Values.controller.imageName -}}:{{- .Values.controller.imageTag -}}"
+{{- if .Values.controller.lean }}
+        securityContext:
+          privileged: true
+{{- end }}
         command: ["/bin/bash", "-c", "/init.sh `hostname | cut -d'-' -f3`"]
         ports:
         - name: controller
@@ -47,6 +58,9 @@ spec:
           containerPort: 2552
         - name: akka-mgmt-http
           containerPort: 19999
+{{- if .Values.controller.lean }}
+{{ include "openwhisk.invoker.volume_mounts" . }}
+{{- end }}
         livenessProbe:
           httpGet:
             path: "/ping"
@@ -79,7 +93,7 @@ spec:
 
         # specific controller arguments
         - name: "CONTROLLER_OPTS"
-          value: {{ .Values.controller.options | quote }}
+          value: "{{ .Values.controller.options }} {{ if .Values.controller.lean }} {{ include "openwhisk.invoker.add_opts" . }} {{ end }}"
 
         # action runtimes
         - name: "RUNTIMES_MANIFEST"
@@ -117,4 +131,10 @@ spec:
           value: "name={{ .Release.Name }}-controller"
         - name: "CONFIG_akka_discovery_kubernetesApi_podPortName"
           value: "akka-mgmt-http"
+{{- end }}
+        # properties for lean messaging provider
+{{ include "openwhisk.lean.provider" . | indent 8 }}
+
+{{- if .Values.controller.lean }}
+{{ include "openwhisk.invoker.apihost" . | indent 8 }}
 {{- end }}

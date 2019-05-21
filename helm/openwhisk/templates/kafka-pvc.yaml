@@ -1,7 +1,7 @@
 # Licensed to the Apache Software Foundation (ASF) under one or more contributor
 # license agreements; and to You under the Apache License, Version 2.0.
 
-{{ if and .Values.k8s.persistence.enabled (eq (int .Values.kafka.replicaCount) 1 ) }}
+{{ if and .Values.k8s.persistence.enabled (eq (int .Values.kafka.replicaCount) 1 ) (not .Values.controller.lean) }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:

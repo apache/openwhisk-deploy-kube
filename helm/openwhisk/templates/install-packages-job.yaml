@@ -23,7 +23,9 @@ spec:
         configMap:
           name: {{ .Release.Name }}-install-packages-cm
       initContainers:
+{{- if not .Values.controller.lean }}
 {{ include "openwhisk.readiness.waitForHealthyInvoker" . | indent 6 }}
+{{ end }}
 {{ include "openwhisk.docker.imagePullSecrets" . | indent 6 }}
       containers:
       - name: install-packages
