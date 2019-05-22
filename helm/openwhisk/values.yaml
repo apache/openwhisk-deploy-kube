@@ -136,7 +136,7 @@ k8s:
 # Images used to run auxillary tasks/jobs
 utility:
   imageName: "openwhisk/ow-utils"
-  imageTag: "d353d26"
+  imageTag: "73732b4"
   imagePullPolicy: "IfNotPresent"
 
 # Docker registry

@@ -48,7 +48,7 @@
       value: {{ template "openwhisk.runtimes_manifest" . }}
 {{- if ne .Values.docker.registry.name "" }}
     - name: "RUNTIMES_REGISTRY"
-      value: "{{- .Values.docker.registry.name -}}/"
+      value: "{{- .Values.docker.registry.name -}}"
     - name: "RUNTIMES_REGISTRY_USERNAME"
       valueFrom:
         secretKeyRef:
