@@ -62,14 +62,15 @@ spec:
             port: {{ .Values.zookeeper.port }}
           initialDelaySeconds: 5
           periodSeconds: 10
-        readinessProbe:
-          exec:
-            command:
-            - /bin/bash
-            - -c
-            - "echo ruok | nc -w 1 localhost:{{ .Values.zookeeper.port }} | grep imok"
-          initialDelaySeconds: 5
-          periodSeconds: 10
+        # Disabled: See issue https://github.com/apache/incubator-openwhisk-deploy-kube/issues/469
+        # readinessProbe:
+        #   exec:
+        #     command:
+        #     - /bin/bash
+        #     - -c
+        #     - "echo ruok | nc -w 1 localhost:{{ .Values.zookeeper.port }} | grep imok"
+        #   initialDelaySeconds: 5
+        #   periodSeconds: 10
         volumeMounts:
         - mountPath: /conf
           name: zk-config
