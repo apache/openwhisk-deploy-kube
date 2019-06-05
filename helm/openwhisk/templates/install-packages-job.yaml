@@ -106,6 +106,8 @@ spec:
             value: {{ .Values.providers.cloudant.dbPrefix | quote }}
           - name: "KAFKA_DB_PREFIX"
             value: {{ .Values.providers.kafka.dbPrefix | quote }}
+          - name: "AMQP_TRIGGERS_DB"
+            value: {{ .Values.providers.amqp.db | quote }}
 
           # Should each of the providers be installed?
           - name: "OW_INSTALL_ALARM_PROVIDER"
@@ -114,6 +116,8 @@ spec:
             value: {{ if .Values.providers.cloudant.enabled }} "yes" {{ else }} "no" {{ end }}
           - name: "OW_INSTALL_KAFKA_PROVIDER"
             value: {{ if .Values.providers.kafka.enabled }} "yes" {{ else }} "no" {{ end }}
+          - name: "OW_INSTALL_AMQP_PROVIDER"
+            value: {{ if .Values.providers.amqp.enabled }} "yes" {{ else }} "no" {{ end }}
 
           # tags to use for git clone operations
           - name: "OW_GIT_TAG_OPENWHISK"
@@ -126,3 +130,11 @@ spec:
             value: {{ .Values.whisk.versions.openwhiskPackageCloudant.gitTag | quote }}
           - name: "OW_GIT_TAG_OPENWHISK_PACKAGE_KAFKA"
             value: {{ .Values.whisk.versions.openwhiskPackageKafka.gitTag | quote }}
+          - name: "OW_GIT_TAG_OPENWHISK_PLUGGABLE_PROVIDER"
+            value: {{ .Values.whisk.versions.openwhiskPluggableProvider.gitTag | quote }}
+
+          # pluggable provider config
+          - name: "AMQP_PLUGIN"
+            value: {{ .Values.providers.amqp.plugin | quote }}
+          - name: "AMQP_PACKAGE_NAMESPACE"
+            value: {{ .Values.providers.amqp.namespace | quote }}

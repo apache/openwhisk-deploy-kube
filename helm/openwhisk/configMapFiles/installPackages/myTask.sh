@@ -122,3 +122,17 @@ if [ "$OW_INSTALL_KAFKA_PROVIDER" == "yes" ]; then
     popd
 fi
 
+#####
+# Install the catalog for the AMQP provider
+#####
+
+if [ "$OW_INSTALL_AMQP_PROVIDER" == "yes" ]; then
+    cd /
+    git clone https://github.com/apache/incubator-openwhisk-pluggable-provider.git
+
+    pushd /incubator-openwhisk-pluggable-provider
+        git checkout $OW_GIT_TAG_OPENWHISK_PLUGGABLE_PROVIDER
+        export EVENT_PROVIDER=$AMQP_PLUGIN
+        ./installCatalog.sh $WHISK_AUTH $WHISK_API_HOST $PROVIDER_DB_URL $AMQP_TRIGGERS_DB $WHISK_API_HOST $AMQP_PACKAGE_NAMESPACE || exit 1
+    popd
+fi

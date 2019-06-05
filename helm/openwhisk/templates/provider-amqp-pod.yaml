@@ -1,0 +1,93 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more contributor
+# license agreements; and to You under the Apache License, Version 2.0.
+
+{{- if .Values.providers.amqp.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-amqpprovider
+  labels:
+    name: {{ .Release.Name }}-amqpprovider
+{{ include "openwhisk.label_boilerplate" . | indent 4 }}
+spec:
+  replicas: {{ .Values.providers.amqp.replicaCount }}
+  selector:
+    matchLabels:
+      name: {{ .Release.Name }}-amqpprovider
+  template:
+    metadata:
+      labels:
+        name: {{ .Release.Name }}-amqpprovider
+{{ include "openwhisk.label_boilerplate" . | indent 8 }}
+    spec:
+      restartPolicy: {{ .Values.providers.amqp.restartPolicy }}
+      volumes:
+        - name: amqp-logs
+{{- if .Values.k8s.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-amqpprovider-pvc
+{{- else }}
+          emptyDir: {}
+{{- end }}
+      initContainers:
+      # Wait for a controller to be up (which implies couchdb is up as well).
+{{ include "openwhisk.readiness.waitForController" . | indent 6 }}
+{{ include "openwhisk.docker.imagePullSecrets" . | indent 6 }}
+      containers:
+      - name: amqpprovider
+        image: "{{- .Values.docker.registry.name -}}{{- .Values.providers.amqp.imageName -}}:{{- .Values.providers.amqp.imageTag -}}"
+        imagePullPolicy: {{ .Values.providers.amqp.imagePullPolicy | quote }}
+        ports:
+        - name: amqpprovider
+          containerPort: {{ .Values.providers.amqp.apiPort }}
+        env:
+        {{- if .Values.providers.db.external }}
+        # Config database using the external instance
+        - name: "DB_PROTOCOL"
+          value: {{ .Values.providers.db.protocol | quote }}
+        - name: "DB_HOST"
+          value: "{{ .Values.providers.db.host }}:{{ .Values.providers.db.port }}"
+        - name: "DB_USERNAME"
+          value: {{ .Values.providers.db.username | quote }}
+        - name: "DB_PASSWORD"
+          value: {{ .Values.providers.db.password | quote }}
+        {{- else }}
+        - name: "DB_PROTOCOL"
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Release.Name }}-db.config
+              key: db_protocol
+        - name: "DB_HOST"
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Release.Name }}-db.config
+              key: db_host_port
+        - name: "DB_USERNAME"
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-db.auth
+              key: db_username
+        - name: "DB_PASSWORD"
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-db.auth
+              key: db_password
+        {{- end }}
+        - name: "EVENT_PROVIDER"
+          value: {{ .Values.providers.amqp.plugin | quote }}
+        - name: "TRIGGERS_DB"
+          value: {{ .Values.providers.amqp.db | quote }}
+        - name: "ROUTER_HOST"
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Release.Name }}-whisk.config
+              key: whisk_api_host_nameAndPort
+        - name: "ENDPOINT_AUTH"
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Release.Name }}-whisk.config
+              key: whisk_api_host_nameAndPort
+        volumeMounts:
+          - name: amqp-logs
+            mountPath: /logs
+{{- end }}

@@ -1,0 +1,20 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more contributor
+# license agreements; and to You under the Apache License, Version 2.0.
+
+{{- if and .Values.providers.amqp.enabled .Values.k8s.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-amqpprovider-pvc
+  labels:
+{{ include "openwhisk.label_boilerplate" . | indent 4 }}
+spec:
+{{- if not .Values.k8s.persistence.hasDefaultStorageClass }}
+  storageClassName: {{ .Values.k8s.persistence.explicitStorageClass }}
+{{- end }}
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.providers.amqp.persistence.size }}
+{{- end }}

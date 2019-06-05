@@ -124,6 +124,8 @@ whisk:
       gitTag: "e4eddc0b99b6c00648266d0e6f4940bd1c3748a7"
     openwhiskPackageKafka:
       gitTag: "90da0152c95492af6c8b1fb908a701a3493f45ed"
+    openwhiskPluggableProvider:
+      gitTag: "HEAD"
 
 k8s:
   domain: cluster.local
@@ -334,7 +336,22 @@ providers:
     restartPolicy: "Always"
     apiPort: 8080
     dbPrefix: "kp"
-
+  # AMQP provider configurations
+  amqp:
+    enabled: true
+    imageName: "openwhisk/pluggable_provider"
+    imageTag: "latest"
+    imagePullPolicy: "IfNotPresent"
+    # NOTE: replicaCount > 1 doesn't work because of the PVC
+    replicaCount: 1
+    restartPolicy: "Always"
+    apiPort: 8080
+    db: "amqp_triggers"
+    plugin: "openwhisk-amqp-trigger-feed"
+    namespace: "whisk.system"
+    persistence:
+      size: 1Gi
+ 
 
 # Used to define pod affinity and anti-affinity for the Kubernetes scheduler.
 # If affinity.enabled is true, then all of the deployments for the OpenWhisk
