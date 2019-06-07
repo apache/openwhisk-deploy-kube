@@ -351,7 +351,6 @@ providers:
     namespace: "whisk.system"
     persistence:
       size: 1Gi
- 
 
 # Used to define pod affinity and anti-affinity for the Kubernetes scheduler.
 # If affinity.enabled is true, then all of the deployments for the OpenWhisk
