@@ -102,6 +102,9 @@ spec:
           - name: "CONFIG_whisk_containerFactory_containerArgs_extraArgs_env_0"
             value: "__OW_ALLOW_CONCURRENT={{ .Values.invoker.containerFactory.enableConcurrency }}"
 
+          - name: "CONFIG_whisk_containerFactory_runtimesRegistry_url"
+            value: "{{ .Values.docker.registry.name }}"
+
           # Invoker name is the name of the node (DaemonSet) or pod (StatefulSet)
           - name: "INVOKER_NAME"
             valueFrom:
