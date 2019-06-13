@@ -1483,3 +1483,30 @@ affinity:
       description: "Label used for worker nodes that should execute OpenWhisk event provider pods"
       type: "string"
       required: true
+
+probes:
+  _metadata: 
+  label: "Pod's liveness and readiness time related settings"
+  description: "Used for configurable liveness and readiness probes timing settings"
+  component:
+    _metadata:
+      label: "Specify component name i.e. zookeeper, controller etc."
+      description: "Specify component name for which probes settings will apply"
+    initialDelaySeconds:
+      _metadata:
+      label: "Initial wait time to start probes after container has started"
+      description: "Time in seconds to wait before starting the probes on pod in started state."
+      type: "number"
+      required: false
+    periodSeconds:
+      _metadata:
+      label: "Frequency to perform the probe in seconds"
+      description: "Frequency to perform the probe, default is 10, minimun is 1"
+      type: "number"
+      required: false
+    timeoutSeconds: 
+      _metadata:
+      label: "Probe timeout in seconds"
+      description: "Probe will timeouts after defined seconds, defaults to 1 second, minimum value is 1"
+      type: "number"
+      required: false

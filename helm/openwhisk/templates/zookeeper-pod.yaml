@@ -60,8 +60,9 @@ spec:
         livenessProbe:
           tcpSocket:
             port: {{ .Values.zookeeper.port }}
-          initialDelaySeconds: 5
-          periodSeconds: 10
+          initialDelaySeconds: {{ .Values.probes.zookeeper.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.probes.zookeeper.livenessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.probes.zookeeper.livenessProbe.timeoutSeconds }}
         # Disabled: See issue https://github.com/apache/incubator-openwhisk-deploy-kube/issues/469
         # readinessProbe:
         #   exec:
@@ -69,8 +70,9 @@ spec:
         #     - /bin/bash
         #     - -c
         #     - "echo ruok | nc -w 1 localhost:{{ .Values.zookeeper.port }} | grep imok"
-        #   initialDelaySeconds: 5
-        #   periodSeconds: 10
+        #   initialDelaySeconds: {{ .Values.probes.zookeeper.readinessProbe.initialDelaySeconds }}
+        #   periodSeconds: {{ .Values.probes.zookeeper.readinessProbe.periodSeconds }}
+        #   timeoutSeconds: {{ .Values.probes.zookeeper.readinessProbe.timeoutSeconds }}
         volumeMounts:
         - mountPath: /conf
           name: zk-config
