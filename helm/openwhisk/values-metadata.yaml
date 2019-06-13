@@ -1485,7 +1485,7 @@ affinity:
       required: true
 
 probes:
-  _metadata: 
+  _metadata:
   label: "Pod's liveness and readiness time related settings"
   description: "Used for configurable liveness and readiness probes timing settings"
   component:
@@ -1504,9 +1504,10 @@ probes:
       description: "Frequency to perform the probe, default is 10, minimun is 1"
       type: "number"
       required: false
-    timeoutSeconds: 
+    timeoutSeconds:
       _metadata:
       label: "Probe timeout in seconds"
       description: "Probe will timeouts after defined seconds, defaults to 1 second, minimum value is 1"
       type: "number"
       required: false
+
