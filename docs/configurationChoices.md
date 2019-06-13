@@ -214,3 +214,18 @@ If you want to override this default when using the DockerContainerFactory,
 you can set `invoker.containerFactory.networkConfig.dns.inheritInvokerConfig` to `false`
 and explicitly configure the child values of `invoker.containerFactory.networkConfig.dns.overrides`
 instead.
+
+### Customizing probes setting
+
+Many openwhisk components has liveness and readiness probes configured. Sometimes it is observed that components do not come up or in ready state before the probes starts executing which causes pods to restarts or fail. You can configure probes timing settings like `initialDelaySeconds`, `periodSeconds` and `timeoutSeconds` in `mycluster.yaml`
+
+```bash
+probes:
+  zookeeper:
+    livenessProbe:
+      initialDelaySeconds: <number of seconds>
+      periodSeconds: <number of seconds>
+      timeoutSeconds: <number of seconds>
+```
+
+**Note:** currently, probes settings are available for `zookeeper` and `controllers` only.

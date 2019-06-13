@@ -66,9 +66,17 @@ spec:
             path: "/ping"
             port: {{ .Values.controller.port }}
             scheme: "HTTP"
-          initialDelaySeconds: 5
-          periodSeconds: 10
-          timeoutSeconds: 1
+          initialDelaySeconds: {{ .Values.probes.controller.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.probes.controller.livenessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.probes.controller.livenessProbe.timeoutSeconds }}
+        readinessProbe:
+          httpGet:
+            path: "/ping"
+            port: {{ .Values.controller.port }}
+            scheme: "HTTP"
+          initialDelaySeconds: {{ .Values.probes.controller.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.probes.controller.readinessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.probes.controller.readinessProbe.timeoutSeconds }}
         env:
         - name: "PORT"
           value: {{ .Values.controller.port | quote }}

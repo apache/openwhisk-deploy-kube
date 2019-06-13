@@ -346,3 +346,34 @@ affinity:
   edgeNodeLabel: edge
   invokerNodeLabel: invoker
   providerNodeLabel: provider
+
+# Used to define the probes timing settings so that you can more precisely control the
+# liveness and readiness checks.
+# initialDelaySeconds - Initial wait time to start probes after container has started
+# periodSeconds - Frequency to perform the probe, defaults to 10, minimum value is 1
+# timeoutSeconds - Probe will timeouts after defined seconds, defaults to 1 second,
+#                  minimum value is 1
+# for more information please refer - https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
+# Note - for now added probes settings for zookeeper and controller only.
+#        in future all components probes timing settings should be
+#        configured here if any.
+
+probes:
+  zookeeper:
+    livenessProbe:
+      initialDelaySeconds: 5
+      periodSeconds: 10
+      timeoutSeconds: 1
+    readinessProbe:
+      initialDelaySeconds: 5
+      periodSeconds: 10
+      timeoutSeconds: 1
+  controller:
+    livenessProbe:
+      initialDelaySeconds: 5
+      periodSeconds: 10
+      timeoutSeconds: 1
+    readinessProbe:
+      initialDelaySeconds: 5
+      periodSeconds: 10
+      timeoutSeconds: 1
