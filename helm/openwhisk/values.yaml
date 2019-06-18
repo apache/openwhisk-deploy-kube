@@ -300,6 +300,19 @@ redis:
   persistence:
     size: 256Mi
 
+# Metrics
+metrics:
+  # set true to enable prometheus exporter
+  prometheusEnabled: false
+  # passing prometheus-enabled by a config file, required by openwhisk
+  whiskconfigFile: "whiskconfig.conf"
+  # set true to enable Kamon
+  kamonEnabled: false
+  # set true to enable Kamon tags
+  kamonTags: false
+  # set true to enable user metrics
+  userMetricsEnabled: false
+
 # Configuration of OpenWhisk event providers
 providers:
   # CouchDB instance used by all enabled providers to store event/configuration data.

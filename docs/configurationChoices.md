@@ -229,3 +229,32 @@ probes:
 ```
 
 **Note:** currently, probes settings are available for `zookeeper` and `controllers` only.
+
+### Metrics and prometheus support
+
+OpenWhisk distinguishes between system and user metrics. System metrics typically contain information about system performance and use Kamon to collect. User metrics encompass information about action performance which is sent to Kafka in a form of events.
+
+If you want to collect system metrics, store and display them with prometheus, use below configuration in `mycluster.yaml`:
+
+```
+metrics:
+  prometheusEnabled: true
+```
+
+You also need to enable your prometheus to scrape those metrics, add below `scrape_configs` to your prometheus configuration file:
+```
+global:
+  scrape_interval: 1s
+scrape_configs:
+  - job_name: 'kamon-metrics'
+    static_configs:
+      - targets:['<controller_host>:8080','<invoker_host>:8080']
+```
+**Note:** replace `<controller_host>` and `<invoker_host>` with the real host name of controller and invoker.
+
+If you want to enable user metrics, use below configuration in `mycluster.yaml`:
+
+```
+metrics:
+  userMetricsEnabled: true
+```

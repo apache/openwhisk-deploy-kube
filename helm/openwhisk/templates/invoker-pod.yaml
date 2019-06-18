@@ -169,7 +169,22 @@ spec:
           # properties for zookeeper connection
           - name: "ZOOKEEPER_HOSTS"
             value: "{{ include "openwhisk.zookeeper_connect" . }}"
-
+{{ if .Values.metrics.prometheusEnabled }}
+          - name: "OPENWHISK_ENCODED_CONFIG"
+            value: {{ template "openwhisk.whiskconfig" . }}
+{{ end }}
+{{ if or .Values.metrics.kamonEnabled .Values.metrics.prometheusEnabled }}
+          - name: "METRICS_KAMON"
+            value: "true"
+{{ end }}
+{{ if and .Values.metrics.kamonTags .Values.metrics.prometheusEnabled }}
+          - name: "METRICS_KAMON_TAGS"
+            value: "true"
+{{ end }}
+{{ if .Values.metrics.userMetricsEnabled }}
+          - name: "CONFIG_whisk_userEvents_enabled"
+            value: "true"
+{{ end }}
         ports:
         - name: invoker
           containerPort: {{ .Values.invoker.port }}

@@ -79,6 +79,11 @@ app: {{ template "openwhisk.fullname" . }}
 {{ .Files.Get .Values.whisk.runtimes | quote }}
 {{- end -}}
 
+{{/* Whisk Config */}}
+{{- define "openwhisk.whiskconfig" -}}
+{{ .Files.Get .Values.metrics.whiskconfigFile | b64enc }}
+{{- end -}}
+
 {{/* Environment variables required for accessing CouchDB from a pod */}}
 {{- define "openwhisk.dbEnvVars" -}}
 - name: "CONFIG_whisk_couchdb_username"
