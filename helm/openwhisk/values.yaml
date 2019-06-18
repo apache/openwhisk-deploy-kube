@@ -165,7 +165,7 @@ docker:
 zookeeper:
   imageName: "zookeeper"
   imageTag: "3.4"
-  imagePullPolicy: "IfNotPresent"
+  imagePullPolicy: "Always"  # Workaround caching of 3.4.x images that don't have nc
   # Note: Zookeeper's quorum protocol is designed to have an odd number of replicas.
   replicaCount: 1
   restartPolicy: "Always"
