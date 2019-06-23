@@ -82,7 +82,7 @@ spec:
             command:
             - /bin/bash
             - -c
-            - "echo ruok | nc -w 1 localhost:{{ .Values.zookeeper.port }} | grep imok"
+            - "echo ruok | nc -w 1 localhost {{ .Values.zookeeper.port }} | grep imok"
           initialDelaySeconds: {{ .Values.probes.zookeeper.readinessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.probes.zookeeper.readinessProbe.periodSeconds }}
           timeoutSeconds: {{ .Values.probes.zookeeper.readinessProbe.timeoutSeconds }}
