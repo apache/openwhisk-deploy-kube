@@ -24,4 +24,4 @@ ROOTDIR="$SCRIPTDIR/../../"
 cd $ROOTDIR
 
 echo "Publishing kube-invoker-agent image"
-./tools/travis/publish.sh openwhisk kube-invoker-agent latest docker/invoker-agent
+./tools/travis/publish.sh openwhisk kube-invoker-agent nightly docker/invoker-agent
