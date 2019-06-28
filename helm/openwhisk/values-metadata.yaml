@@ -1525,3 +1525,39 @@ probes:
       type: "number"
       required: false
 
+# Metrics
+metrics:
+  __metadata:
+    label: "Metrics configuration"
+    description: "configurations to enable and configure Kamon metrics from controller and invoker."
+  prometheusEnabled:
+    __metadata:
+      label: "enable Prometheus support"
+      description: "true to enable kamon-prometheus exporter, metrics would be exposed at `/metrics` endpoint"
+      type: "boolean"
+      required: true
+  whiskconfigFile:
+    __metadata:
+      label: "whiskconfig file name"
+      description: "file name of whiskconfig"
+      type: "string"
+      required: false
+  kamonEnabled:
+    __metadata:
+      label: "enable kamon metrics collection"
+      description: "whether metric information is sent to the configured reporters"
+      type: "boolean"
+      required: true
+  kamonTags:
+    __metadata:
+      label: "enable kamon tag"
+      description: "whether to use the Kamon tags when sending metrics"
+      type: "boolean"
+      required: true
+  userMetricsEnabled:
+    __metadata:
+      label: "enable user metrics"
+      description: "true to enable user metrics"
+      type: "boolean"
+      required: true
+
