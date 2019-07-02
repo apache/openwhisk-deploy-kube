@@ -111,6 +111,21 @@ major cloud providers:
 
 We would welcome contributions of documentation for Azure (AKS) and any other public cloud providers.
 
+### Using a Kubernetes cluster you built yourself
+
+If you are comfortable with building your own Kubernetes clusters and
+deploying services with ingresses to them, you should also
+be able to deploy OpenWhisk to a do-it-yourself cluster. Make sure
+your cluster meets the [technical
+requirements](docs/k8s-technical-requirements.md).  You will need at
+least 1 worker node with 4GB of memory and 2 virtual CPUs to deploy
+the default configuration of OpenWhisk.  You can deploy to
+significantly larger clusters by scaling up the replica count of the
+various components and labeling multiple nodes as invoker nodes.
+There are some additional notes [here](docs/k8s-diy.md).
+
+We would welcome contributions of more detailed DIY instructions.
+
 ## Helm
 
 [Helm](https://github.com/kubernetes/helm) is a tool to simplify the

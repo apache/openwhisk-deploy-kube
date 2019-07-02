@@ -30,6 +30,7 @@
 #   docs/k8s-ibm-private.md
 #   docs/k8s-google.md
 #   docs/k8s-minikube.md
+#   docs/k8s-diy.md (for do-it-yourself clusters).
 #
 # Production deployments _MUST_ override the default credentials
 # that are used in whisk.auth and db.auth.
@@ -45,7 +46,9 @@
 # Overall configuration of OpenWhisk deployment
 whisk:
   # Ingress defines how to access OpenWhisk from outside the Kubernetes cluster.
-  # See docs/ingress.md for a discussion of how to provide these values.
+  # Only a subset of the values are actually used on any specific type of cluster.
+  # See the "Configuring OpenWhisk section" of the docs/k8s-*.md that matches
+  # your cluster type for details on what values to provide and how to get them.
   ingress:
     apiHostName: ""
     apiHostPort: 31001
