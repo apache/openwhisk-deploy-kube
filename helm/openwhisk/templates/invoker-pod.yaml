@@ -55,6 +55,11 @@ spec:
 {{ include "openwhisk.affinity.selfAntiAffinity" ( printf "%s-invoker" .Release.Name ) | indent 8 }}
 {{- end }}
 
+{{- if .Values.toleration.enabled }}
+      tolerations:
+{{ include "openwhisk.toleration.invoker" . | indent 8 }}
+{{- end }}
+
 {{ include "openwhisk.invoker.volumes" . }}
 
       initContainers:

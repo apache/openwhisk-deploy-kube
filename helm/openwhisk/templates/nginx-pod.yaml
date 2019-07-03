@@ -41,6 +41,11 @@ spec:
 {{ include "openwhisk.affinity.selfAntiAffinity" ( printf "%s-nginx" .Release.Name ) | indent 8 }}
       {{- end }}
 
+      {{- if .Values.toleration.enabled }}
+      tolerations:
+{{ include "openwhisk.toleration.edge" . | indent 8 }}
+      {{- end }}
+
       volumes:
       - name: nginx-certs
         secret:

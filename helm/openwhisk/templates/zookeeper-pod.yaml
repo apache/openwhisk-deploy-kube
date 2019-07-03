@@ -45,6 +45,11 @@ spec:
 {{ include "openwhisk.affinity.selfAntiAffinity" ( printf "%s-zookeeper" .Release.Name ) | indent 8 }}
 {{- end }}
 
+{{- if .Values.toleration.enabled }}
+      tolerations:
+{{ include "openwhisk.toleration.core" . | indent 8 }}
+{{- end }}
+
       volumes:
         - name: zk-config
           configMap:
