@@ -110,7 +110,7 @@ spec:
   {{- end }}
 {{- end }}
 {{- end }}
-          - name: "CONFIG_whisk_docker_containerFactory_containerArgs_network"
+          - name: "CONFIG_whisk_containerFactory_containerArgs_network"
             value: {{ .Values.invoker.containerFactory.networkConfig.name | quote }}
 
           - name: "CONFIG_whisk_containerFactory_containerArgs_extraArgs_env_0"
