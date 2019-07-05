@@ -29,9 +29,6 @@ nodeAffinity:
         operator: NotIn
         values:
         - {{ .Values.affinity.invokerNodeLabel }}
-# prefer to run on a core node
-nodeAffinity:
-  preferredDuringSchedulingIgnoredDuringExecution:
   - weight: 80
     preference:
       matchExpressions:
@@ -54,9 +51,6 @@ nodeAffinity:
         operator: NotIn
         values:
         - {{ .Values.affinity.invokerNodeLabel }}
-# prefer to run on a edge node
-nodeAffinity:
-  preferredDuringSchedulingIgnoredDuringExecution:
   - weight: 80
     preference:
       matchExpressions:
@@ -79,8 +73,6 @@ nodeAffinity:
         operator: NotIn
         values:
         - {{ .Values.affinity.invokerNodeLabel }}
-# prefer to run on a provider node
-nodeAffinity:
   preferredDuringSchedulingIgnoredDuringExecution:
   - weight: 80
     preference:
