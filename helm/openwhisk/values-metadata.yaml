@@ -1560,4 +1560,24 @@ metrics:
       description: "true to enable user metrics"
       type: "boolean"
       required: true
+pdb:
+  _metadata:
+  label: "Pod's disruption budget settings"
+  description: "Pod Disruption settings for voluntary and nonvoluntary disruptions"
+  enable:
+    _metadata:
+      label: "Enable pod disruption budget for deployment"
+      description: "true to enable pod disruption budgets for pods"
+      type: "boolean"
+      required: true
+  component:
+    _metadata:
+      label: "Specify component name i.e. zookeeper, controller etc."
+      description: "Specify component name for which PDB settings will apply"
+    maxUnavailable:
+      _metadata:
+      label: "Maximum Number of unavailable pods in replicas"
+      description: "Number of pods from replica set that can be unavailable after the eviction. Should be an absolute number and less than replicaCount value"
+      type: "number"
+      required: true
 
