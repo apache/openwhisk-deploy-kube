@@ -1595,7 +1595,7 @@ pdb:
       description: "Number of pods from replica set that can be unavailable after the eviction. Should be an absolute number and less than replicaCount value"
       type: "number"
       required: false
-  Kafka:
+  kafka:
     _metadata:
     label: "Kafka"
     maxUnavailable:
