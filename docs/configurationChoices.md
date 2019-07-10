@@ -258,3 +258,31 @@ If you want to enable user metrics, use below configuration in `mycluster.yaml`:
 metrics:
   userMetricsEnabled: true
 ```
+
+# Configure pod disruptions budget
+
+To avoid openwhisk components from [voluntary and nonvoluntary disruptions](https://kubernetes.io/docs/concepts/workloads/pods/disruptions/) which are managed by Kubernetes built-in controllers, you can configure PDB in `mycluster.yaml`.
+
+```yaml
+pdb:
+  enable: true
+  zookeeper:
+    maxUnavailable: 1
+  controller:
+    maxUnavailable: 1
+```
+
+Currently, you can configure PDB for below components.
+
+- Zookeeper
+- Kafka
+- Controller
+- Invoker
+
+**Notes:**
+
+- You can specify numbers of maxUnavailable Pods for now as integer. % values are not
+supported.
+- minAvailable is not supported
+- PDB only applicable when components replicaCount is > 1.
+- Invoker PDB only applicable if containerFactory implementation is of type "kubernetes" and replicaCount is > 1.

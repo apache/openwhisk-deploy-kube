@@ -407,3 +407,27 @@ probes:
       initialDelaySeconds: 5
       periodSeconds: 10
       timeoutSeconds: 1
+
+# Pod Disruption Budget allows Pods to survive Voluntary and Involuntary Disruptions.
+# for more information refer - https://kubernetes.io/docs/concepts/workloads/pods/disruptions/
+# Pod Disruptions budgets currently supported for the pods which are managed
+# by one of Kubernetes built-in controllers (Deployment, ReplicationController,
+# ReplicaSet, StatefulSet).
+# Caveats -
+# - You can specify numbers of maxUnavailable Pods for now as integer. % values are not
+# supported.
+# - minAvailable is not supported
+# - PDB only applicable when replicaCount is greater than 1.
+# - Only zookeeper, kafka, invoker and controller pods are supported for PDB for now.
+# - Invoker PDB only applicable if containerFactory implementation is of type "kubernetes"
+
+pdb:
+  enable: false
+  zookeeper:
+    maxUnavailable: 1
+  kafka:
+    maxUnavailable: 1
+  controller:
+    maxUnavailable: 1
+  invoker:
+    maxUnavailable: 1

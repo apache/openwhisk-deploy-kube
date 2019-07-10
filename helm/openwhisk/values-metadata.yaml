@@ -1500,12 +1500,28 @@ affinity:
 
 probes:
   _metadata:
-  label: "Pod's liveness and readiness time related settings"
+  label: "Pod's Probes Settings"
   description: "Used for configurable liveness and readiness probes timing settings"
-  component:
-    _metadata:
-      label: "Specify component name i.e. zookeeper, controller etc."
-      description: "Specify component name for which probes settings will apply"
+  controller:
+    initialDelaySeconds:
+      _metadata:
+      label: "Initial wait time to start probes after container has started"
+      description: "Time in seconds to wait before starting the probes on pod in started state."
+      type: "number"
+      required: false
+    periodSeconds:
+      _metadata:
+      label: "Frequency to perform the probe in seconds"
+      description: "Frequency to perform the probe, default is 10, minimun is 1"
+      type: "number"
+      required: false
+    timeoutSeconds:
+      _metadata:
+      label: "Probe timeout in seconds"
+      description: "Probe will timeouts after defined seconds, defaults to 1 second, minimum value is 1"
+      type: "number"
+      required: false
+  zookeeper:
     initialDelaySeconds:
       _metadata:
       label: "Initial wait time to start probes after container has started"
@@ -1560,4 +1576,50 @@ metrics:
       description: "true to enable user metrics"
       type: "boolean"
       required: true
+pdb:
+  _metadata:
+  label: "Pod's Disruption Budget"
+  description: "Pod Disruption Budget settings for voluntary and nonvoluntary disruptions"
+  enable:
+    _metadata:
+      label: "Enable PDB"
+      description: "true to enable pod disruption budgets for pods"
+      type: "boolean"
+      required: false
+  zookeeper:
+    _metadata:
+      label: "Zookeeper"
+    maxUnavailable:
+      _metadata:
+      label: "Max Unavailable"
+      description: "Number of pods from replica set that can be unavailable after the eviction. Should be an absolute number and less than replicaCount value"
+      type: "number"
+      required: false
+  kafka:
+    _metadata:
+    label: "Kafka"
+    maxUnavailable:
+      _metadata:
+      label: "Max Unavailable"
+      description: "Number of pods from replica set that can be unavailable after the eviction. Should be an absolute number and less than replicaCount value"
+      type: "number"
+      required: false
+  controller:
+    _metadata:
+    label: "Controllers"
+    maxUnavailable:
+      _metadata:
+      label: "Max Unavailable"
+      description: "Number of pods from replica set that can be unavailable after the eviction. Should be an absolute number and less than replicaCount value"
+      type: "number"
+      required: false
+  invoker:
+    _metadata:
+    label: "Invokers"
+    maxUnavailable:
+      _metadata:
+      label: "Max Unavailable"
+      description: "Number of pods from replica set that can be unavailable after the eviction. Should be an absolute number and less than replicaCount value"
+      type: "number"
+      required: false
 
