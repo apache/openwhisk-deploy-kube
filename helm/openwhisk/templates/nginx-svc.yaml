@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 
+{{- if ne .Values.whisk.ingress.type "OpenShift" }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -38,3 +39,4 @@ spec:
       nodePort: {{ .Values.nginx.httpsNodePort }}
       {{- end }}
       name: https-api
+{{- end }}
