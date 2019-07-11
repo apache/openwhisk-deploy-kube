@@ -8,7 +8,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "nodejs6action",
-                    "tag": "ab224ab"
+                    "tag": "1.14.0-incubating"
                 },
                 "deprecated": false
             },
@@ -18,7 +18,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-nodejs-v10",
-                    "tag": "ab224ab"
+                    "tag": "1.14.0-incubating"
                 },
                 "deprecated": false,
                 "attached": {
@@ -33,7 +33,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "python3action",
-                    "tag": "d6a8920"
+                    "tag": "1.13.0-incubating"
                 },
                 "deprecated": false
             }
@@ -43,7 +43,7 @@
         {
             "prefix": "openwhisk",
             "name": "dockerskeleton",
-            "tag": "3d6ee06"
+            "tag": "1.13.0-incubating"
         }
     ]
 }
