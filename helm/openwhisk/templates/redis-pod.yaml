@@ -41,6 +41,11 @@ spec:
 {{ include "openwhisk.affinity.selfAntiAffinity" ( printf "%s-redis" .Release.Name | quote ) | indent 8 }}
       {{- end }}
 
+      {{- if .Values.toleration.enabled }}
+      tolerations:
+{{ include "openwhisk.toleration.core" . | indent 8 }}
+      {{- end }}
+
 {{- if .Values.k8s.persistence.enabled }}
       volumes:
       - name: redis-data

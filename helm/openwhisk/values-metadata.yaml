@@ -1498,6 +1498,35 @@ affinity:
       type: "string"
       required: true
 
+toleration:
+  __metadata:
+    label: "Node toleration configuration"
+    description: "Key used for node tolerations"
+  enabled:
+    __metadata:
+      label: "Toleration enabled"
+      description: "If toleration should be enabled"
+      type: "boolean"
+      required: true
+  coreValue:
+    __metadata:
+      label: "Core openwhisk-role toleration value"
+      description: "Value used for worker nodes toleration that should execute OpenWhisk core pods"
+      type: "string"
+      required: true
+  edgeValue:
+    __metadata:
+      label: "Edge openwhisk-role toleration value"
+      description: "Value used for worker nodes toleration that should execute OpenWhisk edge pods"
+      type: "string"
+      required: true
+  invokerValue:
+    __metadata:
+      label: "Invoker openwhisk-role toleration value"
+      description: "Value used for worker nodes toleration that should execute OpenWhisk invoker pods"
+      type: "string"
+      required: true
+
 probes:
   _metadata:
   label: "Pod's Probes Settings"

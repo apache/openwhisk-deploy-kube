@@ -377,6 +377,15 @@ affinity:
   invokerNodeLabel: invoker
   providerNodeLabel: provider
 
+# Used to define toleration for the Kubernetes scheduler.
+# If tolerations.enabled is true, then all of the deployments for the OpenWhisk
+# microservices will add tolerations for key openwhisk-role with specified value and effect NoSchedule.
+toleration:
+  enabled: true
+  coreValue: core
+  edgeValue: edge
+  invokerValue: invoker
+
 # Used to define the probes timing settings so that you can more precisely control the
 # liveness and readiness checks.
 # initialDelaySeconds - Initial wait time to start probes after container has started

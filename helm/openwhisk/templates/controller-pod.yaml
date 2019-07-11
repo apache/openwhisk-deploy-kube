@@ -44,6 +44,11 @@ spec:
 {{ include "openwhisk.affinity.selfAntiAffinity" ( printf "%s-controller" .Release.Name ) | indent 8 }}
       {{- end }}
 
+      {{- if .Values.toleration.enabled }}
+      tolerations:
+{{ include "openwhisk.toleration.core" . | indent 8 }}
+      {{- end }}
+
       initContainers:
 {{- if not .Values.controller.lean }}
       # The controller must wait for kafka and/or couchdb to be ready before it starts

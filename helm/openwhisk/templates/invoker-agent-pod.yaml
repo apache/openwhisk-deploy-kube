@@ -39,6 +39,11 @@ spec:
       affinity:
 {{ include "openwhisk.affinity.invoker" . | indent 8 }}
 
+{{- if .Values.toleration.enabled }}
+      tolerations:
+{{ include "openwhisk.toleration.invoker" . | indent 8 }}
+{{- end }}
+
       volumes:
 {{ include "openwhisk.docker_volumes" . | indent 6 }}
       - name: userlogs

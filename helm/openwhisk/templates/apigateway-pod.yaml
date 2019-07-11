@@ -40,6 +40,12 @@ spec:
 {{ include "openwhisk.affinity.core" . | indent 8 }}
 {{ include "openwhisk.affinity.selfAntiAffinity" ( printf "%s-apigateway" .Release.Name ) | indent 8 }}
       {{- end }}
+
+      {{- if .Values.toleration.enabled }}
+      tolerations:
+{{ include "openwhisk.toleration.core" . | indent 8 }}
+      {{- end }}
+
 {{ include "openwhisk.docker.imagePullSecrets" . | indent 6 }}
       containers:
         - name: apigateway
