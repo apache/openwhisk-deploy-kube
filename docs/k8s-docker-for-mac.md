@@ -75,7 +75,7 @@ just add the stanza below to your `mycluster.yaml` to override the default
 behavior of pulling a stable `openwhisk/controller` image from Docker Hub.
 ```yaml
 controller:
-  imageName: "whisk/controller"
+  imageName: "openwhisk/controller"
   imageTag: "latest"
 ```
 
