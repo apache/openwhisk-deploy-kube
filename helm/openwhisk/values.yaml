@@ -129,19 +129,20 @@ whisk:
     includeSystemTests: false
   versions:
     openwhisk:
-      buildDate: "2019-04-05-18:03:02Z"
-      buildNo: "20190405a"
-      gitTag: "d353d26cb44ae8c99988465123b6c8e5567b3fc1"
+      buildDate: "2019-07-23-14:06:10Z"
+      buildNo: "20190723a"
+      gitTag: "4a09c73bb391fcc8b3cf0ecd76ac7abad7fe849d"
     openwhiskCli:
-      tag: "eaf64ae"
+      # more recent than 0.10.0 to pick up bug fix in commmit 457c17d
+      tag: "457c17d"
     openwhiskCatalog:
-      gitTag: "879b85a6f0692a5038456033ff9fbe9b4dd74f7f"
+      gitTag: "0.10.0-incubating"
     openwhiskPackageAlarms:
-      gitTag: "0e62ca60704e79e57f48ff525d79f536a8f9a1e3"
+      gitTag: "2.0.0-incubating"
     openwhiskPackageCloudant:
-      gitTag: "e4eddc0b99b6c00648266d0e6f4940bd1c3748a7"
+      gitTag: "2.0.0-incubating"
     openwhiskPackageKafka:
-      gitTag: "90da0152c95492af6c8b1fb908a701a3493f45ed"
+      gitTag: "2.0.0-incubating"
 
 k8s:
   domain: cluster.local
@@ -154,7 +155,7 @@ k8s:
 # Images used to run auxillary tasks/jobs
 utility:
   imageName: "openwhisk/ow-utils"
-  imageTag: "73732b4"
+  imageTag: "4a09c73"
   imagePullPolicy: "IfNotPresent"
 
 # Docker registry
@@ -238,7 +239,7 @@ nginx:
 # Controller configurations
 controller:
   imageName: "openwhisk/controller"
-  imageTag: "d353d26"
+  imageTag: "4a09c73"
   imagePullPolicy: "IfNotPresent"
   replicaCount: 1
   restartPolicy: "Always"
@@ -250,7 +251,7 @@ controller:
 # Invoker configurations
 invoker:
   imageName: "openwhisk/invoker"
-  imageTag: "d353d26"
+  imageTag: "4a09c73"
   imagePullPolicy: "IfNotPresent"
   restartPolicy: "Always"
   port: 8080
