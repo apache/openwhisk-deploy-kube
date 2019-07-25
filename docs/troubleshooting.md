@@ -76,6 +76,8 @@ Here's what it looks like when the network is misconfigured and kafka is not rea
 [2018-10-18T17:30:53.433Z] [INFO] [#tid_sid_unknown] [Controller] Shutting down Kamon with coordinated shutdown
 ```
 
+if you have `hairpin` mode configured but still seeing above error, this can happen due to probes failure as well. Default liveness probe for controller is 5 seconds, if you see similar error in controller logs, try customizing the prob settings to increase `initialDelaySeconds` for controller for liveness probe. See the customizing probes section in the [configuration choices documentation](./configurationChoices.md) for more details.
+
 ### wsk `cannot validate certificates` error
 
 If you installed self-signed certificates, which is the default

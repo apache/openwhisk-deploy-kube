@@ -1,5 +1,19 @@
-# Licensed to the Apache Software Foundation (ASF) under one or more contributor
-# license agreements; and to You under the Apache License, Version 2.0.
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
 
 {{- if not .Values.controller.lean }}
 ---
@@ -31,6 +45,11 @@ spec:
 {{ include "openwhisk.affinity.selfAntiAffinity" ( printf "%s-zookeeper" .Release.Name ) | indent 8 }}
 {{- end }}
 
+{{- if .Values.toleration.enabled }}
+      tolerations:
+{{ include "openwhisk.toleration.core" . | indent 8 }}
+{{- end }}
+
       volumes:
         - name: zk-config
           configMap:
@@ -60,17 +79,18 @@ spec:
         livenessProbe:
           tcpSocket:
             port: {{ .Values.zookeeper.port }}
-          initialDelaySeconds: 5
-          periodSeconds: 10
-        # Disabled: See issue https://github.com/apache/incubator-openwhisk-deploy-kube/issues/469
-        # readinessProbe:
-        #   exec:
-        #     command:
-        #     - /bin/bash
-        #     - -c
-        #     - "echo ruok | nc -w 1 localhost:{{ .Values.zookeeper.port }} | grep imok"
-        #   initialDelaySeconds: 5
-        #   periodSeconds: 10
+          initialDelaySeconds: {{ .Values.probes.zookeeper.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.probes.zookeeper.livenessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.probes.zookeeper.livenessProbe.timeoutSeconds }}
+        readinessProbe:
+          exec:
+            command:
+            - /bin/bash
+            - -c
+            - "echo ruok | nc -w 1 localhost {{ .Values.zookeeper.port }} | grep imok"
+          initialDelaySeconds: {{ .Values.probes.zookeeper.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.probes.zookeeper.readinessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.probes.zookeeper.readinessProbe.timeoutSeconds }}
         volumeMounts:
         - mountPath: /conf
           name: zk-config

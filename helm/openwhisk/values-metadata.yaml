@@ -1,5 +1,19 @@
-# Licensed to the Apache Software Foundation (ASF) under one or more contributor
-# license agreements; and to You under the Apache License, Version 2.0.
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
 
 
 ## Metadata for OpenWhisk configuration
@@ -362,6 +376,12 @@ whisk:
       type: "string"
       required: true
   testing:
+    includeTests:
+      __metadata:
+        label: "Include basic tests"
+        description: "If basic tests should be included in the Helm test suite"
+        type: "boolean"
+        required: true
     includeSystemTests:
       __metadata:
         label: "Include system tests"
@@ -1483,3 +1503,158 @@ affinity:
       description: "Label used for worker nodes that should execute OpenWhisk event provider pods"
       type: "string"
       required: true
+
+toleration:
+  __metadata:
+    label: "Node toleration configuration"
+    description: "Key used for node tolerations"
+  enabled:
+    __metadata:
+      label: "Toleration enabled"
+      description: "If toleration should be enabled"
+      type: "boolean"
+      required: true
+  coreValue:
+    __metadata:
+      label: "Core openwhisk-role toleration value"
+      description: "Value used for worker nodes toleration that should execute OpenWhisk core pods"
+      type: "string"
+      required: true
+  edgeValue:
+    __metadata:
+      label: "Edge openwhisk-role toleration value"
+      description: "Value used for worker nodes toleration that should execute OpenWhisk edge pods"
+      type: "string"
+      required: true
+  invokerValue:
+    __metadata:
+      label: "Invoker openwhisk-role toleration value"
+      description: "Value used for worker nodes toleration that should execute OpenWhisk invoker pods"
+      type: "string"
+      required: true
+
+probes:
+  _metadata:
+  label: "Pod's Probes Settings"
+  description: "Used for configurable liveness and readiness probes timing settings"
+  controller:
+    initialDelaySeconds:
+      _metadata:
+      label: "Initial wait time to start probes after container has started"
+      description: "Time in seconds to wait before starting the probes on pod in started state."
+      type: "number"
+      required: false
+    periodSeconds:
+      _metadata:
+      label: "Frequency to perform the probe in seconds"
+      description: "Frequency to perform the probe, default is 10, minimun is 1"
+      type: "number"
+      required: false
+    timeoutSeconds:
+      _metadata:
+      label: "Probe timeout in seconds"
+      description: "Probe will timeouts after defined seconds, defaults to 1 second, minimum value is 1"
+      type: "number"
+      required: false
+  zookeeper:
+    initialDelaySeconds:
+      _metadata:
+      label: "Initial wait time to start probes after container has started"
+      description: "Time in seconds to wait before starting the probes on pod in started state."
+      type: "number"
+      required: false
+    periodSeconds:
+      _metadata:
+      label: "Frequency to perform the probe in seconds"
+      description: "Frequency to perform the probe, default is 10, minimun is 1"
+      type: "number"
+      required: false
+    timeoutSeconds:
+      _metadata:
+      label: "Probe timeout in seconds"
+      description: "Probe will timeouts after defined seconds, defaults to 1 second, minimum value is 1"
+      type: "number"
+      required: false
+
+# Metrics
+metrics:
+  __metadata:
+    label: "Metrics configuration"
+    description: "configurations to enable and configure Kamon metrics from controller and invoker."
+  prometheusEnabled:
+    __metadata:
+      label: "enable Prometheus support"
+      description: "true to enable kamon-prometheus exporter, metrics would be exposed at `/metrics` endpoint"
+      type: "boolean"
+      required: true
+  whiskconfigFile:
+    __metadata:
+      label: "whiskconfig file name"
+      description: "file name of whiskconfig"
+      type: "string"
+      required: false
+  kamonEnabled:
+    __metadata:
+      label: "enable kamon metrics collection"
+      description: "whether metric information is sent to the configured reporters"
+      type: "boolean"
+      required: true
+  kamonTags:
+    __metadata:
+      label: "enable kamon tag"
+      description: "whether to use the Kamon tags when sending metrics"
+      type: "boolean"
+      required: true
+  userMetricsEnabled:
+    __metadata:
+      label: "enable user metrics"
+      description: "true to enable user metrics"
+      type: "boolean"
+      required: true
+pdb:
+  _metadata:
+  label: "Pod's Disruption Budget"
+  description: "Pod Disruption Budget settings for voluntary and nonvoluntary disruptions"
+  enable:
+    _metadata:
+      label: "Enable PDB"
+      description: "true to enable pod disruption budgets for pods"
+      type: "boolean"
+      required: false
+  zookeeper:
+    _metadata:
+      label: "Zookeeper"
+    maxUnavailable:
+      _metadata:
+      label: "Max Unavailable"
+      description: "Number of pods from replica set that can be unavailable after the eviction. Should be an absolute number and less than replicaCount value"
+      type: "number"
+      required: false
+  kafka:
+    _metadata:
+    label: "Kafka"
+    maxUnavailable:
+      _metadata:
+      label: "Max Unavailable"
+      description: "Number of pods from replica set that can be unavailable after the eviction. Should be an absolute number and less than replicaCount value"
+      type: "number"
+      required: false
+  controller:
+    _metadata:
+    label: "Controllers"
+    maxUnavailable:
+      _metadata:
+      label: "Max Unavailable"
+      description: "Number of pods from replica set that can be unavailable after the eviction. Should be an absolute number and less than replicaCount value"
+      type: "number"
+      required: false
+  invoker:
+    _metadata:
+    label: "Invokers"
+    maxUnavailable:
+      _metadata:
+      label: "Max Unavailable"
+      description: "Number of pods from replica set that can be unavailable after the eviction. Should be an absolute number and less than replicaCount value"
+      type: "number"
+      required: false
+

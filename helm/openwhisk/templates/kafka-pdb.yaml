@@ -1,4 +1,3 @@
-#!/bin/bash
 #
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
@@ -16,13 +15,18 @@
 # limitations under the License.
 #
 
-###
-# Now run the tests provided in the Chart to verify the deployment
-###
-if helm test ow4travis --timeout 2400; then
-    echo "PASSED! Deployment verification tests passed."
-else
-    echo "FAILED: Deployment verification tests failed."
-    kubectl logs -n openwhisk -low-testpod=true
-    exit 1
-fi
+{{- if and .Values.pdb.enable (gt (int .Values.kafka.replicaCount) 1) }}
+---
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ .Release.Name }}-kafka-pdb
+  labels:
+    name: {{ .Release.Name }}-kafka-pdb
+{{ include "openwhisk.label_boilerplate" . | indent 4 }}
+spec:
+  selector:
+    matchLabels:
+      name: {{ .Release.Name }}-kafka
+  maxUnavailable: {{ .Values.pdb.kafka.maxUnavailable | default 1 }}
+{{- end }}

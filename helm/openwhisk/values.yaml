@@ -1,5 +1,19 @@
-# Licensed to the Apache Software Foundation (ASF) under one or more contributor
-# license agreements; and to You under the Apache License, Version 2.0.
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
 
 
 # This file defines the default values for all variables
@@ -16,6 +30,7 @@
 #   docs/k8s-ibm-private.md
 #   docs/k8s-google.md
 #   docs/k8s-minikube.md
+#   docs/k8s-diy.md (for do-it-yourself clusters).
 #
 # Production deployments _MUST_ override the default credentials
 # that are used in whisk.auth and db.auth.
@@ -31,7 +46,9 @@
 # Overall configuration of OpenWhisk deployment
 whisk:
   # Ingress defines how to access OpenWhisk from outside the Kubernetes cluster.
-  # See docs/ingress.md for a discussion of how to provide these values.
+  # Only a subset of the values are actually used on any specific type of cluster.
+  # See the "Configuring OpenWhisk section" of the docs/k8s-*.md that matches
+  # your cluster type for details on what values to provide and how to get them.
   ingress:
     apiHostName: ""
     apiHostPort: 31001
@@ -108,22 +125,24 @@ whisk:
     userMemory: "2048m"
   runtimes: "runtimes.json"
   testing:
+    includeTests: true
     includeSystemTests: false
   versions:
     openwhisk:
-      buildDate: "2019-04-05-18:03:02Z"
-      buildNo: "20190405a"
-      gitTag: "d353d26cb44ae8c99988465123b6c8e5567b3fc1"
+      buildDate: "2019-07-23-14:06:10Z"
+      buildNo: "20190723a"
+      gitTag: "4a09c73bb391fcc8b3cf0ecd76ac7abad7fe849d"
     openwhiskCli:
-      tag: "eaf64ae"
+      # more recent than 0.10.0 to pick up bug fix in commmit 457c17d
+      tag: "457c17d"
     openwhiskCatalog:
-      gitTag: "879b85a6f0692a5038456033ff9fbe9b4dd74f7f"
+      gitTag: "0.10.0-incubating"
     openwhiskPackageAlarms:
-      gitTag: "0e62ca60704e79e57f48ff525d79f536a8f9a1e3"
+      gitTag: "2.0.0-incubating"
     openwhiskPackageCloudant:
-      gitTag: "e4eddc0b99b6c00648266d0e6f4940bd1c3748a7"
+      gitTag: "2.0.0-incubating"
     openwhiskPackageKafka:
-      gitTag: "90da0152c95492af6c8b1fb908a701a3493f45ed"
+      gitTag: "2.0.0-incubating"
     openwhiskPluggableProvider:
       gitTag: "HEAD"
 
@@ -138,7 +157,7 @@ k8s:
 # Images used to run auxillary tasks/jobs
 utility:
   imageName: "openwhisk/ow-utils"
-  imageTag: "73732b4"
+  imageTag: "4a09c73"
   imagePullPolicy: "IfNotPresent"
 
 # Docker registry
@@ -222,7 +241,7 @@ nginx:
 # Controller configurations
 controller:
   imageName: "openwhisk/controller"
-  imageTag: "d353d26"
+  imageTag: "4a09c73"
   imagePullPolicy: "IfNotPresent"
   replicaCount: 1
   restartPolicy: "Always"
@@ -234,7 +253,7 @@ controller:
 # Invoker configurations
 invoker:
   imageName: "openwhisk/invoker"
-  imageTag: "d353d26"
+  imageTag: "4a09c73"
   imagePullPolicy: "IfNotPresent"
   restartPolicy: "Always"
   port: 8080
@@ -268,7 +287,7 @@ invoker:
 # API Gateway configurations
 apigw:
   imageName: "openwhisk/apigateway"
-  imageTag: "993dda2"
+  imageTag: "0.10.0-incubating"
   imagePullPolicy: "IfNotPresent"
   # NOTE: setting replicaCount > 1 is not tested and may not work
   replicaCount: 1
@@ -287,6 +306,19 @@ redis:
   port: 6379
   persistence:
     size: 256Mi
+
+# Metrics
+metrics:
+  # set true to enable prometheus exporter
+  prometheusEnabled: false
+  # passing prometheus-enabled by a config file, required by openwhisk
+  whiskconfigFile: "whiskconfig.conf"
+  # set true to enable Kamon
+  kamonEnabled: false
+  # set true to enable Kamon tags
+  kamonTags: false
+  # set true to enable user metrics
+  userMetricsEnabled: false
 
 # Configuration of OpenWhisk event providers
 providers:
@@ -362,3 +394,67 @@ affinity:
   edgeNodeLabel: edge
   invokerNodeLabel: invoker
   providerNodeLabel: provider
+
+# Used to define toleration for the Kubernetes scheduler.
+# If tolerations.enabled is true, then all of the deployments for the OpenWhisk
+# microservices will add tolerations for key openwhisk-role with specified value and effect NoSchedule.
+toleration:
+  enabled: true
+  coreValue: core
+  edgeValue: edge
+  invokerValue: invoker
+
+# Used to define the probes timing settings so that you can more precisely control the
+# liveness and readiness checks.
+# initialDelaySeconds - Initial wait time to start probes after container has started
+# periodSeconds - Frequency to perform the probe, defaults to 10, minimum value is 1
+# timeoutSeconds - Probe will timeouts after defined seconds, defaults to 1 second,
+#                  minimum value is 1
+# for more information please refer - https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
+# Note - for now added probes settings for zookeeper and controller only.
+#        in future all components probes timing settings should be
+#        configured here if any.
+
+probes:
+  zookeeper:
+    livenessProbe:
+      initialDelaySeconds: 5
+      periodSeconds: 10
+      timeoutSeconds: 1
+    readinessProbe:
+      initialDelaySeconds: 5
+      periodSeconds: 10
+      timeoutSeconds: 1
+  controller:
+    livenessProbe:
+      initialDelaySeconds: 5
+      periodSeconds: 10
+      timeoutSeconds: 1
+    readinessProbe:
+      initialDelaySeconds: 5
+      periodSeconds: 10
+      timeoutSeconds: 1
+
+# Pod Disruption Budget allows Pods to survive Voluntary and Involuntary Disruptions.
+# for more information refer - https://kubernetes.io/docs/concepts/workloads/pods/disruptions/
+# Pod Disruptions budgets currently supported for the pods which are managed
+# by one of Kubernetes built-in controllers (Deployment, ReplicationController,
+# ReplicaSet, StatefulSet).
+# Caveats -
+# - You can specify numbers of maxUnavailable Pods for now as integer. % values are not
+# supported.
+# - minAvailable is not supported
+# - PDB only applicable when replicaCount is greater than 1.
+# - Only zookeeper, kafka, invoker and controller pods are supported for PDB for now.
+# - Invoker PDB only applicable if containerFactory implementation is of type "kubernetes"
+
+pdb:
+  enable: false
+  zookeeper:
+    maxUnavailable: 1
+  kafka:
+    maxUnavailable: 1
+  controller:
+    maxUnavailable: 1
+  invoker:
+    maxUnavailable: 1
