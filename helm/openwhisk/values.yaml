@@ -340,7 +340,7 @@ providers:
   amqp:
     enabled: true
     imageName: "openwhisk/pluggable_provider"
-    imageTag: "latest"
+    imageTag: "nightly"
     imagePullPolicy: "IfNotPresent"
     # NOTE: replicaCount > 1 doesn't work because of the PVC
     replicaCount: 1
