@@ -50,7 +50,6 @@ wsk property set --auth $WSK_AUTH --apihost $WSK_API_HOST_URL
 
 
 # Check for the standard catalog of packages
-packageListingCheck "combinators"
 packageListingCheck "github"
 packageListingCheck "slack"
 packageListingCheck "utils"
