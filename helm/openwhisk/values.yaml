@@ -339,7 +339,7 @@ providers:
   # AMQP provider configurations
   amqp:
     enabled: true
-    imageName: "openwhisk/pluggable_provider"
+    imageName: "openwhisk/pluggable_feed_provider"
     imageTag: "nightly"
     imagePullPolicy: "IfNotPresent"
     # NOTE: replicaCount > 1 doesn't work because of the PVC
