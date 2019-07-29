@@ -214,3 +214,75 @@ If you want to override this default when using the DockerContainerFactory,
 you can set `invoker.containerFactory.networkConfig.dns.inheritInvokerConfig` to `false`
 and explicitly configure the child values of `invoker.containerFactory.networkConfig.dns.overrides`
 instead.
+
+### Customizing probes setting
+
+Many openwhisk components has liveness and readiness probes configured. Sometimes it is observed that components do not come up or in ready state before the probes starts executing which causes pods to restarts or fail. You can configure probes timing settings like `initialDelaySeconds`, `periodSeconds` and `timeoutSeconds` in `mycluster.yaml`
+
+```bash
+probes:
+  zookeeper:
+    livenessProbe:
+      initialDelaySeconds: <number of seconds>
+      periodSeconds: <number of seconds>
+      timeoutSeconds: <number of seconds>
+```
+
+**Note:** currently, probes settings are available for `zookeeper` and `controllers` only.
+
+### Metrics and prometheus support
+
+OpenWhisk distinguishes between system and user metrics. System metrics typically contain information about system performance and use Kamon to collect. User metrics encompass information about action performance which is sent to Kafka in a form of events.
+
+If you want to collect system metrics, store and display them with prometheus, use below configuration in `mycluster.yaml`:
+
+```
+metrics:
+  prometheusEnabled: true
+```
+
+You also need to enable your prometheus to scrape those metrics, add below `scrape_configs` to your prometheus configuration file:
+```
+global:
+  scrape_interval: 1s
+scrape_configs:
+  - job_name: 'kamon-metrics'
+    static_configs:
+      - targets:['<controller_host>:8080','<invoker_host>:8080']
+```
+**Note:** replace `<controller_host>` and `<invoker_host>` with the real host name of controller and invoker.
+
+If you want to enable user metrics, use below configuration in `mycluster.yaml`:
+
+```
+metrics:
+  userMetricsEnabled: true
+```
+
+# Configure pod disruptions budget
+
+To avoid openwhisk components from [voluntary and nonvoluntary disruptions](https://kubernetes.io/docs/concepts/workloads/pods/disruptions/) which are managed by Kubernetes built-in controllers, you can configure PDB in `mycluster.yaml`.
+
+```yaml
+pdb:
+  enable: true
+  zookeeper:
+    maxUnavailable: 1
+  controller:
+    maxUnavailable: 1
+```
+
+Currently, you can configure PDB for below components.
+
+- Zookeeper
+- Kafka
+- Controller
+- Invoker
+
+**Notes:**
+
+- You can specify numbers of maxUnavailable Pods for now as integer. % values are not
+supported.
+- minAvailable is not supported
+- PDB only applicable when components replicaCount is > 1.
+- Invoker PDB only applicable if containerFactory implementation is of type "kubernetes" and replicaCount is > 1.

@@ -36,6 +36,13 @@ It contains a Helm chart that can be used to deploy the core
 OpenWhisk platform and optionally some of its Event Providers
 to both single-node and multi-node Kubernetes clusters.
 
+The same Helm chart can also be used to deploy OpenWhisk to
+OKD/OpenShift via a strategy of using `helm template` to
+generate yaml that is then fed to the `oc` cli.  There are some
+rough edges still in this process, we would welcome community
+contributions to help improve the targeting of OKD/OpenShift and
+document the necessary steps.
+
 # Table of Contents
 
 * [Prerequisites: Kubernetes and Helm](#prerequisites-kubernetes-and-helm)
@@ -94,6 +101,12 @@ with 4GB of memory and 2 virtual CPUs is sufficient for the default
 settings of OpenWhisk. For details on setting up
 Minikube, see these [setup instructions](docs/k8s-minikube.md).
 
+### Using Minishift
+
+Minishift is the OpenShift equivalent to Minikube.  We would welcome
+documentation on the process of running OpenWhisk on Minishift.
+
+
 ### Using a Kubernetes cluster from a cloud provider
 
 You can also provision a Kubernetes cluster from a cloud provider,
@@ -110,6 +123,30 @@ major cloud providers:
 * [Amazon (EKS)](docs/k8s-aws.md)
 
 We would welcome contributions of documentation for Azure (AKS) and any other public cloud providers.
+
+### Using OKD/OpenShift
+
+You will need at least 1 worker node with 4GB of memory and 2 virtual
+CPUs to deploy the default configuration of OpenWhisk.  You can deploy
+to significantly larger clusters by scaling up the replica count of
+the various components and labeling multiple nodes as invoker nodes.
+For more detailed documentation, see:
+* [OKD/OpenShift 3.11](docs/okd-311.md)
+
+### Using a Kubernetes cluster you built yourself
+
+If you are comfortable with building your own Kubernetes clusters and
+deploying services with ingresses to them, you should also
+be able to deploy OpenWhisk to a do-it-yourself cluster. Make sure
+your cluster meets the [technical
+requirements](docs/k8s-technical-requirements.md).  You will need at
+least 1 worker node with 4GB of memory and 2 virtual CPUs to deploy
+the default configuration of OpenWhisk.  You can deploy to
+significantly larger clusters by scaling up the replica count of the
+various components and labeling multiple nodes as invoker nodes.
+There are some additional notes [here](docs/k8s-diy.md).
+
+We would welcome contributions of more detailed DIY instructions.
 
 ## Helm
 
@@ -128,6 +165,11 @@ you will need to execute these two commands and wait a few seconds for the
 helm init
 kubectl create clusterrolebinding tiller-cluster-admin --clusterrole=cluster-admin --serviceaccount=kube-system:default
 ```
+
+If you are targeting an OKD/OpenShift cluster, you will need the
+`helm` cli on your development machine but will not run the
+`tiller-deploy` pod in the cluster as it is not allowed by
+OKD/OpenShift security policies.
 
 # Deploying OpenWhisk
 
@@ -167,6 +209,11 @@ you want to be an invoker, execute
 $ kubectl label nodes <INVOKER_NODE_NAME> openwhisk-role=invoker
 ```
 
+If you are targeting OKD/OpenShift, use the command
+```shell
+oc label node <INVOKER_NODE_NAME> openwhisk-role=invoker
+```
+
 For more precise control of the placement of the rest of OpenWhisk's
 pods on a multi-node cluster, you can optionally label additional
 non-invoker worker nodes. Use the label `openwhisk-role=core`
@@ -190,6 +237,7 @@ appropriate to your Kubernetes cluster:
 * [IBM Cloud Private (ICP)](docs/k8s-ibm-private.md#configuring-openwhisk)
 * [Google (GKE)](docs/k8s-google.md#configuring-openwhisk)
 * [Amazon (EKS)](docs/k8s-aws.md#configuring-openwhisk)
+* [OKD/OpenShift](docs/okd-311.md##configuring-openwhisk)
 
 Beyond the Kubernetes cluster specific configuration information,
 the `mycluster.yaml` file is also used
@@ -205,6 +253,15 @@ Deployment can be done by using the following single command:
 ```shell
 helm install ./helm/openwhisk --namespace=openwhisk --name=owdev -f mycluster.yaml
 ```
+
+Deploying to OKD/OpenShift uses the commands:
+```shell
+helm template ./helm/openwhisk --namespace=openwhisk --name=owdev -f mycluster.yaml > owdev.yaml
+oc create -f owdev.yaml
+```
+We recommend generating to a file to make it easier to undeploy openwhisk later
+by simply doing `oc delete -f owdev.yaml`
+
 For simplicity, in this README, we have used `owdev` as the release name and
 `openwhisk` as the namespace into which the Chart's resources will be deployed.
 You can use different names, or not specify a release name at all and let
@@ -246,8 +303,10 @@ Your OpenWhisk installation should now be usable.  You can test it by following
 [these instructions](https://github.com/apache/incubator-openwhisk/blob/master/docs/actions.md)
 to define and invoke a sample OpenWhisk action in your favorite programming language.
 
-You can also issue the command `helm test owdev` to run the basic verification
-test suite included in the OpenWhisk Helm chart.
+You can also issue the command `helm test owdev` to run the basic
+verification test suite included in the OpenWhisk Helm chart. Note
+that `helm test` is not supported for OpenShift deployments because it
+requires the `tiller` pod to be run in the cluster.
 
 Note: if you installed self-signed certificates, which is the default
 for the OpenWhisk Helm chart, you will need to use `wsk -i` to
@@ -364,6 +423,12 @@ reuse owdev to deploy OpenWhisk again, use the command:
 ```shell
 helm delete owdev --purge
 ```
+
+For OpenShift deployments, you cannot use Helm to remove the OpenWhisk
+deployment.  If you saved the output from `helm template` into a file,
+you can simply use that file as an argument to `oc delete`.  If you
+did not save the file, you can redo the `helm template` command and
+feed the generated yaml into an `oc delete` command.
 
 # Issues
 

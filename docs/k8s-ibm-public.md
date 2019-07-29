@@ -104,7 +104,6 @@ whisk:
           'X-Request-ID' $request_id;
         }
 
-# not required on IKS 1.10; required on IKS 1.11 and newer
 invoker:
   containerFactory:
     impl: kubernetes
@@ -178,19 +177,3 @@ When using an IBM Cloud Lite cluster, TLS termination will be handled
 by OpenWhisk's `nginx` service and will use self-signed certificates.
 You will need to invoke `wsk` with the `-i` command line argument to
 bypass certificate checking.
-
-IBM's 1.11 and 1.12 Kubernetes clusters have switched to using
-`containerd` as the underlying container runtime system. This is not
-compatible with OpenWhisk's DockerContainerFactory. Therefore you
-either need to provision a 1.10 cluster or use the
-KubernetesContainerFactory by adding the following to your
-mycluster.yaml:
-```yaml
-invoker:
-  containerFactory:
-    impl: kubernetes
-    kubernetes:
-      agent:
-        enabled: false
-```
-
