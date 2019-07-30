@@ -1185,12 +1185,6 @@ redis:
       description: "If using an externally deployed Redis"
       type: "boolean"
       required: true
-  host:
-    __metadata:
-      label: "Host"
-      description: "If using an external Redis, the hostname or IP address to use to connect to the Redis"
-      type: "string"
-      required: true
   imageName:
     __metadata:
       label: "Image name"
@@ -1226,6 +1220,12 @@ redis:
     __metadata:
       label: "Restart policy"
       description: "The restart policy for redis pods"
+      type: "string"
+      required: true
+  host:
+    __metadata:
+      label: "Host"
+      description: "If using an external Redis, the hostname or IP address to use to connect to the Redis"
       type: "string"
       required: true
   port:

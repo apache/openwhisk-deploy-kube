@@ -291,13 +291,13 @@ apigw:
 # Redis (used by apigateway)
 redis:
   external: false
-  host: nil
   imageName: "redis"
   imageTag: "4.0"
   imagePullPolicy: "IfNotPresent"
   # NOTE: setting replicaCount > 1 will not work; need to add redis cluster configuration
   replicaCount: 1
   restartPolicy: "Always"
+  host: nil
   port: 6379
   persistence:
     size: 256Mi

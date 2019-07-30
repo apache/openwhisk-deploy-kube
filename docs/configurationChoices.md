@@ -78,6 +78,22 @@ db:
   wipeAndInit: false
 ```
 
+### Using an external redis
+
+Similarly, you may want to use external Redis instance instead of using default single pod deployment.
+This is especially useful in production scenarios as a HA Redis deployment is recommended.
+
+To use an externally deployed Redis, add a stanza like the one
+below to your `mycluster.yaml`, substituting in the appropriate values
+for `<...>`
+
+```yaml
+db:
+  external: true
+  host: <redis hostname or ip addr>
+  port: <redis port>
+```
+
 ### Persistence
 
 Several of the OpenWhisk components that are deployed by the Helm
