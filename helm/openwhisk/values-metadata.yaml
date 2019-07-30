@@ -1179,6 +1179,18 @@ redis:
   __metadata:
     label: "Redis configuration"
     description: "Update these default values to customize the Redis deployment"
+  external:
+    __metadata:
+      label: "External"
+      description: "If using an externally deployed Redis"
+      type: "boolean"
+      required: true
+  host:
+    __metadata:
+      label: "Host"
+      description: "If using an external Redis, the hostname or IP address to use to connect to the Redis"
+      type: "string"
+      required: true
   imageName:
     __metadata:
       label: "Image name"
@@ -1237,7 +1249,7 @@ providers:
   db:
     external:
       __metadata:
-        label: "External Providers Databaae"
+        label: "External Providers Database"
         description: "If the event providers database is external"
         type: "boolean"
         required: true
@@ -1246,7 +1258,6 @@ providers:
         label: "Database host"
         description: "The external event providers database host"
         type: "string"
-        required: true
         required: true
     port:
       __metadata:

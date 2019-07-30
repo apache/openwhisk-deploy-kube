@@ -57,7 +57,11 @@ app: {{ template "openwhisk.fullname" . }}
 
 {{/* hostname for redis */}}
 {{- define "openwhisk.redis_host" -}}
+{{- if .Values.redis.external -}}
+{{ .Values.redis.host }}
+{{- else -}}
 {{ .Release.Name }}-redis.{{ .Release.Namespace }}.svc.{{ .Values.k8s.domain }}
+{{- end -}}
 {{- end -}}
 
 {{/* client connection string for zookeeper cluster (server1:port,server2:port, ... serverN:port)*/}}

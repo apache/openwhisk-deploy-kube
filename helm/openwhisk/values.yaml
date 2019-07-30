@@ -290,6 +290,8 @@ apigw:
 
 # Redis (used by apigateway)
 redis:
+  external: false
+  host: nil
   imageName: "redis"
   imageTag: "4.0"
   imagePullPolicy: "IfNotPresent"
