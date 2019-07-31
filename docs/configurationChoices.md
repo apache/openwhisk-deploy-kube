@@ -88,7 +88,7 @@ below to your `mycluster.yaml`, substituting in the appropriate values
 for `<...>`
 
 ```yaml
-db:
+redis:
   external: true
   host: <redis hostname or ip addr>
   port: <redis port>
