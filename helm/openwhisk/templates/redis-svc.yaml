@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 
+{{ if not .Values.redis.external }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -28,3 +29,4 @@ spec:
   ports:
     - port: {{ .Values.redis.port }}
       name: redis
+{{ end }}
