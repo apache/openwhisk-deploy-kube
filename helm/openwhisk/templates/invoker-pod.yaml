@@ -118,7 +118,7 @@ spec:
           - name: "CONFIG_whisk_containerFactory_containerArgs_network"
             value: {{ .Values.invoker.containerFactory.networkConfig.name | quote }}
 
-          - name: "CONFIG_whisk_containerFactory_containerArgs_extraArgs_env_0"
+          - name: "CONFIG_whisk_containerFactory_containerArgs_extraEnvVars_0"
             value: "__OW_ALLOW_CONCURRENT={{ .Values.invoker.containerFactory.enableConcurrency }}"
 
           - name: "CONFIG_whisk_containerFactory_runtimesRegistry_url"
