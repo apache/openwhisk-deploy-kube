@@ -108,7 +108,7 @@ data:
         }
 
         location /blackbox.tar.gz {
-            return 301 https://github.com/apache/incubator-openwhisk-runtime-docker/releases/download/sdk%400.1.0/blackbox-0.1.0.tar.gz;
+            return 301 https://github.com/apache/openwhisk-runtime-docker/releases/download/sdk%400.1.0/blackbox-0.1.0.tar.gz;
         }
         # leaving this for a while for clients out there to update to the new endpoint
         location /blackbox-0.1.0.tar.gz {
@@ -121,27 +121,27 @@ data:
 
         # redirect requests for specific binaries to the matching one from the latest openwhisk-cli release.
         location /cli/go/download/linux/amd64 {
-            return 301 https://github.com/apache/incubator-openwhisk-cli/releases/download/latest/OpenWhisk_CLI-latest-linux-amd64.tgz;
+            return 301 https://github.com/apache/openwhisk-cli/releases/download/latest/OpenWhisk_CLI-latest-linux-amd64.tgz;
         }
         location /cli/go/download/linux/386 {
-            return 301 https://github.com/apache/incubator-openwhisk-cli/releases/download/latest/OpenWhisk_CLI-latest-linux-386.tgz;
+            return 301 https://github.com/apache/openwhisk-cli/releases/download/latest/OpenWhisk_CLI-latest-linux-386.tgz;
         }
         location /cli/go/download/mac/amd64 {
-            return 301 https://github.com/apache/incubator-openwhisk-cli/releases/download/latest/OpenWhisk_CLI-latest-mac-amd64.zip;
+            return 301 https://github.com/apache/openwhisk-cli/releases/download/latest/OpenWhisk_CLI-latest-mac-amd64.zip;
         }
         location /cli/go/download/mac/386 {
-            return 301 https://github.com/apache/incubator-openwhisk-cli/releases/download/latest/OpenWhisk_CLI-latest-mac-386.zip;
+            return 301 https://github.com/apache/openwhisk-cli/releases/download/latest/OpenWhisk_CLI-latest-mac-386.zip;
         }
         location /cli/go/download/windows/amd64 {
-            return 301 https://github.com/apache/incubator-openwhisk-cli/releases/download/latest/OpenWhisk_CLI-latest-windows-amd64.zip;
+            return 301 https://github.com/apache/openwhisk-cli/releases/download/latest/OpenWhisk_CLI-latest-windows-amd64.zip;
         }
         location /cli/go/download/windows/386 {
-            return 301 https://github.com/apache/incubator-openwhisk-cli/releases/download/latest/OpenWhisk_CLI-latest-windows-386.zip;
+            return 301 https://github.com/apache/openwhisk-cli/releases/download/latest/OpenWhisk_CLI-latest-windows-386.zip;
         }
 
         # redirect top-level cli downloads to the latest openwhisk-cli release.
         location /cli/go/download {
-            return 301 https://github.com/apache/incubator-openwhisk-cli/releases/latest;
+            return 301 https://github.com/apache/openwhisk-cli/releases/latest;
         }
       }
     }

@@ -18,7 +18,7 @@
 set -ex
 
 # Clone openwhisk repo at specified tag to get test suite
-git clone -q https://github.com/apache/incubator-openwhisk openwhisk
+git clone -q https://github.com/apache/openwhisk openwhisk
 cd /openwhisk
 git checkout $OW_GIT_TAG_OPENWHISK
 
