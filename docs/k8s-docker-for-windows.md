@@ -55,7 +55,7 @@ the box to enable Kubernetes.
 
 ### Using Git to Clone this Repository
 
-`git clone https://github.com/apache/incubator-openwhisk-deploy-kube.git`
+`git clone https://github.com/apache/openwhisk-deploy-kube.git`
 
 ### Configuring OpenWhisk
 
@@ -95,7 +95,7 @@ Now you're ready to run helm to set up OpenWhisk. Make sure you created your
 `mycluster.yaml` file as described above, and run:
 
 ```cmd
-cd incubator-openwhisk-deploy-kube
+cd openwhisk-deploy-kube
 helm install ./helm/openwhisk --namespace=openwhisk --name=owdev -f mycluster.yaml
 ```
 
@@ -110,7 +110,7 @@ that claims are stuck in the Pending state, you may need to follow the
 workaround mentioned in this [Docker for Windows Github Issue](https://github.com/docker/for-win/issues/1758#issuecomment-376054370).
 
 You are now ready to set up the wsk cli. Further instructions can be
-[found here](https://github.com/apache/incubator-openwhisk-deploy-kube#https://github.com/apache/incubator-openwhisk-deploy-kube#configure-the-wsk-cli).
+[found here](https://github.com/apache/openwhisk-deploy-kube#https://github.com/apache/openwhisk-deploy-kube#configure-the-wsk-cli).
 Follow the Docker for Windows instructions.
 
 ## Hints and Tips

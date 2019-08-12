@@ -405,42 +405,42 @@ whisk:
       gitTag:
         __metadata:
           label: "OpenWhisk git tag"
-          description: "The git tag for incubator-openwhisk"
+          description: "The git tag for openwhisk"
           type: "string"
           required: true
     openwhiskCli:
       tag:
         __metadata:
           label: "CLI tag"
-          description: "The git tag for incubator-openwhisk-cli"
+          description: "The git tag for openwhisk-cli"
           type: "string"
           required: true
     openwhiskCatalog:
       gitTag:
         __metadata:
           label: "Catalog git tag"
-          description: "The git tag for incubator-openwhisk-catalog"
+          description: "The git tag for openwhisk-catalog"
           type: "string"
           required: true
     openwhiskPackageAlarms:
       gitTag:
         __metadata:
           label: "Alarms git tag"
-          description: "The git tag for incubator-openwhisk-package-alarms"
+          description: "The git tag for openwhisk-package-alarms"
           type: "string"
           required: true
     openwhiskPackageCloudant:
       gitTag:
         __metadata:
           label: "Cloudant git tag"
-          description: "The git tag for incubator-openwhisk-package-cloudant"
+          description: "The git tag for openwhisk-package-cloudant"
           type: "string"
           required: true
     openwhiskPackageKafka:
       gitTag:
         __metadata:
           label: "Kafka git tag"
-          description: "The git tag for incubator-openwhisk-package-kafka"
+          description: "The git tag for openwhisk-package-kafka"
           type: "string"
           required: true
 

@@ -20,7 +20,7 @@
 # OpenWhisk Deployment on Kubernetes
 
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
-[![Build Status](https://travis-ci.org/apache/incubator-openwhisk-deploy-kube.svg?branch=master)](https://travis-ci.org/apache/incubator-openwhisk-deploy-kube)
+[![Build Status](https://travis-ci.org/apache/openwhisk-deploy-kube.svg?branch=master)](https://travis-ci.org/apache/openwhisk-deploy-kube)
 [![Join Slack](https://img.shields.io/badge/join-slack-9B69A0.svg)](http://slack.openwhisk.org/)
 
 Apache OpenWhisk is an open source, distributed Serverless platform
@@ -276,7 +276,7 @@ your OpenWhisk deployment is ready to be used.
 
 Configure the OpenWhisk CLI, wsk, by setting the auth and apihost
 properties (if you don't already have the wsk cli, follow the
-instructions [here](https://github.com/apache/incubator-openwhisk-cli)
+instructions [here](https://github.com/apache/openwhisk-cli)
 to get it). Replace `whisk.ingress.apiHostName` and `whisk.ingress.apiHostPort`
 with the actual values from your mycluster.yaml.
 ```shell
@@ -300,7 +300,7 @@ wsk property set --auth 23bc46b1-71f6-4ed5-8c54-816aa4f8c502:123zO3xZCLrMN6v2BKK
 ## Verify your OpenWhisk Deployment
 
 Your OpenWhisk installation should now be usable.  You can test it by following
-[these instructions](https://github.com/apache/incubator-openwhisk/blob/master/docs/actions.md)
+[these instructions](https://github.com/apache/openwhisk/blob/master/docs/actions.md)
 to define and invoke a sample OpenWhisk action in your favorite programming language.
 
 You can also issue the command `helm test owdev` to run the basic
@@ -318,7 +318,7 @@ If your deployment is not working, check our
 
 # Administering OpenWhisk
 
-[Wskadmin](https://github.com/apache/incubator-openwhisk/tree/master/tools/admin) is the tool to perform various administrative operations against an OpenWhisk deployment.
+[Wskadmin](https://github.com/apache/openwhisk/tree/master/tools/admin) is the tool to perform various administrative operations against an OpenWhisk deployment.
 
 Since wskadmin requires credentials for direct access to the database (that is not normally accessible to the outside), it is deployed in a pod inside Kubernetes that is configured with the proper parameters. You can run `wskadmin` with `kubectl`. You need to use the `<namespace>` and the deployment `<name>` that you configured with `--namespace` and `--name` when deploying.
 
@@ -335,7 +335,7 @@ $ kubectl -n openwhisk  -ti exec owdev-wskadmin -- wskadmin user list guest
 23bc46b1-71f6-4ed5-8c54-816aa4f8c502:123zO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP
 ```
 
-Check [here](https://github.com/apache/incubator-openwhisk/tree/master/tools/admin) for details about the available commands.
+Check [here](https://github.com/apache/openwhisk/tree/master/tools/admin) for details about the available commands.
 
 # Development and Testing OpenWhisk on Kubernetes
 

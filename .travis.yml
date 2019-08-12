@@ -57,4 +57,4 @@ deploy:
   script: ./tools/travis/publish-images.sh
   on:
     branch: master
-    repo: apache/incubator-openwhisk-deploy-kube
+    repo: apache/openwhisk-deploy-kube
