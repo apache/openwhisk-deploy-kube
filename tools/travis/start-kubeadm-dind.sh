@@ -19,7 +19,7 @@
 set -x
 
 # Install kubernetes-dind-cluster and boot it
-wget https://github.com/kubernetes-sigs/kubeadm-dind-cluster/releases/download/v0.1.0/dind-cluster-v$TRAVIS_KUBE_VERSION.sh -O $HOME/dind-cluster.sh && chmod +x $HOME/dind-cluster.sh
+wget https://github.com/kubernetes-retired/kubeadm-dind-cluster/releases/download/v0.3.0/dind-cluster-v$TRAVIS_KUBE_VERSION.sh -O $HOME/dind-cluster.sh && chmod +x $HOME/dind-cluster.sh
 if [[ "$TRAVIS_KUBE_VERSION" == "1.12" ]]; then
     patch $HOME/dind-cluster.sh ./tools/travis/dind-cluster-v12.patch
 fi
