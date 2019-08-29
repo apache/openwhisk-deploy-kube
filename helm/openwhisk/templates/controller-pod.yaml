@@ -180,4 +180,5 @@ spec:
 
 {{- if .Values.controller.lean }}
 {{ include "openwhisk.invoker.apihost" . | indent 8 }}
+{{ include "openwhisk.invoker.containerconfig" . | indent 8 }}
 {{- end }}

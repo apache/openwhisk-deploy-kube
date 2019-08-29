@@ -86,6 +86,9 @@ spec:
           # Needed by invoker to set the environment variable __OW_API_HOST in action containers
 {{ include "openwhisk.invoker.apihost" . | indent 10 }}
 
+          # Needed by invoker to configure the container factory & container pool
+{{ include "openwhisk.invoker.containerconfig" . | indent 10 }}
+
 {{- if not .Values.invoker.containerFactory.networkConfig.dns.inheritInvokerConfig }}
 {{- if ne .Values.invoker.containerFactory.networkConfig.dns.overrides.nameservers "" }}
           # DNS Server(s) to be used by action containers
