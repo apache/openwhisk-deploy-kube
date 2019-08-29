@@ -64,7 +64,7 @@ spec:
       - name: kafka
         image: "{{- .Values.docker.registry.name -}}{{- .Values.kafka.imageName -}}:{{- .Values.kafka.imageTag -}}"
         imagePullPolicy: {{ .Values.kafka.imagePullPolicy | quote }}
-        command: ["/bin/bash", "-c", "export KAFKA_BROKER_ID=`hostname | cut -d'-' -f3`; export KAFKA_ADVERTISED_HOST_NAME=`hostname -f`; /usr/bin/start-kafka.sh"]
+        command: ["/bin/bash", "-c", "export KAFKA_BROKER_ID=`hostname | awk -F '-' '{print $NF}'`; export KAFKA_ADVERTISED_HOST_NAME=`hostname -f`; /usr/bin/start-kafka.sh"]
 {{- if .Values.k8s.persistence.enabled }}
         volumeMounts:
         - mountPath: /kafka

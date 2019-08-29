@@ -69,7 +69,7 @@ spec:
         securityContext:
           privileged: true
 {{- end }}
-        command: ["/bin/bash", "-c", "/init.sh `hostname | cut -d'-' -f3`"]
+        command: ["/bin/bash", "-c", "/init.sh `hostname | awk -F '-' '{print $NF}'`"]
         ports:
         - name: controller
           containerPort: {{ .Values.controller.port }}
