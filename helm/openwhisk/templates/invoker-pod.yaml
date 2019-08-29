@@ -86,12 +86,6 @@ spec:
           # Needed by invoker to set the environment variable __OW_API_HOST in action containers
 {{ include "openwhisk.invoker.apihost" . | indent 10 }}
 
-          - name: "CONFIG_whisk_docker_containerFactory_useRunc"
-            value: {{ .Values.invoker.containerFactory.useRunc | quote }}
-
-          - name: "CONFIG_whisk_containerPool_userMemory"
-            value: {{ .Values.whisk.containerPool.userMemory | quote }}
-
 {{- if not .Values.invoker.containerFactory.networkConfig.dns.inheritInvokerConfig }}
 {{- if ne .Values.invoker.containerFactory.networkConfig.dns.overrides.nameservers "" }}
           # DNS Server(s) to be used by action containers
