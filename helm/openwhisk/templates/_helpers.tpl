@@ -269,6 +269,10 @@ imagePullSecrets:
     configMapKeyRef:
       name: {{ .Release.Name }}-whisk.config
       key: whisk_api_host_name
+{{- end -}}
+
+{{/* Environment variables required for invoker containerpool/containerfactory configuration */}}
+{{- define "openwhisk.invoker.containerconfig" -}}
 - name: "CONFIG_whisk_docker_containerFactory_useRunc"
   value: {{ .Values.invoker.containerFactory.useRunc | quote }}
 - name: "CONFIG_whisk_containerPool_userMemory"
