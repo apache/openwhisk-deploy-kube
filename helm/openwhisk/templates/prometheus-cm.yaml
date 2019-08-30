@@ -1,0 +1,10 @@
+{{ if or .Values.metrics.prometheusEnabled .Values.metrics.userMetricsEnabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-prometheus-configuration
+  labels:
+    name: {{ .Release.Name }}-prometheus-configuration
+data:
+{{ (.Files.Glob "configMapFiles/prometheus/prometheus.yaml").AsConfig | indent 2 }}
+{{- end }}

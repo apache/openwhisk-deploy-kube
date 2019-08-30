@@ -1,0 +1,74 @@
+{{ if or .Values.metrics.prometheusEnabled .Values.metrics.userMetricsEnabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-prometheus-server
+  labels:
+    name: {{ .Release.Name }}-prometheus-server
+{{ include "openwhisk.label_boilerplate" . | indent 4 }}
+spec:
+  serviceName: {{ .Release.Name }}-prometheus-server
+  replicas: {{ .Values.prometheus.replicaCount }}
+  selector:
+    matchLabels:
+      name: {{ .Release.Name }}-prometheus-server
+  template:
+    metadata:
+      labels:
+        name: {{ .Release.Name }}-prometheus-server
+{{ include "openwhisk.label_boilerplate" . | indent 8 }}
+    spec:
+      restartPolicy: {{ .Values.user_events.restartPolicy }}
+      {{- if .Values.affinity.enabled }}
+      affinity:
+{{ include "openwhisk.affinity.core" . | indent 8 }}
+{{ include "openwhisk.affinity.selfAntiAffinity" ( printf "%s-prometheus-server" .Release.Name ) | indent 8 }}
+      {{- end }}
+
+      {{- if .Values.toleration.enabled }}
+      tolerations:
+{{ include "openwhisk.toleration.core" . | indent 8 }}
+      {{- end }}
+
+      securityContext:
+        fsGroup: 2000
+        runAsUser: 1000
+        runAsNonRoot: true
+      serviceAccountName: {{ .Release.Name }}-prometheus-server
+      containers:
+        - name: prometheus
+          imagePullPolicy: {{ .Values.prometheus.imagePullPolicy | quote }}
+          image: "{{- .Values.docker.registry.name -}}{{- .Values.prometheus.image -}}:{{- .Values.prometheus.imageTag -}}"
+          args:
+            - "--config.file=/etc/prometheus/prometheus.yaml"
+            - "--storage.tsdb.path=/prometheus/"
+          ports:
+            - containerPort: {{ .Values.prometheus.port }}
+          livenessProbe:
+            httpGet:
+              path: /-/healthy
+              port: {{ .Values.prometheus.port }}
+            initialDelaySeconds: 30
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /-/healthy
+              port: {{ .Values.prometheus.port }}
+
+          volumeMounts:
+            - name: prometheus-config-volume
+              mountPath: /etc/prometheus/
+{{- if .Values.k8s.persistence.enabled }}
+            - name: prometheus-storage-volume
+              mountPath: /prometheus/
+{{- end }}
+      volumes:
+      - name: prometheus-config-volume
+        configMap:
+          name: "{{ .Release.Name }}-prometheus-configuration"
+{{- if and .Values.k8s.persistence.enabled (eq (int .Values.prometheus.replicaCount) 1) }}
+      - name: prometheus-storage-volume
+        persistentVolumeClaim:
+          claimName: "{{ .Release.Name }}-prometheus-pvc"
+{{- end }}
+{{- end }}

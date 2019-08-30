@@ -1,0 +1,14 @@
+{{ if or .Values.metrics.prometheusEnabled .Values.metrics.userMetricsEnabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-prometheus-server
+  annotations:
+    prometheus.io/scrape: 'true'
+    prometheus.io/port:   '{{ .Values.prometheus.port }}'
+spec:
+  selector:
+    name: {{ .Release.Name }}-prometheus-server
+  ports:
+    - port: {{ .Values.prometheus.port }}
+{{- end }}

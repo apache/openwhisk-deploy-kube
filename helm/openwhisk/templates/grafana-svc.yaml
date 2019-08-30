@@ -1,0 +1,14 @@
+{{ if or .Values.metrics.prometheusEnabled .Values.metrics.userMetricsEnabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-grafana
+  labels:
+    name: {{ .Release.Name }}-grafana
+spec:
+  selector:
+    name: {{ .Release.Name }}-grafana
+  ports:
+  - port: {{ .Values.grafana.port }}
+    name: http
+{{- end }}

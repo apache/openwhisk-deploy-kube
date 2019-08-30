@@ -307,6 +307,40 @@ redis:
   persistence:
     size: 256Mi
 
+# User-events configuration
+user_events:
+  image: "adobeapiplatform/openwhisk-user-events" #TODO: Change to openwhisk/user-events after PR#4584 merge
+  imageTag: latest
+  imagePullPolicy: "IfNotPresent"
+  replicaCount: 1
+  restartPolicy: "Always"
+  port: 9095
+
+# Prometheus configuration
+prometheus:
+  image: "prom/prometheus"
+  imageTag: v2.10.0
+  imagePullPolicy: "IfNotPresent"
+  replicaCount: 1
+  restartPolicy: "Always"
+  port: 9090
+  persistence:
+    size: 1Gi
+
+# Grafana configuration
+grafana:
+  image: "grafana/grafana"
+  imageTag: "6.3.0"
+  imagePullPolicy: "IfNotPresent"
+  replicaCount: 1
+  restartPolicy: "Always"
+  port: 3000
+  adminPassword: "admin"
+  dashboards:
+  - https://raw.githubusercontent.com/adobe-apiplatform/openwhisk-user-events/master/compose/grafana/dashboards/openwhisk_events.json
+  - https://raw.githubusercontent.com/adobe-apiplatform/openwhisk-user-events/master/compose/grafana/dashboards/global-metrics.json
+  - https://raw.githubusercontent.com/adobe-apiplatform/openwhisk-user-events/master/compose/grafana/dashboards/top-namespaces.json
+
 # Metrics
 metrics:
   # set true to enable prometheus exporter

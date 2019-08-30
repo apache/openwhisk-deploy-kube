@@ -311,3 +311,13 @@ imagePullSecrets:
 -Dkubernetes.master=https://$KUBERNETES_SERVICE_HOST -Dwhisk.spi.ContainerFactoryProvider=org.apache.openwhisk.core.containerpool.kubernetes.KubernetesContainerFactoryProvider
 {{- end -}}
 {{- end -}}
+
+{{/* hostname for prometheus server */}}
+{{- define "openwhisk.prometheus_server_host" -}}
+{{ .Release.Name }}-prometheus-server.{{ .Release.Namespace }}.svc.{{ .Values.k8s.domain }}
+{{- end -}}
+
+{{/* hostname for grafana */}}
+{{- define "openwhisk.grafana_host" -}}
+{{ .Release.Name }}-grafana.{{ .Release.Namespace }}.svc.{{ .Values.k8s.domain }}
+{{- end -}}

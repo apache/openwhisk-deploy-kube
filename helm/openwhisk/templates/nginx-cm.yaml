@@ -71,6 +71,7 @@ data:
         set $controllers {{ include "openwhisk.controller_host" . }};
 {{- if or (eq .Values.whisk.ingress.type "NodePort") (eq .Values.whisk.ingress.type "LoadBalancer") }}
         set $apigw {{ include "openwhisk.apigw_host" . }};
+        set $grafana {{ include "openwhisk.grafana_host" . }};
 {{- end }}
 
 {{- if or (eq .Values.whisk.ingress.type "NodePort") (eq .Values.whisk.ingress.type "LoadBalancer") }}
@@ -97,6 +98,10 @@ data:
 
         location /v2 {
             proxy_pass http://$apigw:{{ .Values.apigw.apiPort }};
+        }
+
+        location /monitoring {
+            proxy_pass http://$grafana:{{ .Values.grafana.port }};
         }
 {{- end }}
         location / {

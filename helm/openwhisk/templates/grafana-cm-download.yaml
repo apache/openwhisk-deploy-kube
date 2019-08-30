@@ -1,0 +1,19 @@
+{{ if or .Values.metrics.prometheusEnabled .Values.metrics.userMetricsEnabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-grafana-download
+  labels:
+    name: {{ .Release.Name }}-grafana-download
+data:
+  download_dashboards.sh: |
+    #!/usr/bin/env sh
+    {{- range $index, $url := .Values.grafana.dashboards }}
+      curl -sk \
+      --connect-timeout 60 \
+      --max-time 60 \
+      -H "Accept: application/json" \
+      -H "Content-Type: application/json;charset=UTF-8" \
+      {{ $url }}  > /var/lib/grafana/dashboards/{{ $index }}.json
+    {{- end }}
+{{- end }}

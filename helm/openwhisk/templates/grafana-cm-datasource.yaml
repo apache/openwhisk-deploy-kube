@@ -1,0 +1,16 @@
+{{ if or .Values.metrics.prometheusEnabled .Values.metrics.userMetricsEnabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-grafana-ds-cfg
+  labels:
+    name: {{ .Release.Name }}-grafana-ds-cfg
+data:
+  datasource.yml: |
+    datasources:
+    - name: Prometheus
+      type: prometheus
+      access: proxy
+      isDefault: true
+      url: http://{{ include "openwhisk.prometheus_server_host" . }}:{{ .Values.prometheus.port }}
+{{- end }}
