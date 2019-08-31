@@ -259,9 +259,9 @@ metrics:
   prometheusEnabled: true
 ```
 
-This will automatically spin up a Prometheus server inside your cluster that will start scraping `controller` and `invoker` metrics. 
+This will automatically spin up a Prometheus server inside your cluster that will start scraping `controller` and `invoker` metrics.
 
-You can access Prometheus by using port forwarding: 
+You can access Prometheus by using port forwarding:
 ```
 kubectl port-forward svc/owdev-prometheus-server 9090:9090 --namespace openwhisk
 ```
@@ -275,13 +275,13 @@ metrics:
   userMetricsEnabled: true
 ```
 
-This will install [User-events](https://github.com/adobe-apiplatform/openwhisk-user-events), [Prometheus](https://github.com/prometheus/prometheus) and [Grafana](https://github.com/grafana/grafana) on your cluster with already preconfigured Grafana dashboards for visualizing user generated metrics.  
+This will install [User-events](https://github.com/adobe-apiplatform/openwhisk-user-events), [Prometheus](https://github.com/prometheus/prometheus) and [Grafana](https://github.com/grafana/grafana) on your cluster with already preconfigured Grafana dashboards for visualizing user generated metrics.
 
-The dashboards can be accessed here:  
+The dashboards can be accessed here:
 ```
 https://<whisk.ingress.apiHostName>:<whisk.ingress.apiHostPort>/monitoring/dashboards
 ```
-All dashboards can be viewed anonymously and by default admin Grafana credentials are `admin/admin`. Use the bellow configuration in `mycluster.yaml` to change Grafana's admin password:  
+All dashboards can be viewed anonymously and by default admin Grafana credentials are `admin/admin`. Use the bellow configuration in `mycluster.yaml` to change Grafana's admin password:
 ```
 grafana:
   adminPassword: admin
