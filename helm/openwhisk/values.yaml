@@ -309,7 +309,7 @@ redis:
 
 # User-events configuration
 user_events:
-  image: "adobeapiplatform/openwhisk-user-events" #TODO: Change to openwhisk/user-events after PR#4584 merge
+  imageName: "adobeapiplatform/openwhisk-user-events" #TODO: Change to openwhisk/user-events after PR#4584 merge
   imageTag: latest
   imagePullPolicy: "IfNotPresent"
   replicaCount: 1
@@ -318,7 +318,7 @@ user_events:
 
 # Prometheus configuration
 prometheus:
-  image: "prom/prometheus"
+  imageName: "prom/prometheus"
   imageTag: v2.10.0
   imagePullPolicy: "IfNotPresent"
   replicaCount: 1
@@ -329,7 +329,7 @@ prometheus:
 
 # Grafana configuration
 grafana:
-  image: "grafana/grafana"
+  imageName: "grafana/grafana"
   imageTag: "6.3.0"
   imagePullPolicy: "IfNotPresent"
   replicaCount: 1

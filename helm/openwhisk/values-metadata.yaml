@@ -1248,6 +1248,169 @@ redis:
         type: "string"
         required: true
 
+user-events:
+  __metadata:
+    label: "User-events Configuration"
+    description: "Update these default values to customize the User-events deployment"
+  imageName:
+    __metadata:
+      label: "Image name"
+      description: "The docker image name"
+      type: "string"
+      required: true
+  imageTag:
+    __metadata:
+      label: "Image tag"
+      description: "The docker image tag"
+      type: "string"
+      required: true
+  imagePullPolicy:
+    __metadata:
+      label: "Image pull policy"
+      description: "The image pull policy to apply for this image."
+      type: "string"
+      required: true
+      options:
+      - label: "Always"
+        value: "Always"
+      - label: "Never"
+        value: "Never"
+      - label: "IfNotPresent"
+        value: "IfNotPresent"
+  replicaCount:
+    __metadata:
+      label: "Replica count"
+      description: "The number of user-events instances to deploy"
+      type: "string"
+      required: true
+  restartPolicy:
+    __metadata:
+      label: "Restart policy"
+      description: "The restart policy for user-events pods"
+      type: "string"
+      required: true
+  port:
+    __metadata:
+      label: "HTTP port"
+      description: "The port to use for HTTP connections"
+      type: "string"
+      required: true
+
+prometheus:
+  __metadata:
+    label: "Prometheus Configuration"
+    description: "Update these default values to customize the prometheus deployment"
+  imageName:
+    __metadata:
+      label: "Image name"
+      description: "The docker image name"
+      type: "string"
+      required: true
+  imageTag:
+    __metadata:
+      label: "Image tag"
+      description: "The docker image tag"
+      type: "string"
+      required: true
+  imagePullPolicy:
+    __metadata:
+      label: "Image pull policy"
+      description: "The image pull policy to apply for this image."
+      type: "string"
+      required: true
+      options:
+      - label: "Always"
+        value: "Always"
+      - label: "Never"
+        value: "Never"
+      - label: "IfNotPresent"
+        value: "IfNotPresent"
+  replicaCount:
+    __metadata:
+      label: "Replica count"
+      description: "The number of prometheus instances to deploy"
+      type: "string"
+      required: true
+  restartPolicy:
+    __metadata:
+      label: "Restart policy"
+      description: "The restart policy for prometheus pods"
+      type: "string"
+      required: true
+  port:
+    __metadata:
+      label: "HTTP port"
+      description: "The port to use for HTTP connections"
+      type: "string"
+      required: true
+    persistence:
+      size:
+        __metadata:
+          label: "Prometheus persistence size"
+          description: "The size of the persistent volume for Prometheus"
+          type: "string"
+          required: true
+
+grafana:
+  __metadata:
+    label: "User-events Configuration"
+    description: "Update these default values to customize the User-events deployment"
+  imageName:
+    __metadata:
+      label: "Image name"
+      description: "The docker image name"
+      type: "string"
+      required: true
+  imageTag:
+    __metadata:
+      label: "Image tag"
+      description: "The docker image tag"
+      type: "string"
+      required: true
+  imagePullPolicy:
+    __metadata:
+      label: "Image pull policy"
+      description: "The image pull policy to apply for this image."
+      type: "string"
+      required: true
+      options:
+      - label: "Always"
+        value: "Always"
+      - label: "Never"
+        value: "Never"
+      - label: "IfNotPresent"
+        value: "IfNotPresent"
+  replicaCount:
+    __metadata:
+      label: "Replica count"
+      description: "The number of user-events instances to deploy"
+      type: "string"
+      required: true
+  restartPolicy:
+    __metadata:
+      label: "Restart policy"
+      description: "The restart policy for user-events pods"
+      type: "string"
+      required: true
+  port:
+    __metadata:
+      label: "HTTP port"
+      description: "The port to use for HTTP connections"
+      type: "string"
+      required: true
+  adminPassword:
+    __metadata:
+      label: "Grafana user admin password"
+      description: "The password used for logging in as an admin user in Grafana"
+      type: "string"
+      required: true
+  dashboards:
+    __metadata:
+      label: "List of dashboards Grafana dashboards"
+      description: "List of dashboards that should be configured in Grafana on container init"
+      type: "string"
+      required: true
+
 providers:
   __metadata:
     label: "OpenWhisk providers configuration"

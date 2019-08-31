@@ -63,7 +63,7 @@ spec:
           mountPath: "/etc/grafana"
       containers:
         - name: grafana
-          image: "{{- .Values.docker.registry.name -}}{{- .Values.grafana.image -}}:{{- .Values.grafana.imageTag -}}"
+          image: "{{- .Values.docker.registry.name -}}{{- .Values.grafana.imageName -}}:{{- .Values.grafana.imageTag -}}"
           env:
           - name: "GF_AUTH_ANONYMOUS_ENABLED"
             value: "true"

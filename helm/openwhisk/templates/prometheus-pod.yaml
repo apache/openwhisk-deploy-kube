@@ -55,7 +55,7 @@ spec:
       containers:
         - name: prometheus
           imagePullPolicy: {{ .Values.prometheus.imagePullPolicy | quote }}
-          image: "{{- .Values.docker.registry.name -}}{{- .Values.prometheus.image -}}:{{- .Values.prometheus.imageTag -}}"
+          image: "{{- .Values.docker.registry.name -}}{{- .Values.prometheus.imageName -}}:{{- .Values.prometheus.imageTag -}}"
           args:
             - "--config.file=/etc/prometheus/prometheus.yaml"
             - "--storage.tsdb.path=/prometheus/"

@@ -54,7 +54,7 @@ spec:
       containers:
         - name: user-events
           imagePullPolicy: {{ .Values.user_events.imagePullPolicy | quote }}
-          image: "{{- .Values.docker.registry.name -}}{{- .Values.user_events.image -}}:{{- .Values.user_events.imageTag -}}"
+          image: "{{- .Values.docker.registry.name -}}{{- .Values.user_events.imageName -}}:{{- .Values.user_events.imageTag -}}"
           env:
           - name: "KAFKA_HOSTS"
             value: "{{ include "openwhisk.kafka_connect" . }}"
