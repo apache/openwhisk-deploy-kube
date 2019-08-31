@@ -219,6 +219,9 @@ nginx:
 
 controller:
   lean: ${OW_LEAN_MODE:-false}
+
+metrics:
+  userMetricsEnabled: true
 EOF
 
 echo "Contents of mycluster.yaml are:"
@@ -247,3 +250,7 @@ deploymentHealthCheck "ow4travis-alarmprovider"
 deploymentHealthCheck "ow4travis-cloudantprovider"
 deploymentHealthCheck "ow4travis-kafkaprovider"
 
+# Verify that the user-metrics components were deployed successfully
+deploymentHealthCheck "ow4travis-user-events"
+deploymentHealthCheck "ow4travis-prometheus-server"
+deploymentHealthCheck "ow4travis-grafana"
