@@ -95,4 +95,9 @@ Therefore you must use different host names to connect to OpenWhisk
 from outside the cluster (with the `wsk` cli) and from inside the
 cluster (in `mycluster.yaml`).  Continuing the example from above,
 when setting the `--apihost` for the `wsk` cli, you would use
-`localhost:31001`.
+`localhost:31001`.  This networking difference also shows up when
+listing apis via `wsk -i api list`. The listed URLs will show the
+cluster-internal apihost,
+e.g. `https://192.168.65.3:31001/api/<UID>/<PATH>`, to invoke the api
+from outside the cluster you should use `localhost:31001` instead, e.g.
+`https://localhost:31001/api/<UID>/<PATH>`.
