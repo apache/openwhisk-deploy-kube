@@ -55,6 +55,7 @@ whisk:
     apiHostProto: "https"
     type: NodePort
     annotations:
+      nginx.ingress.kubernetes.io/proxy-body-size: "50m"
     domain: "domain"
     tls:
       enabled: false
