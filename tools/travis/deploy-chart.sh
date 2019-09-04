@@ -240,6 +240,11 @@ if [ "${OW_LEAN_MODE:-false}" == "false" ]; then
 
   # Wait for the controller to confirm that it has at least one healthy invoker
   verifyHealthyInvoker
+
+  # Verify that the user-metrics components were deployed successfully
+  deploymentHealthCheck "ow4travis-user-events"
+  deploymentHealthCheck "ow4travis-prometheus-server"
+  deploymentHealthCheck "ow4travis-grafana"
 fi
 
 # Wait for install-packages job to complete successfully
@@ -249,8 +254,3 @@ jobHealthCheck "ow4travis-install-packages"
 deploymentHealthCheck "ow4travis-alarmprovider"
 deploymentHealthCheck "ow4travis-cloudantprovider"
 deploymentHealthCheck "ow4travis-kafkaprovider"
-
-# Verify that the user-metrics components were deployed successfully
-deploymentHealthCheck "ow4travis-user-events"
-deploymentHealthCheck "ow4travis-prometheus-server"
-deploymentHealthCheck "ow4travis-grafana"
