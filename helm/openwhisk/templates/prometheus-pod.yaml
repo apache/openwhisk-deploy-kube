@@ -57,8 +57,8 @@ spec:
           imagePullPolicy: {{ .Values.prometheus.imagePullPolicy | quote }}
           image: "{{- .Values.docker.registry.name -}}{{- .Values.prometheus.imageName -}}:{{- .Values.prometheus.imageTag -}}"
           args:
-            - "--config.file=/etc/prometheus/prometheus.yaml"
-            - "--storage.tsdb.path=/prometheus/"
+            - --config.file=/etc/prometheus/prometheus.yaml
+            - --storage.tsdb.path={{ .Values.prometheus.persistentVolume.mountPath }}
           ports:
             - containerPort: {{ .Values.prometheus.port }}
           livenessProbe:
@@ -75,17 +75,27 @@ spec:
           volumeMounts:
             - name: prometheus-config-volume
               mountPath: /etc/prometheus/
-{{- if .Values.k8s.persistence.enabled }}
             - name: prometheus-storage-volume
-              mountPath: /prometheus/
-{{- end }}
+              mountPath: {{ .Values.prometheus.persistentVolume.mountPath }}
+
       volumes:
       - name: prometheus-config-volume
         configMap:
           name: "{{ .Release.Name }}-prometheus-configuration"
-{{- if and .Values.k8s.persistence.enabled (eq (int .Values.prometheus.replicaCount) 1) }}
       - name: prometheus-storage-volume
         persistentVolumeClaim:
           claimName: "{{ .Release.Name }}-prometheus-pvc"
+
+  volumeClaimTemplates:
+  - metadata:
+      name: "{{ .Release.Name }}-prometheus-pvc"
+    spec:
+{{- if not .Values.k8s.persistence.hasDefaultStorageClass }}
+      storageClassName: {{ .Values.k8s.persistence.explicitStorageClass }}
 {{- end }}
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: {{ .Values.prometheus.persistence.size }}
 {{- end }}

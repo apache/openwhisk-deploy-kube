@@ -15,7 +15,6 @@
 # limitations under the License.
 #
 
-{{ if .Values.k8s.persistence.enabled }}
 {{ if or .Values.metrics.prometheusEnabled .Values.metrics.userMetricsEnabled }}
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -32,5 +31,4 @@ spec:
   resources:
     requests:
       storage: {{ .Values.prometheus.persistence.size }}
-{{- end }}
 {{- end }}

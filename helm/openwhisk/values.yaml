@@ -326,6 +326,8 @@ prometheus:
   port: 9090
   persistence:
     size: 1Gi
+  persistentVolume:
+    mountPath: /data
 
 # Grafana configuration
 grafana:
