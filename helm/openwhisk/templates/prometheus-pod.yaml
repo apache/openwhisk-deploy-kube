@@ -48,9 +48,10 @@ spec:
       {{- end }}
 
       securityContext:
-        fsGroup: 2000
-        runAsUser: 1000
+        runAsUser: 65534
         runAsNonRoot: true
+        runAsGroup: 65534
+        fsGroup: 65534
       serviceAccountName: {{ .Release.Name }}-prometheus-server
       containers:
         - name: prometheus
@@ -83,19 +84,10 @@ spec:
         configMap:
           name: "{{ .Release.Name }}-prometheus-configuration"
       - name: prometheus-storage-volume
+{{- if and .Values.k8s.persistence.enabled (eq (int .Values.prometheus.replicaCount) 1) }}
         persistentVolumeClaim:
           claimName: "{{ .Release.Name }}-prometheus-pvc"
-
-  volumeClaimTemplates:
-  - metadata:
-      name: "{{ .Release.Name }}-prometheus-pvc"
-    spec:
-{{- if not .Values.k8s.persistence.hasDefaultStorageClass }}
-      storageClassName: {{ .Values.k8s.persistence.explicitStorageClass }}
+{{- else }}
+        emptyDir: {}
 {{- end }}
-      accessModes:
-        - ReadWriteOnce
-      resources:
-        requests:
-          storage: {{ .Values.prometheus.persistence.size }}
 {{- end }}
