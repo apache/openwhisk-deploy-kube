@@ -23,24 +23,28 @@
 ## Overview
 
 On Linux, you can run Kubernetes on top of Docker using the
-[kubeadm-dind-cluster](https://github.com/kubernetes-sigs/kubeadm-dind-cluster)
+[kubeadm-dind-cluster](https://github.com/kubernetes-retired/kubeadm-dind-cluster)
 project.  Based on using Docker-in-Docker (DIND) virtualization and
 `kubeadm`, kubeadm-dind-cluster can be used to create a
 multi-node Kubernetes cluster that is suitable for deploying
 OpenWhisk for development and testing.  For detailed instructions on kubeadm-dind-cluster, we
-refer you to that project's [github repository](https://github.com/kubernetes-sigs/kubeadm-dind-cluster).
+refer you to that project's [github repository](https://github.com/kubernetes-retired/kubeadm-dind-cluster).
 Here we will only cover the basic operations needed to create and
 operate a default cluster with two virtual worker nodes running on a
 single host machine.
 
+NOTE: The kubeadm-dind-cluster project was recently deprecated in favor of [kind](https://kind.sigs.k8s.io/).
+We have a [work item](https://github.com/apache/openwhisk-deploy-kube/issues/508) to migrate our
+CI testing to using kind and document its setup for end users.  *Contributions Welcome!*
+
 ## Initial setup
 
 There are "fixed" scripts
-[available](https://github.com/kubernetes-sigs/kubeadm-dind-cluster/tree/master/fixed)
+[available](https://github.com/kubernetes-retired/kubeadm-dind-cluster/tree/master/fixed)
 for each major release of Kubernetes.
-Our TravisCI testing uses kubeadm-dind-cluster.sh on an ubuntu 16.04
-host.  The `fixed` `dind-cluster` scripts for Kubernetes version 1.10,
-1.11, and 1.12 are known to work for deploying OpenWhisk.
+Our TravisCI testing uses kubeadm-dind-cluster.sh on an ubuntu 18.04
+host.  The `fixed` `dind-cluster` scripts for Kubernetes version 1.13,
+and 1.14 are known to work for deploying OpenWhisk.
 
 ### Creating the Kubernetes Cluster
 
@@ -51,13 +55,13 @@ requiring `sudo` to gain `root` privileges.
 To initially create your cluster, do the following:
 ```shell
 # Get the script for the Kubernetes version you want
-wget https://cdn.rawgit.com/kubernetes-sigs/kubeadm-dind-cluster/master/fixed/dind-cluster-v1.10.sh
+wget https://github.com/kubernetes-retired/kubeadm-dind-cluster/releases/download/v0.3.0/dind-cluster-v1.14.sh
 
 # Make it executable
-chmod +x dind-cluster-v1.10.sh
+chmod +x dind-cluster-v1.14.sh
 
 # Start the cluster. Please note you *must* set `USE_HAIRPIN` to `true`
-USE_HAIRPIN=true ./dind-cluster-v1.10.sh up
+USE_HAIRPIN=true ./dind-cluster-v1.14.sh up
 
 # add the directory containing kubectl to your PATH
 export PATH="$HOME/.kubeadm-dind-cluster:$PATH"
