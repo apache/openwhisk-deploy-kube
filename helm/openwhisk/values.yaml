@@ -134,8 +134,7 @@ whisk:
       buildNo: "20190906a"
       gitTag: "b05b7ff21c414aac31a325c68ae522e5c8a17dd6"
     openwhiskCli:
-      # more recent than 0.10.0 to pick up bug fix in commmit 457c17d
-      tag: "457c17d"
+      tag: "1.0.0"
     openwhiskCatalog:
       gitTag: "0.10.0-incubating"
     openwhiskPackageAlarms:
