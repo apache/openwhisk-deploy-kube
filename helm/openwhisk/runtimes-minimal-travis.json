@@ -37,6 +37,22 @@
                 },
                 "deprecated": false
             }
+        ],
+        "swift": [
+            {
+                "kind": "swift:4.2",
+                "default": true,
+                "image": {
+                    "prefix": "openwhisk",
+                    "name": "action-swift-v4.2",
+                    "tag": "1.13.0-incubating"
+                },
+                "deprecated": false,
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                }
+            }
         ]
     },
     "blackboxes": [

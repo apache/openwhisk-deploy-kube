@@ -79,7 +79,7 @@ pushd openwhisk-catalog
 popd
 
 pushd openwhisk-catalog/packages
-    ./installCatalog.sh $WHISK_AUTH $WHISK_API_HOST /usr/local/bin/wsk || exit 1
+    ./installCatalogUsingWskdeploy.sh $WHISK_AUTH $WHISK_API_HOST /usr/local/bin/wsk || exit 1
 popd
 
 
