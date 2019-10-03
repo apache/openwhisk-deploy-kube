@@ -1117,7 +1117,7 @@ invoker:
         enabled:
           __metadata:
             label: "Agent enabled"
-            description: "If the invoker agent should be enabled"
+            description: "If the experimental invoker agent should be enabled"
             type: "boolean"
             required: true
         port:

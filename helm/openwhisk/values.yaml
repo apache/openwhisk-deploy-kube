@@ -275,6 +275,7 @@ invoker:
           options: ""
     kubernetes:
       replicaCount: 1
+      # WARNING: the invoker agent is an experimental feature and is not recommend for general use
       agent:
         imageName: "openwhisk/kube-invoker-agent"
         imageTag: "7314d75"

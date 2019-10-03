@@ -210,9 +210,13 @@ invoker:
   options: "-Dwhisk.spi.LogStoreProvider=org.apache.openwhisk.core.containerpool.logging.LogDriverLogStoreProvider"
 ```
 
-The KubernetesContainerFactory can be deployed with an additional
-invokerAgent that implements container suspend/resume operations on
-behalf of a remote Invoker. To enable this experimental configuration, add
+There is an experimental configuration of the KubernetesContainerFactory
+that deploys an additional invokerAgent DaemonSet that implements container suspend/resume
+operations on behalf of a remote Invoker. The agent does this by attempting to
+connect directly to the Docker engine running on the worker node.  If your worker nodes
+do not use Docker as their underlying container engine, the invoker agent will go into
+a `CrashLoopBackOff`. If you want to experiment with this feature,
+you can enable it by adding the stanza:
 ```yaml
 invoker:
   containerFactory:
