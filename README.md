@@ -82,30 +82,13 @@ Depending on your host operating system, we recommend the following:
 version 18.06 or later. Please follow our
 [setup instructions](docs/k8s-docker-for-mac.md) to initially create
 your cluster.
-2. Linux: Use kubeadm-dind-cluster, but carefully follow our
-[setup instructions](docs/k8s-dind-cluster.md) because the default
-setup of kubeadm-dind-cluster does *not* meet the requirements for
-running OpenWhisk.
+2. Linux: Use [kind](https://github.com/kubernetes-sigs/kind).
+Please follow our [setup instructions](docs/k8s-kind.md)
+to initially create your cluster.
 3. Windows: Use the built-in Kubernetes support in Docker for Windows
 version 18.06 or later. Please follow our
 [setup instructions](docs/k8s-docker-for-windows.md) to initially create
 your cluster.
-
-### Using Minikube
-
-Minikube provides a Kubernetes cluster running inside a virtual
-machine (for example VirtualBox). It can be used on MacOS, Linux, or
-Windows to run OpenWhisk, but is somewhat less flexible than the
-docker-in-docker options described above. Configuring the Minikube VM
-with 4GB of memory and 2 virtual CPUs is sufficient for the default
-settings of OpenWhisk. For details on setting up
-Minikube, see these [setup instructions](docs/k8s-minikube.md).
-
-### Using Minishift
-
-Minishift is the OpenShift equivalent to Minikube.  We would welcome
-documentation on the process of running OpenWhisk on Minishift.
-
 
 ### Using a Kubernetes cluster from a cloud provider
 
@@ -231,8 +214,8 @@ Kubernetes cluster that are needed to configure the deployment of
 OpenWhisk to your cluster. For details, see the documentation
 appropriate to your Kubernetes cluster:
 * [Docker for Mac](docs/k8s-docker-for-mac.md#configuring-openwhisk)
-* [kubeadm-dind-cluster](docs/k8s-dind-cluster.md#configuring-openwhisk)
-* [Minikube](docs/k8s-minikube.md#configuring-openwhisk)
+* [Docker for Windows](docs/k8s-docker-for-windows.md#configuring-openwhisk)
+* [kind](docs/k8s-kind.md#configuring-openwhisk)
 * [IBM Kubernetes Service (IKS)](docs/k8s-ibm-public.md#configuring-openwhisk)
 * [IBM Cloud Private (ICP)](docs/k8s-ibm-private.md#configuring-openwhisk)
 * [Google (GKE)](docs/k8s-google.md#configuring-openwhisk)
