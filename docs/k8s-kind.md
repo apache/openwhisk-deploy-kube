@@ -112,6 +112,31 @@ we will use the port forwarding configured by the `extraPortMappings`
 in kind-cluster.yaml to allow the OpenWhisk apihost property
 to be set to localhost:31001
 
+## Hints and Tips
+
+If you are working on the core OpenWhisk system and want
+to use a locally built controller or invoker image to test
+your changes, you need to push the image to the docker image
+repository inside the `kind` cluster.
+
+For example, suppose I had a local change to the controller
+I wanted to test.  To do this, I would build the image normally
+(`gradlew distDocker` in `openwhisk`). Then, execute the `kind`
+command
+```shell
+kind load docker-image whisk/controller
+```
+Then add a stanza to your `mycluster.yaml` to override the default
+behavior of pulling a stable `openwhisk/controller` image from Docker Hub.
+```yaml
+controller:
+  imageName: "whisk/controller"
+  imageTag: "latest"
+```
+
+Then deploy OpenWhisk normally using `helm install`. The deployed
+system will use the locally built `whisk/controller` image.
+
 ## Limitations
 
 Using kind is only appropriate for development and testing purposes.
