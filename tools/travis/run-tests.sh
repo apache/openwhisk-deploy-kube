@@ -16,6 +16,8 @@
 # limitations under the License.
 #
 
+export KUBECONFIG="$(kind get kubeconfig-path)"
+
 ###
 # Now run the tests provided in the Chart to verify the deployment
 ###
