@@ -38,7 +38,7 @@ nodes:
 - role: worker
 EOF
 
-kind create cluster --config mycluster.yaml --name kind --image kindest/node:${TRAVIS_KUBE_VERSION} --wait 10s
+kind create cluster --config mycluster.yaml --name kind --image kindest/node:${TRAVIS_KUBE_VERSION} --wait 300s
 
 export KUBECONFIG="$(kind get kubeconfig-path)"
 
