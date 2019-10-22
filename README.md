@@ -141,6 +141,9 @@ Kubernetes cluster.
 
 For details on installing Helm, see these [instructions](docs/helm.md).
 
+WARNING: There is a [serious regression in Helm v2.15.0](https://github.com/helm/helm/issues/6708)
+that impacts the OpenWhisk chart.  You should use Helm v2.14.3.
+
 In short if you already have the `helm` cli installed on your development machine,
 you will need to execute these two commands and wait a few seconds for the
 `tiller-deploy` pod in the `kube-system` namespace to be in the `Running` state.
