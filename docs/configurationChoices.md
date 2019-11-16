@@ -163,9 +163,10 @@ component on Kubernetes (selected by picking a
       advantages of this configuration are lower latency on container
       management operations and robustness of the code paths being
       used (since they are the same as in the default system).  The
-      primary disadvantage is that it does not leverage Kubernetes to
+      primary disadvantages are (1) that it does not leverage Kubernetes to
       simplify resource management, security configuration, etc. for
-      user containers.
+      user containers and (2) it cannot be used if the underlying
+      container engine is containerd or cri-o.
   2. `KubernetesContainerFactory` is a truly Kubernetes-native design
       where although the Invoker is still responsible for managing the
       cache of available user containers, the Invoker relies on Kubernetes to
@@ -174,7 +175,8 @@ component on Kubernetes (selected by picking a
       inverse of `DockerContainerFactory`.  Kubernetes pod management
       operations have higher latency and without additional configuration
       (see below) can result in poor performance. However, this design
-      fully leverages Kubernetes to manage the execution resources for user functions.
+      fully leverages Kubernetes to manage the execution resources for
+      user functions.
 
 You can control the selection of the ContainerFactory by adding either
 ```yaml

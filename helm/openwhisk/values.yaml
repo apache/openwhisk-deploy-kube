@@ -261,7 +261,7 @@ invoker:
   containerFactory:
     dind: false
     useRunc: false
-    impl: "docker"
+    impl: "kubernetes"
     enableConcurrency: false
     networkConfig:
       name: "bridge"
