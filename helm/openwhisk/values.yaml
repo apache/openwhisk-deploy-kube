@@ -24,7 +24,6 @@
 # to reflect your specific Kubernetes cluster.  For details, see the appropriate
 # one of these files:
 #   docs/k8s-docker-for-mac.md
-#   docs/k8s-dind-cluster.md
 #   docs/k8s-aws.md
 #   docs/k8s-ibm-public.md
 #   docs/k8s-ibm-private.md
@@ -259,7 +258,6 @@ invoker:
   jvmHeapMB: "512"
   jvmOptions: ""
   containerFactory:
-    dind: false
     useRunc: false
     impl: "kubernetes"
     enableConcurrency: false

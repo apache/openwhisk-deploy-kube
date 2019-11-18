@@ -24,11 +24,7 @@
     path: "/run/runc"
 - name: dockerrootdir
   hostPath:
-    {{- if .Values.invoker.containerFactory.dind }}
-    path: "/dind/docker/containers"
-    {{- else }}
     path: "/var/lib/docker/containers"
-    {{- end }}
 - name: dockersock
   hostPath:
     path: "/var/run/docker.sock"

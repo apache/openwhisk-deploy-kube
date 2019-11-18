@@ -1019,12 +1019,6 @@ invoker:
       type: "string"
       required: false
   containerFactory:
-    dind:
-      __metadata:
-        label: "dind"
-        description: "If using Docker-in-Docker to run your Kubernetes cluster"
-        type: "boolean"
-        required: true
     useRunc:
       __metadata:
         label: "useRunc"
