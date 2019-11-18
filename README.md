@@ -182,7 +182,11 @@ tell the `wsk` CLI how to connect to your OpenWhisk deployment.
 
 Indicate the Kubernetes worker nodes that should be used to execute
 user containers by OpenWhisk's invokers.  Do this by labeling each node with
-`openwhisk-role=invoker`. In its default configuration,
+`openwhisk-role=invoker`. In the default configuration, which uses the
+KubernetesContainerFactory, the node labels are used in conjunction
+with Pod affinities to inform the Kubernetes scheduler how to place
+work so that user actions will not interfere with the OpenWhisk
+control plane.  When using the non-default DockerContainerFactory,
 OpenWhisk assumes it has exclusive use of these invoker nodes and
 will schedule work on them directly, completely bypassing the Kubernetes
 scheduler. For a single node cluster, simply do
