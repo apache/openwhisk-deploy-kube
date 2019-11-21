@@ -23,6 +23,9 @@ ROOTDIR="$SCRIPTDIR/../../"
 
 cd $ROOTDIR
 
+# kind puts config file in non-standard place; must set KUBECONFIG
+export KUBECONFIG="$(kind get kubeconfig-path)"
+
 echo "Gathering logs to upload to https://app.box.com/v/openwhisk-travis-logs"
 
 mkdir logs
@@ -44,7 +47,7 @@ kubectl -n openwhisk logs -lname=ow4travis-kafkaprovider >& logs/kafkaprovider.l
 kubectl -n openwhisk logs -lname=ow4travis-user-events >& logs/user-events.log
 kubectl -n openwhisk logs -lname=ow4travis-prometheus >& logs/prometheus.log
 kubectl -n openwhisk logs -lname=ow4travis-grafana >& logs/grafana.log
-kubectl get pods --all-namespaces -o wide --show-all >& logs/all-pods.txt
+kubectl get pods --all-namespaces -o wide >& logs/all-pods.txt
 
 # System level logs from kubernetes cluster
 $HOME/dind-cluster.sh dump >& logs/dind-cluster-dump.txt

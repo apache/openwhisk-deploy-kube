@@ -166,23 +166,26 @@ ROOTDIR="$SCRIPTDIR/../../"
 OW_CONTAINER_FACTORY=${OW_CONTAINER_FACTORY:="docker"}
 
 # Default to not including system tests in helm test suite
-OW_INCLUDE_SYSTEM_TESTS=${$OW_INCLUDE_SYSTEM_TESTS:="false"}
+OW_INCLUDE_SYSTEM_TESTS=${OW_INCLUDE_SYSTEM_TESTS:="false"}
 
 # Default timeout limit to 60 steps
 TIMEOUT_STEP_LIMIT=${TIMEOUT_STEP_LIMIT:=60}
 
+# kind puts config file in non-standard place; must set KUBECONFIG
+export KUBECONFIG="$(kind get kubeconfig-path)"
+
 # Label nodes for affinity.
 # For DockerContainerFactory, at least one must be labeled as an invoker.
 echo "Labeling nodes with openwhisk-role assignments"
-kubectl label nodes kube-node-1 openwhisk-role=core
-kubectl label nodes kube-node-2 openwhisk-role=invoker
+kubectl label nodes kind-worker openwhisk-role=core
+kubectl label nodes kind-worker2 openwhisk-role=invoker
 
-# Configure a NodePort Ingress assuming kubeadm-dind-cluster conventions.
-# Use kube-node-1 as the ingress, since we labeled it as our core node above.
-# (But using kube-node-2 would also work because Kubernetes
+# Configure a NodePort Ingress assuming kind conventions.
+# Use kind-worker as the ingress, since we labeled it as our core node above.
+# (But using kind-worker2 would also work because Kubernetes
 #  exposes the same NodePort service on all worker nodes.)
 WSK_PORT=31001
-WSK_HOST=$(kubectl describe node kube-node-1 | grep InternalIP: | awk '{print $2}')
+WSK_HOST=$(kubectl describe node kind-worker | grep InternalIP: | awk '{print $2}')
 if [ -z "$WSK_HOST" ]; then
   echo "FAILED! Could not determine value for WSK_HOST"
   exit 1
@@ -201,14 +204,8 @@ whisk:
   testing:
     includeSystemTests: $OW_INCLUDE_SYSTEM_TESTS
 
-# TODO: instead document how to enable dynamic volume provisioning for dind
-k8s:
-  persistence:
-    enabled: false
-
 invoker:
   containerFactory:
-    dind: true
     impl: $OW_CONTAINER_FACTORY
     kubernetes:
       agent:

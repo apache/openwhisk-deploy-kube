@@ -21,6 +21,10 @@
 
 ## Overview
 
+WARNING: Consider using kind instead of Minikube. We no longer
+test these instructions and are considering removing them
+entirely.
+
 Minikube runs a single node Kubernetes cluster inside of a VM
 (virtual machine) running on your host machine. Depending on your host
 machine, you will have different choices for the VM.

@@ -55,6 +55,7 @@ whisk:
     apiHostProto: "https"
     type: NodePort
     annotations:
+      nginx.ingress.kubernetes.io/proxy-body-size: "50m"
     domain: "domain"
     tls:
       enabled: false
@@ -129,12 +130,11 @@ whisk:
     includeSystemTests: false
   versions:
     openwhisk:
-      buildDate: "2019-08-07-11:22:17Z"
-      buildNo: "20190807a"
-      gitTag: "9bef49fcd47f7922e4226ff7a97385f1313f7d64"
+      buildDate: "2019-11-08-08:32:33Z"
+      buildNo: "20191108a"
+      gitTag: "d47f4ec91d467295ffcfa894401ddb113984c108"
     openwhiskCli:
-      # more recent than 0.10.0 to pick up bug fix in commmit 457c17d
-      tag: "457c17d"
+      tag: "1.0.0"
     openwhiskCatalog:
       gitTag: "0.10.0-incubating"
     openwhiskPackageAlarms:
@@ -155,7 +155,7 @@ k8s:
 # Images used to run auxillary tasks/jobs
 utility:
   imageName: "openwhisk/ow-utils"
-  imageTag: "9bef49f"
+  imageTag: "d47f4ec"
   imagePullPolicy: "IfNotPresent"
 
 # Docker registry
@@ -239,7 +239,7 @@ nginx:
 # Controller configurations
 controller:
   imageName: "openwhisk/controller"
-  imageTag: "9bef49f"
+  imageTag: "d47f4ec"
   imagePullPolicy: "IfNotPresent"
   replicaCount: 1
   restartPolicy: "Always"
@@ -251,7 +251,7 @@ controller:
 # Invoker configurations
 invoker:
   imageName: "openwhisk/invoker"
-  imageTag: "9bef49f"
+  imageTag: "d47f4ec"
   imagePullPolicy: "IfNotPresent"
   restartPolicy: "Always"
   port: 8080
@@ -261,7 +261,7 @@ invoker:
   containerFactory:
     dind: false
     useRunc: false
-    impl: "docker"
+    impl: "kubernetes"
     enableConcurrency: false
     networkConfig:
       name: "bridge"
@@ -275,6 +275,7 @@ invoker:
           options: ""
     kubernetes:
       replicaCount: 1
+      # WARNING: the invoker agent is an experimental feature and is not recommend for general use
       agent:
         imageName: "openwhisk/kube-invoker-agent"
         imageTag: "7314d75"
@@ -285,7 +286,7 @@ invoker:
 # API Gateway configurations
 apigw:
   imageName: "openwhisk/apigateway"
-  imageTag: "0.10.0-incubating"
+  imageTag: "0.11.0"
   imagePullPolicy: "IfNotPresent"
   # NOTE: setting replicaCount > 1 is not tested and may not work
   replicaCount: 1
@@ -449,11 +450,11 @@ probes:
       timeoutSeconds: 1
   controller:
     livenessProbe:
-      initialDelaySeconds: 5
+      initialDelaySeconds: 10
       periodSeconds: 10
       timeoutSeconds: 1
     readinessProbe:
-      initialDelaySeconds: 5
+      initialDelaySeconds: 10
       periodSeconds: 10
       timeoutSeconds: 1
 

@@ -38,6 +38,17 @@ mounting`/sys/fs/cgroup`, `/run/runc`,`/var/lib/docker/containers`, or
 value in `helm/openwhisk/templates/_invoker-helpers.yaml` to match the host operating system
 running on your Kubernetes worker node.
 
+### Invokers unhealthy when using DockerContainerFactory
+
+It is becoming increasingly common for Kubernetes clusters to be
+configured to be using something other than Docker as the underlying
+container runtime engine (eg containerd or cri-o). The
+DockerContainerFactory cannot be used on such clusters. The usual
+symptom is that the invoker pods deploy correctly, but the controller
+considers all invokers to be unheathy/down because even though the
+invoker pod is running, it is unable to successfully spawn user action
+containers.  The workaround is to use the KubernetesContainerFactory.
+
 ### Kafka, Redis, CouchDB, and Zookeeper pods stuck in Pending
 
 These pods all mount Volumes via PersistentVolumeClaims. If there is a

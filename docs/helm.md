@@ -32,7 +32,11 @@ setup on your Kubernetes cluster.
 README.md.
 
 2. Follow the Helm [install instructions](https://github.com/kubernetes/helm)
-for your platform.
+for your platform to install Helm v2.14.3.
+
+WARNING: There is a [serious regression in Helm v2.15.0](https://github.com/helm/helm/issues/6708)
+that impacts the OpenWhisk chart.  You cannout use versions of Helm newer than v2.14.3 until
+a there is a 2.15.x release with a fix for the regression.
 
 3. Run the following command to init `Helm Tiller`:
 ```shell
