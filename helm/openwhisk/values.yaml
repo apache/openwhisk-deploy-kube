@@ -310,8 +310,8 @@ redis:
 
 # User-events configuration
 user_events:
-  imageName: "adobeapiplatform/openwhisk-user-events" #TODO: Change to openwhisk/user-events after PR#4584 merge
-  imageTag: latest
+  imageName: "openwhisk/user-events"
+  imageTag: "94043db"
   imagePullPolicy: "IfNotPresent"
   replicaCount: 1
   restartPolicy: "Always"
@@ -340,9 +340,9 @@ grafana:
   port: 3000
   adminPassword: "admin"
   dashboards:
-  - https://raw.githubusercontent.com/adobe-apiplatform/openwhisk-user-events/master/compose/grafana/dashboards/openwhisk_events.json
-  - https://raw.githubusercontent.com/adobe-apiplatform/openwhisk-user-events/master/compose/grafana/dashboards/global-metrics.json
-  - https://raw.githubusercontent.com/adobe-apiplatform/openwhisk-user-events/master/compose/grafana/dashboards/top-namespaces.json
+  - https://raw.githubusercontent.com/apache/openwhisk/master/core/monitoring/user-events/compose/grafana/dashboards/openwhisk_events.json
+  - https://raw.githubusercontent.com/apache/openwhisk/master/core/monitoring/user-events/compose/grafana/dashboards/global-metrics.json
+  - https://raw.githubusercontent.com/apache/openwhisk/master/core/monitoring/user-events/compose/grafana/dashboards/top-namespaces.json
 
 # Metrics
 metrics:

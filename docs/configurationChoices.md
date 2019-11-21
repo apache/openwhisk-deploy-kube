@@ -281,7 +281,7 @@ metrics:
   userMetricsEnabled: true
 ```
 
-This will install [User-events](https://github.com/adobe-apiplatform/openwhisk-user-events), [Prometheus](https://github.com/prometheus/prometheus) and [Grafana](https://github.com/grafana/grafana) on your cluster with already preconfigured Grafana dashboards for visualizing user generated metrics.
+This will install [User-events](https://github.com/apache/openwhisk/tree/master/core/monitoring/user-events), [Prometheus](https://github.com/prometheus/prometheus) and [Grafana](https://github.com/grafana/grafana) on your cluster with already preconfigured Grafana dashboards for visualizing user generated metrics.
 
 The dashboards can be accessed here:
 ```
