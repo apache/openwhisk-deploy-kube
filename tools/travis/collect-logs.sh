@@ -48,6 +48,3 @@ kubectl -n openwhisk logs -lname=ow4travis-user-events >& logs/user-events.log
 kubectl -n openwhisk logs -lname=ow4travis-prometheus >& logs/prometheus.log
 kubectl -n openwhisk logs -lname=ow4travis-grafana >& logs/grafana.log
 kubectl get pods --all-namespaces -o wide >& logs/all-pods.txt
-
-# System level logs from kubernetes cluster
-$HOME/dind-cluster.sh dump >& logs/dind-cluster-dump.txt
