@@ -328,7 +328,7 @@ prometheus:
   persistence:
     size: 1Gi
   persistentVolume:
-    mountPath: /data
+    mountPath: /prometheus/
 
 # Grafana configuration
 grafana:

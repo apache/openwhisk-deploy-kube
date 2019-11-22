@@ -48,17 +48,17 @@ spec:
       {{- end }}
 
       securityContext:
-        fsGroup: 2000
-        runAsUser: 1000
-        runAsNonRoot: true
+        fsGroup: 0
+        runAsGroup: 0
+        runAsUser: 0
       serviceAccountName: {{ .Release.Name }}-prometheus-server
       containers:
         - name: prometheus
           imagePullPolicy: {{ .Values.prometheus.imagePullPolicy | quote }}
           image: "{{- .Values.docker.registry.name -}}{{- .Values.prometheus.imageName -}}:{{- .Values.prometheus.imageTag -}}"
           args:
-            - --config.file=/etc/prometheus/prometheus.yaml
-            - --storage.tsdb.path={{ .Values.prometheus.persistentVolume.mountPath }}
+            - "--config.file=/etc/prometheus/prometheus.yaml"
+            - "--storage.tsdb.path={{ .Values.prometheus.persistentVolume.mountPath }}"
           ports:
             - containerPort: {{ .Values.prometheus.port }}
           livenessProbe:
