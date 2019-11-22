@@ -217,10 +217,8 @@ nginx:
 controller:
   lean: ${OW_LEAN_MODE:-false}
 
-if [ "${OW_LEAN_MODE:-false}" == "false" ]; then
 metrics:
   userMetricsEnabled: true
-fi
 EOF
 
 echo "Contents of mycluster.yaml are:"
