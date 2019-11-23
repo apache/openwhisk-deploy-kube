@@ -240,7 +240,7 @@ if [ "${OW_LEAN_MODE:-false}" == "false" ]; then
 
   # Verify that the user-metrics components were deployed successfully
   deploymentHealthCheck "ow4travis-user-events"
-  deploymentHealthCheck "ow4travis-prometheus-server"
+  # deploymentHealthCheck "ow4travis-prometheus-server"
   deploymentHealthCheck "ow4travis-grafana"
 fi
 

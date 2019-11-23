@@ -48,9 +48,9 @@ spec:
       {{- end }}
 
       securityContext:
-        fsGroup: 0
-        runAsGroup: 0
-        runAsUser: 0
+        fsGroup: 2000
+        runAsUser: 1000
+        runAsNonRoot: true
       serviceAccountName: {{ .Release.Name }}-prometheus-server
       containers:
         - name: prometheus
