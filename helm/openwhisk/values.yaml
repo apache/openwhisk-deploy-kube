@@ -318,7 +318,7 @@ user_events:
 # Prometheus configuration
 prometheus:
   imageName: "prom/prometheus"
-  imageTag: v2.10.0
+  imageTag: v2.14.0
   imagePullPolicy: "IfNotPresent"
   replicaCount: 1
   restartPolicy: "Always"

@@ -17,7 +17,7 @@
 
 {{ if or .Values.metrics.prometheusEnabled .Values.metrics.userMetricsEnabled }}
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: {{ .Release.Name }}-prometheus-server
   labels:
