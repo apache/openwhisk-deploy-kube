@@ -15,16 +15,7 @@
 # limitations under the License.
 #
 
-apiVersion: v1
-description: An open source, distributed serverless platform that executes functions in response to events at any scale
-name: openwhisk
-version: 0.1.9
-icon: https://raw.githubusercontent.com/apache/openwhisk/682eb5b62ee6ba8017ab54226c2ace3637f4f1ec/docs/images/whisk_icon_full-color_with_tm_64x64-300dpi.png
-keywords:
-  - Apache OpenWhisk
-  - amd64
-maintainers:
-  - name: Apache OpenWhisk committers
-    email: dev@openwhisk.apache.org
-tillerVersion: ">=2.9.0"
-kubeVersion: ">=v1.10.0-r0"
+genssl.sh "*.$WHISK_API_HOST_NAME" server /cert-gen
+
+kubectl create secret tls $NGINX_CERT_SECRET --cert=/cert-gen/openwhisk-server-cert.pem --key=/cert-gen/openwhisk-server-key.pem
+
