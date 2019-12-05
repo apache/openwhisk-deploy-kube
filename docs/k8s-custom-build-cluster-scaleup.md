@@ -21,25 +21,25 @@
 
 ## Overview
 
-The default configurations of openwhisk deployment, support low concurrency-limit which can only be used for testing purposes. This document outlines how this concurrency-limit can be increased to scale-up openwhisk deployment for more practical use, on custom-built-kubernetes cluster. Also, provides information regarding some issues one might encounter while scaling-up.  
+The default configurations of openwhisk deployment, support low concurrency-limit which can only be used for testing purposes. This document outlines how this concurrency-limit can be increased to scale-up openwhisk deployment for more practical use, on custom-built-kubernetes cluster. Also, provides information regarding some issues one might encounter while scaling-up.
 
 ## Scale-up
 
 ### Small Scale
 
 By default, openwhisk deployment is configured to provide a bare-minimum working platform for testing and exploration. For your specialized workloads, you can scale-up your openwhisk deployment by defining your deployment configurations in your `mycluster.yaml` which overrides the defaults in `helm/openwhisk/values.yaml`. Some important parameters to consider (for other parameters, check `helm/openwhisk/values.yaml` and [configurationChoices](./docs/configurationChoices.md)):
-* `actionsInvokesPerminute`: limits the maximum number of invocations per minute. 
+* `actionsInvokesPerminute`: limits the maximum number of invocations per minute.
 * `actionsInvokesPerminute`: limits the maximum concurrent invocations.
-* `containerPool.userMemory`: total memory available per `invoker` instance. `Invoker` uses this memory to create containers for user-actions. The concurrency-limit (actions running in parallel) will depend upon the total memory configured for `containerPool` and memory allocated per action (`default:` 256mb per container). 
+* `containerPool.userMemory`: total memory available per `invoker` instance. `Invoker` uses this memory to create containers for user-actions. The concurrency-limit (actions running in parallel) will depend upon the total memory configured for `containerPool` and memory allocated per action (`default:` 256mb per container).
 * `triggersFiresPerminute`: limits the maximum triggers invoked per minute.
 
-Modifying the above mentioned parameters, one can easily increase the concurrency-limit (`default:` 8) to `100` or `200` without affecting the runtime performance (may vary based on the running functions). To further increase the concurrency-limit, check `Large` scale-up below. 
+Modifying the above mentioned parameters, one can easily increase the concurrency-limit (`default:` 8) to `100` or `200` without affecting the runtime performance (may vary based on the running functions). To further increase the concurrency-limit, check `Large` scale-up below.
 
 ### Large Scale
 
 In order to further increase the scale-up beyond `Small Scale`, one needs to modify the following additional configurations appropriately (on top of the above mentioned):
 * `invoker:jvmHeapMB`: jvmHeap memory available to each invoker instance. May or may not require increase based on running functions. For more information check `troubleshooting` below.
-* `invoker:containerFactory:_:replicaCount`: number of invoker instances that will be used to handle the incoming workload. By default, there is only one invoker instance which can become overwhelmed if workload goes beyond a certain threshold. 
+* `invoker:containerFactory:_:replicaCount`: number of invoker instances that will be used to handle the incoming workload. By default, there is only one invoker instance which can become overwhelmed if workload goes beyond a certain threshold.
 * `controller:replicaCount`: number of controller instances that will be used to handle the incoming workload. Same as invoker instances.
 * `invoker:options`: Log processing at the invoker can become a bottleneck for the KubernetesContainerFactory. One might try disabling invoker log processing by setting it to `-Dwhisk.spi.LogStoreProvider=org.apache.openwhisk.core.containerpool.logging.LogDriverLogStoreProvider`. In general, one needs to offload log processing from the invoker to a node-level log store provider if one is trying to push a large load through the system.
 
@@ -64,10 +64,10 @@ The above error occurs when one has configured too large a `containerPool` to ma
 ```
 java.lang.OutOfMemoryError: Java heap space
 ```
-The above error occurs when the configured `invoker:jvmHeapMB` memory is insufficient for the faced workload. 
+The above error occurs when the configured `invoker:jvmHeapMB` memory is insufficient for the faced workload.
 
 #### error: only single invoker instance being used to handle all the workload
 
-OpenWhisk treats [blackbox (docker) actions](https://github.com/apache/openwhisk/blob/master/docs/actions-docker.md) differently when compared to regular actions. By default, OpenWhisk loadbalancer is configured to use only `10%` (only 1 invoker-instance if total invoker-instances are less than 10) of invoker instances for `blackbox` actions. This behavior can be configured by modifying `whisk.loadbalancer.blackbox-fraction` in `helm/openwhisk/values.yaml`. 
+OpenWhisk treats [blackbox (docker) actions](https://github.com/apache/openwhisk/blob/master/docs/actions-docker.md) differently when compared to regular actions. By default, OpenWhisk loadbalancer is configured to use only `10%` (only 1 invoker-instance if total invoker-instances are less than 10) of invoker instances for `blackbox` actions. This behavior can be configured by modifying `whisk.loadbalancer.blackbox-fraction` in `helm/openwhisk/values.yaml`.
 
 
