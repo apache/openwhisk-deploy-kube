@@ -21,7 +21,7 @@
 
 ## Overview
 
-The default configurations of OpenWhisk deployment, support low concurrency-limit which can only be used for testing purposes. This document outlines how this concurrency-limit can be increased to scale-up openwhisk deployment for more practical use, on custom-built-kubernetes cluster. Also, provides information regarding some issues one might encounter while scaling-up.  
+The default configurations of openwhisk deployment, support low concurrency-limit which can only be used for testing purposes. This document outlines how this concurrency-limit can be increased to scale-up openwhisk deployment for more practical use, on custom-built-kubernetes cluster. Also, provides information regarding some issues one might encounter while scaling-up.  
 
 ## Scale-up
 
@@ -38,7 +38,7 @@ Modifying the above mentioned parameters, one can easily increase the concurrenc
 ### Large Scale
 
 In order to further increase the scale-up beyond `Small Scale`, one needs to modify the following additional configurations appropriately (on top of the above mentioned):
-* `invoker:jvmHeapMB`: jvmHeap memory available to each invoker instance. May or maynot require increase based on running functions. For more information check `troubleshooting` below.
+* `invoker:jvmHeapMB`: jvmHeap memory available to each invoker instance. May or may not require increase based on running functions. For more information check `troubleshooting` below.
 * `invoker:containerFactory:_:replicaCount`: number of invoker instances that will be used to handle the incoming workload. By default, there is only one invoker instance which can become overwhelmed if workload goes beyond a certain threshold. 
 * `controller:replicaCount`: number of controller instances that will be used to handle the incoming workload. Same as invoker instances.
 * `invoker:options`: Log processing at the invoker can become a bottleneck for the KubernetesContainerFactory. One might try disabling invoker log processing by setting it to `-Dwhisk.spi.LogStoreProvider=org.apache.openwhisk.core.containerpool.logging.LogDriverLogStoreProvider`. In general, one needs to offload log processing from the invoker to a node-level log store provider if one is trying to push a large load through the system.
@@ -53,7 +53,7 @@ On the client-side, the most frequently received error:
 ```
 The above mentioned error occurs when controller is unable to find any healthy invoker instance to serve the incoming requests. To resolve this issue, one needs to debug the `Deployment-side` to figure-out the cause for unhealth invoker instances.
 
-### Deoployment-side
+### Deployment-side
 
 For debugging, one needs to identify the `invoker` and `controller` pods and check their logs for further details. Few known errors:
 ```
