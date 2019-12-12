@@ -44,4 +44,7 @@ kubectl logs -n openwhisk -low-testpod=true >& logs/helm-tests.log
 kubectl -n openwhisk logs -lname=ow4travis-alarmprovider >& logs/kafkaprovider.log
 kubectl -n openwhisk logs -lname=ow4travis-cloudantprovider >& logs/cloudantprovider.log
 kubectl -n openwhisk logs -lname=ow4travis-kafkaprovider >& logs/kafkaprovider.log
+kubectl -n openwhisk logs -lname=ow4travis-user-events >& logs/user-events.log
+kubectl -n openwhisk logs -lname=ow4travis-prometheus >& logs/prometheus.log
+kubectl -n openwhisk logs -lname=ow4travis-grafana >& logs/grafana.log
 kubectl get pods --all-namespaces -o wide >& logs/all-pods.txt

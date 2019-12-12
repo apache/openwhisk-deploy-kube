@@ -1,0 +1,74 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+{{ if .Values.metrics.userMetricsEnabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-user-events
+  labels:
+    name: {{ .Release.Name }}-user-events
+{{ include "openwhisk.label_boilerplate" . | indent 4 }}
+spec:
+  serviceName: {{ .Release.Name }}-user-events
+  replicas: {{ .Values.user_events.replicaCount }}
+  selector:
+    matchLabels:
+      name: {{ .Release.Name }}-user-events
+  template:
+    metadata:
+      labels:
+        name: {{ .Release.Name }}-user-events
+{{ include "openwhisk.label_boilerplate" . | indent 8 }}
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/port:   '{{ .Values.user_events.port }}'
+    spec:
+      restartPolicy: {{ .Values.user_events.restartPolicy }}
+
+      {{- if .Values.metrics.userMetricsEnabled }}
+      affinity:
+{{ include "openwhisk.affinity.core" . | indent 8 }}
+{{ include "openwhisk.affinity.selfAntiAffinity" ( printf "%s-user-events" .Release.Name ) | indent 8 }}
+      {{- end }}
+
+      {{- if .Values.toleration.enabled }}
+      tolerations:
+{{ include "openwhisk.toleration.core" . | indent 8 }}
+      {{- end }}
+
+      containers:
+        - name: user-events
+          imagePullPolicy: {{ .Values.user_events.imagePullPolicy | quote }}
+          image: "{{- .Values.docker.registry.name -}}{{- .Values.user_events.imageName -}}:{{- .Values.user_events.imageTag -}}"
+          env:
+          - name: "KAFKA_HOSTS"
+            value: "{{ include "openwhisk.kafka_connect" . }}"
+{{ include "openwhisk.kafkaConfigEnvVars" . | indent 10 }}
+          ports:
+            - containerPort: {{ .Values.user_events.port }}
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: {{ .Values.user_events.port }}
+            initialDelaySeconds: 30
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /ping
+              port: {{ .Values.user_events.port }}
+{{- end }}

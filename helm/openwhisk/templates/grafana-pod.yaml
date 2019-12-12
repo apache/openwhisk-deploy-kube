@@ -1,0 +1,112 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+{{ if or .Values.metrics.prometheusEnabled .Values.metrics.userMetricsEnabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-grafana
+  labels:
+    name: {{ .Release.Name }}-grafana
+{{ include "openwhisk.label_boilerplate" . | indent 4 }}
+spec:
+  serviceName: {{ .Release.Name }}-grafana
+  replicas: {{ .Values.grafana.replicaCount }}
+  selector:
+    matchLabels:
+      name: {{ .Release.Name }}-grafana
+  template:
+    metadata:
+      labels:
+        name: {{ .Release.Name }}-grafana
+{{ include "openwhisk.label_boilerplate" . | indent 8 }}
+    spec:
+      restartPolicy: {{ .Values.user_events.restartPolicy }}
+      {{- if .Values.affinity.enabled }}
+      affinity:
+{{ include "openwhisk.affinity.core" . | indent 8 }}
+{{ include "openwhisk.affinity.selfAntiAffinity" ( printf "%s-grafana" .Release.Name ) | indent 8 }}
+      {{- end }}
+
+      {{- if .Values.toleration.enabled }}
+      tolerations:
+{{ include "openwhisk.toleration.core" . | indent 8 }}
+      {{- end }}
+
+      initContainers:
+      - name: download-dashboards
+        image: "appropriate/curl:latest"
+        imagePullPolicy: Always
+        command: ["sh", "/etc/grafana/download_dashboards.sh"]
+        resources:
+          limits:
+            cpu: 100m
+            memory: 128Mi
+        volumeMounts:
+        - name: grafana-dashboard-volume
+          mountPath: /var/lib/grafana/dashboards
+        - name: grafana-download-volume
+          mountPath: "/etc/grafana"
+      containers:
+        - name: grafana
+          image: "{{- .Values.docker.registry.name -}}{{- .Values.grafana.imageName -}}:{{- .Values.grafana.imageTag -}}"
+          env:
+          - name: "GF_AUTH_ANONYMOUS_ENABLED"
+            value: "true"
+          - name: "GF_SECURITY_ADMIN_PASSWORD"
+            value: {{ .Values.grafana.adminPassword }}
+          - name: "GF_PATHS_PROVISIONING"
+            value: "/var/lib/grafana/config"
+          - name: "GF_USERS_ALLOW_SIGN_UP"
+            value: "false"
+          - name: "GF_SERVER_ROOT_URL"
+            value: "%(protocol)s://%(domain)s/monitoring"
+          - name: "GF_SERVER_SERVE_FROM_SUB_PATH"
+            value: "true"
+
+          ports:
+            - containerPort: {{ .Values.grafana.port }}
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: {{ .Values.grafana.port }}
+            initialDelaySeconds: 30
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: {{ .Values.grafana.port }}
+          volumeMounts:
+          - name: grafana-datasource-config-volume
+            mountPath: /var/lib/grafana/config/datasources
+          - name: grafana-dashboard-config-volume
+            mountPath: /var/lib/grafana/config/dashboards
+          - name: grafana-dashboard-volume
+            mountPath: /var/lib/grafana/dashboards
+      volumes:
+      - name: grafana-datasource-config-volume
+        configMap:
+          name: "{{ .Release.Name }}-grafana-ds-cfg"
+      - name: grafana-dashboard-config-volume
+        configMap:
+          name: "{{ .Release.Name }}-grafana-dsb-cfg"
+      - name: grafana-download-volume
+        configMap:
+          name: "{{ .Release.Name }}-grafana-download"
+      - name: grafana-dashboard-volume
+        emptyDir: {}
+{{- end }}

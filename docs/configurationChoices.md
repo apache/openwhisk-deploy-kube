@@ -254,7 +254,9 @@ probes:
 
 ### Metrics and prometheus support
 
-OpenWhisk distinguishes between system and user metrics. System metrics typically contain information about system performance and use Kamon to collect. User metrics encompass information about action performance which is sent to Kafka in a form of events.
+OpenWhisk distinguishes between `system` and `user` metrics. System metrics typically contain information about system performance and use Kamon to collect. User metrics encompass information about action performance which is sent to Kafka in a form of events.
+
+#### System metrics
 
 If you want to collect system metrics, store and display them with prometheus, use below configuration in `mycluster.yaml`:
 
@@ -263,22 +265,32 @@ metrics:
   prometheusEnabled: true
 ```
 
-You also need to enable your prometheus to scrape those metrics, add below `scrape_configs` to your prometheus configuration file:
-```
-global:
-  scrape_interval: 1s
-scrape_configs:
-  - job_name: 'kamon-metrics'
-    static_configs:
-      - targets:['<controller_host>:8080','<invoker_host>:8080']
-```
-**Note:** replace `<controller_host>` and `<invoker_host>` with the real host name of controller and invoker.
+This will automatically spin up a Prometheus server inside your cluster that will start scraping `controller` and `invoker` metrics.
 
-If you want to enable user metrics, use below configuration in `mycluster.yaml`:
+You can access Prometheus by using port forwarding:
+```
+kubectl port-forward svc/owdev-prometheus-server 9090:9090 --namespace openwhisk
+```
+
+#### User metrics
+
+If you want to enable user metrics, use the below configuration in `mycluster.yaml`:
 
 ```
 metrics:
   userMetricsEnabled: true
+```
+
+This will install [User-events](https://github.com/apache/openwhisk/tree/master/core/monitoring/user-events), [Prometheus](https://github.com/prometheus/prometheus) and [Grafana](https://github.com/grafana/grafana) on your cluster with already preconfigured Grafana dashboards for visualizing user generated metrics.
+
+The dashboards can be accessed here:
+```
+https://<whisk.ingress.apiHostName>:<whisk.ingress.apiHostPort>/monitoring/dashboards
+```
+All dashboards can be viewed anonymously and by default admin Grafana credentials are `admin/admin`. Use the bellow configuration in `mycluster.yaml` to change Grafana's admin password:
+```
+grafana:
+  adminPassword: admin
 ```
 
 # Configure pod disruptions budget
