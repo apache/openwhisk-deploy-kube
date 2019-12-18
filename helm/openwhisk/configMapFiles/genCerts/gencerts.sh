@@ -15,7 +15,11 @@
 # limitations under the License.
 #
 
-genssl.sh "*.$WHISK_API_HOST_NAME" server /cert-gen
-
-kubectl create secret tls $NGINX_CERT_SECRET --cert=/cert-gen/openwhisk-server-cert.pem --key=/cert-gen/openwhisk-server-key.pem
+if kubectl get secret $NGINX_CERT_SECRET; then
+    echo "using existing $NGINX_CERT_SECRET secret"
+else
+    echo "generating new $NGINX_CERT_SECRET secret"
+    genssl.sh "*.$WHISK_API_HOST_NAME" server /cert-gen
+    kubectl create secret tls $NGINX_CERT_SECRET --cert=/cert-gen/openwhisk-server-cert.pem --key=/cert-gen/openwhisk-server-key.pem
+fi
 
