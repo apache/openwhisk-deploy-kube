@@ -350,7 +350,9 @@ etc.) are not directly accessible from the outside of the Kubernetes cluster.
 Therefore, although you can run full system tests against a
 Kubernetes-based deployment by giving some extra command line
 arguments, any unit tests that assume direct access to one of the internal
-microservices will fail.   The system tests can be executed in a
+microservices will fail.   First clone the [core OpenWhisk repository](https://github.com/apache/openwhisk)
+locally and set `$OPENWHISK_HOME` to its top-level directory. Then, the
+system tests can be executed in a
 batch-style as shown below, where WHISK_SERVER and WHISK_AUTH are
 replaced by the values returned by `wsk property get --apihost` and
 `wsk property get --auth` respectively.
