@@ -26,7 +26,7 @@ to get a Kubernetes cluster for local development is to use the
 built-in support for running a single node Kubernetes cluster that is
 available in Docker 18.06 and later. This will let you use Helm to
 deploy Apache OpenWhisk to Kubernetes on your computer without needing
-to install Minikube or otherwise run inside a virtual machine.
+any additional virtualization software installed.
 
 ## Quick-start
 

@@ -61,10 +61,8 @@ documentation](./configurationChoices.md) for more details.
 
 If services are having trouble connecting to Kafka, it may be that the
 Kafka service didn't actually come up successfully. One reason Kafka
-can fail to fully come up is that it cannot connect to itself.  On minikube,
-fix this by saying `minikube ssh -- sudo ip link set docker0 promisc
-on`. On full scale Kubernetes clusters,
-make sure that your kubelet's `hairpin-mode` is not `none`).
+can fail to fully come up is that it cannot connect to itself. This can
+happen if your kubelet's `hairpin-mode` is not `none`.
 
 The usual symptom of this network misconfiguration is the controller
 pod being in a CrashLoopBackOff where it exits before it reports
