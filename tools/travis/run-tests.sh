@@ -25,6 +25,6 @@ if helm test ow4travis --timeout 2400; then
     echo "PASSED! Deployment verification tests passed."
 else
     echo "FAILED: Deployment verification tests failed."
-    kubectl logs -n openwhisk -low-testpod=true
+    kubectl logs -n openwhisk -low-testpod=true --tail=-1
     exit 1
 fi
