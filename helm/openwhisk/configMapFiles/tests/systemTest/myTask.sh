@@ -23,9 +23,9 @@ cd /openwhisk
 git checkout $OW_GIT_TAG_OPENWHISK
 
 # compile test suite
-./gradlew --console=plain compileTestScala
+./gradlew --console=plain compileTestScala tests:buildArtifacts
 
-# run tests:testSystemBasic
-./gradlew --console=plain :tests:testSystemBasic -Dwhisk.auth="$WSK_AUTH" -Dwhisk.server=$WSK_API_HOST_URL -Dopenwhisk.home=/openwhisk
+# run tests:testSystemKCF
+./gradlew --console=plain :tests:testSystemKCF -Dwhisk.auth="$WSK_AUTH" -Dwhisk.server=$WSK_API_HOST_URL -Dopenwhisk.home=/openwhisk
 
 echo "PASSED! Successfully executed tests:testSystemBasic"
