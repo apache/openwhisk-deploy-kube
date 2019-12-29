@@ -48,7 +48,7 @@ document the necessary steps.
 * [Prerequisites: Kubernetes and Helm](#prerequisites-kubernetes-and-helm)
 * [Deploying OpenWhisk](#deploying-openwhisk)
 * [Administering OpenWhisk](#administering-openwhisk)
-* [Development and Testing](#development-and-testing)
+* [Development and Testing OpenWhisk on Kubernetes](#development-and-testing-openwhisk-on-kubernetes)
 * [Cleanup](#cleanup)
 * [Issues](#issues)
 
