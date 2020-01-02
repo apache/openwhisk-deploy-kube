@@ -1082,44 +1082,6 @@ invoker:
           description: "How many instances of the KubernetesContainerFactory should be deployed?"
           type: "number"
           required: true
-      agent:
-        imageName:
-          __metadata:
-            label: "InvokerAgent image name"
-            description: "The docker image name for the invoker agent"
-            type: "string"
-            required: true
-        imageTag:
-          __metadata:
-            label: "InvokerAgent image tag"
-            description: "The docker image tag for the invoker agent"
-            type: "string"
-            required: true
-        imagePullPolicy:
-          __metadata:
-            label: "Image pull policy"
-            description: "The image pull policy to apply for this image."
-            type: "string"
-            required: true
-            options:
-            - label: "Always"
-              value: "Always"
-            - label: "Never"
-              value: "Never"
-            - label: "IfNotPresent"
-              value: "IfNotPresent"
-        enabled:
-          __metadata:
-            label: "Agent enabled"
-            description: "If the experimental invoker agent should be enabled"
-            type: "boolean"
-            required: true
-        port:
-          __metadata:
-            label: "Agent port"
-            description: "The primary invoker agent port"
-            type: "string"
-            required: true
 
 apigw:
   __metadata:

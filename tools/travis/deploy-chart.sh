@@ -207,9 +207,6 @@ whisk:
 invoker:
   containerFactory:
     impl: $OW_CONTAINER_FACTORY
-    kubernetes:
-      agent:
-        enabled: false
 
 nginx:
   httpsNodePort: $WSK_PORT

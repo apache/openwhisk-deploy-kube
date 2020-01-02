@@ -22,6 +22,3 @@ SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 ROOTDIR="$SCRIPTDIR/../../"
 
 cd $ROOTDIR
-
-echo "Publishing kube-invoker-agent image"
-./tools/travis/publish.sh openwhisk kube-invoker-agent nightly docker/invoker-agent
