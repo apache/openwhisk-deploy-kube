@@ -53,7 +53,7 @@ pushd /tmp
   sudo cp wsk /usr/local/bin/wsk
 
   # Download and install helm
-  curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get > get_helm.sh && chmod +x get_helm.sh && ./get_helm.sh --version v2.14.3
+  curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get > get_helm.sh && chmod +x get_helm.sh && ./get_helm.sh --version v2.16.1
 popd
 
 # Pods running in kube-system namespace should have cluster-admin role

@@ -28,4 +28,4 @@ git checkout $OW_GIT_TAG_OPENWHISK
 # run tests:testSystemKCF
 ./gradlew --console=plain :tests:testSystemKCF -Dwhisk.auth="$WSK_AUTH" -Dwhisk.server=$WSK_API_HOST_URL -Dopenwhisk.home=/openwhisk
 
-echo "PASSED! Successfully executed tests:testSystemBasic"
+echo "PASSED! Successfully executed tests:testSystemKCF"
