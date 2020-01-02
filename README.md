@@ -48,7 +48,7 @@ document the necessary steps.
 * [Prerequisites: Kubernetes and Helm](#prerequisites-kubernetes-and-helm)
 * [Deploying OpenWhisk](#deploying-openwhisk)
 * [Administering OpenWhisk](#administering-openwhisk)
-* [Development and Testing](#development-and-testing)
+* [Development and Testing OpenWhisk on Kubernetes](#development-and-testing-openwhisk-on-kubernetes)
 * [Cleanup](#cleanup)
 * [Issues](#issues)
 
@@ -129,7 +129,8 @@ significantly larger clusters by scaling up the replica count of the
 various components and labeling multiple nodes as invoker nodes.
 There are some additional notes [here](docs/k8s-diy.md).
 
-We would welcome contributions of more detailed DIY instructions.
+[Here](docs/k8s-diy-ubuntu.md) a Kubernetes cluster example using kubeadm and Ubuntu 18.04.
+
 
 ## Helm
 
