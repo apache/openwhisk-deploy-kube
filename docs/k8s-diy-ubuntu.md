@@ -1,12 +1,31 @@
+<!--
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+-->
+
 # Kubernetes cluster example with Ubuntu
 
-You can easily build a cluster using kubeadm and kubectl on Ubuntu 18.04. 
+You can easily build a cluster using kubeadm and kubectl on Ubuntu 18.04.
 
 ### Perform these steps on **all the machines** that will be part of your cluster.
 
 First, have Docker installed:
-``` 
-sudo apt-get install -y docker.io 
+```
+sudo apt-get install -y docker.io
 ```
 
 Then install the kubeadm toolbox:
@@ -72,9 +91,9 @@ Now you're ready to let other machines join. Use the join command kubeadm printe
 ```
 kubeadm join <IP-address>:6443 --token 29am26.3fw2znktwbbff0we \
     --discovery-token-ca-cert-hash sha256:eb32f7f58ae6907f26ed5c075ecd4ef6756d832b6c358fd4b2f408e52d18a369
-    
+
 ```
-After a node joined give it time to get in the Ready status, then you can check that everything is 
+After a node joined give it time to get in the Ready status, then you can check that everything is
 running with: ```kubectl get all -A```.
 
 Now you have a running cluster with a master node and one or more worker nodes.
