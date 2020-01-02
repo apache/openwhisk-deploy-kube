@@ -18,11 +18,6 @@
 
 set -x
 
-# Install kubectl
-curl -Lo ./kubectl https://storage.googleapis.com/kubernetes-release/release/v1.16.1/bin/linux/amd64/kubectl
-chmod +x kubectl
-sudo cp kubectl /usr/local/bin/kubectl
-
 # Install kind
 curl -Lo ./kind https://github.com/kubernetes-sigs/kind/releases/download/v0.5.1/kind-linux-amd64
 chmod +x kind
@@ -45,21 +40,10 @@ export KUBECONFIG="$(kind get kubeconfig-path)"
 echo "Kubernetes cluster is deployed and reachable"
 kubectl describe nodes
 
-# Download and install misc packages and utilities
-pushd /tmp
-  # download and install the wsk cli
-  wget -q https://github.com/apache/openwhisk-cli/releases/download/latest/OpenWhisk_CLI-latest-linux-amd64.tgz
-  tar xzf OpenWhisk_CLI-latest-linux-amd64.tgz
-  sudo cp wsk /usr/local/bin/wsk
-
-  # Download and install helm
-  curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get > get_helm.sh && chmod +x get_helm.sh && ./get_helm.sh --version v2.16.1
-popd
-
 # Pods running in kube-system namespace should have cluster-admin role
 kubectl create clusterrolebinding add-on-cluster-admin --clusterrole=cluster-admin --serviceaccount=kube-system:default
 
-# Install tiller into the cluster
+# Install tiller (Helm2) into the cluster
 /usr/local/bin/helm init --service-account default
 
 # Wait for tiller to be ready
