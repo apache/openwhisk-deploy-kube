@@ -69,7 +69,7 @@ spec:
                 name: {{ .Release.Name }}-whisk.config
                 key: whisk_system_namespace
           - name: "WHISK_API_GATEWAY_HOST_V2"
-            value: "http://$({{ upper .Release.Name }}_APIGATEWAY_SERVICE_HOST):$({{ upper .Release.Name }}_APIGATEWAY_SERVICE_PORT_API)/v2"
+            value: "http://{{ include "openwhisk.apigw_host" . }}:{{ .Values.apigw.apiPort }}/v2"
 
           # Provider database configuration
           {{- if .Values.providers.db.external }}
