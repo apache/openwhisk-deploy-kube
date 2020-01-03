@@ -24,7 +24,6 @@ metadata:
     name: {{ .Release.Name }}-user-events
 {{ include "openwhisk.label_boilerplate" . | indent 4 }}
 spec:
-  serviceName: {{ .Release.Name }}-user-events
   replicas: {{ .Values.user_events.replicaCount }}
   selector:
     matchLabels:

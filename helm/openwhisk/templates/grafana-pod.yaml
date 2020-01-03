@@ -24,7 +24,6 @@ metadata:
     name: {{ .Release.Name }}-grafana
 {{ include "openwhisk.label_boilerplate" . | indent 4 }}
 spec:
-  serviceName: {{ .Release.Name }}-grafana
   replicas: {{ .Values.grafana.replicaCount }}
   selector:
     matchLabels:
