@@ -36,7 +36,7 @@ operate a default cluster with two virtual worker nodes.
 
 Download the latest stable release of `kind` for your platform from
 https://github.com/kubernetes-sigs/kind/releases. Our TravisCI testing
-currently uses kind v0.5.1 on an ubuntu 18.04 host.
+currently uses kind v0.6.1 on an ubuntu 18.04 host.
 
 ### Creating the Kubernetes Cluster
 
@@ -47,7 +47,7 @@ requiring `sudo` to gain `root` privileges.
 Create a kind-cluster.yaml to configure your cluster.
 ```yaml
 kind: Cluster
-apiVersion: kind.sigs.k8s.io/v1alpha3
+apiVersion: kind.x-k8s.io/v1alpha4
 nodes:
 - role: control-plane
 - role: worker

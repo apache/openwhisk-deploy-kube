@@ -16,12 +16,10 @@
 # limitations under the License.
 #
 
-export KUBECONFIG="$(kind get kubeconfig-path)"
-
 ###
 # Now run the tests provided in the Chart to verify the deployment
 ###
-if helm test ow4travis --timeout 2400; then
+if helm test ow4travis -n openwhisk --timeout 40m; then
     echo "PASSED! Deployment verification tests passed."
 else
     echo "FAILED: Deployment verification tests failed."
