@@ -1,0 +1,524 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+
+  "definitions": {
+    "podspec": {
+      "type": "object",
+      "properties": {
+        "imageName":       { "type": "string" },
+        "imageTag":        { "type": "string" },
+        "imagePullPolicy": { "type": "string", "enum": ["Always", "Never", "IfNotPresent"] },
+        "replicaCount":    { "type": "integer", "minimum": 1 },
+        "restartPolicy":   { "type": "string" }
+      },
+      "required": ["imageName", "imageTag", "imagePullPolicy", "replicaCount", "restartPolicy"]
+    },
+
+    "daemonset": {
+      "type": "object",
+      "properties": {
+        "imageName":       { "type": "string" },
+        "imageTag":        { "type": "string" },
+        "imagePullPolicy": { "type": "string", "enum": ["Always", "Never", "IfNotPresent"] },
+        "restartPolicy":   { "type": "string" }
+      },
+      "required": ["imageName", "imageTag", "imagePullPolicy", "restartPolicy"]
+    },
+
+    "pvSizeValid": {
+      "$comment": "intended to validate the *.persistence.size portion of a podspec",
+      "type": "object",
+      "properties": {
+        "persistence": {
+          "type": "object",
+          "properties": {
+            "size": { "type": "string" }
+          },
+          "required": [ "size" ]
+        }
+      }
+    },
+
+    "probespec": {
+      "$comment": "configuration of liveness or readiness probe",
+      "properties": {
+        "initialDelaySeconds": { "type": "integer", "minimum": 0 },
+        "periodSeconds": { "type": "integer", "minimum": 0 },
+        "timeoutSeconds": { "type": "integer", "minimum": 0 }
+      },
+      "required": ["initialDelaySeconds", "periodSeconds", "timeoutSeconds"]
+    },
+
+    "standardPodProbes": {
+      "type": "object",
+      "properties": {
+        "livenessProbe": { "$ref": "#/definitions/probespec" },
+        "readinessProbe": { "$ref": "#/definitions/probespec" }
+      },
+      "required": ["livenessProbe", "readinessProbe"]
+    },
+
+    "optionalExternalHostCheck": {
+      "$comment": "external being true implies host is non-null string",
+      "properties": { "external": { "type": "boolean" } },
+      "required": ["external"],
+      "if": { "properties": { "external": { "const": true } } },
+      "then": { "properties": { "host": { "type": "string" } }, "required": ["host"] }
+    },
+
+    "actionLimitSpecString": {
+      "type": "object",
+      "properties": {
+        "min": { "type": "string" },
+        "max": { "type": "string" },
+        "std": { "type": "string" }
+      },
+      "required": ["min", "max", "std" ]
+    },
+
+    "actionLimitSpecInteger": {
+      "type": "object",
+      "properties": {
+        "min": { "type": "number" },
+        "max": { "type": "number" },
+        "std": { "type": "number" }
+      },
+      "required": ["min", "max", "std" ]
+    },
+
+    "kafkaTopicConfig": {
+      "type": "object",
+      "properties": {
+        "segmentBytes": { "type": "string" },
+        "retentionBytes": { "type": "string" },
+        "retentionMs": { "type": "string" }
+      },
+      "required": ["segmentBytes", "retentionBytes", "retentionMs" ]
+    }
+
+  },
+
+  "type": "object",
+  "name": "Values",
+  "properties": {
+    "whisk": {
+      "type": "object",
+      "properties": {
+        "ingress": {
+          "description": "Specification of the Ingress used to expose OpenWhisk outside your Kubernetes cluster",
+          "type": "object",
+          "properties": {
+            "apiHostName": { "type": "string", "description": "The external hostname or IP address used to access the Ingress of your Kubernetes cluster" },
+            "apiHostPort": { "type": "integer", "minimum": 0, "description": "The external port used to access the Ingress of your Kubernetes cluster" },
+            "apiHostProto": { "type": "string", "enum": ["http", "https"], "description": "The protocol to be used to connect to the Ingress of your Kubernetes cluster" },
+            "type": { "type": "string", "enum": ["NodePort", "Standard", "LoadBalancer", "OpenShift"], "description": "The type of Ingress being deployed" },
+            "annotations": { "type": "object", "description": "Annotations to add to Ingress resource. Specify as a list of key: value pairs" },
+            "domain": { "type": "string", "description": "The Fully Qualified Host Name for the Ingress domain" },
+            "tls": {
+              "type": "object",
+              "properties": {
+                "enabled": { "type": "boolean" },
+                "secretenabled": { "type": "boolean" },
+                "createsecret": { "type": "boolean" },
+                "secrettype": { "type": "string" },
+                "crt": { "type": "string" },
+                "key": { "type": "string" }
+              }
+            }
+          },
+          "required": ["apiHostName", "apiHostPort", "apiHostProto", "type"]
+        },
+        "auth": {
+          "type": "object",
+          "properties": {
+            "system": { "type": "string" },
+            "guest": { "type": "string" }
+          }
+        },
+        "systemNameSpace": { "type": "string" },
+        "limits": {
+          "type": "object",
+          "properties": {
+            "actionsInvokesPerminute": { "type": "number", "minimum": 0, "descrption": "The maximum number of action invocations per minute by a single namespace" },
+            "actionsInvokesConcurrent": { "type": "number", "minimum": 0, "descrption":  "The maximum number of concurrent action invocations by a single namespace" },
+            "triggersFiresPerminute": { "type": "number", "minimum": 0, "description": "The maximum triggers fired per minute for a single namespace" },
+            "actionsSequenceMaxLength": { "type": "number", "minimum": 0, "description": "The maximum length of an action sequence" },
+            "actions": {
+              "type": "object",
+              "properties": {
+                "time": { "$ref": "#/definitions/actionLimitSpecString" },
+                "memory": { "$ref": "#/definitions/actionLimitSpecString" },
+                "concurrency": { "$ref": "#/definitions/actionLimitSpecInteger" },
+                "log": { "$ref": "#/definitions/actionLimitSpecString" },
+                "time": { "$ref": "#/definitions/actionLimitSpecString" }
+              }
+            },
+            "activation": {
+              "type": "object",
+              "properties": {
+                "payload": {
+                  "type": "object",
+                  "properties": {
+                    "max": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "loadbalancer": {
+          "type": "object",
+          "properties": {
+            "blackboxFraction": { "type": "string" },
+            "timeoutFactor": { "type": "number" }
+          }
+        }
+      },
+      "kafka": {
+        "type": "object",
+        "properties": {
+          "replicationFactor": { "type": "string" },
+          "topics": {
+            "type": "object",
+            "properties": {
+              "cacheInvalidation": { "$ref": "#/definitions/kafkaTopicConfig" },
+              "completed": { "$ref": "#/definitions/kafkaTopicConfig" },
+              "events": { "$ref": "#/definitions/kafkaTopicConfig" },
+              "health": { "$ref": "#/definitions/kafkaTopicConfig" },
+              "invoker": { "$ref": "#/definitions/kafkaTopicConfig" }
+            }
+          }
+        }
+      },
+      "containerPool": {
+        "type": "object",
+        "properties": {
+          "userMemory": { "type": "string" }
+        }
+      },
+      "runtimes": { "type": "string" },
+      "testing": {
+        "type": "object",
+        "properties": {
+          "includeTests": { "type": "boolean" },
+          "includeSystemTests": { "type": "boolean" }
+        }
+      },
+      "versions": {
+        "type": "object",
+        "properties": {
+          "openwhisk": {
+            "type": "object",
+            "properties": {
+              "buildDate": { "type": "string" },
+              "buildNo": { "type": "string" },
+              "gitTag": { "type": "string" }
+            },
+            "required": ["buildDate", "buildNo", "gitTag"]
+          },
+          "openwhiskCli": { "type": "object", "properties": { "gitTag": { "type": "string" }, "required": ["gitTag"] } },
+          "openwhiskCatalog": { "type": "object", "properties": { "gitTag": { "type": "string" }, "required": ["gitTag"] } },
+          "openwhiskPackageAlarms": { "type": "object", "properties": { "gitTag": { "type": "string" }, "required": ["gitTag"] } },
+          "openwhiskPackageCloudant": { "type": "object", "properties": { "gitTag": { "type": "string" }, "required": ["gitTag"] } },
+          "openwhiskPackageKafka": { "type": "object", "properties": { "gitTag": { "type": "string" }, "required": ["gitTag"] } },
+          "required": ["openwhisk", "openwhiskCli", "openwhiskCatalog", "openwhiskPackageAlarms", "openwhiskPackageCloudant", "openwhiskPackageKafka"]
+        }
+      },
+      "required": [ "ingress", "auth", "systemNameSpace", "versions" ]
+    },
+
+    "k8s": {
+      "type": "object",
+      "properties": {
+        "domain": { "type": "string" },
+        "dns": { "type": "string" },
+        "persistence": {
+          "type": "object",
+          "properties": { "enabled": { "type": "boolean" } },
+          "required": ["enabled"],
+          "if": { "properties": { "enabled": { "const": true } } },
+          "then": {
+            "allOf": [
+              { "properties": { "hasDefaultStorageClass": { "type": "boolean" } },
+                "required": ["hasDefaultStorageClass"]
+              },
+              { "if": { "properties": { "hasDefaultStorageClass": { "const": false } } },
+                "then": {
+                  "properties": { "explicitStorageClass": { "type": "string" } },
+                  "required": ["explicitStorageClass"]
+                }
+              }
+            ]
+          }
+        }
+      },
+      "required": ["domain", "dns", "persistence"]
+    },
+
+    "utility": {
+      "type": "object",
+      "properties": {
+        "imageName":       { "type": "string" },
+        "imageTag":        { "type": "string" },
+        "imagePullPolicy": { "type": "string", "enum": ["Always", "Never", "IfNotPresent"] }
+      },
+      "required": ["imageName", "imageTag", "imagePullPolicy"]
+    },
+
+    "docker": {
+      "type": "object",
+      "properties": {
+        "registry": {
+          "type": "object",
+          "properties": {
+            "name": { "type" : "string" },
+            "username": { "type" : "string" },
+            "password": { "type" : "string" }
+          }
+        },
+        "timezone": { "type": "string" }
+      }
+    },
+
+    "zookeeper": {
+      "allOf": [
+        { "$ref": "#/definitions/podspec" },
+        { "$comment": "Zookeeper's quorum protocol is designed to have an odd number of replicas",
+          "properties": { "replicaCount": { "not": { "multipleOf": 2 } } }
+        },
+        { "properties": {
+            "port": { "type": "integer", "minimum": 0 },
+            "serverPort": { "type": "integer", "minimum": 0 },
+            "leaderElectionPort": { "type": "integer", "minimum": 0 },
+            "config": {
+              "type": "object",
+              "properties": {
+                "tickTime": { "type": "integer" },
+                "initLimit": { "type": "integer" },
+                "syncLimit": { "type": "integer" },
+                "dataDir": { "type": "string" },
+                "dataLogDir": { "type": "string" }
+              },
+              "required": ["tickTime", "initLimit", "syncLimit", "dataDir", "dataLogDir"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["port", "serverPort", "leaderElectionPort", "config"]
+        }
+      ]
+    },
+
+    "kafka": {
+      "allOf": [
+        { "$ref": "#/definitions/podspec" },
+        { "properties": { "port": { "type": "integer", "minimum": 0 } }, "required": ["port"] }
+      ]
+    },
+
+    "db": {
+      "allOf": [
+        { "$ref": "#/definitions/podspec" },
+        { "properties": { "port": { "type": "integer", "minimum": 0 } }, "required": ["port"] },
+        { "$comment": "wipeAndInit implies replicaCount is 1 because initdb.sh enables single node mode",
+          "if": { "properties": { "wipeAndInit": { "const": true } } },
+          "then": { "properties": { "replicaCount": { "const": 1 } } }
+        },
+        { "$ref": "#/definitions/optionalExternalHostCheck" }
+      ]
+    },
+
+    "nginx": {
+      "allOf": [
+        { "$ref": "#/definitions/podspec" },
+        { "properties": { "httpPort": { "type": "integer", "minimum": 0 } }, "required": ["httpPort"] },
+        { "properties": { "httpsPort": { "type": "integer", "minimum": 0 } }, "required": ["httpsPort"] }
+      ]
+    },
+
+    "controller": {
+      "allOf": [
+        { "$ref": "#/definitions/podspec" },
+        { "properties": { "port": { "type": "integer", "minimum": 0 } }, "required": ["port"] },
+        { "properties": {
+            "options": { "type": "string" },
+            "jvmHeapMB": { "type": "string" },
+            "jvmOptions": { "type": "string" }
+           },
+           "required": ["jvmHeapMB"]
+        }
+      ]
+    },
+
+    "invoker": {
+      "allOf": [
+        { "$ref": "#/definitions/daemonset" },
+        { "properties": { "port": { "type": "integer", "minimum": 0 } }, "required": ["port"] }
+      ]
+    },
+
+    "apigw": {
+      "allOf": [
+        { "$ref": "#/definitions/podspec" },
+        { "properties": { "apiPort": { "type": "integer", "minimum": 0 } }, "required": ["apiPort"] },
+        { "properties": { "mgmtPort": { "type": "integer", "minimum": 0 } }, "required": ["mgmtPort"] }
+      ]
+    },
+
+    "redis": {
+      "allOf": [
+        { "$ref": "#/definitions/podspec" },
+        { "properties": { "port": { "type": "integer", "minimum": 0 } }, "required": ["port"] },
+        { "properties": { "replicaCount": { "const": 1 } } },
+        { "$ref": "#/definitions/optionalExternalHostCheck" }
+      ]
+    },
+
+    "user_events": {
+      "allOf": [
+        { "$ref": "#/definitions/podspec" },
+        { "properties": { "port": { "type": "integer", "minimum": 0 } }, "required": ["port"] }
+      ]
+    },
+
+    "prometheus": {
+      "allOf": [
+        { "$ref": "#/definitions/podspec" },
+        { "properties": { "port": { "type": "integer", "minimum": 0 } }, "required": ["port"] },
+        { "properties": {
+            "persistentVolume": {
+              "type": "object",
+              "properties": { "mountPath": { "type": "string" } },
+              "required": ["mountPath" ]
+            }
+          }
+        }
+      ]
+    },
+
+    "grafana": {
+      "allOf": [
+        { "$ref": "#/definitions/podspec" },
+        { "properties": { "port": { "type": "integer", "minimum": 0 } }, "required": ["port"] },
+        { "properties": { "dashboards": { "type": "array", "items": { "type": "string" } } }, "required": ["dashboards"] }
+      ]
+    },
+
+    "metrics": {
+      "type": "object",
+      "properties": {
+        "prometheusEnabled": { "type": "boolean" },
+        "whiskconfigFile": { "type": "string" },
+        "kamonEnabled": { "type": "boolean" },
+        "kamonTags": { "type": "boolean" },
+        "userMetricsEnabled": { "type": "boolean" }
+      }
+    },
+
+    "providers": {
+      "type": "object",
+      "properties": {
+        "db": { "$ref": "#/definitions/optionalExternalHostCheck" },
+
+        "alarm": {
+          "allOf": [
+            { "$ref": "#/definitions/podspec" },
+            { "properties": { "apiPort": { "type": "integer", "minimum": 0 } }, "required": ["apiPort"] },
+            { "properties": { "replicaCount": { "const": 1 } } }
+          ]
+        },
+
+        "cloudant": {
+          "allOf": [
+            { "$ref": "#/definitions/podspec" },
+            { "properties": { "apiPort": { "type": "integer", "minimum": 0 } }, "required": ["apiPort"] },
+            { "properties": { "replicaCount": { "const": 1 } } }
+          ]
+        },
+
+        "kafka": {
+          "allOf": [
+            { "$ref": "#/definitions/podspec" },
+            { "properties": { "apiPort": { "type": "integer", "minimum": 0 } }, "required": ["apiPort"] },
+            { "properties": { "replicaCount": { "const": 1 } } }
+          ]
+        }
+      }
+    },
+
+    "affinity": {
+      "type": "object",
+      "properties": { "enabled": { "type": "boolean" } },
+      "required": ["enabled"],
+      "if": { "properties": { "enabled": { "const": true } } },
+      "then": {
+        "properties": {
+          "coreNodeLabel": { "type": "string" },
+          "edgeNodeLabel": { "type": "string" },
+          "invokerNodeLabel": { "type": "string" },
+          "providerNodeLabel": { "type": "string" }
+        },
+        "required": ["coreNodeLabel", "edgeNodeLabel", "invokerNodeLabel", "providerNodeLabel"]
+      }
+    },
+
+    "toleration": {
+      "type": "object",
+      "properties": { "enabled": { "type": "boolean" } },
+      "required": ["enabled"],
+      "if": { "properties": { "enabled": { "const": true } } },
+      "then": {
+        "properties": {
+          "coreValue": { "type": "string" },
+          "edgeValue": { "type": "string" },
+          "invokerValue": { "type": "string" }
+        },
+        "required": ["coreValue", "edgeValue", "invokerValue"]
+      }
+    },
+
+    "pdb": {
+      "type": "object",
+      "properties": { "enable": { "type": "boolean" } },
+      "required": ["enable"],
+      "if": { "properties": { "enable": { "const": true } } },
+      "then": {
+        "properties": {
+          "zookeeper": { "type": "object", "properties": { "maxUnavailable": { "type": "integer" } }, "required": ["maxUnavailable"] },
+          "kafka": { "type": "object", "properties": { "maxUnavailable": { "type": "integer" } }, "required": ["maxUnavailable"] },
+          "controller": { "type": "object", "properties": { "maxUnavailable": { "type": "integer" } }, "required": ["maxUnavailable"] },
+          "invoker": { "type": "object", "properties": { "maxUnavailable": { "type": "integer" } }, "required": ["maxUnavailable"] }
+        },
+        "required": ["zookeeper", "kafka", "controller", "invoker"]
+      }
+    },
+
+
+    "probes": {
+      "type": "object",
+      "properties": {
+        "zookeeper": { "$ref": "#/definitions/standardPodProbes" },
+        "controller": { "$ref": "#/definitions/standardPodProbes" }
+      }
+    }
+  },
+
+  "if": {
+    "properties": { "k8s": { "properties": { "persistence": { "properties": { "enabled": { "const": true } }}}}}
+  },
+  "then": {
+    "$comment": "If k8s.persistence.enabled then .persistence.size must be valid for each listed podspec",
+    "properties": {
+      "zookeeper": { "$ref": "#/definitions/pvSizeValid" },
+      "kafka": { "$ref": "#/definitions/pvSizeValid" },
+      "db": { "$ref": "#/definitions/pvSizeValid" },
+      "redis": { "$ref": "#/definitions/pvSizeValid" },
+      "prometheus": { "$ref": "#/definitions/pvSizeValid" },
+      "providers": {
+        "properties": {
+          "alarm": { "$ref": "#/definitions/pvSizeValid" },
+          "cloudant": { "$ref": "#/definitions/pvSizeValid" }
+        }
+      }
+    }
+  }
+}

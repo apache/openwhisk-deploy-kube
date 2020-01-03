@@ -89,14 +89,7 @@ storageClass:
   reclaimPolicy: Delete
 ```
 
-With Helm 2, run the command to install it:
-```
-helm install --name your-ow-release-name --namespace openwhisk \
-  --values ./openwhisk-nfs-client-provisioner.yaml \
-  stable/nfs-client-provisioner
-```
-
-Or if you're using Helm 3:
+Using Helm 3, run this command to install it:
 ```
 helm install your-ow-release-name --namespace openwhisk \
   stable/nfs-client-provisioner \

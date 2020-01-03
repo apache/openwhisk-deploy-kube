@@ -77,29 +77,21 @@ nginx:
 
 ### Using helm to install OpenWhisk
 
-Execute these two commands and wait a few seconds for the tiller-deploy pod
-in the kube-system namespace to be in the Running state:
-
-```cmd
-helm init
-kubectl create clusterrolebinding tiller-cluster-admin --clusterrole=cluster-admin --serviceaccount=kube-system:default
-```
-
 Indicate the Kubernetes worker nodes that should be used to execute user
 containers by OpenWhisk's invokers. For a single node development cluster,
 simply run:
 
 `kubectl label nodes --all openwhisk-role=invoker`
 
-Now you're ready to run helm to set up OpenWhisk. Make sure you created your
+Make sure you created your
 `mycluster.yaml` file as described above, and run:
 
 ```cmd
 cd openwhisk-deploy-kube
-helm install ./helm/openwhisk --namespace=openwhisk --name=owdev -f mycluster.yaml
+helm install owdev ./helm/openwhisk -n openwhisk -f mycluster.yaml
 ```
 
-You can use the command `helm status owdev` to get a summary of the various
+You can use the command `helm status owdev -n openwhisk` to get a summary of the various
 Kubernetes artifacts that make up your OpenWhisk deployment. Once the
 `install-packages` Pod is in the Completed state, your OpenWhisk deployment
 is ready to be used.
