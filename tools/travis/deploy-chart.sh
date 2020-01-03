@@ -162,8 +162,8 @@ set -x
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 ROOTDIR="$SCRIPTDIR/../../"
 
-# Default to docker container factory if not specified
-OW_CONTAINER_FACTORY=${OW_CONTAINER_FACTORY:="docker"}
+# Default to kubernetes container factory if not specified
+OW_CONTAINER_FACTORY=${OW_CONTAINER_FACTORY:="kubernetes"}
 
 # Default to not including system tests in helm test suite
 OW_INCLUDE_SYSTEM_TESTS=${OW_INCLUDE_SYSTEM_TESTS:="false"}
@@ -171,14 +171,14 @@ OW_INCLUDE_SYSTEM_TESTS=${OW_INCLUDE_SYSTEM_TESTS:="false"}
 # Default timeout limit to 60 steps
 TIMEOUT_STEP_LIMIT=${TIMEOUT_STEP_LIMIT:=60}
 
-# kind puts config file in non-standard place; must set KUBECONFIG
-export KUBECONFIG="$(kind get kubeconfig-path)"
-
 # Label nodes for affinity.
 # For DockerContainerFactory, at least one must be labeled as an invoker.
 echo "Labeling nodes with openwhisk-role assignments"
 kubectl label nodes kind-worker openwhisk-role=core
 kubectl label nodes kind-worker2 openwhisk-role=invoker
+
+# Create namespace
+kubectl create namespace openwhisk
 
 # Configure a NodePort Ingress assuming kind conventions.
 # Use kind-worker as the ingress, since we labeled it as our core node above.
@@ -224,7 +224,8 @@ EOF
 echo "Contents of mycluster.yaml are:"
 cat mycluster.yaml
 
-helm install helm/openwhisk --namespace=openwhisk --name=ow4travis -f mycluster.yaml || exit 1
+helm lint helm/openwhisk -n openwhisk -f mycluster.yaml || exit 1
+helm install ow4travis helm/openwhisk -n openwhisk -f mycluster.yaml || exit 1
 
 # Wait for controller to be up
 statefulsetHealthCheck "ow4travis-controller"

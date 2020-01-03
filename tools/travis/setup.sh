@@ -18,22 +18,31 @@
 
 set -x
 
-# Intall python packages used by box-upload.py
-pip install --user humanize requests
+HELM_VERSION=v3.0.1
+KIND_VERSION=v0.6.1
+KUBECTL_VERSION=v1.16.3
+WSK_CLI_VERSION=latest
 
-# Download and install misc packages and utilities
+# Download and install command line tools
 pushd /tmp
-  # Install kubectl
-  curl -Lo ./kubectl https://storage.googleapis.com/kubernetes-release/release/v1.16.1/bin/linux/amd64/kubectl
+  # kubectl
+  curl -Lo ./kubectl https://storage.googleapis.com/kubernetes-release/release/$KUBECTL_VERSION/bin/linux/amd64/kubectl
   chmod +x kubectl
   sudo cp kubectl /usr/local/bin/kubectl
 
-  # download and install the wsk cli
-  wget -q https://github.com/apache/openwhisk-cli/releases/download/latest/OpenWhisk_CLI-latest-linux-amd64.tgz
-  tar xzf OpenWhisk_CLI-latest-linux-amd64.tgz
+  # kind
+  curl -Lo ./kind https://github.com/kubernetes-sigs/kind/releases/download/$KIND_VERSION/kind-linux-amd64
+  chmod +x kind
+  sudo cp kind /usr/local/bin/kind
+
+  # wsk cli
+  wget -q https://github.com/apache/openwhisk-cli/releases/download/$WSK_CLI_VERSION/OpenWhisk_CLI-$WSK_CLI_VERSION-linux-amd64.tgz
+  tar xzf OpenWhisk_CLI-$WSK_CLI_VERSION-linux-amd64.tgz
   sudo cp wsk /usr/local/bin/wsk
 
-  # Download and install helm 2 (remove tiller init from start-kind.sh when upgrading to helm 3)
-  curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get > get_helm.sh && chmod +x get_helm.sh && ./get_helm.sh --version v2.16.1
+  # helm3
+  curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get-helm-3 > get-helm-3.sh && chmod +x get-helm-3.sh && ./get-helm-3.sh --version $HELM_VERSION
 popd
 
+# Install additional python packages for box-upload.py
+pip install --user humanize requests
