@@ -21,14 +21,53 @@
 
 ## NFS-based Dynamic Provisioning
 
-You will need an already-provisioned NFS server supporting NFS v4 or better,
-preferably provisioned for at least 5 GB.
-The server must be set up to accept connections from all nodes in your cluster --
-we leave it to you to determine the best strategy for that, though you may
-wish to consider the
-[nfs-server-provisioner](https://github.com/helm/charts/tree/master/stable/nfs-server-provisioner)
-Helm Chart (*TODO: link*) if youhave lots of storage available on your nodes or
-an NFS server provided by your cloud provider.
+You will need an already-provisioned NFS server supporting NFS v4 or better, preferably provisioned for at least 5 GB. The server must be set up to accept connections from all nodes in your cluster.
+
+### Set up the nfs server
+
+#### Helm chart
+You may wish to consider the [nfs-server-provisioner](https://github.com/helm/charts/tree/master/stable/nfs-server-provisioner) Helm Chart to deploy a nfs server in your k8s cluster. If you experience any problems or you're just interested in setting up your own nfs server, try to set up manually with the following section.
+
+#### Manually
+Assuming you're using a linux machine, first install the nfs server related packages on the nfs server host.
+
+On Ubuntu, use ``` sudo apt install nfs-kernel-server```.
+On CentOS or Arch, install the ```nfs-utils``` package.
+
+Now create a directory that you want to export to the server, which will be used in cluster. For example:
+```
+sudo mkdir /var/nfs/kubedata -p
+```
+We have to change the directory ownership to the nobody user, to match what nfs expects when we access the directory (note: for CentOS, it is **nfsnobody**).
+```
+sudo chown nobody: /var/nfs/kubedata
+```
+
+Then enable and start the nfs-server service:
+```
+sudo systemctl enable nfs-server.service
+sudo systemctl start nfs-server.service
+```
+
+Now you have to "export" the nfs directory so that they can be accessed. At this point if you have a firewall enabled or you want to set one up, you need to open the NFS port. For example if you're using `firewalld`, you could open the SSH and NFS port:
+```
+firewall-cmd --permanent --zone=public --add-service=ssh
+firewall-cmd --permanent --zone=public --add-service=nfs
+firewall-cmd --reload
+```
+
+Open the `/etc/exports` file with a text editor and add the entry for your directory:
+`/var/nfs/kubedata  *(rw,sync,no_subtree_check,no_root_squash,no_all_squash)`.
+
+Here the chosen directory will be exported to the world using `*`, you can specify the nodes that can access the directory by using their IP: `/var/nfs/kubedata  <IP1>(options) ... <IPn>(options)`.
+
+And run `sudo exportfs -rav` to make the changes effective.
+
+The nfs server is now set up. You can check it by mounting the exported directory with a client node using `sudo mount -t nfs <Host IP>:/var/nfs/kubedata /mnt` (to unmount it after: `sudo umount /mnt`).
+
+### Set up nfs client provisioner 
+
+#### With the helm chart
 
 Once the NFS server is defined, the fastest way to make a dynamic file store
 available is with the
@@ -61,3 +100,7 @@ When you configure OpenWhisk, do remember to set
 `k8s.persistence.hasDefaultStorageClass` to `false` and set
 `k8s.persistence.explicitStorageClass` to be `openwhisk`.
 And then you should be off to the races.
+
+#### Manually
+
+TODO.
