@@ -134,7 +134,7 @@ whisk:
     openwhiskCli:
       tag: "1.0.0"
     openwhiskCatalog:
-      gitTag: "0.10.0-incubating"
+      gitTag: "0.11.0"
     openwhiskPackageAlarms:
       gitTag: "2.0.0-incubating"
     openwhiskPackageCloudant:
