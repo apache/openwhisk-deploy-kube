@@ -142,13 +142,6 @@ spec:
           - name: "INVOKER_OPTS"
             value: "{{ .Values.invoker.options }} {{ include "openwhisk.invoker.add_opts" . }}"
 
-{{ if .Values.invoker.containerFactory.kubernetes.agent.enabled }}
-          - name: "CONFIG_whisk_kubernetes_invokerAgent_enabled"
-            value:  "TRUE"
-          - name: "CONFIG_whisk_kubernetes_invokerAgent_port"
-            value: {{ .Values.invoker.containerFactory.kubernetes.agent.port | quote }}
-{{ end }}
-
           # action runtimes
           - name: "RUNTIMES_MANIFEST"
             value: {{ template "openwhisk.runtimes_manifest" . }}

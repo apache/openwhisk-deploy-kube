@@ -24,5 +24,4 @@ These images are built automatically and published
 to DockerHub under the openwhisk userid.  Docker images are
 published on all successful Travis CI builds of the master branch.
 The built images are:
-  * invoker-agent - worker node invoker agent -- used to implement
-    suspend/resume on action containers for a remote invoker
+* currently no images are being actively built.
