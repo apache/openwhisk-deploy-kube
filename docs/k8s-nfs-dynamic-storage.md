@@ -65,7 +65,7 @@ And run `sudo exportfs -rav` to make the changes effective.
 
 The nfs server is now set up. You can check it by mounting the exported directory with a client node using `sudo mount -t nfs <Host IP>:/var/nfs/kubedata /mnt` (to unmount it after: `sudo umount /mnt`).
 
-### Set up nfs client provisioner 
+### Set up nfs client provisioner
 
 #### With the helm chart
 
@@ -96,7 +96,7 @@ helm install --name your-ow-release-name --namespace openwhisk \
   stable/nfs-client-provisioner
 ```
 
-Or if you're using Helm 3: 
+Or if you're using Helm 3:
 ```
 helm install your-ow-release-name --namespace openwhisk \
   stable/nfs-client-provisioner \
