@@ -226,7 +226,7 @@ db:
 # Nginx configurations
 nginx:
   imageName: "nginx"
-  imageTag: "1.15"
+  imageTag: "1.17"
   imagePullPolicy: "IfNotPresent"
   replicaCount: 1
   restartPolicy: "Always"
