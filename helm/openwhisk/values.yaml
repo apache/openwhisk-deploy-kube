@@ -188,7 +188,7 @@ zookeeper:
 # kafka configurations
 kafka:
   imageName: "wurstmeister/kafka"
-  imageTag: "0.11.0.1"
+  imageTag: "2.12-2.3.1"
   imagePullPolicy: "IfNotPresent"
   replicaCount: 1
   restartPolicy: "Always"
