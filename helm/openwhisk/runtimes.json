@@ -186,8 +186,8 @@
                 },
                 "image": {
                     "prefix": "openwhisk",
-                    "name": "actionloop-rust-v1.34",
-                    "tag": "1.13.0-incubating"
+                    "name": "action-rust-v1.34",
+                    "tag": "1.0.0"
                 }
             }
         ],
