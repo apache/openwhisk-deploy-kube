@@ -203,6 +203,22 @@
                 }
             }
         ],
+        "rust": [
+            {
+                "kind": "rust:1.34",
+                "default": true,
+                "deprecated": false,
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                },
+                "image": {
+                    "prefix": "openwhisk",
+                    "name": "action-rust-v1.34",
+                    "tag": "1.0.0"
+                }
+            }
+        ],
         "dotnet": [
             {
                 "kind": "dotnet:2.2",
