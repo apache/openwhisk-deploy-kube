@@ -21,7 +21,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-nodejs-v8",
-                    "tag": "1.14.0-incubating"
+                    "tag": "1.15.0"
                 },
                 "deprecated": false,
                 "attached": {
@@ -35,7 +35,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-nodejs-v10",
-                    "tag": "1.14.0-incubating"
+                    "tag": "1.15.0"
                 },
                 "deprecated": false,
                 "attached": {
@@ -55,7 +55,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-nodejs-v12",
-                    "tag": "1.14.0-incubating"
+                    "tag": "1.15.0"
                 },
                 "deprecated": false,
                 "attached": {
@@ -85,7 +85,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "python3action",
-                    "tag": "1.13.0-incubating"
+                    "tag": "1.14.0"
                 },
                 "deprecated": false,
                 "attached": {
