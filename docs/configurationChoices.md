@@ -221,6 +221,14 @@ you can set `invoker.containerFactory.networkConfig.dns.inheritInvokerConfig` to
 and explicitly configure the child values of `invoker.containerFactory.networkConfig.dns.overrides`
 instead.
 
+### User action container network isolation
+
+By default, a set of NetworkPolicy objects will be configured to isolate
+pods running user actions from each other and from the back-end pods
+of the OpenWhisk control plane.  If you want to disable this network
+isolation, set `invoker.containerFactory.kubernetes.isolateUserActions`
+to `false`.
+
 ### Customizing probes setting
 
 Many openwhisk components has liveness and readiness probes configured. Sometimes it is observed that components do not come up or in ready state before the probes starts executing which causes pods to restarts or fail. You can configure probes timing settings like `initialDelaySeconds`, `periodSeconds` and `timeoutSeconds` in `mycluster.yaml`

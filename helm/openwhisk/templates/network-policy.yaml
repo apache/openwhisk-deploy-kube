@@ -1,0 +1,88 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+{{- if .Values.invoker.containerFactory.kubernetes.isolateUserActions }}
+
+# Default deny all ingress
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ .Release.Name }}-default-no-ingress-np
+  labels:
+{{ include "openwhisk.label_boilerplate" .| indent 4 }}
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+---
+
+# Backend control plane pods only accept connections from non-user-action-pods
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ .Release.Name }}-backend-np
+  labels:
+{{ include "openwhisk.label_boilerplate" .| indent 4 }}
+spec:
+  podSelector:
+    matchExpressions:
+      - {key: user-action-pod, operator: DoesNotExist}
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector:
+        matchExpressions:
+          - {key: user-action-pod, operator: DoesNotExist}
+---
+
+# Frontend pods (nginx, controller, apigateway) accept connections from anyone
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ .Release.Name }}-frontend-np
+  labels:
+{{ include "openwhisk.label_boilerplate" .| indent 4 }}
+spec:
+  podSelector:
+    matchExpressions:
+      - {key: name, operator: In, values: ["{{ .Release.Name }}-controller", "{{ .Release.Name }}-apigateway", "{{ .Release.Name }}-nginx"]}
+  policyTypes:
+  - Ingress
+  ingress:
+  - {}
+---
+
+# User action pods will only accept connections from invokers
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ .Release.Name }}-actions-allow-invoker-np
+  labels:
+{{ include "openwhisk.label_boilerplate" .| indent 4 }}
+spec:
+  podSelector:
+    matchExpressions:
+      - {key: user-action-pod, operator: In, values: ["true"]}
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          name: {{ .Release.Name }}-invoker
+{{- end }}
