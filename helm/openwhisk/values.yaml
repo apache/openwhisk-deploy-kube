@@ -148,7 +148,7 @@ k8s:
   persistence:
     enabled: true
     hasDefaultStorageClass: true
-    explicitStorageClass: nil
+    explicitStorageClass: null
 
 # Images used to run auxillary tasks/jobs
 utility:
@@ -208,7 +208,7 @@ db:
   # NOTE: must be 1 (because initdb.sh enables single node mode)
   replicaCount: 1
   restartPolicy: "Always"
-  host: nil
+  host: null
   port: 5984
   provider: "CouchDB"
   protocol: "http"
@@ -294,7 +294,7 @@ redis:
   # NOTE: setting replicaCount > 1 will not work; need to add redis cluster configuration
   replicaCount: 1
   restartPolicy: "Always"
-  host: nil
+  host: null
   port: 6379
   persistence:
     size: 256Mi

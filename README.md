@@ -127,41 +127,26 @@ least 1 worker node with 4GB of memory and 2 virtual CPUs to deploy
 the default configuration of OpenWhisk.  You can deploy to
 significantly larger clusters by scaling up the replica count of the
 various components and labeling multiple nodes as invoker nodes.
-There are some additional notes [here](docs/k8s-diy.md).
 
-[Here](docs/k8s-diy-ubuntu.md) a Kubernetes cluster example using kubeadm and Ubuntu 18.04.
-
+Additional more detailed instructions:
+* [Some general comments](docs/k8s-diy.md).
+* [Using kubeadm on Ubuntu 18.04](docs/k8s-diy-ubuntu.md).
 
 ## Helm
 
 [Helm](https://github.com/kubernetes/helm) is a tool to simplify the
-deployment and management of applications on Kubernetes clusters. Helm
-consists of the `helm` command line tool that you install on your
-development machine and the `tiller` runtime that is deployed on your
-Kubernetes cluster.
+deployment and management of applications on Kubernetes clusters.
+The OpenWhisk Helm chart requires the Helm 3.
 
-For details on installing Helm, see these [instructions](docs/helm.md).
+Our automated testing currently uses Helm v3.0.1.
 
-WARNING: There is a [serious regression in Helm v2.15.0](https://github.com/helm/helm/issues/6708)
-that impacts the OpenWhisk chart.  You should use Helm v2.14.3.
-
-In short if you already have the `helm` cli installed on your development machine,
-you will need to execute these two commands and wait a few seconds for the
-`tiller-deploy` pod in the `kube-system` namespace to be in the `Running` state.
-```shell
-helm init
-kubectl create clusterrolebinding tiller-cluster-admin --clusterrole=cluster-admin --serviceaccount=kube-system:default
-```
-
-If you are targeting an OKD/OpenShift cluster, you will need the
-`helm` cli on your development machine but will not run the
-`tiller-deploy` pod in the cluster as it is not allowed by
-OKD/OpenShift security policies.
+Follow the Helm [install instructions](https://github.com/kubernetes/helm)
+for your platform to install Helm v3.0.1 or newer.
 
 # Deploying OpenWhisk
 
-Now that you have your Kubernetes cluster and have installed and
-initialized Helm, you are ready to deploy OpenWhisk.
+Now that you have your Kubernetes cluster and have installed
+the Helm 3 CLI, you are ready to deploy OpenWhisk.
 
 ## Overview
 
@@ -240,25 +225,27 @@ discussion of the primary options.
 
 ## Deploy With Helm
 
-Deployment can be done by using the following single command:
-```shell
-helm install ./helm/openwhisk --namespace=openwhisk --name=owdev -f mycluster.yaml
-```
-
-Deploying to OKD/OpenShift uses the commands:
-```shell
-helm template ./helm/openwhisk --namespace=openwhisk --name=owdev -f mycluster.yaml > owdev.yaml
-oc create -f owdev.yaml
-```
-We recommend generating to a file to make it easier to undeploy openwhisk later
-by simply doing `oc delete -f owdev.yaml`
-
 For simplicity, in this README, we have used `owdev` as the release name and
 `openwhisk` as the namespace into which the Chart's resources will be deployed.
-You can use different names, or not specify a release name at all and let
-Helm auto-generate one for you.
+You can use a different name and/or namespace simply by changing the commands
+used below.
 
-You can use the command `helm status owdev` to get a summary
+Deployment can be done by using the following single command:
+```shell
+helm install owdev ./helm/openwhisk -n openwhisk -f mycluster.yaml
+```
+
+Deploying to OKD/OpenShift uses the command sequence:
+```shell
+helm template owdev ./helm/openwhisk -n openwhisk -f mycluster.yaml > owdev.yaml
+oc create -f owdev.yaml
+```
+The two step sequence is currently required because the `oc` command must be
+used to create the `Route` resource specified in the generated `owdev.yaml`.
+We recommend generating to a file to make it easier to undeploy OpenWhisk later
+by simply doing `oc delete -f owdev.yaml`
+
+You can use the command `helm status owdev -n openwhisk` to get a summary
 of the various Kubernetes artifacts that make up your OpenWhisk
 deployment. Once the `install-packages` Pod is in the `Completed` state,
 your OpenWhisk deployment is ready to be used.
@@ -294,10 +281,8 @@ Your OpenWhisk installation should now be usable.  You can test it by following
 [these instructions](https://github.com/apache/openwhisk/blob/master/docs/actions.md)
 to define and invoke a sample OpenWhisk action in your favorite programming language.
 
-You can also issue the command `helm test owdev` to run the basic
-verification test suite included in the OpenWhisk Helm chart. Note
-that `helm test` is not supported for OpenShift deployments because it
-requires the `tiller` pod to be run in the cluster.
+You can also issue the command `helm test owdev -n openwhisk` to run the basic
+verification test suite included in the OpenWhisk Helm chart.
 
 Note: if you installed self-signed certificates, which is the default
 for the OpenWhisk Helm chart, you will need to use `wsk -i` to
@@ -402,7 +387,7 @@ controller:
 Redeploy with Helm by executing this commaned in your
 openwhisk-deploy-kube directory:
 ```shell
-helm upgrade ./helm/openwhisk --namespace=openwhisk --name=owdev -f mycluster.yaml
+helm upgrade owdev ./helm/openwhisk -n openwhisk -f mycluster.yaml
 ```
 
 ### Deploying Lean Openwhisk version.
@@ -417,17 +402,14 @@ controller:
 
 Use the following command to remove all the deployed OpenWhisk components:
 ```shell
-helm delete owdev
+helm uninstall owdev -n openwhisk
 ```
-Helm does keep a history of previous deployments.  If you want to
-completely remove the deployment from helm, for example so you can
-reuse owdev to deploy OpenWhisk again, use the command:
-```shell
-helm delete owdev --purge
-```
+By default, `helm uninstall` removes the history of previous deployments.
+If you want to keep the history, add the command line flag `--keep-history`.
 
-For OpenShift deployments, you cannot use Helm to remove the OpenWhisk
-deployment.  If you saved the output from `helm template` into a file,
+For OpenShift deployments, you cannot use `helm uninstall` to remove the OpenWhisk
+deployment because we did not do a `helm install`.
+If you saved the output from `helm template` into a file,
 you can simply use that file as an argument to `oc delete`.  If you
 did not save the file, you can redo the `helm template` command and
 feed the generated yaml into an `oc delete` command.
