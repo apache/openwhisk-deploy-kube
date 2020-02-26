@@ -18,9 +18,9 @@
 
 set -x
 
-HELM_VERSION=v3.0.1
-KIND_VERSION=v0.6.1
-KUBECTL_VERSION=v1.16.3
+HELM_VERSION=v3.0.3
+KIND_VERSION=v0.7.0
+KUBECTL_VERSION=v1.16.7
 WSK_CLI_VERSION=latest
 
 # Download and install command line tools
