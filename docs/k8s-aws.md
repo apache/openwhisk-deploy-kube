@@ -73,17 +73,7 @@ whisk:
     annotations:
       service.beta.kubernetes.io/aws-load-balancer-internal: 0.0.0.0/0
       service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:iam::12345678901:server-certificate/ow-self-signed
-
-k8s:
-  persistence:
-    enabled: false
 ```
-
-For ease of deployment, you should disable persistent volumes because
-EKS does not come with an automatically configured default
-StorageClass. Alternatively, you may choose to leave persistence
-enabled and manually create the necessary persistent volumes using
-AWS/EKS instructions to do so.
 
 Shortly after you deploy your helm chart, an ELB should be
 automatically created. You can determine its hostname by issuing
@@ -99,10 +89,6 @@ errors from `wsk` when attempting to access it.
 ## Hints and Tips
 
 ## Limitations
-
-Without additional configuration to enable persistent volumes, EKS is
-only appropriate for development and testing purposes.  It is not
-recommended for production deployments of OpenWhisk.
 
 If you used a self-signed certificate, you will need to invoke `wsk`
 with the `-i` command line argument to bypass certificate checking.
