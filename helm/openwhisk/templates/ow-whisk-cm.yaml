@@ -27,11 +27,19 @@ data:
   whisk_cli_version_tag: {{ .Values.whisk.versions.openwhiskCli.tag | quote }}
   whisk_system_namespace: {{ .Values.whisk.systemNameSpace | quote }}
 {{- if eq .Values.whisk.ingress.type "LoadBalancer" }}
+{{- if eq .Values.whisk.ingress.awsSSL "true" }}
+  whisk_api_host_proto: "http"
+  whisk_api_host_port: {{ .Values.nginx.httpPort | quote }}
+  whisk_api_host_name: "{{ .Release.Name }}-nginx.{{ .Release.Namespace }}.svc.{{ .Values.k8s.domain }}"
+  whisk_api_host_nameAndPort: "{{ .Release.Name }}-nginx.{{ .Release.Namespace }}.svc.{{ .Values.k8s.domain }}:{{ .Values.nginx.httpPort }}"
+  whisk_api_host_url: "http://{{ .Release.Name }}-nginx.{{ .Release.Namespace }}.svc.{{ .Values.k8s.domain }}:{{ .Values.nginx.httpPort }}"
+{{- else }}
   whisk_api_host_proto: "https"
   whisk_api_host_port: {{ .Values.nginx.httpsPort | quote }}
   whisk_api_host_name: "{{ .Release.Name }}-nginx.{{ .Release.Namespace }}.svc.{{ .Values.k8s.domain }}"
   whisk_api_host_nameAndPort: "{{ .Release.Name }}-nginx.{{ .Release.Namespace }}.svc.{{ .Values.k8s.domain }}:{{ .Values.nginx.httpsPort }}"
   whisk_api_host_url: "https://{{ .Release.Name }}-nginx.{{ .Release.Namespace }}.svc.{{ .Values.k8s.domain }}:{{ .Values.nginx.httpsPort }}"
+{{- end }}
 {{- else }}
   whisk_api_host_proto: {{ .Values.whisk.ingress.apiHostProto | quote }}
   whisk_api_host_port: {{ .Values.whisk.ingress.apiHostPort | quote }}

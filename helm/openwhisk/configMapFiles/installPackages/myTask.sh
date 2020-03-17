@@ -54,14 +54,14 @@ pushd $OPENWHISK_HOME/ansible/roles/routemgmt/files
     PASSED=false
     TRIES=0
     until $PASSED || [ $TRIES -eq 10 ]; do
-        if ./installRouteMgmt.sh $WHISK_AUTH $WHISK_API_HOST $WHISK_SYSTEM_NAMESPACE /usr/local/bin/wsk; then
+        if ./installRouteMgmt.sh $WHISK_AUTH $WHISK_API_HOST_URL $WHISK_SYSTEM_NAMESPACE /usr/local/bin/wsk; then
             PASSED=true
             echo "Successfully deployed routemgmt package"
         else
             echo "Failed to deploy routemgmt package; will pause, uninstall, and try again"
             let TRIES=TRIES+1
             sleep 10
-            ./uninstallRouteMgmt.sh $WHISK_AUTH $WHISK_API_HOST $WHISK_SYSTEM_NAMESPACE /usr/local/bin/wsk;
+            ./uninstallRouteMgmt.sh $WHISK_AUTH $WHISK_API_HOST_URL $WHISK_SYSTEM_NAMESPACE /usr/local/bin/wsk;
         fi
     done
     if ! $PASSED; then
@@ -79,7 +79,7 @@ pushd openwhisk-catalog
 popd
 
 pushd openwhisk-catalog/packages
-    ./installCatalogUsingWskdeploy.sh $WHISK_AUTH $WHISK_API_HOST /usr/local/bin/wsk || exit 1
+    ./installCatalogUsingWskdeploy.sh $WHISK_AUTH $WHISK_API_HOST_URL /usr/local/bin/wsk || exit 1
 popd
 
 
@@ -101,7 +101,7 @@ if [ "$OW_INSTALL_ALARM_PROVIDER" == "yes" ]; then
 
     pushd /openwhisk-package-alarms
         git checkout $OW_GIT_TAG_OPENWHISK_PACKAGE_ALARMS
-        ./installCatalog.sh $WHISK_AUTH $WHISK_API_HOST $PROVIDER_DB_URL $ALARM_DB_PREFIX $WHISK_API_HOST || exit 1
+        ./installCatalog.sh $WHISK_AUTH $WHISK_API_HOST_URL $PROVIDER_DB_URL $ALARM_DB_PREFIX $WHISK_API_HOST_URL || exit 1
     popd
 fi
 
@@ -116,7 +116,7 @@ if [ "$OW_INSTALL_CLOUDANT_PROVIDER" == "yes" ]; then
 
     pushd /openwhisk-package-cloudant
         git checkout $OW_GIT_TAG_OPENWHISK_PACKAGE_CLOUDANT
-        ./installCatalog.sh $WHISK_AUTH $WHISK_API_HOST $PROVIDER_DB_URL $CLOUDANT_DB_PREFIX $WHISK_API_HOST || exit 1
+        ./installCatalog.sh $WHISK_AUTH $WHISK_API_HOST_URL $PROVIDER_DB_URL $CLOUDANT_DB_PREFIX $WHISK_API_HOST_URL || exit 1
     popd
 fi
 
@@ -131,8 +131,8 @@ if [ "$OW_INSTALL_KAFKA_PROVIDER" == "yes" ]; then
 
     pushd /openwhisk-package-kafka
         git checkout $OW_GIT_TAG_OPENWHISK_PACKAGE_KAFKA
-        ./installKafka.sh $WHISK_AUTH $WHISK_API_HOST $PROVIDER_DB_URL $KAFKA_DB_PREFIX $WHISK_API_HOST || exit 1
-        ./installCatalog.sh $WHISK_AUTH $WHISK_API_HOST $PROVIDER_DB_URL $KAFKA_DB_PREFIX $WHISK_API_HOST || exit 1
+        ./installKafka.sh $WHISK_AUTH $WHISK_API_HOST_URL $PROVIDER_DB_URL $KAFKA_DB_PREFIX $WHISK_API_HOST_URL || exit 1
+        ./installCatalog.sh $WHISK_AUTH $WHISK_API_HOST_URL $PROVIDER_DB_URL $KAFKA_DB_PREFIX $WHISK_API_HOST_URL || exit 1
     popd
 fi
 

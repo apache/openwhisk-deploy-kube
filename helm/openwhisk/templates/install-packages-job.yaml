@@ -61,7 +61,11 @@ spec:
               configMapKeyRef:
                 name: {{ .Release.Name }}-whisk.config
                 key: whisk_api_host_nameAndPort
-
+          - name: "WHISK_API_HOST_URL"
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Release.Name }}-whisk.config
+                key: whisk_api_host_url
           # apigateway configuration (for installing routemgmt actions)
           - name: "WHISK_SYSTEM_NAMESPACE"
             valueFrom:
