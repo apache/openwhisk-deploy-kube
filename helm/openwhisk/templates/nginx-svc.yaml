@@ -19,6 +19,12 @@
 apiVersion: v1
 kind: Service
 metadata:
+  {{- if eq .Values.whisk.ingress.type "LoadBalancer" }}
+  annotations:
+    {{- range $key, $value := .Values.whisk.ingress.annotations }}
+      {{ $key }}: {{ $value | quote }}
+    {{- end }}
+  {{- end }}
   name: {{ .Release.Name }}-nginx
   labels:
     name: {{ .Release.Name }}-nginx
@@ -39,4 +45,7 @@ spec:
       nodePort: {{ .Values.nginx.httpsNodePort }}
       {{- end }}
       name: https-api
+      {{- if eq .Values.whisk.ingress.awsSSL "true"}}
+      targetPort: http
+      {{- end}}
 {{- end }}
