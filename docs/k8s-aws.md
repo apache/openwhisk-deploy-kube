@@ -27,7 +27,7 @@
 
 Follow Amazon's instructions to provision your cluster.
 
-### Configuring OpenWhisk
+### Configuring OpenWhisk using SSL and IAM
 
 AWS's Elastic Kubernetes Service (EKS) does not support standard Kubernetes
 ingress.  Instead, it relies on provisioning Elastic Load
@@ -85,6 +85,29 @@ NOTE: It may take several minutes after the ELB is reported as being
 available before the hostname is actually properly registered in DNS.
 Be patient and keep trying until you stop getting `no such host`
 errors from `wsk` when attempting to access it.
+
+### Configuring Openwhisk using SSL and Elastic Loadbalancers
+
+Due to the way AWS supports TLS termination on ELBs there are a couple of configuration options required to put a
+signed certificate in place when deploying openwhisk.
+
+First ensure you have a signed certificate in your AWS Certificate Manager. 
+
+Then ensure you enable the following:
+```yaml
+whisk:
+  ingress:
+    awsSSL: "true"
+    type: LoadBalancer
+    annotations:
+      service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
+      service.beta.kubernetes.io/aws-load-balancer-ssl-ports: https-api
+      service.beta.kubernetes.io/aws-load-balancer-ssl-cert: <your certificate ARN>
+```
+
+This will setup a loadbalanced service that allows your users to connect via HTTPS to the cluster. Internally we switch 
+from SSL to plain HTTP communication as we're forwarding ports internally. 
+Please read [this doc](https://kubernetes-on-aws.readthedocs.io/en/latest/user-guide/tls-termination.html#common-pitfalls) for more information.
 
 ## Hints and Tips
 
