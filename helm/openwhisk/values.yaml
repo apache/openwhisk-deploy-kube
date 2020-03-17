@@ -48,7 +48,7 @@ whisk:
   # See the "Configuring OpenWhisk section" of the docs/k8s-*.md that matches
   # your cluster type for details on what values to provide and how to get them.
   ingress:
-    aws: "false"
+    awsSSL: "false"
     apiHostName: ""
     apiHostPort: 31001
     apiHostProto: "https"
