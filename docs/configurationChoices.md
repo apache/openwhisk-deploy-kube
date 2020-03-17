@@ -78,6 +78,9 @@ db:
   wipeAndInit: false
 ```
 
+Please note, if you're using a version of CouchDB that has `require_valid_user` enabled, you need to disable it for the
+cluster to operate correctly. This is because the current version of the cloudant client [expects it to be off by default](https://github.com/cloudant/python-cloudant/issues/387).
+
 ### Using an external redis
 
 Similarly, you may want to use external Redis instance instead of using default single pod deployment.
