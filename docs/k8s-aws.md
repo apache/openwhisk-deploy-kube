@@ -91,7 +91,7 @@ errors from `wsk` when attempting to access it.
 Due to the way AWS supports TLS termination on ELBs there are a couple of configuration options required to put a
 signed certificate in place when deploying openwhisk.
 
-First ensure you have a signed certificate in your AWS Certificate Manager. 
+First ensure you have a signed certificate in your AWS Certificate Manager.
 
 Then ensure you enable the following:
 ```yaml
@@ -105,8 +105,8 @@ whisk:
       service.beta.kubernetes.io/aws-load-balancer-ssl-cert: <your certificate ARN>
 ```
 
-This will setup a loadbalanced service that allows your users to connect via HTTPS to the cluster. Internally we switch 
-from SSL to plain HTTP communication as we're forwarding ports internally. 
+This will setup a loadbalanced service that allows your users to connect via HTTPS to the cluster. Internally we switch
+from SSL to plain HTTP communication as we're forwarding ports internally.
 Please read [this doc](https://kubernetes-on-aws.readthedocs.io/en/latest/user-guide/tls-termination.html#common-pitfalls) for more information.
 
 ## Hints and Tips
