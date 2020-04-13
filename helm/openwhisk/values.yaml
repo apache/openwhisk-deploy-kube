@@ -278,7 +278,7 @@ invoker:
 # API Gateway configurations
 apigw:
   imageName: "openwhisk/apigateway"
-  imageTag: "0.11.0"
+  imageTag: "1.0.0"
   imagePullPolicy: "IfNotPresent"
   # NOTE: setting replicaCount > 1 is not tested and may not work
   replicaCount: 1
