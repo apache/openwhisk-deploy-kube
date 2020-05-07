@@ -23,9 +23,6 @@ ROOTDIR="$SCRIPTDIR/../../"
 
 cd $ROOTDIR
 
-# kind puts config file in non-standard place; must set KUBECONFIG
-export KUBECONFIG="$(kind get kubeconfig-path)"
-
 echo "Gathering logs to upload to https://app.box.com/v/openwhisk-travis-logs"
 
 mkdir logs
