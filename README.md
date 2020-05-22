@@ -344,7 +344,7 @@ replaced by the values returned by `wsk property get --apihost` and
 `wsk property get --auth` respectively.
 ```shell
 cd $OPENWHISK_HOME
-./gradlew :tests:testSystemBasic -Dwhisk.auth=$WHISK_AUTH -Dwhisk.server=https://$WHISK_SERVER -Dopenwhisk.home=`pwd`
+./gradlew :tests:testSystemKCF -Dwhisk.auth=$WHISK_AUTH -Dwhisk.server=https://$WHISK_SERVER -Dopenwhisk.home=`pwd`
 ```
 You can also launch the system tests as JUnit test from an IDE by
 adding the same system properties to the JVM command line used to
