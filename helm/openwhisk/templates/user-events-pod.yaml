@@ -39,7 +39,7 @@ spec:
     spec:
       restartPolicy: {{ .Values.user_events.restartPolicy }}
 
-      {{- if .Values.metrics.userMetricsEnabled }}
+      {{- if and .Values.affinity.enabled .Values.metrics.userMetricsEnabled }}
       affinity:
 {{ include "openwhisk.affinity.core" . | indent 8 }}
 {{ include "openwhisk.affinity.selfAntiAffinity" ( printf "%s-user-events" .Release.Name ) | indent 8 }}
