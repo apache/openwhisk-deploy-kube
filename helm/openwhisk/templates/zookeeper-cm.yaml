@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-{{- if not .Values.controller.lean }}
+{{- if add (not .Values.controller.lean) (not .Values.zookeeper.external) }}
 ---
 apiVersion: v1
 kind: ConfigMap
