@@ -232,7 +232,7 @@ used below.
 
 Deployment can be done by using the following single command:
 ```shell
-helm install owdev ./helm/openwhisk -n openwhisk -f mycluster.yaml
+helm install owdev ./helm/openwhisk -n openwhisk --create-namespace -f mycluster.yaml
 ```
 
 Deploying to OKD/OpenShift uses the command sequence:
