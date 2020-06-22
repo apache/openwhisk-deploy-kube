@@ -56,10 +56,12 @@ spec:
 {{- end }}
       restartPolicy: {{ .Values.invoker.restartPolicy }}
 
+{{- if .Values.affinity.enabled }}
       affinity:
 {{ include "openwhisk.affinity.invoker" . | indent 8 }}
 {{- if eq .Values.invoker.containerFactory.impl "kubernetes" }}
 {{ include "openwhisk.affinity.selfAntiAffinity" ( printf "%s-invoker" .Release.Name ) | indent 8 }}
+{{- end }}
 {{- end }}
 
 {{- if .Values.toleration.enabled }}

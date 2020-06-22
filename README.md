@@ -200,6 +200,19 @@ If you have dedicated Ingress nodes, label them with
 Event Providers on specific nodes, label those nodes with
 `openwhisk-role=provider`.
 
+### Disabling affinity (not recommended)
+If the Kubernetes cluster does not allow you to assign a label to a node, or you cannot use the affinity attribute, you can disable it.
+Please note that it is suitable for testing purposes only and may interfere with the OpenWhisk control plane.
+
+You can disable affinity by editing the `mycluster.yaml` file:
+
+```yaml
+affinity:
+  enabled: false
+invoker:
+  options: "-Dwhisk.kubernetes.user-pod-node-affinity.enabled=false"
+```
+
 ## Customize the Deployment
 
 You must create a `mycluster.yaml` file to record key aspects of your
