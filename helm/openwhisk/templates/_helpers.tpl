@@ -67,7 +67,7 @@ app: {{ template "openwhisk.fullname" . }}
 {{/* client connection string for zookeeper cluster (server1:port,server2:port, ... serverN:port)*/}}
 {{- define "openwhisk.zookeeper_connect" -}}
 {{- if .Values.zookeeper.external -}}
-{{ .Values.zookeeper.host }}:{{ .Values.zookeeper.port }}
+{{ .Values.zookeeper.connect_string }}
 {{- else -}}
 {{- $zkname := printf "%s-zookeeper" .Release.Name }}
 {{- $zkport := .Values.zookeeper.port }}
@@ -89,7 +89,7 @@ app: {{ template "openwhisk.fullname" . }}
 {{/* client connection string for kafka cluster (server1:port,server2:port, ... serverN:port)*/}}
 {{- define "openwhisk.kafka_connect" -}}
 {{- if .Values.kafka.external -}}
-{{ .Values.kafka.host }}:{{ .Values.kafka.port }}
+{{ .Values.kafka.connect_string }}
 {{- else -}}
 {{- $kname := printf "%s-kafka" .Release.Name }}
 {{- $kport := .Values.kafka.port }}
