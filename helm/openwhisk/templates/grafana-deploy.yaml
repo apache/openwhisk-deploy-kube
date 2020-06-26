@@ -64,18 +64,12 @@ spec:
         - name: grafana
           image: "{{- .Values.docker.registry.name -}}{{- .Values.grafana.imageName -}}:{{- .Values.grafana.imageTag -}}"
           env:
-          - name: "GF_AUTH_ANONYMOUS_ENABLED"
-            value: "true"
           - name: "GF_SECURITY_ADMIN_PASSWORD"
             value: {{ .Values.grafana.adminPassword }}
-          - name: "GF_PATHS_PROVISIONING"
-            value: "/var/lib/grafana/config"
-          - name: "GF_USERS_ALLOW_SIGN_UP"
-            value: "false"
-          - name: "GF_SERVER_ROOT_URL"
-            value: "%(protocol)s://%(domain)s/monitoring"
-          - name: "GF_SERVER_SERVE_FROM_SUB_PATH"
-            value: "true"
+          {{- range .Values.grafana.env }}
+          - name: {{ .name }}
+            value: {{ .value | quote }}
+          {{- end }}
 
           ports:
             - containerPort: {{ .Values.grafana.port }}

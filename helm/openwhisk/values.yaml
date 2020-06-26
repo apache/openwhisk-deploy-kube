@@ -335,6 +335,18 @@ grafana:
   - https://raw.githubusercontent.com/apache/openwhisk/master/core/monitoring/user-events/compose/grafana/dashboards/openwhisk_events.json
   - https://raw.githubusercontent.com/apache/openwhisk/master/core/monitoring/user-events/compose/grafana/dashboards/global-metrics.json
   - https://raw.githubusercontent.com/apache/openwhisk/master/core/monitoring/user-events/compose/grafana/dashboards/top-namespaces.json
+  # https://grafana.com/docs/grafana/latest/administration/configuration/#configure-with-environment-variables
+  env:
+  - name: "GF_AUTH_ANONYMOUS_ENABLED"
+    value: "true"
+  - name: "GF_PATHS_PROVISIONING"
+    value: "/var/lib/grafana/config"
+  - name: "GF_USERS_ALLOW_SIGN_UP"
+    value: "false"
+  - name: "GF_SERVER_ROOT_URL"
+    value: "%(protocol)s://%(domain)s/monitoring"
+  - name: "GF_SERVER_SERVE_FROM_SUB_PATH"
+    value: "true"
 
 # Metrics
 metrics:
