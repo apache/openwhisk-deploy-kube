@@ -327,3 +327,17 @@ imagePullSecrets:
 {{- define "openwhisk.grafana_host" -}}
 {{ .Release.Name }}-grafana.{{ .Release.Namespace }}.svc.{{ .Values.k8s.domain }}
 {{- end -}}
+
+{{/* nginx cert */}}
+{{- define "openwhisk.nginx_cert" -}}
+{{- if .Values.nginx.certificate.external }}
+{{ .Files.Get .Values.nginx.certificate.cert_file }}
+{{- end -}}
+{{- end -}}
+
+{{/* nginx key */}}
+{{- define "openwhisk.nginx_key" -}}
+{{- if .Values.nginx.certificate.external }}
+{{ .Files.Get .Values.nginx.certificate.key_file }}
+{{- end -}}
+{{- end -}}

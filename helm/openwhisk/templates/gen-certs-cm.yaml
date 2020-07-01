@@ -22,4 +22,13 @@ metadata:
   labels:
 {{ include "openwhisk.label_boilerplate" . | indent 4 }}
 data:
+{{- if .Values.nginx.certificate.external }}
+  tls.crt: |
+{{ include "openwhisk.nginx_cert" . | indent 4 }}
+  tls.key: |
+{{ include "openwhisk.nginx_key" . | indent 4 }}
+  sslPassword: |
+    {{ .Values.nginx.certificate.sslPassword }}
+{{- else }}
 {{ (.Files.Glob "configMapFiles/genCerts/gencerts.sh").AsConfig | indent 2 }}
+{{- end }}
