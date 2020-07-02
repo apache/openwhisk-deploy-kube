@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-{{- if not .Values.controller.lean }}
+{{- if and (not .Values.controller.lean) (not .Values.zookeeper.external) }}
 ---
 apiVersion: apps/v1
 kind: StatefulSet

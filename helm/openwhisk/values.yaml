@@ -167,12 +167,15 @@ docker:
 
 # zookeeper configurations
 zookeeper:
+  external: false
   imageName: "zookeeper"
   imageTag: "3.4"
   imagePullPolicy: "IfNotPresent"
   # Note: Zookeeper's quorum protocol is designed to have an odd number of replicas.
   replicaCount: 1
   restartPolicy: "Always"
+  connect_string: null
+  host: null
   port: 2181
   serverPort: 2888
   leaderElectionPort: 3888
@@ -188,11 +191,13 @@ zookeeper:
 
 # kafka configurations
 kafka:
+  external: false
   imageName: "wurstmeister/kafka"
   imageTag: "2.12-2.3.1"
   imagePullPolicy: "IfNotPresent"
   replicaCount: 1
   restartPolicy: "Always"
+  connect_string: null
   port: 9092
   persistence:
     size: 512Mi

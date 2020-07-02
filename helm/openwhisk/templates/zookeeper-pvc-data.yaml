@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-{{ if and .Values.k8s.persistence.enabled (eq (int .Values.zookeeper.replicaCount) 1 ) }}
+{{ if and .Values.k8s.persistence.enabled (eq (int .Values.zookeeper.replicaCount) 1 ) (not .Values.zookeeper.external) }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
