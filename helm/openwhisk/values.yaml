@@ -239,7 +239,7 @@ nginx:
   httpPort: 80
   httpsPort: 443
   httpsNodePort: 31001
-  certifiate:
+  certificate:
     external: false
     cert_file: ""
     key_file: ""
