@@ -48,9 +48,15 @@ spec:
       {{- end }}
 
       volumes:
+      {{- if .Values.nginx.certificate.external }}
+      - name: nginx-certs
+        configMap:
+          name: {{ .Release.Name }}-gen-certs
+      {{- else }}
       - name: nginx-certs
         secret:
           secretName: {{ .Release.Name }}-nginx
+      {{- end }}
       - name: nginx-conf
         configMap:
           name: {{ .Release.Name }}-nginx
