@@ -189,6 +189,20 @@ spec:
           - name: "CONFIG_whisk_userEvents_enabled"
             value: "true"
 {{ end }}
+{{- if eq .Values.activationStoreBackend "ElasticSearch" }}
+          - name: "CONFIG_whisk_activationStore_elasticsearch_protocol"
+            value: "{{ .Values.protocol }}"
+          - name: "CONFIG_whisk_activationStore_elasticsearch_hosts"
+            value: {{ template "openwhisk.elasticsearch_connect" . }}
+          - name: "CONFIG_whisk_activationStore_elasticsearch_indexPattern"
+            value: {{ .Values.indexPattern }}
+          - name: "CONFIG_whisk_activationStore_elasticsearch_username"
+            value: "admin"
+          - name: "CONFIG_whisk_activationStore_elasticsearch_password"
+            value: "admin"
+          - name: "CONFIG_whisk_spi_ActivationStoreProvider"
+            value: "org.apache.openwhisk.core.database.elasticsearch.ElasticSearchActivationStoreProvider"
+{{- end }}
         ports:
         - name: invoker
           containerPort: {{ .Values.invoker.port }}

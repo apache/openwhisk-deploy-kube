@@ -9,7 +9,7 @@ metadata:
   annotations:
     esMajorVersion: "{{ include "elasticsearch.esMajorVersion" . }}"
 spec:
-  serviceName: {{ .Release.Name }}-elasticsearch-headless
+  serviceName: {{ .Release.Name }}-elasticsearch
   selector:
     matchLabels:
       name: {{ .Release.Name }}-elasticsearch
@@ -280,10 +280,10 @@ spec:
           {{- end }}
           {{- if lt (int (include "elasticsearch.esMajorVersion" .)) 7 }}
           - name: discovery.zen.ping.unicast.hosts
-            value: "{{ template "elasticsearch.masterService" . }}-headless"
+            value: "{{ .Release.Name }}-elasticsearch"
           {{- else }}
           - name: discovery.seed_hosts
-            value: "{{ template "elasticsearch.masterService" . }}-headless"
+            value: "{{ .Release.Name }}-elasticsearch"
           {{- end }}
           - name: cluster.name
             value: "{{ .Values.clusterName }}"

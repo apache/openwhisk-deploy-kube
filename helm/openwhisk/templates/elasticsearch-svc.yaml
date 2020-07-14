@@ -6,38 +6,6 @@ metadata:
   labels:
     name: {{ .Release.Name }}-elasticsearch
 {{ include "openwhisk.label_boilerplate" . | indent 4 }}
-spec:
-  type: {{ .Values.service.type }}
-  selector:
-    name: {{ .Release.Name }}-elasticsearch
-  ports:
-  - name: {{ .Values.service.httpPortName | default "http" }}
-    protocol: TCP
-    port: {{ .Values.httpPort }}
-{{- if .Values.service.nodePort }}
-    nodePort: {{ .Values.service.nodePort }}
-{{- end }}
-  - name: {{ .Values.service.transportPortName | default "transport" }}
-    protocol: TCP
-    port: {{ .Values.transportPort }}
-{{- if .Values.service.loadBalancerIP }}
-  loadBalancerIP: {{ .Values.service.loadBalancerIP }}
-{{- end }}
-{{- with .Values.service.loadBalancerSourceRanges }}
-  loadBalancerSourceRanges:
-{{ toYaml . | indent 4 }}
-{{- end }}
----
-kind: Service
-apiVersion: v1
-metadata:
-{{- if eq .Values.nodeGroup "master" }}
-  name: {{ .Release.Name }}-elasticsearch-headless
-{{- else }}
-  name: {{ .Release.Name }}-elasticsearch-headless
-{{- end }}
-  labels:
-{{ include "openwhisk.label_boilerplate" . | indent 4 }}
 {{- if .Values.service.labelsHeadless }}
 {{ toYaml .Values.service.labelsHeadless | indent 4 }}
 {{- end }}

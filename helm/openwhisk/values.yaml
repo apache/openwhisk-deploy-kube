@@ -536,7 +536,7 @@ secretMounts: []
 #    defaultMode: 0755
 
 image: "docker.elastic.co/elasticsearch/elasticsearch"
-imageTag: "7.8.0"
+imageTag: "6.7.2"
 imagePullPolicy: "IfNotPresent"
 
 podAnnotations: {}
@@ -756,3 +756,6 @@ keystore: []
 # Deprecated
 # please use the above podSecurityContext.fsGroup instead
 fsGroup: ""
+
+activationStoreBackend: "ElasticSearch"
+indexPattern: "openwhisk-%s"
