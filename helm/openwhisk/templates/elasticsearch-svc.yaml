@@ -2,27 +2,14 @@
 kind: Service
 apiVersion: v1
 metadata:
-{{- if eq .Values.nodeGroup "master" }}
-  name: {{ template "elasticsearch.masterService" . }}
-{{- else }}
-  name: {{ template "elasticsearch.uname" . }}
-{{- end }}
+  name: {{ .Release.Name }}-elasticsearch
   labels:
-    heritage: {{ .Release.Service | quote }}
-    release: {{ .Release.Name | quote }}
-    chart: "{{ .Chart.Name }}"
-    app: "{{ template "elasticsearch.uname" . }}"
-{{- if .Values.service.labels }}
-{{ toYaml .Values.service.labels | indent 4}}
-{{- end }}
-  annotations:
-{{ toYaml .Values.service.annotations | indent 4 }}
+    name: {{ .Release.Name }}-elasticsearch
+{{ include "openwhisk.label_boilerplate" . | indent 4 }}
 spec:
   type: {{ .Values.service.type }}
   selector:
-    release: {{ .Release.Name | quote }}
-    chart: "{{ .Chart.Name }}"
-    app: "{{ template "elasticsearch.uname" . }}"
+    name: {{ .Release.Name }}-elasticsearch
   ports:
   - name: {{ .Values.service.httpPortName | default "http" }}
     protocol: TCP
@@ -45,15 +32,12 @@ kind: Service
 apiVersion: v1
 metadata:
 {{- if eq .Values.nodeGroup "master" }}
-  name: {{ template "elasticsearch.masterService" . }}-headless
+  name: {{ .Release.Name }}-elasticsearch-headless
 {{- else }}
-  name: {{ template "elasticsearch.uname" . }}-headless
+  name: {{ .Release.Name }}-elasticsearch-headless
 {{- end }}
   labels:
-    heritage: {{ .Release.Service | quote }}
-    release: {{ .Release.Name | quote }}
-    chart: "{{ .Chart.Name }}"
-    app: "{{ template "elasticsearch.uname" . }}"
+{{ include "openwhisk.label_boilerplate" . | indent 4 }}
 {{- if .Values.service.labelsHeadless }}
 {{ toYaml .Values.service.labelsHeadless | indent 4 }}
 {{- end }}
@@ -64,7 +48,7 @@ spec:
   # Create endpoints also if the related pod isn't ready
   publishNotReadyAddresses: true
   selector:
-    app: "{{ template "elasticsearch.uname" . }}"
+    name: {{ .Release.Name }}-elasticsearch
   ports:
   - name: {{ .Values.service.httpPortName | default "http" }}
     port: {{ .Values.httpPort }}

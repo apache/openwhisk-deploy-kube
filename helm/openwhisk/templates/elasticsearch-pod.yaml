@@ -2,22 +2,17 @@
 apiVersion: {{ template "elasticsearch.statefulset.apiVersion" . }}
 kind: StatefulSet
 metadata:
-  name: {{ template "elasticsearch.uname" . }}
+  name: {{ .Release.Name }}-elasticsearch
   labels:
-    heritage: {{ .Release.Service | quote }}
-    release: {{ .Release.Name | quote }}
-    chart: "{{ .Chart.Name }}"
-    app: "{{ template "elasticsearch.uname" . }}"
-    {{- range $key, $value := .Values.labels }}
-    {{ $key }}: {{ $value | quote }}
-    {{- end }}
+    name: {{ .Release.Name }}-elasticsearch
+{{ include "openwhisk.label_boilerplate" . | indent 4 }}
   annotations:
     esMajorVersion: "{{ include "elasticsearch.esMajorVersion" . }}"
 spec:
-  serviceName: {{ template "elasticsearch.uname" . }}-headless
+  serviceName: {{ .Release.Name }}-elasticsearch-headless
   selector:
     matchLabels:
-      app: "{{ template "elasticsearch.uname" . }}"
+      name: {{ .Release.Name }}-elasticsearch
   replicas: {{ .Values.replicas }}
   podManagementPolicy: {{ .Values.podManagementPolicy }}
   updateStrategy:
@@ -35,15 +30,9 @@ spec:
   {{- end }}
   template:
     metadata:
-      name: "{{ template "elasticsearch.uname" . }}"
       labels:
-        heritage: {{ .Release.Service | quote }}
-        release: {{ .Release.Name | quote }}
-        chart: "{{ .Chart.Name }}"
-        app: "{{ template "elasticsearch.uname" . }}"
-        {{- range $key, $value := .Values.labels }}
-        {{ $key }}: {{ $value | quote }}
-        {{- end }}
+        name: {{ .Release.Name }}-elasticsearch
+{{ include "openwhisk.label_boilerplate" . | indent 8 }}
       annotations:
         {{- range $key, $value := .Values.podAnnotations }}
         {{ $key }}: {{ $value | quote }}
@@ -120,7 +109,7 @@ spec:
         {{- if .Values.esConfig }}
         - name: esconfig
           configMap:
-            name: {{ template "elasticsearch.uname" . }}-config
+            name: {{ .Release.Name }}-elasticsearch-cm
         {{- end }}
 {{- if .Values.keystore }}
         - name: keystore

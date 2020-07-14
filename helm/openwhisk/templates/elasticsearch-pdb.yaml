@@ -3,7 +3,9 @@
 apiVersion: policy/v1beta1
 kind: PodDisruptionBudget
 metadata:
-  name: "{{ template "elasticsearch.uname" . }}-pdb"
+  name: {{ .Release.Name }}-elasticsearch-pdb
+  labels:
+{{ include "openwhisk.label_boilerplate" .| indent 4 }}
 spec:
   maxUnavailable: {{ .Values.maxUnavailable }}
   selector:

@@ -3,12 +3,9 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: {{ $fullName | quote }}
+  name: {{ .Release.Name }}-elasticsearch
   labels:
-    heritage: {{ .Release.Service | quote }}
-    release: {{ .Release.Name | quote }}
-    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
-    app: {{ $fullName | quote }}
+{{ include "openwhisk.label_boilerplate" . | indent 4 }}
 subjects:
   - kind: ServiceAccount
     {{- if eq .Values.rbac.serviceAccountName "" }}

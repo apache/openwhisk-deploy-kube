@@ -429,3 +429,14 @@ Return the appropriate apiVersion for ingress.
 {{- print "networking.k8s.io/v1beta1" -}}
 {{- end -}}
 {{- end -}}
+
+{{- define "openwhisk.elasticsearch_connect" -}}
+{{- if .Values.elasticsearch.external -}}
+{{ .Values.elasticsearch.connect_string }}
+{{- else -}}
+{{- $kname := printf "%s-elasticsearch" .Release.Name }}
+{{- $kport := .Values.httpPort }}
+{{- $kubeDomain := .Values.k8s.domain }}
+{{- range $i, $e := until (int .Values.replicas) -}}{{ if ne $i 0 }},{{ end }}{{ $kname }}-{{ . }}.{{ $kname }}.{{ $.Release.Namespace }}.svc.{{ $kubeDomain }}:{{ $kport }}{{ end }}
+{{- end -}}
+{{- end -}}
