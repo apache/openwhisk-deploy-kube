@@ -759,3 +759,5 @@ fsGroup: ""
 
 activationStoreBackend: "ElasticSearch"
 indexPattern: "openwhisk-%s"
+username: "admin"
+password: "admin"

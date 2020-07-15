@@ -62,6 +62,10 @@ spec:
 {{ include "openwhisk.readiness.waitForKafka" . | indent 6 }}
 {{- end }}
 {{ include "openwhisk.readiness.waitForCouchDB" . | indent 6 }}
+{{- if eq .Values.activationStoreBackend "ElasticSearch" }}
+      # The controller must wait for elasticsearch to be ready before it starts
+{{ include "openwhisk.readiness.waitForElasticSearch" . | indent 6 }}
+{{- end }}
       # The lean controller requires invoker volumes mounts
 {{- if .Values.controller.lean }}
 {{ include "openwhisk.invoker.volumes" . }}
@@ -190,9 +194,9 @@ spec:
         - name: "CONFIG_whisk_activationStore_elasticsearch_indexPattern"
           value: {{ .Values.indexPattern }}
         - name: "CONFIG_whisk_activationStore_elasticsearch_username"
-          value: "admin"
+          value: "{{ .Values.username }}"
         - name: "CONFIG_whisk_activationStore_elasticsearch_password"
-          value: "admin"
+          value: "{{ .Values.password }}"
         - name: "CONFIG_whisk_spi_ActivationStoreProvider"
           value: "org.apache.openwhisk.core.database.elasticsearch.ElasticSearchActivationStoreProvider"
 {{- end }}

@@ -55,6 +55,10 @@ app: {{ template "openwhisk.fullname" . }}
 {{ .Values.db.auth.username }}:{{ .Values.db.auth.password }}
 {{- end -}}
 
+{{- define "openwhisk.elasticsearch_authentication" -}}
+{{ .Values.username }}:{{ .Values.password }}
+{{- end -}}
+
 {{/* hostname for redis */}}
 {{- define "openwhisk.redis_host" -}}
 {{- if .Values.redis.external -}}

@@ -68,3 +68,14 @@
     value: "http://{{ include "openwhisk.controller_host" . }}:{{ .Values.controller.port }}/invokers/healthy/count"
   command: ["sh", "-c", "echo 0 > /tmp/count.txt; while true; do echo 'waiting for healthy invoker'; wget -T 5 -qO /tmp/count.txt --no-check-certificate \"$READINESS_URL\"; NUM_HEALTHY_INVOKERS=$(cat /tmp/count.txt); if [ $NUM_HEALTHY_INVOKERS -gt 0 ]; then echo \"Success: there are $NUM_HEALTHY_INVOKERS healthy invokers\"; break; fi; echo '...not ready yet; sleeping 3 seconds before retry'; sleep 3; done;"]
 {{- end -}}
+
+{{/* Init container that waits for ElasticSearch to be ready */}}
+{{- define "openwhisk.readiness.waitForElasticSearch" -}}
+- name: "wait-for-elasticsearch"
+  image: "{{- .Values.docker.registry.name -}}busybox"
+  imagePullPolicy: "IfNotPresent"
+  env:
+  - name: "READINESS_URL"
+    value: {{ .Values.protocol  }}://{{ .Release.Name }}-elasticsearch-0.{{ .Release.Name }}-elasticsearch.{{ .Release.Namespace }}.svc.{{ .Values.k8s.domain }}:{{ .Values.httpPort }}/_cluster/health
+  command: ["sh", "-c", "while true; do echo 'checking ElasticSearch readiness'; wget -T 5 --spider $READINESS_URL --header=\"Authorization: Basic {{ include "openwhisk.elasticsearch_authentication" . | b64enc }}\"; result=$?; if [ $result -eq 0 ]; then echo 'Success: ElasticSearch is ready!'; break; fi; echo '...not ready yet; sleeping 3 seconds before retry'; sleep 3; done;"]
+{{- end -}}
