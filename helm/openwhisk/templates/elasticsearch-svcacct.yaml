@@ -1,12 +1,12 @@
-{{- if .Values.rbac.create -}}
+{{- if .Values.elasticsearch.rbac.create -}}
 {{- $fullName := include "elasticsearch.uname" . -}}
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  {{- if eq .Values.rbac.serviceAccountName "" }}
+  {{- if eq .Values.elasticsearch.rbac.serviceAccountName "" }}
   name: {{ $fullName | quote }}
   {{- else }}
-  name: {{ .Values.rbac.serviceAccountName | quote }}
+  name: {{ .Values.elasticsearch.rbac.serviceAccountName | quote }}
   {{- end }}
   labels:
     heritage: {{ .Release.Service | quote }}

@@ -56,7 +56,7 @@ app: {{ template "openwhisk.fullname" . }}
 {{- end -}}
 
 {{- define "openwhisk.elasticsearch_authentication" -}}
-{{ .Values.username }}:{{ .Values.password }}
+{{ .Values.elasticsearch.username }}:{{ .Values.elasticsearch.password }}
 {{- end -}}
 
 {{/* hostname for redis */}}
@@ -351,7 +351,7 @@ imagePullSecrets:
 Expand the name of the chart.
 */}}
 {{- define "elasticsearch.name" -}}
-{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
+{{- default .Chart.Name .Values.elasticsearch.nameOverride | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/*
@@ -359,40 +359,40 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
 {{- define "elasticsearch.fullname" -}}
-{{- $name := default .Chart.Name .Values.nameOverride -}}
+{{- $name := default .Chart.Name .Values.elasticsearch.nameOverride -}}
 {{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{- define "elasticsearch.uname" -}}
-{{- if empty .Values.fullnameOverride -}}
-{{- if empty .Values.nameOverride -}}
-{{ .Values.clusterName }}-{{ .Values.nodeGroup }}
+{{- if empty .Values.elasticsearch.fullnameOverride -}}
+{{- if empty .Values.elasticsearch.nameOverride -}}
+{{ .Values.elasticsearch.clusterName }}-{{ .Values.elasticsearch.nodeGroup }}
 {{- else -}}
-{{ .Values.nameOverride }}-{{ .Values.nodeGroup }}
+{{ .Values.elasticsearch.nameOverride }}-{{ .Values.elasticsearch.nodeGroup }}
 {{- end -}}
 {{- else -}}
-{{ .Values.fullnameOverride }}
+{{ .Values.elasticsearch.fullnameOverride }}
 {{- end -}}
 {{- end -}}
 
 {{- define "elasticsearch.masterService" -}}
-{{- if empty .Values.masterService -}}
-{{- if empty .Values.fullnameOverride -}}
-{{- if empty .Values.nameOverride -}}
-{{ .Values.clusterName }}-master
+{{- if empty .Values.elasticsearch.masterServiceValue -}}
+{{- if empty .Values.elasticsearch.fullnameOverride -}}
+{{- if empty .Values.elasticsearch.nameOverride -}}
+{{ .Values.elasticsearch.clusterName }}-master
 {{- else -}}
-{{ .Values.nameOverride }}-master
+{{ .Values.elasticsearch.nameOverride }}-master
 {{- end -}}
 {{- else -}}
-{{ .Values.fullnameOverride }}
+{{ .Values.elasticsearch.fullnameOverride }}
 {{- end -}}
 {{- else -}}
-{{ .Values.masterService }}
+{{ .Values.elasticsearch.masterServiceValue }}
 {{- end -}}
 {{- end -}}
 
 {{- define "elasticsearch.endpoints" -}}
-{{- $replicas := int (toString (.Values.replicas)) }}
+{{- $replicas := int (toString (.Values.elasticsearch.replicaCount)) }}
 {{- $uname := printf "%s-elasticsearch" .Release.Name }}
   {{- range $i, $e := untilStep 0 $replicas 1 -}}
 {{ $uname }}-{{ $i }},
@@ -400,11 +400,11 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 {{- end -}}
 
 {{- define "elasticsearch.esMajorVersion" -}}
-{{- if .Values.esMajorVersion -}}
-{{ .Values.esMajorVersion }}
+{{- if .Values.elasticsearch.esMajorVersionValue -}}
+{{ .Values.elasticsearch.esMajorVersionValue }}
 {{- else -}}
-{{- $version := int (index (.Values.imageTag | splitList ".") 0) -}}
-  {{- if and (contains "docker.elastic.co/elasticsearch/elasticsearch" .Values.image) (not (eq $version 0)) -}}
+{{- $version := int (index (.Values.elasticsearch.imageTag | splitList ".") 0) -}}
+  {{- if and (contains "docker.elastic.co/elasticsearch/elasticsearch" .Values.elasticsearch.image) (not (eq $version 0)) -}}
 {{ $version }}
   {{- else -}}
 7
@@ -423,24 +423,13 @@ Return the appropriate apiVersion for statefulset.
 {{- end -}}
 {{- end -}}
 
-{{/*
-Return the appropriate apiVersion for ingress.
-*/}}
-{{- define "elasticsearch.ingress.apiVersion" -}}
-{{- if semverCompare "<1.14-0" .Capabilities.KubeVersion.GitVersion -}}
-{{- print "extensions/v1beta1" -}}
-{{- else -}}
-{{- print "networking.k8s.io/v1beta1" -}}
-{{- end -}}
-{{- end -}}
-
 {{- define "openwhisk.elasticsearch_connect" -}}
 {{- if .Values.elasticsearch.external -}}
 {{ .Values.elasticsearch.connect_string }}
 {{- else -}}
 {{- $kname := printf "%s-elasticsearch" .Release.Name }}
-{{- $kport := .Values.httpPort }}
+{{- $kport := .Values.elasticsearch.httpPort }}
 {{- $kubeDomain := .Values.k8s.domain }}
-{{- range $i, $e := until (int .Values.replicas) -}}{{ if ne $i 0 }},{{ end }}{{ $kname }}-{{ . }}.{{ $kname }}.{{ $.Release.Namespace }}.svc.{{ $kubeDomain }}:{{ $kport }}{{ end }}
+{{- range $i, $e := until (int .Values.elasticsearch.replicaCount) -}}{{ if ne $i 0 }},{{ end }}{{ $kname }}-{{ . }}.{{ $kname }}.{{ $.Release.Namespace }}.svc.{{ $kubeDomain }}:{{ $kport }}{{ end }}
 {{- end -}}
 {{- end -}}

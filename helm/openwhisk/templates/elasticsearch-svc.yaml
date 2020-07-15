@@ -6,8 +6,8 @@ metadata:
   labels:
     name: {{ .Release.Name }}-elasticsearch
 {{ include "openwhisk.label_boilerplate" . | indent 4 }}
-{{- if .Values.service.labelsHeadless }}
-{{ toYaml .Values.service.labelsHeadless | indent 4 }}
+{{- if .Values.elasticsearch.service.labelsHeadless }}
+{{ toYaml .Values.elasticsearch.service.labelsHeadless | indent 4 }}
 {{- end }}
   annotations:
     service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
@@ -18,7 +18,7 @@ spec:
   selector:
     name: {{ .Release.Name }}-elasticsearch
   ports:
-  - name: {{ .Values.service.httpPortName | default "http" }}
-    port: {{ .Values.httpPort }}
-  - name: {{ .Values.service.transportPortName | default "transport" }}
-    port: {{ .Values.transportPort }}
+  - name: {{ .Values.elasticsearch.service.httpPortName | default "http" }}
+    port: {{ .Values.elasticsearch.httpPort }}
+  - name: {{ .Values.elasticsearch.service.transportPortName | default "transport" }}
+    port: {{ .Values.elasticsearch.transportPort }}

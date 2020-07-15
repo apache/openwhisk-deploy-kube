@@ -1,4 +1,4 @@
-{{- if .Values.esConfig }}
+{{- if .Values.elasticsearch.esConfig }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -6,7 +6,7 @@ metadata:
   labels:
 {{ include "openwhisk.label_boilerplate" .| indent 4 }}
 data:
-{{- range $path, $config := .Values.esConfig }}
+{{- range $path, $config := .Values.elasticsearch.esConfig }}
   {{ $path }}: |
 {{ $config | indent 4 -}}
 {{- end -}}

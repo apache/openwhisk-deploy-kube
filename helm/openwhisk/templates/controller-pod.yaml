@@ -188,15 +188,15 @@ spec:
 {{ end }}
 {{- if eq .Values.activationStoreBackend "ElasticSearch" }}
         - name: "CONFIG_whisk_activationStore_elasticsearch_protocol"
-          value: "{{ .Values.protocol }}"
+          value: "{{ .Values.elasticsearch.protocol }}"
         - name: "CONFIG_whisk_activationStore_elasticsearch_hosts"
           value: {{ template "openwhisk.elasticsearch_connect" . }}
         - name: "CONFIG_whisk_activationStore_elasticsearch_indexPattern"
-          value: {{ .Values.indexPattern }}
+          value: {{ .Values.elasticsearch.indexPattern }}
         - name: "CONFIG_whisk_activationStore_elasticsearch_username"
-          value: "{{ .Values.username }}"
+          value: "{{ .Values.elasticsearch.username }}"
         - name: "CONFIG_whisk_activationStore_elasticsearch_password"
-          value: "{{ .Values.password }}"
+          value: "{{ .Values.elasticsearch.password }}"
         - name: "CONFIG_whisk_spi_ActivationStoreProvider"
           value: "org.apache.openwhisk.core.database.elasticsearch.ElasticSearchActivationStoreProvider"
 {{- end }}

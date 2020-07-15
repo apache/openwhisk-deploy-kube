@@ -76,6 +76,6 @@
   imagePullPolicy: "IfNotPresent"
   env:
   - name: "READINESS_URL"
-    value: {{ .Values.protocol  }}://{{ .Release.Name }}-elasticsearch-0.{{ .Release.Name }}-elasticsearch.{{ .Release.Namespace }}.svc.{{ .Values.k8s.domain }}:{{ .Values.httpPort }}/_cluster/health
+    value: {{ .Values.elasticsearch.protocol  }}://{{ .Release.Name }}-elasticsearch-0.{{ .Release.Name }}-elasticsearch.{{ .Release.Namespace }}.svc.{{ .Values.k8s.domain }}:{{ .Values.elasticsearch.httpPort }}/_cluster/health
   command: ["sh", "-c", "while true; do echo 'checking ElasticSearch readiness'; wget -T 5 --spider $READINESS_URL --header=\"Authorization: Basic {{ include "openwhisk.elasticsearch_authentication" . | b64enc }}\"; result=$?; if [ $result -eq 0 ]; then echo 'Success: ElasticSearch is ready!'; break; fi; echo '...not ready yet; sleeping 3 seconds before retry'; sleep 3; done;"]
 {{- end -}}

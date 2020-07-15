@@ -13,20 +13,20 @@ spec:
   selector:
     matchLabels:
       name: {{ .Release.Name }}-elasticsearch
-  replicas: {{ .Values.replicas }}
-  podManagementPolicy: {{ .Values.podManagementPolicy }}
+  replicas: {{ .Values.elasticsearch.replicaCount }}
+  podManagementPolicy: {{ .Values.elasticsearch.podManagementPolicy }}
   updateStrategy:
-    type: {{ .Values.updateStrategy }}
-  {{- if .Values.persistence.enabled }}
+    type: {{ .Values.elasticsearch.updateStrategy }}
+  {{- if .Values.k8s.persistence.enabled }}
   volumeClaimTemplates:
   - metadata:
       name: {{ template "elasticsearch.uname" . }}
-    {{- with .Values.persistence.annotations  }}
+    {{- with .Values.elasticsearch.persistence.annotations  }}
       annotations:
 {{ toYaml . | indent 8 }}
     {{- end }}
     spec:
-{{ toYaml .Values.volumeClaimTemplate | indent 6 }}
+{{ toYaml .Values.elasticsearch.volumeClaimTemplate | indent 6 }}
   {{- end }}
   template:
     metadata:
@@ -34,42 +34,42 @@ spec:
         name: {{ .Release.Name }}-elasticsearch
 {{ include "openwhisk.label_boilerplate" . | indent 8 }}
       annotations:
-        {{- range $key, $value := .Values.podAnnotations }}
+        {{- range $key, $value := .Values.elasticsearch.podAnnotations }}
         {{ $key }}: {{ $value | quote }}
         {{- end }}
         {{/* This forces a restart if the configmap has changed */}}
-        {{- if .Values.esConfig }}
+        {{- if .Values.elasticsearch.esConfig }}
         configchecksum: {{ include (print .Template.BasePath "/configmap.yaml") . | sha256sum | trunc 63 }}
         {{- end }}
     spec:
-      {{- if .Values.schedulerName }}
-      schedulerName: "{{ .Values.schedulerName }}"
+      {{- if .Values.elasticsearch.schedulerName }}
+      schedulerName: "{{ .Values.elasticsearch.schedulerName }}"
       {{- end }}
       securityContext:
-{{ toYaml .Values.podSecurityContext | indent 8 }}
-        {{- if .Values.fsGroup }}
-        fsGroup: {{ .Values.fsGroup }} # Deprecated value, please use .Values.podSecurityContext.fsGroup
+{{ toYaml .Values.elasticsearch.podSecurityContext | indent 8 }}
+        {{- if .Values.elasticsearch.fsGroup }}
+        fsGroup: {{ .Values.elasticsearch.fsGroup }} # Deprecated value, please use .Values.podSecurityContext.fsGroup
         {{- end }}
-      {{- if .Values.rbac.create }}
+      {{- if .Values.elasticsearch.rbac.create }}
       serviceAccountName: "{{ template "elasticsearch.uname" . }}"
-      {{- else if not (eq .Values.rbac.serviceAccountName "") }}
-      serviceAccountName: {{ .Values.rbac.serviceAccountName | quote }}
+      {{- else if not (eq .Values.elasticsearch.rbac.serviceAccountName "") }}
+      serviceAccountName: {{ .Values.elasticsearch.rbac.serviceAccountName | quote }}
       {{- end }}
-      {{- with .Values.tolerations }}
+      {{- with .Values.elasticsearch.tolerations }}
       tolerations:
 {{ toYaml . | indent 6 }}
       {{- end }}
-      {{- with .Values.nodeSelector }}
+      {{- with .Values.elasticsearch.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}
       {{- end }}
-      {{- if or (eq .Values.antiAffinity "hard") (eq .Values.antiAffinity "soft") .Values.nodeAffinity }}
-      {{- if .Values.priorityClassName }}
-      priorityClassName: {{ .Values.priorityClassName }}
+      {{- if or (eq .Values.elasticsearch.antiAffinity "hard") (eq .Values.elasticsearch.antiAffinity "soft") .Values.elasticsearch.nodeAffinity }}
+      {{- if .Values.elasticsearch.priorityClassName }}
+      priorityClassName: {{ .Values.elasticsearch.priorityClassName }}
       {{- end }}
       affinity:
       {{- end }}
-      {{- if eq .Values.antiAffinity "hard" }}
+      {{- if eq .Values.elasticsearch.antiAffinity "hard" }}
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
           - labelSelector:
@@ -78,13 +78,13 @@ spec:
                 operator: In
                 values:
                 - "{{ template "elasticsearch.uname" .}}"
-            topologyKey: {{ .Values.antiAffinityTopologyKey }}
-      {{- else if eq .Values.antiAffinity "soft" }}
+            topologyKey: {{ .Values.elasticsearch.antiAffinityTopologyKey }}
+      {{- else if eq .Values.elasticsearch.antiAffinity "soft" }}
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
           - weight: 1
             podAffinityTerm:
-              topologyKey: {{ .Values.antiAffinityTopologyKey }}
+              topologyKey: {{ .Values.elasticsearch.antiAffinityTopologyKey }}
               labelSelector:
                 matchExpressions:
                 - key: app
@@ -92,13 +92,13 @@ spec:
                   values:
                   - "{{ template "elasticsearch.uname" . }}"
       {{- end }}
-      {{- with .Values.nodeAffinity }}
+      {{- with .Values.elasticsearch.nodeAffinity }}
         nodeAffinity:
 {{ toYaml . | indent 10 }}
       {{- end }}
-      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriod }}
+      terminationGracePeriodSeconds: {{ .Values.elasticsearch.terminationGracePeriod }}
       volumes:
-        {{- range .Values.secretMounts }}
+        {{- range .Values.elasticsearch.secretMounts }}
         - name: {{ .name }}
           secret:
             secretName: {{ .secretName }}
@@ -106,52 +106,52 @@ spec:
             defaultMode: {{ .defaultMode }}
             {{- end }}
         {{- end }}
-        {{- if .Values.esConfig }}
+        {{- if .Values.elasticsearch.esConfig }}
         - name: esconfig
           configMap:
             name: {{ .Release.Name }}-elasticsearch-cm
         {{- end }}
-{{- if .Values.keystore }}
+{{- if .Values.elasticsearch.keystore }}
         - name: keystore
           emptyDir: {}
-        {{- range .Values.keystore }}
+        {{- range .Values.elasticsearch.keystore }}
         - name: keystore-{{ .secretName }}
           secret: {{ toYaml . | nindent 12 }}
         {{- end }}
 {{ end }}
-      {{- if .Values.extraVolumes }}
+      {{- if .Values.elasticsearch.extraVolumes }}
       # Currently some extra blocks accept strings
       # to continue with backwards compatibility this is being kept
       # whilst also allowing for yaml to be specified too.
-      {{- if eq "string" (printf "%T" .Values.extraVolumes) }}
-{{ tpl .Values.extraVolumes . | indent 8 }}
+      {{- if eq "string" (printf "%T" .Values.elasticsearch.extraVolumes) }}
+{{ tpl .Values.elasticsearch.extraVolumes . | indent 8 }}
       {{- else }}
-{{ toYaml .Values.extraVolumes | indent 8 }}
+{{ toYaml .Values.elasticsearch.extraVolumes | indent 8 }}
       {{- end }}
       {{- end }}
-      {{- if .Values.imagePullSecrets }}
+      {{- if .Values.elasticsearch.imagePullSecrets }}
       imagePullSecrets:
-{{ toYaml .Values.imagePullSecrets | indent 8 }}
+{{ toYaml .Values.elasticsearch.imagePullSecrets | indent 8 }}
       {{- end }}
       {{- if semverCompare ">1.13" .Capabilities.KubeVersion.GitVersion }}
-      enableServiceLinks: {{ .Values.enableServiceLinks }}
+      enableServiceLinks: {{ .Values.elasticsearch.enableServiceLinks }}
       {{- end }}
       initContainers:
-      {{- if .Values.sysctlInitContainer.enabled }}
+      {{- if .Values.elasticsearch.sysctlInitContainer.enabled }}
       - name: configure-sysctl
         securityContext:
           runAsUser: 0
           privileged: true
-        image: "{{ .Values.image }}:{{ .Values.imageTag }}"
-        imagePullPolicy: "{{ .Values.imagePullPolicy }}"
-        command: ["sysctl", "-w", "vm.max_map_count={{ .Values.sysctlVmMaxMapCount}}"]
+        image: "{{ .Values.elasticsearch.image }}:{{ .Values.elasticsearch.imageTag }}"
+        imagePullPolicy: "{{ .Values.elasticsearch.imagePullPolicy }}"
+        command: ["sysctl", "-w", "vm.max_map_count={{ .Values.elasticsearch.sysctlVmMaxMapCount}}"]
         resources:
-{{ toYaml .Values.initResources | indent 10 }}
+{{ toYaml .Values.elasticsearch.initResources | indent 10 }}
       {{- end }}
-{{ if .Values.keystore }}
+{{ if .Values.elasticsearch.keystore }}
       - name: keystore
-        image: "{{ .Values.image }}:{{ .Values.imageTag }}"
-        imagePullPolicy: "{{ .Values.imagePullPolicy }}"
+        image: "{{ .Values.elasticsearch.image }}:{{ .Values.elasticsearch.imageTag }}"
+        imagePullPolicy: "{{ .Values.elasticsearch.imagePullPolicy }}"
         command:
         - sh
         - -c
@@ -174,33 +174,33 @@ spec:
           fi
 
           cp -a /usr/share/elasticsearch/config/elasticsearch.keystore /tmp/keystore/
-        env: {{ toYaml .Values.extraEnvs | nindent 10 }}
-        envFrom: {{ toYaml .Values.envFrom | nindent 10 }}
-        resources: {{ toYaml .Values.initResources | nindent 10 }}
+        env: {{ toYaml .Values.elasticsearch.extraEnvs | nindent 10 }}
+        envFrom: {{ toYaml .Values.elasticsearch.envFrom | nindent 10 }}
+        resources: {{ toYaml .Values.elasticsearch.initResources | nindent 10 }}
         volumeMounts:
           - name: keystore
             mountPath: /tmp/keystore
-          {{- range .Values.keystore }}
+          {{- range .Values.elasticsearch.keystore }}
           - name: keystore-{{ .secretName }}
             mountPath: /tmp/keystoreSecrets/{{ .secretName }}
           {{- end }}
 {{ end }}
-      {{- if .Values.extraInitContainers }}
+      {{- if .Values.elasticsearch.extraInitContainers }}
       # Currently some extra blocks accept strings
       # to continue with backwards compatibility this is being kept
       # whilst also allowing for yaml to be specified too.
-      {{- if eq "string" (printf "%T" .Values.extraInitContainers) }}
-{{ tpl .Values.extraInitContainers . | indent 6 }}
+      {{- if eq "string" (printf "%T" .Values.elasticsearch.extraInitContainers) }}
+{{ tpl .Values.elasticsearch.extraInitContainers . | indent 6 }}
       {{- else }}
-{{ toYaml .Values.extraInitContainers | indent 6 }}
+{{ toYaml .Values.elasticsearch.extraInitContainers | indent 6 }}
       {{- end }}
       {{- end }}
       containers:
       - name: "{{ template "elasticsearch.name" . }}"
         securityContext:
-{{ toYaml .Values.securityContext | indent 10 }}
-        image: "{{ .Values.image }}:{{ .Values.imageTag }}"
-        imagePullPolicy: "{{ .Values.imagePullPolicy }}"
+{{ toYaml .Values.elasticsearch.securityContext | indent 10 }}
+        image: "{{ .Values.elasticsearch.image }}:{{ .Values.elasticsearch.imageTag }}"
+        imagePullPolicy: "{{ .Values.elasticsearch.imagePullPolicy }}"
         readinessProbe:
           exec:
             command:
@@ -208,7 +208,7 @@ spec:
               - -c
               - |
                 #!/usr/bin/env bash -e
-                # If the node is starting up wait for the cluster to be ready (request params: "{{ .Values.clusterHealthCheckParams }}" )
+                # If the node is starting up wait for the cluster to be ready (request params: "{{ .Values.elasticsearch.clusterHealthCheckParams }}" )
                 # Once it has started only check that the node itself is responding
                 START_FILE=/tmp/.es_start_file
 
@@ -225,7 +225,7 @@ spec:
                     set -- "$@" -u "${ELASTIC_USERNAME}:${ELASTIC_PASSWORD}"
                   fi
 
-                  curl --output /dev/null -k "$@" "{{ .Values.protocol }}://127.0.0.1:{{ .Values.httpPort }}${path}"
+                  curl --output /dev/null -k "$@" "{{ .Values.elasticsearch.protocol }}://127.0.0.1:{{ .Values.elasticsearch.httpPort }}${path}"
                 }
 
                 if [ -f "${START_FILE}" ]; then
@@ -233,7 +233,7 @@ spec:
                   HTTP_CODE=$(http "/" "-w %{http_code}")
                   RC=$?
                   if [[ ${RC} -ne 0 ]]; then
-                    echo "curl --output /dev/null -k -XGET -s -w '%{http_code}' \${BASIC_AUTH} {{ .Values.protocol }}://127.0.0.1:{{ .Values.httpPort }}/ failed with RC ${RC}"
+                    echo "curl --output /dev/null -k -XGET -s -w '%{http_code}' \${BASIC_AUTH} {{ .Values.elasticsearch.protocol }}://127.0.0.1:{{ .Values.elasticsearch.httpPort }}/ failed with RC ${RC}"
                     exit ${RC}
                   fi
                   # ready if HTTP code 200, 503 is tolerable if ES version is 6.x
@@ -242,40 +242,40 @@ spec:
                   elif [[ ${HTTP_CODE} == "503" && "{{ include "elasticsearch.esMajorVersion" . }}" == "6" ]]; then
                     exit 0
                   else
-                    echo "curl --output /dev/null -k -XGET -s -w '%{http_code}' \${BASIC_AUTH} {{ .Values.protocol }}://127.0.0.1:{{ .Values.httpPort }}/ failed with HTTP code ${HTTP_CODE}"
+                    echo "curl --output /dev/null -k -XGET -s -w '%{http_code}' \${BASIC_AUTH} {{ .Values.elasticsearch.protocol }}://127.0.0.1:{{ .Values.elasticsearch.httpPort }}/ failed with HTTP code ${HTTP_CODE}"
                     exit 1
                   fi
 
                 else
-                  echo 'Waiting for elasticsearch cluster to become ready (request params: "{{ .Values.clusterHealthCheckParams }}" )'
-                  if http "/_cluster/health?{{ .Values.clusterHealthCheckParams }}" "--fail" ; then
+                  echo 'Waiting for elasticsearch cluster to become ready (request params: "{{ .Values.elasticsearch.clusterHealthCheckParams }}" )'
+                  if http "/_cluster/health?{{ .Values.elasticsearch.clusterHealthCheckParams }}" "--fail" ; then
                     touch ${START_FILE}
                     exit 0
                   else
-                    echo 'Cluster is not yet ready (request params: "{{ .Values.clusterHealthCheckParams }}" )'
+                    echo 'Cluster is not yet ready (request params: "{{ .Values.elasticsearch.clusterHealthCheckParams }}" )'
                     exit 1
                   fi
                 fi
-{{ toYaml .Values.readinessProbe | indent 10 }}
+{{ toYaml .Values.elasticsearch.readinessProbe | indent 10 }}
         ports:
         - name: http
-          containerPort: {{ .Values.httpPort }}
+          containerPort: {{ .Values.elasticsearch.httpPort }}
         - name: transport
-          containerPort: {{ .Values.transportPort }}
+          containerPort: {{ .Values.elasticsearch.transportPort }}
         resources:
-{{ toYaml .Values.resources | indent 10 }}
+{{ toYaml .Values.elasticsearch.resources | indent 10 }}
         env:
           - name: node.name
             valueFrom:
               fieldRef:
                 fieldPath: metadata.name
-          {{- if eq .Values.roles.master "true" }}
+          {{- if eq .Values.elasticsearch.roles.master "true" }}
           {{- if ge (int (include "elasticsearch.esMajorVersion" .)) 7 }}
           - name: cluster.initial_master_nodes
             value: "{{ template "elasticsearch.endpoints" . }}"
           {{- else }}
           - name: discovery.zen.minimum_master_nodes
-            value: "{{ .Values.minimumMasterNodes }}"
+            value: "{{ .Values.elasticsearch.minimumMasterNodes }}"
           {{- end }}
           {{- end }}
           {{- if lt (int (include "elasticsearch.esMajorVersion" .)) 7 }}
@@ -286,61 +286,61 @@ spec:
             value: "{{ .Release.Name }}-elasticsearch"
           {{- end }}
           - name: cluster.name
-            value: "{{ .Values.clusterName }}"
+            value: "{{ .Values.elasticsearch.clusterName }}"
           - name: network.host
-            value: "{{ .Values.networkHost }}"
+            value: "{{ .Values.elasticsearch.networkHost }}"
           - name: ES_JAVA_OPTS
-            value: "{{ .Values.esJavaOpts }}"
-          {{- range $role, $enabled := .Values.roles }}
+            value: "{{ .Values.elasticsearch.esJavaOpts }}"
+          {{- range $role, $enabled := .Values.elasticsearch.roles }}
           - name: node.{{ $role }}
             value: "{{ $enabled }}"
           {{- end }}
-{{- if .Values.extraEnvs }}
-{{ toYaml .Values.extraEnvs | indent 10 }}
+{{- if .Values.elasticsearch.extraEnvs }}
+{{ toYaml .Values.elasticsearch.extraEnvs | indent 10 }}
 {{- end }}
-{{- if .Values.envFrom }}
+{{- if .Values.elasticsearch.envFrom }}
         envFrom:
-{{ toYaml .Values.envFrom | indent 10 }}
+{{ toYaml .Values.elasticsearch.envFrom | indent 10 }}
 {{- end }}
         volumeMounts:
-          {{- if .Values.persistence.enabled }}
+          {{- if .Values.k8s.persistence.enabled }}
           - name: "{{ template "elasticsearch.uname" . }}"
             mountPath: /usr/share/elasticsearch/data
           {{- end }}
-{{ if .Values.keystore }}
+{{ if .Values.elasticsearch.keystore }}
           - name: keystore
             mountPath: /usr/share/elasticsearch/config/elasticsearch.keystore
             subPath: elasticsearch.keystore
 {{ end }}
-          {{- range .Values.secretMounts }}
+          {{- range .Values.elasticsearch.secretMounts }}
           - name: {{ .name }}
             mountPath: {{ .path }}
             {{- if .subPath }}
             subPath: {{ .subPath }}
             {{- end }}
           {{- end }}
-          {{- range $path, $config := .Values.esConfig }}
+          {{- range $path, $config := .Values.elasticsearch.esConfig }}
           - name: esconfig
             mountPath: /usr/share/elasticsearch/config/{{ $path }}
             subPath: {{ $path }}
           {{- end -}}
-        {{- if .Values.extraVolumeMounts }}
+        {{- if .Values.elasticsearch.extraVolumeMounts }}
         # Currently some extra blocks accept strings
         # to continue with backwards compatibility this is being kept
         # whilst also allowing for yaml to be specified too.
-        {{- if eq "string" (printf "%T" .Values.extraVolumeMounts) }}
-{{ tpl .Values.extraVolumeMounts . | indent 10 }}
+        {{- if eq "string" (printf "%T" .Values.elasticsearch.extraVolumeMounts) }}
+{{ tpl .Values.elasticsearch.extraVolumeMounts . | indent 10 }}
         {{- else }}
-{{ toYaml .Values.extraVolumeMounts | indent 10 }}
+{{ toYaml .Values.elasticsearch.extraVolumeMounts | indent 10 }}
         {{- end }}
         {{- end }}
-      {{- if .Values.masterTerminationFix }}
-      {{- if eq .Values.roles.master "true" }}
+      {{- if .Values.elasticsearch.masterTerminationFix }}
+      {{- if eq .Values.elasticsearch.roles.master "true" }}
       # This sidecar will prevent slow master re-election
       # https://github.com/elastic/helm-charts/issues/63
       - name: elasticsearch-master-graceful-termination-handler
-        image: "{{ .Values.image }}:{{ .Values.imageTag }}"
-        imagePullPolicy: "{{ .Values.imagePullPolicy }}"
+        image: "{{ .Values.elasticsearch.image }}:{{ .Values.elasticsearch.imageTag }}"
+        imagePullPolicy: "{{ .Values.elasticsearch.imagePullPolicy }}"
         command:
         - "sh"
         - -c
@@ -355,7 +355,7 @@ spec:
               else
                 BASIC_AUTH=''
               fi
-              curl -XGET -s -k --fail ${BASIC_AUTH} {{ .Values.protocol }}://{{ template "elasticsearch.masterService" . }}:{{ .Values.httpPort }}${path}
+              curl -XGET -s -k --fail ${BASIC_AUTH} {{ .Values.elasticsearch.protocol }}://{{ template "elasticsearch.masterService" . }}:{{ .Values.elasticsearch.httpPort }}${path}
           }
 
           cleanup () {
@@ -377,32 +377,32 @@ spec:
           sleep infinity &
           wait $!
         resources:
-{{ toYaml .Values.sidecarResources | indent 10 }}
+{{ toYaml .Values.elasticsearch.sidecarResources | indent 10 }}
         env:
           - name: NODE_NAME
             valueFrom:
               fieldRef:
                 fieldPath: metadata.name
-        {{- if .Values.extraEnvs }}
-{{ toYaml .Values.extraEnvs | indent 10 }}
+        {{- if .Values.elasticsearch.extraEnvs }}
+{{ toYaml .Values.elasticsearch.extraEnvs | indent 10 }}
         {{- end }}
-        {{- if .Values.envFrom }}
+        {{- if .Values.elasticsearch.envFrom }}
         envFrom:
-{{ toYaml .Values.envFrom | indent 10 }}
+{{ toYaml .Values.elasticsearch.envFrom | indent 10 }}
         {{- end }}
       {{- end }}
       {{- end }}
-{{- if .Values.lifecycle }}
+{{- if .Values.elasticsearch.lifecycle }}
         lifecycle:
-{{ toYaml .Values.lifecycle | indent 10 }}
+{{ toYaml .Values.elasticsearch.lifecycle | indent 10 }}
 {{- end }}
-      {{- if .Values.extraContainers }}
+      {{- if .Values.elasticsearch.extraContainers }}
       # Currently some extra blocks accept strings
       # to continue with backwards compatibility this is being kept
       # whilst also allowing for yaml to be specified too.
-      {{- if eq "string" (printf "%T" .Values.extraContainers) }}
-{{ tpl .Values.extraContainers . | indent 6 }}
+      {{- if eq "string" (printf "%T" .Values.elasticsearch.extraContainers) }}
+{{ tpl .Values.elasticsearch.extraContainers . | indent 6 }}
       {{- else }}
-{{ toYaml .Values.extraContainers | indent 6 }}
+{{ toYaml .Values.elasticsearch.extraContainers | indent 6 }}
       {{- end }}
       {{- end }}
