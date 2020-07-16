@@ -97,6 +97,48 @@ redis:
   port: <redis port>
 ```
 
+### Using an external kafka/zookeeper
+
+To use an externally deployed kafka/zookeeper instead of using default single pod deployment, add a stanza like the one
+below to your `mycluster.yaml`, substituting in the appropriate values
+for `<...>`
+
+```yaml
+zookeeper:
+  external: true
+  connect_string: <zookeeper connect string>
+  host: <the first instance of zookeeper>
+
+kafka:
+  external: true
+  connect_string: <kafka connect string>
+```
+
+### Using activation store backend: ElasticSearch
+
+Currently, deploy-kube uses `CouchDB` for activation store backend by default,
+If you want to change it to `ElasticSearch`, just change
+
+```yaml
+activationStoreBackend: "ElasticSearch"
+```
+
+If you want to use an externally deployed ElasticSearch for activation store backend, add a stanza like the one
+below to your `mycluster.yaml`, substituting in the appropriate values
+for `<...>`
+
+```yaml
+activationStoreBackend: "ElasticSearch"
+elasticsearch:
+  external: true
+  connect_string: <elasticsearch connect string>
+  protocol: <"http" or "https">
+  host: <the first instance of elasticsearch>
+  indexPattern: <the indexPattern for activation index>
+  username: <elasticsearch username>
+  password: <elasticsearch username>
+```
+
 ### Persistence
 
 Several of the OpenWhisk components that are deployed by the Helm
