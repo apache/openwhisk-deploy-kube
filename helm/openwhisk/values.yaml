@@ -590,18 +590,6 @@ elasticsearch:
   #   image: busybox
   #   command: ['do', 'something']
   extraInitContainers: []
-  # This is the PriorityClass settings as defined in
-  # https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/#priorityclass
-  priorityClassName: ""
-  # By default this will make sure two pods don't end up on the same node
-  # Changing this to a region would allow you to spread pods across regions
-  antiAffinityTopologyKey: "kubernetes.io/hostname"
-  # Hard means that by default pods will only be scheduled if there are enough nodes for them
-  # and that they will never end up on the same node. Setting this to soft will do this "best effort"
-  antiAffinity: "hard"
-  # This is the node affinity settings as defined in
-  # https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#node-affinity-beta-feature
-  nodeAffinity: {}
   # The default is to deploy all pods serially. By setting this to parallel all pods are started at
   # the same time when bootstrapping the cluster
   podManagementPolicy: "Parallel"

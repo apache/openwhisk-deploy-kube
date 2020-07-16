@@ -56,47 +56,18 @@ spec:
       {{- else if not (eq .Values.elasticsearch.rbac.serviceAccountName "") }}
       serviceAccountName: {{ .Values.elasticsearch.rbac.serviceAccountName | quote }}
       {{- end }}
-      {{- with .Values.elasticsearch.tolerations }}
-      tolerations:
-{{ toYaml . | indent 6 }}
-      {{- end }}
-      {{- with .Values.elasticsearch.nodeSelector }}
-      nodeSelector:
-{{ toYaml . | indent 8 }}
-      {{- end }}
-      {{- if or (eq .Values.elasticsearch.antiAffinity "hard") (eq .Values.elasticsearch.antiAffinity "soft") .Values.elasticsearch.nodeAffinity }}
-      {{- if .Values.elasticsearch.priorityClassName }}
-      priorityClassName: {{ .Values.elasticsearch.priorityClassName }}
-      {{- end }}
+
+      {{- if .Values.affinity.enabled }}
       affinity:
+{{ include "openwhisk.affinity.core" . | indent 8 }}
+{{ include "openwhisk.affinity.selfAntiAffinity" ( printf "%s-elasticsearch" .Release.Name ) | indent 8 }}
       {{- end }}
-      {{- if eq .Values.elasticsearch.antiAffinity "hard" }}
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-          - labelSelector:
-              matchExpressions:
-              - key: app
-                operator: In
-                values:
-                - "{{ template "elasticsearch.uname" .}}"
-            topologyKey: {{ .Values.elasticsearch.antiAffinityTopologyKey }}
-      {{- else if eq .Values.elasticsearch.antiAffinity "soft" }}
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 1
-            podAffinityTerm:
-              topologyKey: {{ .Values.elasticsearch.antiAffinityTopologyKey }}
-              labelSelector:
-                matchExpressions:
-                - key: app
-                  operator: In
-                  values:
-                  - "{{ template "elasticsearch.uname" . }}"
+
+      {{- if .Values.toleration.enabled }}
+      tolerations:
+{{ include "openwhisk.toleration.core" . | indent 8 }}
       {{- end }}
-      {{- with .Values.elasticsearch.nodeAffinity }}
-        nodeAffinity:
-{{ toYaml . | indent 10 }}
-      {{- end }}
+
       terminationGracePeriodSeconds: {{ .Values.elasticsearch.terminationGracePeriod }}
       volumes:
         {{- range .Values.elasticsearch.secretMounts }}
