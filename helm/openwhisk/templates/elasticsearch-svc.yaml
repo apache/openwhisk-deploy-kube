@@ -1,3 +1,4 @@
+{{- if and (not .Values.elasticsearch.external) (eq .Values.activationStoreBackend "ElasticSearch") }}
 ---
 kind: Service
 apiVersion: v1
@@ -22,3 +23,4 @@ spec:
     port: {{ .Values.elasticsearch.httpPort }}
   - name: {{ .Values.elasticsearch.service.transportPortName | default "transport" }}
     port: {{ .Values.elasticsearch.transportPort }}
+{{- end -}}

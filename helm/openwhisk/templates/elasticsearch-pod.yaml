@@ -1,3 +1,4 @@
+{{- if and (not .Values.elasticsearch.external) (eq .Values.activationStoreBackend "ElasticSearch") }}
 ---
 apiVersion: {{ template "elasticsearch.statefulset.apiVersion" . }}
 kind: StatefulSet
@@ -406,3 +407,4 @@ spec:
 {{ toYaml .Values.elasticsearch.extraContainers | indent 6 }}
       {{- end }}
       {{- end }}
+{{- end }}

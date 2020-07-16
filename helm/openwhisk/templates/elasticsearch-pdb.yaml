@@ -1,5 +1,5 @@
 ---
-{{- if and .Values.pdb.enable (.Values.pdb.elasticsearch.maxUnavailable) (not .Values.elasticsearch.external) }}
+{{- if and .Values.pdb.enable (not .Values.elasticsearch.external) (eq .Values.activationStoreBackend "ElasticSearch") }}
 apiVersion: policy/v1beta1
 kind: PodDisruptionBudget
 metadata:
@@ -7,7 +7,7 @@ metadata:
   labels:
 {{ include "openwhisk.label_boilerplate" .| indent 4 }}
 spec:
-  maxUnavailable: {{ .Values.pdb.elasticsearch.maxUnavailable }}
+  maxUnavailable: {{ .Values.pdb.elasticsearch.maxUnavailable | default 1 }}
   selector:
     matchLabels:
       name: {{ .Release.Name }}-elasticsearch

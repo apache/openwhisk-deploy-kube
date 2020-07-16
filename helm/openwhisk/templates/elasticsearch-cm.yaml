@@ -1,4 +1,4 @@
-{{- if .Values.elasticsearch.esConfig }}
+{{- if and (not .Values.elasticsearch.external) (eq .Values.activationStoreBackend "ElasticSearch") .Values.elasticsearch.esConfig }}
 apiVersion: v1
 kind: ConfigMap
 metadata:

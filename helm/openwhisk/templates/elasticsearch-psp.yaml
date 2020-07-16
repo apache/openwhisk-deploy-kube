@@ -1,4 +1,4 @@
-{{- if .Values.elasticsearch.podSecurityPolicy.create -}}
+{{- if and .Values.elasticsearch.podSecurityPolicy.create (not .Values.elasticsearch.external) (eq .Values.activationStoreBackend "ElasticSearch") }}
 {{- $fullName := include "elasticsearch.uname" . -}}
 apiVersion: policy/v1beta1
 kind: PodSecurityPolicy

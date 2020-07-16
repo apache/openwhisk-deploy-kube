@@ -229,7 +229,8 @@ db:
   persistence:
     size: 2Gi
 
-activationStoreBackend: "ElasticSearch"
+# CouchDB, ElasticSearch
+activationStoreBackend: "CouchDB"
 
 # Nginx configurations
 nginx:
@@ -609,6 +610,8 @@ elasticsearch:
   # If you experience slow pod startups you probably want to set this to `false`.
   enableServiceLinks: true
   protocol: http
+  connect_string: null
+  host: null
   httpPort: 9200
   transportPort: 9300
   service:

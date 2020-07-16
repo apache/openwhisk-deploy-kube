@@ -433,3 +433,12 @@ Return the appropriate apiVersion for statefulset.
 {{- range $i, $e := until (int .Values.elasticsearch.replicaCount) -}}{{ if ne $i 0 }},{{ end }}{{ $kname }}-{{ . }}.{{ $kname }}.{{ $.Release.Namespace }}.svc.{{ $kubeDomain }}:{{ $kport }}{{ end }}
 {{- end -}}
 {{- end -}}
+
+{{/* host name for server.0 in elasticsearch cluster */}}
+{{- define "openwhisk.elasticsearch_zero_host" -}}
+{{- if .Values.elasticsearch.external -}}
+{{ .Values.elasticsearch.host }}
+{{- else -}}
+{{ .Release.Name }}-elasticsearch-0.{{ .Release.Name }}-elasticsearch.{{ .Release.Namespace }}.svc.{{ .Values.k8s.domain }}
+{{- end -}}
+{{- end -}}
