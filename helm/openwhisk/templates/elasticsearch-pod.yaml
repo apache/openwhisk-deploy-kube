@@ -1,0 +1,398 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+{{- if and (not .Values.elasticsearch.external) (eq .Values.activationStoreBackend "ElasticSearch") }}
+---
+apiVersion: {{ template "elasticsearch.statefulset.apiVersion" . }}
+kind: StatefulSet
+metadata:
+  name: {{ .Release.Name }}-elasticsearch
+  labels:
+    name: {{ .Release.Name }}-elasticsearch
+{{ include "openwhisk.label_boilerplate" . | indent 4 }}
+  annotations:
+    esMajorVersion: "{{ include "elasticsearch.esMajorVersion" . }}"
+spec:
+  serviceName: {{ .Release.Name }}-elasticsearch
+  selector:
+    matchLabels:
+      name: {{ .Release.Name }}-elasticsearch
+  replicas: {{ .Values.elasticsearch.replicaCount }}
+  podManagementPolicy: {{ .Values.elasticsearch.podManagementPolicy }}
+  updateStrategy:
+    type: {{ .Values.elasticsearch.updateStrategy }}
+  {{- if .Values.k8s.persistence.enabled }}
+  volumeClaimTemplates:
+  - metadata:
+      name: {{ template "elasticsearch.uname" . }}
+    {{- with .Values.elasticsearch.persistence.annotations  }}
+      annotations:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    spec:
+{{ toYaml .Values.elasticsearch.volumeClaimTemplate | indent 6 }}
+  {{- end }}
+  template:
+    metadata:
+      labels:
+        name: {{ .Release.Name }}-elasticsearch
+{{ include "openwhisk.label_boilerplate" . | indent 8 }}
+      annotations:
+        {{- range $key, $value := .Values.elasticsearch.podAnnotations }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
+        {{/* This forces a restart if the configmap has changed */}}
+        {{- if .Values.elasticsearch.esConfig }}
+        configchecksum: {{ include (print .Template.BasePath "/configmap.yaml") . | sha256sum | trunc 63 }}
+        {{- end }}
+    spec:
+      {{- if .Values.elasticsearch.schedulerName }}
+      schedulerName: "{{ .Values.elasticsearch.schedulerName }}"
+      {{- end }}
+      securityContext:
+{{ toYaml .Values.elasticsearch.podSecurityContext | indent 8 }}
+        {{- if .Values.elasticsearch.fsGroup }}
+        fsGroup: {{ .Values.elasticsearch.fsGroup }} # Deprecated value, please use .Values.podSecurityContext.fsGroup
+        {{- end }}
+      {{- if .Values.elasticsearch.rbac.create }}
+      serviceAccountName: "{{ template "elasticsearch.uname" . }}"
+      {{- else if not (eq .Values.elasticsearch.rbac.serviceAccountName "") }}
+      serviceAccountName: {{ .Values.elasticsearch.rbac.serviceAccountName | quote }}
+      {{- end }}
+
+      {{- if .Values.affinity.enabled }}
+      affinity:
+{{ include "openwhisk.affinity.core" . | indent 8 }}
+{{ include "openwhisk.affinity.selfAntiAffinity" ( printf "%s-elasticsearch" .Release.Name ) | indent 8 }}
+      {{- end }}
+
+      {{- if .Values.toleration.enabled }}
+      tolerations:
+{{ include "openwhisk.toleration.core" . | indent 8 }}
+      {{- end }}
+
+      terminationGracePeriodSeconds: {{ .Values.elasticsearch.terminationGracePeriod }}
+      volumes:
+        {{- range .Values.elasticsearch.secretMounts }}
+        - name: {{ .name }}
+          secret:
+            secretName: {{ .secretName }}
+            {{- if .defaultMode }}
+            defaultMode: {{ .defaultMode }}
+            {{- end }}
+        {{- end }}
+        {{- if .Values.elasticsearch.esConfig }}
+        - name: esconfig
+          configMap:
+            name: {{ .Release.Name }}-elasticsearch-cm
+        {{- end }}
+{{- if .Values.elasticsearch.keystore }}
+        - name: keystore
+          emptyDir: {}
+        {{- range .Values.elasticsearch.keystore }}
+        - name: keystore-{{ .secretName }}
+          secret: {{ toYaml . | nindent 12 }}
+        {{- end }}
+{{ end }}
+      {{- if .Values.elasticsearch.extraVolumes }}
+      # Currently some extra blocks accept strings
+      # to continue with backwards compatibility this is being kept
+      # whilst also allowing for yaml to be specified too.
+      {{- if eq "string" (printf "%T" .Values.elasticsearch.extraVolumes) }}
+{{ tpl .Values.elasticsearch.extraVolumes . | indent 8 }}
+      {{- else }}
+{{ toYaml .Values.elasticsearch.extraVolumes | indent 8 }}
+      {{- end }}
+      {{- end }}
+      {{- if .Values.elasticsearch.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.elasticsearch.imagePullSecrets | indent 8 }}
+      {{- end }}
+      {{- if semverCompare ">1.13" .Capabilities.KubeVersion.GitVersion }}
+      enableServiceLinks: {{ .Values.elasticsearch.enableServiceLinks }}
+      {{- end }}
+      initContainers:
+      {{- if .Values.elasticsearch.sysctlInitContainer.enabled }}
+      - name: configure-sysctl
+        securityContext:
+          runAsUser: 0
+          privileged: true
+        image: "{{ .Values.elasticsearch.image }}:{{ .Values.elasticsearch.imageTag }}"
+        imagePullPolicy: "{{ .Values.elasticsearch.imagePullPolicy }}"
+        command: ["sysctl", "-w", "vm.max_map_count={{ .Values.elasticsearch.sysctlVmMaxMapCount}}"]
+        resources:
+{{ toYaml .Values.elasticsearch.initResources | indent 10 }}
+      {{- end }}
+{{ if .Values.elasticsearch.keystore }}
+      - name: keystore
+        image: "{{ .Values.elasticsearch.image }}:{{ .Values.elasticsearch.imageTag }}"
+        imagePullPolicy: "{{ .Values.elasticsearch.imagePullPolicy }}"
+        command:
+        - sh
+        - -c
+        - |
+          #!/usr/bin/env bash
+          set -euo pipefail
+
+          elasticsearch-keystore create
+
+          for i in /tmp/keystoreSecrets/*/*; do
+            key=$(basename $i)
+            echo "Adding file $i to keystore key $key"
+            elasticsearch-keystore add-file "$key" "$i"
+          done
+
+          # Add the bootstrap password since otherwise the Elasticsearch entrypoint tries to do this on startup
+          if [ ! -z ${ELASTIC_PASSWORD+x} ]; then
+            echo 'Adding env $ELASTIC_PASSWORD to keystore as key bootstrap.password'
+            echo "$ELASTIC_PASSWORD" | elasticsearch-keystore add -x bootstrap.password
+          fi
+
+          cp -a /usr/share/elasticsearch/config/elasticsearch.keystore /tmp/keystore/
+        env: {{ toYaml .Values.elasticsearch.extraEnvs | nindent 10 }}
+        envFrom: {{ toYaml .Values.elasticsearch.envFrom | nindent 10 }}
+        resources: {{ toYaml .Values.elasticsearch.initResources | nindent 10 }}
+        volumeMounts:
+          - name: keystore
+            mountPath: /tmp/keystore
+          {{- range .Values.elasticsearch.keystore }}
+          - name: keystore-{{ .secretName }}
+            mountPath: /tmp/keystoreSecrets/{{ .secretName }}
+          {{- end }}
+{{ end }}
+      {{- if .Values.elasticsearch.extraInitContainers }}
+      # Currently some extra blocks accept strings
+      # to continue with backwards compatibility this is being kept
+      # whilst also allowing for yaml to be specified too.
+      {{- if eq "string" (printf "%T" .Values.elasticsearch.extraInitContainers) }}
+{{ tpl .Values.elasticsearch.extraInitContainers . | indent 6 }}
+      {{- else }}
+{{ toYaml .Values.elasticsearch.extraInitContainers | indent 6 }}
+      {{- end }}
+      {{- end }}
+      containers:
+      - name: "{{ template "elasticsearch.name" . }}"
+        securityContext:
+{{ toYaml .Values.elasticsearch.securityContext | indent 10 }}
+        image: "{{ .Values.elasticsearch.image }}:{{ .Values.elasticsearch.imageTag }}"
+        imagePullPolicy: "{{ .Values.elasticsearch.imagePullPolicy }}"
+        readinessProbe:
+          exec:
+            command:
+              - sh
+              - -c
+              - |
+                #!/usr/bin/env bash -e
+                # If the node is starting up wait for the cluster to be ready (request params: "{{ .Values.elasticsearch.clusterHealthCheckParams }}" )
+                # Once it has started only check that the node itself is responding
+                START_FILE=/tmp/.es_start_file
+
+                http () {
+                  local path="${1}"
+                  local args="${2}"
+                  set -- -XGET -s
+
+                  if [ "$args" != "" ]; then
+                    set -- "$@" $args
+                  fi
+
+                  if [ -n "${ELASTIC_USERNAME}" ] && [ -n "${ELASTIC_PASSWORD}" ]; then
+                    set -- "$@" -u "${ELASTIC_USERNAME}:${ELASTIC_PASSWORD}"
+                  fi
+
+                  curl --output /dev/null -k "$@" "{{ .Values.elasticsearch.protocol }}://127.0.0.1:{{ .Values.elasticsearch.httpPort }}${path}"
+                }
+
+                if [ -f "${START_FILE}" ]; then
+                  echo 'Elasticsearch is already running, lets check the node is healthy'
+                  HTTP_CODE=$(http "/" "-w %{http_code}")
+                  RC=$?
+                  if [[ ${RC} -ne 0 ]]; then
+                    echo "curl --output /dev/null -k -XGET -s -w '%{http_code}' \${BASIC_AUTH} {{ .Values.elasticsearch.protocol }}://127.0.0.1:{{ .Values.elasticsearch.httpPort }}/ failed with RC ${RC}"
+                    exit ${RC}
+                  fi
+                  # ready if HTTP code 200, 503 is tolerable if ES version is 6.x
+                  if [[ ${HTTP_CODE} == "200" ]]; then
+                    exit 0
+                  elif [[ ${HTTP_CODE} == "503" && "{{ include "elasticsearch.esMajorVersion" . }}" == "6" ]]; then
+                    exit 0
+                  else
+                    echo "curl --output /dev/null -k -XGET -s -w '%{http_code}' \${BASIC_AUTH} {{ .Values.elasticsearch.protocol }}://127.0.0.1:{{ .Values.elasticsearch.httpPort }}/ failed with HTTP code ${HTTP_CODE}"
+                    exit 1
+                  fi
+
+                else
+                  echo 'Waiting for elasticsearch cluster to become ready (request params: "{{ .Values.elasticsearch.clusterHealthCheckParams }}" )'
+                  if http "/_cluster/health?{{ .Values.elasticsearch.clusterHealthCheckParams }}" "--fail" ; then
+                    touch ${START_FILE}
+                    exit 0
+                  else
+                    echo 'Cluster is not yet ready (request params: "{{ .Values.elasticsearch.clusterHealthCheckParams }}" )'
+                    exit 1
+                  fi
+                fi
+{{ toYaml .Values.elasticsearch.readinessProbe | indent 10 }}
+        ports:
+        - name: http
+          containerPort: {{ .Values.elasticsearch.httpPort }}
+        - name: transport
+          containerPort: {{ .Values.elasticsearch.transportPort }}
+        resources:
+{{ toYaml .Values.elasticsearch.resources | indent 10 }}
+        env:
+          - name: node.name
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          {{- if eq .Values.elasticsearch.roles.master "true" }}
+          {{- if ge (int (include "elasticsearch.esMajorVersion" .)) 7 }}
+          - name: cluster.initial_master_nodes
+            value: "{{ template "elasticsearch.endpoints" . }}"
+          {{- else }}
+          - name: discovery.zen.minimum_master_nodes
+            value: "{{ .Values.elasticsearch.minimumMasterNodes }}"
+          {{- end }}
+          {{- end }}
+          {{- if lt (int (include "elasticsearch.esMajorVersion" .)) 7 }}
+          - name: discovery.zen.ping.unicast.hosts
+            value: "{{ .Release.Name }}-elasticsearch"
+          {{- else }}
+          - name: discovery.seed_hosts
+            value: "{{ .Release.Name }}-elasticsearch"
+          {{- end }}
+          - name: cluster.name
+            value: "{{ .Values.elasticsearch.clusterName }}"
+          - name: network.host
+            value: "{{ .Values.elasticsearch.networkHost }}"
+          - name: ES_JAVA_OPTS
+            value: "{{ .Values.elasticsearch.esJavaOpts }}"
+          {{- range $role, $enabled := .Values.elasticsearch.roles }}
+          - name: node.{{ $role }}
+            value: "{{ $enabled }}"
+          {{- end }}
+{{- if .Values.elasticsearch.extraEnvs }}
+{{ toYaml .Values.elasticsearch.extraEnvs | indent 10 }}
+{{- end }}
+{{- if .Values.elasticsearch.envFrom }}
+        envFrom:
+{{ toYaml .Values.elasticsearch.envFrom | indent 10 }}
+{{- end }}
+        volumeMounts:
+          {{- if .Values.k8s.persistence.enabled }}
+          - name: "{{ template "elasticsearch.uname" . }}"
+            mountPath: /usr/share/elasticsearch/data
+          {{- end }}
+{{ if .Values.elasticsearch.keystore }}
+          - name: keystore
+            mountPath: /usr/share/elasticsearch/config/elasticsearch.keystore
+            subPath: elasticsearch.keystore
+{{ end }}
+          {{- range .Values.elasticsearch.secretMounts }}
+          - name: {{ .name }}
+            mountPath: {{ .path }}
+            {{- if .subPath }}
+            subPath: {{ .subPath }}
+            {{- end }}
+          {{- end }}
+          {{- range $path, $config := .Values.elasticsearch.esConfig }}
+          - name: esconfig
+            mountPath: /usr/share/elasticsearch/config/{{ $path }}
+            subPath: {{ $path }}
+          {{- end -}}
+        {{- if .Values.elasticsearch.extraVolumeMounts }}
+        # Currently some extra blocks accept strings
+        # to continue with backwards compatibility this is being kept
+        # whilst also allowing for yaml to be specified too.
+        {{- if eq "string" (printf "%T" .Values.elasticsearch.extraVolumeMounts) }}
+{{ tpl .Values.elasticsearch.extraVolumeMounts . | indent 10 }}
+        {{- else }}
+{{ toYaml .Values.elasticsearch.extraVolumeMounts | indent 10 }}
+        {{- end }}
+        {{- end }}
+      {{- if .Values.elasticsearch.masterTerminationFix }}
+      {{- if eq .Values.elasticsearch.roles.master "true" }}
+      # This sidecar will prevent slow master re-election
+      # https://github.com/elastic/helm-charts/issues/63
+      - name: elasticsearch-master-graceful-termination-handler
+        image: "{{ .Values.elasticsearch.image }}:{{ .Values.elasticsearch.imageTag }}"
+        imagePullPolicy: "{{ .Values.elasticsearch.imagePullPolicy }}"
+        command:
+        - "sh"
+        - -c
+        - |
+          #!/usr/bin/env bash
+          set -eo pipefail
+
+          http () {
+              local path="${1}"
+              if [ -n "${ELASTIC_USERNAME}" ] && [ -n "${ELASTIC_PASSWORD}" ]; then
+                BASIC_AUTH="-u ${ELASTIC_USERNAME}:${ELASTIC_PASSWORD}"
+              else
+                BASIC_AUTH=''
+              fi
+              curl -XGET -s -k --fail ${BASIC_AUTH} {{ .Values.elasticsearch.protocol }}://{{ template "elasticsearch.masterService" . }}:{{ .Values.elasticsearch.httpPort }}${path}
+          }
+
+          cleanup () {
+            while true ; do
+              local master="$(http "/_cat/master?h=node" || echo "")"
+              if [[ $master == "{{ template "elasticsearch.masterService" . }}"* && $master != "${NODE_NAME}" ]]; then
+                echo "This node is not master."
+                break
+              fi
+              echo "This node is still master, waiting gracefully for it to step down"
+              sleep 1
+            done
+
+            exit 0
+          }
+
+          trap cleanup SIGTERM
+
+          sleep infinity &
+          wait $!
+        resources:
+{{ toYaml .Values.elasticsearch.sidecarResources | indent 10 }}
+        env:
+          - name: NODE_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+        {{- if .Values.elasticsearch.extraEnvs }}
+{{ toYaml .Values.elasticsearch.extraEnvs | indent 10 }}
+        {{- end }}
+        {{- if .Values.elasticsearch.envFrom }}
+        envFrom:
+{{ toYaml .Values.elasticsearch.envFrom | indent 10 }}
+        {{- end }}
+      {{- end }}
+      {{- end }}
+{{- if .Values.elasticsearch.lifecycle }}
+        lifecycle:
+{{ toYaml .Values.elasticsearch.lifecycle | indent 10 }}
+{{- end }}
+      {{- if .Values.elasticsearch.extraContainers }}
+      # Currently some extra blocks accept strings
+      # to continue with backwards compatibility this is being kept
+      # whilst also allowing for yaml to be specified too.
+      {{- if eq "string" (printf "%T" .Values.elasticsearch.extraContainers) }}
+{{ tpl .Values.elasticsearch.extraContainers . | indent 6 }}
+      {{- else }}
+{{ toYaml .Values.elasticsearch.extraContainers | indent 6 }}
+      {{- end }}
+      {{- end }}
+{{- end }}

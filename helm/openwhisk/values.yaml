@@ -229,6 +229,9 @@ db:
   persistence:
     size: 2Gi
 
+# CouchDB, ElasticSearch
+activationStoreBackend: "CouchDB"
+
 # Nginx configurations
 nginx:
   imageName: "nginx"
@@ -483,3 +486,190 @@ pdb:
     maxUnavailable: 1
   invoker:
     maxUnavailable: 1
+  elasticsearch:
+    maxUnavailable: 1
+
+# ElasticSearch configuration
+elasticsearch:
+  external: false
+  clusterName: "elasticsearch"
+  nodeGroup: "master"
+  # The service that non master groups will try to connect to when joining the cluster
+  # This should be set to clusterName + "-" + nodeGroup for your master group
+  masterServiceValue: ""
+  # Elasticsearch roles that will be applied to this nodeGroup
+  # These will be set as environment variables. E.g. node.master=true
+  roles:
+    master: "true"
+    ingest: "true"
+    data: "true"
+  replicaCount: 1
+  minimumMasterNodes: 1
+  esMajorVersionValue: ""
+  # Allows you to add any config files in /usr/share/elasticsearch/config/
+  # such as elasticsearch.yml and log4j2.properties, e.g.
+  #  elasticsearch.yml: |
+  #    key:
+  #      nestedkey: value
+  #  log4j2.properties: |
+  #    key = value
+  esConfig: {}
+  # Extra environment variables to append to this nodeGroup
+  # This will be appended to the current 'env:' key. You can use any of the kubernetes env
+  # syntax here
+  #  - name: MY_ENVIRONMENT_VAR
+  #    value: the_value_goes_here
+  extraEnvs: []
+  # Allows you to load environment variables from kubernetes secret or config map
+  # - secretRef:
+  #     name: env-secret
+  # - configMapRef:
+  #     name: config-map
+  envFrom: []
+  # A list of secrets and their paths to mount inside the pod
+  # This is useful for mounting certificates for security and for mounting
+  # the X-Pack license
+  #  - name: elastic-certificates
+  #    secretName: elastic-certificates
+  #    path: /usr/share/elasticsearch/config/certs
+  #    defaultMode: 0755
+  secretMounts: []
+  image: "docker.elastic.co/elasticsearch/elasticsearch"
+  imageTag: "6.7.2"
+  imagePullPolicy: "IfNotPresent"
+  podAnnotations: {}
+  labels: {}
+  esJavaOpts: "-Xmx1g -Xms1g"
+  resources:
+    requests:
+      cpu: "1000m"
+      memory: "2Gi"
+    limits:
+      cpu: "1000m"
+      memory: "2Gi"
+  initResources: {}
+  sidecarResources: {}
+  networkHost: "0.0.0.0"
+  volumeClaimTemplate:
+    accessModes: [ "ReadWriteOnce" ]
+    resources:
+      requests:
+        storage: 30Gi
+  rbac:
+    create: false
+    serviceAccountName: ""
+  podSecurityPolicy:
+    create: false
+    name: ""
+    spec:
+      privileged: true
+      fsGroup:
+        rule: RunAsAny
+      runAsUser:
+        rule: RunAsAny
+      seLinux:
+        rule: RunAsAny
+      supplementalGroups:
+        rule: RunAsAny
+      volumes:
+        - secret
+        - configMap
+        - persistentVolumeClaim
+  persistence:
+    annotations: {}
+  extraVolumes: []
+  # - name: extras
+  #   mountPath: /usr/share/extras
+  #   readOnly: true
+  extraVolumeMounts: []
+  # - name: do-something
+  #   image: busybox
+  #   command: ['do', 'something']
+  extraContainers: []
+  # - name: do-something
+  #   image: busybox
+  #   command: ['do', 'something']
+  extraInitContainers: []
+  # The default is to deploy all pods serially. By setting this to parallel all pods are started at
+  # the same time when bootstrapping the cluster
+  podManagementPolicy: "Parallel"
+  # The environment variables injected by service links are not used, but can lead to slow Elasticsearch boot times when
+  # there are many services in the current namespace.
+  # If you experience slow pod startups you probably want to set this to `false`.
+  enableServiceLinks: true
+  protocol: http
+  connect_string: null
+  host: null
+  httpPort: 9200
+  transportPort: 9300
+  service:
+    labels: {}
+    labelsHeadless: {}
+    type: ClusterIP
+    nodePort: ""
+    annotations: {}
+    httpPortName: http
+    transportPortName: transport
+    loadBalancerIP: ""
+    loadBalancerSourceRanges: []
+  updateStrategy: RollingUpdate
+  podSecurityContext:
+    fsGroup: 1000
+    runAsUser: 1000
+  securityContext:
+    capabilities:
+      drop:
+      - ALL
+    # readOnlyRootFilesystem: true
+    runAsNonRoot: true
+    runAsUser: 1000
+  # How long to wait for elasticsearch to stop gracefully
+  terminationGracePeriod: 120
+  sysctlVmMaxMapCount: 262144
+  readinessProbe:
+    failureThreshold: 3
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    successThreshold: 3
+    timeoutSeconds: 5
+  # https://www.elastic.co/guide/en/elasticsearch/reference/7.8/cluster-health.html#request-params wait_for_status
+  clusterHealthCheckParams: "wait_for_status=green&timeout=1s"
+  ## Use an alternate scheduler.
+  ## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
+  ##
+  schedulerName: ""
+  imagePullSecrets: []
+  nodeSelector: {}
+  tolerations: []
+  nameOverride: ""
+  fullnameOverride: ""
+  # https://github.com/elastic/helm-charts/issues/63
+  masterTerminationFix: false
+  lifecycle: {}
+    # preStop:
+    #   exec:
+    #     command: ["/bin/sh", "-c", "echo Hello from the postStart handler > /usr/share/message"]
+    # postStart:
+    #   exec:
+    #     command:
+    #       - bash
+    #       - -c
+    #       - |
+    #         #!/bin/bash
+    #         # Add a template to adjust number of shards/replicas
+    #         TEMPLATE_NAME=my_template
+    #         INDEX_PATTERN="logstash-*"
+    #         SHARD_COUNT=8
+    #         REPLICA_COUNT=1
+    #         ES_URL=http://localhost:9200
+    #         while [[ "$(curl -s -o /dev/null -w '%{http_code}\n' $ES_URL)" != "200" ]]; do sleep 1; done
+    #         curl -XPUT "$ES_URL/_template/$TEMPLATE_NAME" -H 'Content-Type: application/json' -d'{"index_patterns":['\""$INDEX_PATTERN"\"'],"settings":{"number_of_shards":'$SHARD_COUNT',"number_of_replicas":'$REPLICA_COUNT'}}'
+  sysctlInitContainer:
+    enabled: true
+  keystore: []
+  # Deprecated
+  # please use the above podSecurityContext.fsGroup instead
+  fsGroup: ""
+  indexPattern: "openwhisk-%s"
+  username: "admin"
+  password: "admin"
