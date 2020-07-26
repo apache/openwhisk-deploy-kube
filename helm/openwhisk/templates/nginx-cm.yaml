@@ -39,6 +39,7 @@ data:
           '[#tid_$request_id] $request $status $body_bytes_sent '
           '$http_referer $http_user_agent $upstream_addr';
       access_log /logs/nginx_access.log combined-upstream;
+      error_log /logs/nginx_error.log error;
 
       # needed to enable keepalive to upstream controllers
       proxy_http_version 1.1;
