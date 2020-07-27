@@ -83,11 +83,17 @@ spec:
       - name: invoker
         image: "{{- .Values.docker.registry.name -}}{{- .Values.invoker.imageName -}}:{{- .Values.invoker.imageTag -}}"
         imagePullPolicy: {{ .Values.invoker.imagePullPolicy | quote }}
-{{- if and (eq .Values.invoker.containerFactory.impl "docker") .Values.invoker.containerFactory.networkConfig.dns.inheritInvokerConfig }}
-        command: [ "/bin/bash", "-c", ". /invoker-scripts/configureDNS.sh && /init.sh --uniqueName $INVOKER_NAME" ]
-{{- else }}
-        command: [ "/bin/bash", "-c", "/init.sh --uniqueName $INVOKER_NAME" ]
+        command:
+          - /bin/bash
+          - -c
+          -
+{{- if ne .Values.docker.registry.name "" }}
+            . /invoker-scripts/dockerLogin.sh &&
 {{- end }}
+{{- if and (eq .Values.invoker.containerFactory.impl "docker") .Values.invoker.containerFactory.networkConfig.dns.inheritInvokerConfig }}
+            . /invoker-scripts/configureDNS.sh &&
+{{- end }}
+            /init.sh --uniqueName $INVOKER_NAME
         env:
           - name: "PORT"
             value: {{ .Values.invoker.port | quote }}
@@ -211,6 +217,20 @@ spec:
             value: "{{ .Values.akka.actorSystemTerminateTimeout }}"
           - name: "CONFIG_whisk_runtime_delete_timeout"
             value: "{{ .Values.invoker.runtimeDeleteTimeout }}"
+{{- if ne .Values.docker.registry.name "" }}
+          - name: "RUNTIMES_REGISTRY"
+            value: "{{- .Values.docker.registry.name -}}"
+          - name: "RUNTIMES_REGISTRY_USERNAME"
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Release.Name }}-docker.registry.auth
+                key: docker_registry_username
+          - name: "RUNTIMES_REGISTRY_PASSWORD"
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Release.Name }}-docker.registry.auth
+                key: docker_registry_password
+{{- end }}
         ports:
         - name: invoker
           containerPort: {{ .Values.invoker.port }}
