@@ -189,6 +189,8 @@ spec:
           - name: "CONFIG_whisk_userEvents_enabled"
             value: "true"
 {{ end }}
+          - name: "CONFIG_logback_log_level"
+            value: "{{ .Values.invoker.loglevel }}"
 {{- if eq .Values.activationStoreBackend "ElasticSearch" }}
           - name: "CONFIG_whisk_activationStore_elasticsearch_protocol"
             value: "{{ .Values.elasticsearch.protocol }}"

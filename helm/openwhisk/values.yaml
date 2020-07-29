@@ -259,6 +259,7 @@ controller:
   options: ""
   jvmHeapMB: "1024"
   jvmOptions: ""
+  loglevel: "INFO"
 
 # Invoker configurations
 invoker:
@@ -270,6 +271,7 @@ invoker:
   options: ""
   jvmHeapMB: "512"
   jvmOptions: ""
+  loglevel: "INFO"
   containerFactory:
     useRunc: false
     impl: "kubernetes"
