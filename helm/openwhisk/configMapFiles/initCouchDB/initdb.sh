@@ -70,6 +70,10 @@ pushd /openwhisk/ansible
                      -e db_host=$DB_HOST \
                      -e db_username=$COUCHDB_USER \
                      -e db_password=$COUCHDB_PASSWORD \
+                     -e db_controller_user=$COUCHDB_CONTROLLER_USERNAME \
+                     -e db_controller_pass=$COUCHDB_CONTROLLER_PASSWORD \
+                     -e db_invoker_user=$COUCHDB_INVOKER_USERNAME \
+                     -e db_invoker_pass=$COUCHDB_INVOKER_PASSWORD \
                      -e db_port=$DB_PORT \
                      -e openwhisk_home=/openwhisk
 
@@ -79,6 +83,10 @@ pushd /openwhisk/ansible
                      -e db_host=$DB_HOST \
                      -e db_username=$COUCHDB_USER \
                      -e db_password=$COUCHDB_PASSWORD \
+                     -e db_controller_user=$COUCHDB_CONTROLLER_USERNAME \
+                     -e db_controller_pass=$COUCHDB_CONTROLLER_PASSWORD \
+                     -e db_invoker_user=$COUCHDB_INVOKER_USERNAME \
+                     -e db_invoker_pass=$COUCHDB_INVOKER_PASSWORD \
                      -e db_port=$DB_PORT \
                      -e openwhisk_home=/openwhisk
 popd

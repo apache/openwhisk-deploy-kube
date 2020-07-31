@@ -155,6 +155,9 @@ spec:
           - name: "WHISK_LOGS_DIR"
             value: ""
 
+          - name: "CONFIG_whisk_containerPool_akkaClient"
+            value: "{{ .Values.whisk.containerPool.akkaClient }}"
+
           # this version is the day it is deployed,
           - name:  "CONFIG_whisk_info_date"
             valueFrom:
@@ -162,6 +165,16 @@ spec:
                 name: {{ .Release.Name }}-whisk.config
                 key: whisk_info_date
 
+          - name: "CONFIG_whisk_couchdb_username"
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Release.Name }}-db.auth
+                key: db_invoker_username
+          - name: "CONFIG_whisk_couchdb_password"
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Release.Name }}-db.auth
+                key: db_invoker_password
           # properties for DB connection
 {{ include "openwhisk.dbEnvVars" . | indent 10 }}
 

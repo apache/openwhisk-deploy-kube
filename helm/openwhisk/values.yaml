@@ -123,6 +123,7 @@ whisk:
         retentionMs: ""
   containerPool:
     userMemory: "2048m"
+    akkaClient: false
   runtimes: "runtimes.json"
   testing:
     includeTests: true
@@ -220,8 +221,15 @@ db:
   protocol: "http"
   # Production deployments _MUST_ override the default user/password values
   auth:
-    username: "whisk_admin"
-    password: "some_passw0rd"
+    admin:
+      username: "test_admin"
+      password: "some_passw0rd"
+    controller:
+      username: "test_controller0"
+      password: "some_controller_passw0rd"
+    invoker:
+      username: "test_invoker"
+      password: "some_invoker_passw0rd"
   dbPrefix: "test_"
   activationsTable: "test_activations"
   actionsTable: "test_whisks"
@@ -239,6 +247,7 @@ nginx:
   imagePullPolicy: "IfNotPresent"
   replicaCount: 1
   restartPolicy: "Always"
+  workerProcesses: 1
   httpPort: 80
   httpsPort: 443
   httpsNodePort: 31001

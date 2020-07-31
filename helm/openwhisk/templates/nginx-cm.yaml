@@ -24,6 +24,7 @@ metadata:
 {{ include "openwhisk.label_boilerplate" . | indent 4 }}
 data:
   nginx.conf: |
+    worker_processes {{ .Values.nginx.workerProcesses }};
     worker_rlimit_nofile 4096;
 
     events {
