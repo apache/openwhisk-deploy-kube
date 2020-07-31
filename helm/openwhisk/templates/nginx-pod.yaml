@@ -63,6 +63,9 @@ spec:
       - name: logs
         emptyDir: {}
 {{ include "openwhisk.docker.imagePullSecrets" . | indent 6 }}
+      initContainers:
+      # Wait for a controller to be up (which implies kafka, zookeeper, couchdb are all up as well).
+{{ include "openwhisk.readiness.waitForController" . | indent 6 }}
       containers:
       - name: nginx
         image: "{{- .Values.docker.registry.name -}}{{- .Values.nginx.imageName -}}:{{- .Values.nginx.imageTag -}}"
