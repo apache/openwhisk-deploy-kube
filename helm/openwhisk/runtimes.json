@@ -35,7 +35,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-nodejs-v10",
-                    "tag": "1.15.0"
+                    "tag": "1.16.0"
                 },
                 "deprecated": false,
                 "attached": {
@@ -55,7 +55,21 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-nodejs-v12",
-                    "tag": "1.15.0"
+                    "tag": "1.16.0"
+                },
+                "deprecated": false,
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                }
+            },
+            {
+                "kind": "nodejs:14",
+                "default": false,
+                "image": {
+                    "prefix": "openwhisk",
+                    "name": "action-nodejs-v14",
+                    "tag": "1.16.0"
                 },
                 "deprecated": false,
                 "attached": {
@@ -228,7 +242,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-dotnet-v2.2",
-                    "tag": "1.14.0"
+                    "tag": "1.15.0"
                 },
                 "attached": {
                     "attachmentName": "codefile",
@@ -243,7 +257,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-dotnet-v3.1",
-                    "tag": "1.14.0"
+                    "tag": "1.15.0"
                 },
                 "attached": {
                     "attachmentName": "codefile",
