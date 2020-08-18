@@ -137,11 +137,11 @@ whisk:
     openwhiskCatalog:
       gitTag: "0.11.0"
     openwhiskPackageAlarms:
-      gitTag: "2.0.0-incubating"
+      gitTag: "2.2.0"
     openwhiskPackageCloudant:
       gitTag: "2.0.0-incubating"
     openwhiskPackageKafka:
-      gitTag: "2.0.0-incubating"
+      gitTag: "2.1.0"
 
 k8s:
   domain: cluster.local
@@ -379,7 +379,7 @@ providers:
   alarm:
     enabled: true
     imageName: "openwhisk/alarmprovider"
-    imageTag: "2.1.0"
+    imageTag: "2.2.0"
     imagePullPolicy: "IfNotPresent"
     # NOTE: replicaCount > 1 doesn't work because of the PVC
     replicaCount: 1
@@ -405,7 +405,7 @@ providers:
   kafka:
     enabled: true
     imageName: "openwhisk/kafkaprovider"
-    imageTag: "2.0.0-incubating"
+    imageTag: "2.1.0"
     imagePullPolicy: "IfNotPresent"
     # NOTE: setting replicaCount > 1 has not been tested and may not work
     replicaCount: 1
