@@ -101,7 +101,7 @@ if [ "$OW_INSTALL_ALARM_PROVIDER" == "yes" ]; then
 
     pushd /openwhisk-package-alarms
         git checkout $OW_GIT_TAG_OPENWHISK_PACKAGE_ALARMS
-        ./installCatalog.sh $WHISK_AUTH $WHISK_API_HOST_URL $PROVIDER_DB_URL $ALARM_DB_PREFIX $WHISK_API_HOST_URL || exit 1
+        ./installCatalog.sh $WHISK_AUTH $WHISK_API_HOST_URL $WHISK_API_HOST_URL worker0 $PROVIDER_DB_URL $ALARM_DB_PREFIX || exit 1
     popd
 fi
 
