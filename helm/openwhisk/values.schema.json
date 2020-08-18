@@ -219,9 +219,8 @@
           "openwhiskCli": { "type": "object", "properties": { "gitTag": { "type": "string" }, "required": ["gitTag"] } },
           "openwhiskCatalog": { "type": "object", "properties": { "gitTag": { "type": "string" }, "required": ["gitTag"] } },
           "openwhiskPackageAlarms": { "type": "object", "properties": { "gitTag": { "type": "string" }, "required": ["gitTag"] } },
-          "openwhiskPackageCloudant": { "type": "object", "properties": { "gitTag": { "type": "string" }, "required": ["gitTag"] } },
           "openwhiskPackageKafka": { "type": "object", "properties": { "gitTag": { "type": "string" }, "required": ["gitTag"] } },
-          "required": ["openwhisk", "openwhiskCli", "openwhiskCatalog", "openwhiskPackageAlarms", "openwhiskPackageCloudant", "openwhiskPackageKafka"]
+          "required": ["openwhisk", "openwhiskCli", "openwhiskCatalog", "openwhiskPackageAlarms", "openwhiskPackageKafka"]
         }
       },
       "required": [ "ingress", "auth", "systemNameSpace", "versions" ]
@@ -427,14 +426,6 @@
           ]
         },
 
-        "cloudant": {
-          "allOf": [
-            { "$ref": "#/definitions/podspec" },
-            { "properties": { "apiPort": { "type": "integer", "minimum": 0 } }, "required": ["apiPort"] },
-            { "properties": { "replicaCount": { "const": 1 } } }
-          ]
-        },
-
         "kafka": {
           "allOf": [
             { "$ref": "#/definitions/podspec" },
@@ -515,8 +506,7 @@
       "prometheus": { "$ref": "#/definitions/pvSizeValid" },
       "providers": {
         "properties": {
-          "alarm": { "$ref": "#/definitions/pvSizeValid" },
-          "cloudant": { "$ref": "#/definitions/pvSizeValid" }
+          "alarm": { "$ref": "#/definitions/pvSizeValid" }
         }
       }
     }

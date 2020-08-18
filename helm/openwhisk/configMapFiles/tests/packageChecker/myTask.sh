@@ -61,9 +61,6 @@ packageListingCheck "websocket"
 if [ "$OW_INSTALL_ALARM_PROVIDER" == "yes" ]; then
     packageListingCheck "alarms"
 fi
-if [ "$OW_INSTALL_CLOUDANT_PROVIDER" == "yes" ]; then
-    packageListingCheck "cloudant"
-fi
 if [ "$OW_INSTALL_KAFKA_PROVIDER" == "yes" ]; then
     packageListingCheck "messaging"
 fi

@@ -247,5 +247,4 @@ jobHealthCheck "ow4travis-install-packages"
 
 # Verify that the providers deployed successfully
 deploymentHealthCheck "ow4travis-alarmprovider"
-deploymentHealthCheck "ow4travis-cloudantprovider"
 deploymentHealthCheck "ow4travis-kafkaprovider"

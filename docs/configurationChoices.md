@@ -43,7 +43,7 @@ components is not currently supported:
 - couchdb. For production deployments of OpenWhisk on Kubernetes, we strongly recomend running
   CouchDB externally to OpenWhisk as described below. An external CouchDB instance enables
   better management of the database and decouples its lifecycle from that of the OpenWhisk deployment.
-- The event providers: alarmprovider, cloudantprovider, and kafkaprovider.
+- The event providers: alarmprovider and kafkaprovider.
 
 ### Using an external database
 
@@ -179,8 +179,8 @@ k8s:
 
 ### Selectively Deploying Event Providers
 
-The default settings of the Helm chart will deploy OpenWhisk's alarm,
-cloudant, and kafka event providers. If you want to disable the
+The default settings of the Helm chart will deploy OpenWhisk's alarm
+and kafka event providers. If you want to disable the
 deployment of one or more event providers, you can add
 a stanza to your `mycluster.yaml` for example:
 ```yaml

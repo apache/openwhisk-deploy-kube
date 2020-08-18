@@ -138,8 +138,6 @@ whisk:
       gitTag: "0.11.0"
     openwhiskPackageAlarms:
       gitTag: "2.2.0"
-    openwhiskPackageCloudant:
-      gitTag: "2.0.0-incubating"
     openwhiskPackageKafka:
       gitTag: "2.1.0"
 
@@ -386,19 +384,6 @@ providers:
     restartPolicy: "Always"
     apiPort: 8080
     dbPrefix: "alm"
-    persistence:
-      size: 1Gi
-  # Cloudant provider configurations
-  cloudant:
-    enabled: true
-    imageName: "openwhisk/cloudantprovider"
-    imageTag: "2.0.0-incubating"
-    imagePullPolicy: "IfNotPresent"
-    # NOTE: replicaCount > 1 doesn't work because of the PVC
-    replicaCount: 1
-    restartPolicy: "Always"
-    apiPort: 8080
-    dbPrefix: "cldt"
     persistence:
       size: 1Gi
   # Kafka provider configurations

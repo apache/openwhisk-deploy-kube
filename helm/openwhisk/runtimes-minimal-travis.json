@@ -3,16 +3,6 @@
     "runtimes": {
         "nodejs": [
             {
-                "kind": "nodejs:6",
-                "default": false,
-                "image": {
-                    "prefix": "openwhisk",
-                    "name": "nodejs6action",
-                    "tag": "1.14.0-incubating"
-                },
-                "deprecated": false
-            },
-            {
                 "kind": "nodejs:10",
                 "default": true,
                 "image": {

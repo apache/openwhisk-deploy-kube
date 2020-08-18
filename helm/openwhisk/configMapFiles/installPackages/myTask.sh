@@ -107,21 +107,6 @@ fi
 
 
 #####
-# Install the catalog for the Cloudant provider
-#####
-
-if [ "$OW_INSTALL_CLOUDANT_PROVIDER" == "yes" ]; then
-    cd /
-    git clone https://github.com/apache/openwhisk-package-cloudant.git
-
-    pushd /openwhisk-package-cloudant
-        git checkout $OW_GIT_TAG_OPENWHISK_PACKAGE_CLOUDANT
-        ./installCatalog.sh $WHISK_AUTH $WHISK_API_HOST_URL $PROVIDER_DB_URL $CLOUDANT_DB_PREFIX $WHISK_API_HOST_URL || exit 1
-    popd
-fi
-
-
-#####
 # Install the catalog for the Kafka provider
 #####
 
