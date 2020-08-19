@@ -34,7 +34,6 @@ By default, helm charts currently use docker hub to download images to deploy Op
   - busybox
   - openwhisk/alarmprovider
   - openwhisk/kafkaprovider
-  - openwhisk/cloudantprovider
 
 - Add details of your docker registry information in mycluster.yml.
 

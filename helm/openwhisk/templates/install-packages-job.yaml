@@ -120,16 +120,12 @@ spec:
           # Provider database table prefixes
           - name: "ALARM_DB_PREFIX"
             value: {{ .Values.providers.alarm.dbPrefix | quote }}
-          - name: "CLOUDANT_DB_PREFIX"
-            value: {{ .Values.providers.cloudant.dbPrefix | quote }}
           - name: "KAFKA_DB_PREFIX"
             value: {{ .Values.providers.kafka.dbPrefix | quote }}
 
           # Should each of the providers be installed?
           - name: "OW_INSTALL_ALARM_PROVIDER"
             value: {{ if .Values.providers.alarm.enabled }} "yes" {{ else }} "no" {{ end }}
-          - name: "OW_INSTALL_CLOUDANT_PROVIDER"
-            value: {{ if .Values.providers.cloudant.enabled }} "yes" {{ else }} "no" {{ end }}
           - name: "OW_INSTALL_KAFKA_PROVIDER"
             value: {{ if .Values.providers.kafka.enabled }} "yes" {{ else }} "no" {{ end }}
 
@@ -140,7 +136,5 @@ spec:
             value: {{ .Values.whisk.versions.openwhiskCatalog.gitTag | quote }}
           - name: "OW_GIT_TAG_OPENWHISK_PACKAGE_ALARMS"
             value: {{ .Values.whisk.versions.openwhiskPackageAlarms.gitTag | quote }}
-          - name: "OW_GIT_TAG_OPENWHISK_PACKAGE_CLOUDANT"
-            value: {{ .Values.whisk.versions.openwhiskPackageCloudant.gitTag | quote }}
           - name: "OW_GIT_TAG_OPENWHISK_PACKAGE_KAFKA"
             value: {{ .Values.whisk.versions.openwhiskPackageKafka.gitTag | quote }}

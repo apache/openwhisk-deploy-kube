@@ -39,7 +39,6 @@ kubectl -n openwhisk logs -lname=ow4travis-install-packages >& logs/install-pack
 kubectl -n openwhisk logs -lname=ow4travis-init-couchdb >& logs/init-couchdb.log
 kubectl logs -n openwhisk -low-testpod=true --tail=-1 >& logs/helm-tests.log
 kubectl -n openwhisk logs -lname=ow4travis-alarmprovider >& logs/kafkaprovider.log
-kubectl -n openwhisk logs -lname=ow4travis-cloudantprovider >& logs/cloudantprovider.log
 kubectl -n openwhisk logs -lname=ow4travis-kafkaprovider >& logs/kafkaprovider.log
 kubectl -n openwhisk logs -lname=ow4travis-user-events >& logs/user-events.log
 kubectl -n openwhisk logs -lname=ow4travis-prometheus >& logs/prometheus.log

@@ -57,8 +57,6 @@ spec:
       # Which of the providers was installed (and thus should be checked)?
       - name: "OW_INSTALL_ALARM_PROVIDER"
         value: {{ if .Values.providers.alarm.enabled }} "yes" {{ else }} "no" {{ end }}
-      - name: "OW_INSTALL_CLOUDANT_PROVIDER"
-        value: {{ if .Values.providers.cloudant.enabled }} "yes" {{ else }} "no" {{ end }}
       - name: "OW_INSTALL_KAFKA_PROVIDER"
         value: {{ if .Values.providers.kafka.enabled }} "yes" {{ else }} "no" {{ end }}
 {{- end }}
