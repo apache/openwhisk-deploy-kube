@@ -372,7 +372,7 @@ launch the tests:
  -Dwhisk.auth=$WHISK_AUTH -Dwhisk.server=https://$WHISK_SERVER -Dopenwhisk.home=`pwd`
 ```
 
-**NOTE:** You to install JDK 8 in order to run these test case
+**NOTE:** You need to install JDK 8 in order to run these tests.
 
 ### Deploying a locally built docker image.
 
@@ -443,4 +443,3 @@ If your OpenWhisk deployment is not working, check our
 Report bugs, ask questions and request features [here on GitHub](../../issues).
 
 You can also join our slack channel and chat with developers. To get access to our slack channel, request an invite [here](http://slack.openwhisk.org).
-
