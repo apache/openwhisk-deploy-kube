@@ -243,10 +243,14 @@ For simplicity, in this README, we have used `owdev` as the release name and
 You can use a different name and/or namespace simply by changing the commands
 used below.
 
+**NOTE:** Clone the repository https://github.com/apache/openwhisk-deploy-kube.git and use to Helm chart available under the `helm/openwhisk` folder.
+
 Deployment can be done by using the following single command:
 ```shell
 helm install owdev ./helm/openwhisk -n openwhisk --create-namespace -f mycluster.yaml
 ```
+
+**NOTE:** The above command will only work for Helm v3.2.0 or higher versions. Verfiy your local Helm version with the command `helm version`.
 
 Deploying to OKD/OpenShift uses the command sequence:
 ```shell
@@ -260,8 +264,10 @@ by simply doing `oc delete -f owdev.yaml`
 
 You can use the command `helm status owdev -n openwhisk` to get a summary
 of the various Kubernetes artifacts that make up your OpenWhisk
-deployment. Once the `install-packages` Pod is in the `Completed` state,
+deployment. Once the pod name containing the word `install-packages` is in the `Completed` state,
 your OpenWhisk deployment is ready to be used.
+
+**NOTE:** You can check the status of the pod by running the following command `kubectl get pods -n openwhisk --watch`.
 
 ## Configure the wsk CLI
 
@@ -366,6 +372,8 @@ launch the tests:
  -Dwhisk.auth=$WHISK_AUTH -Dwhisk.server=https://$WHISK_SERVER -Dopenwhisk.home=`pwd`
 ```
 
+**NOTE:** You need to install JDK 8 in order to run these tests.
+
 ### Deploying a locally built docker image.
 
 If you are using Kubernetes in Docker, it is
@@ -435,4 +443,3 @@ If your OpenWhisk deployment is not working, check our
 Report bugs, ask questions and request features [here on GitHub](../../issues).
 
 You can also join our slack channel and chat with developers. To get access to our slack channel, request an invite [here](http://slack.openwhisk.org).
-
