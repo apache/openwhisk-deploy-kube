@@ -243,7 +243,7 @@ For simplicity, in this README, we have used `owdev` as the release name and
 You can use a different name and/or namespace simply by changing the commands
 used below.
 
-**NOTE:** Clone the repository https://github.com/apache/openwhisk-deploy-kube.git and use to helm chart available under the `helm/openwhisk` folder.
+**NOTE:** Clone the repository https://github.com/apache/openwhisk-deploy-kube.git and use to Helm chart available under the `helm/openwhisk` folder.
 
 Deployment can be done by using the following single command:
 ```shell
