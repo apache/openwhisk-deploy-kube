@@ -267,7 +267,7 @@ of the various Kubernetes artifacts that make up your OpenWhisk
 deployment. Once the pod name containing the word `install-packages` is in the `Completed` state,
 your OpenWhisk deployment is ready to be used.
 
-**NOTE:** You can check the status of the pod by running the following command `kubectl get pods -n openwhisk --watch`
+**NOTE:** You can check the status of the pod by running the following command `kubectl get pods -n openwhisk --watch`.
 
 ## Configure the wsk CLI
 
