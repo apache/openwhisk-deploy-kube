@@ -250,7 +250,7 @@ Deployment can be done by using the following single command:
 helm install owdev ./helm/openwhisk -n openwhisk --create-namespace -f mycluster.yaml
 ```
 
-**NOTE:** The above command will only work for Helm v3.2.0 or higher versions. Verfiy your local helm version with command `helm version`.
+**NOTE:** The above command will only work for Helm v3.2.0 or higher versions. Verfiy your local Helm version with the command `helm version`.
 
 Deploying to OKD/OpenShift uses the command sequence:
 ```shell
