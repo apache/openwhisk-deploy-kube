@@ -205,6 +205,8 @@ spec:
           - name: "CONFIG_whisk_spi_ActivationStoreProvider"
             value: "org.apache.openwhisk.core.database.elasticsearch.ElasticSearchActivationStoreProvider"
 {{- end }}
+          - name: "CONFIG_whisk_helm_release"
+            value: "{{ .Release.Name }}"
         ports:
         - name: invoker
           containerPort: {{ .Values.invoker.port }}
