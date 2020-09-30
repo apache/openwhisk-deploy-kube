@@ -66,11 +66,6 @@ Now create your cluster with the command:
 kind create cluster --config kind-cluster.yaml
 ```
 
-Next, configure `kubectl` by executing
-```shell
-KUBECONFIG="$(kind get kubeconfig-path)"
-```
-
 Then label the two worker nodes so that one is reserved for the invoker
 and the other will be used to run the rest of the OpenWhisk system.
 ```shell
