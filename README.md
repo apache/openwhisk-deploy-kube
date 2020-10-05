@@ -138,7 +138,7 @@ Additional more detailed instructions:
 deployment and management of applications on Kubernetes clusters.
 The OpenWhisk Helm chart requires the Helm 3.
 
-Our automated testing currently uses Helm v3.2.0
+Our automated testing currently uses Helm v3.2.4
 
 Follow the Helm [install instructions](https://github.com/kubernetes/helm)
 for your platform to install Helm v3.0.1 or newer.
