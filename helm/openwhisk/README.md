@@ -57,7 +57,7 @@ The chart requires one or more Kubernetes worker nodes to be designated to be us
 
 ## Prerequisites
 
-* Kubernetes 1.10 - 1.16.*
+* Kubernetes 1.14 - 1.18.*
 
 ### Image Policy Requirements
 
