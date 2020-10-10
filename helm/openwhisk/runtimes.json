@@ -71,7 +71,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "python3action",
-                    "tag": "1.14.0"
+                    "tag": "1.15.0"
                 },
                 "deprecated": false,
                 "attached": {
@@ -87,7 +87,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-swift-v4.2",
-                    "tag": "1.14.0"
+                    "tag": "1.15.0"
                 },
                 "deprecated": false,
                 "attached": {
@@ -101,7 +101,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-swift-v5.1",
-                    "tag": "1.14.0"
+                    "tag": "1.15.0"
                 },
                 "deprecated": false,
                 "attached": {
@@ -117,7 +117,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "java8action",
-                    "tag": "1.14.0"
+                    "tag": "1.15.0"
                 },
                 "deprecated": false,
                 "attached": {
@@ -135,7 +135,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-php-v7.3",
-                    "tag": "1.14.0"
+                    "tag": "1.15.0"
                 },
                 "attached": {
                     "attachmentName": "codefile",
@@ -149,7 +149,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-php-v7.4",
-                    "tag": "1.14.0"
+                    "tag": "1.15.0"
                 },
                 "attached": {
                     "attachmentName": "codefile",
@@ -169,7 +169,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-ruby-v2.5",
-                    "tag": "1.14.0"
+                    "tag": "1.15.0"
                 }
             }
         ],
@@ -215,7 +215,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-rust-v1.34",
-                    "tag": "1.0.0"
+                    "tag": "1.1.0"
                 }
             }
         ],
