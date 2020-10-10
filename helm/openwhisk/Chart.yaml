@@ -18,7 +18,7 @@
 apiVersion: v2
 type: application
 name: openwhisk
-version: 0.2.6
+version: 0.2.7
 home: https://openwhisk.apache.org
 description: Apache OpenWhisk is an open source serverless cloud platform
 icon: https://raw.githubusercontent.com/apache/openwhisk/682eb5b62ee6ba8017ab54226c2ace3637f4f1ec/docs/images/whisk_icon_full-color_with_tm_64x64-300dpi.png
@@ -28,4 +28,4 @@ keywords:
 maintainers:
   - name: Apache OpenWhisk Community
     email: dev@openwhisk.apache.org
-kubeVersion: ">=v1.10.0-r0"
+kubeVersion: ">=v1.14.0-r0"
