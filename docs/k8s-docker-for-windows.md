@@ -60,7 +60,7 @@ the box to enable Kubernetes.
 ### Configuring OpenWhisk
 
 You will be using a NodePort ingress to access OpenWhisk. Assuming
-`kubectl describe nodes | grep InternalIP` returns 192.168.65.3 and
+`kubectl describe nodes | find "InternalIP"` returns 192.168.65.3 and
 port 31001 is available to be used on your host machine, a
 mycluster.yaml for a standard deployment of OpenWhisk would be:
 
@@ -76,6 +76,10 @@ nginx:
 ```
 
 ### Using helm to install OpenWhisk
+
+Installation expects `openwhisk` namespace to be created. To create, run
+
+`kubectl create namespace openwhisk`
 
 Indicate the Kubernetes worker nodes that should be used to execute user
 containers by OpenWhisk's invokers. For a single node development cluster,
