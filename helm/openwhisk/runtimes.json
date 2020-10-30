@@ -52,20 +52,6 @@
         ],
         "python": [
             {
-                "kind": "python:2",
-                "default": false,
-                "image": {
-                    "prefix": "openwhisk",
-                    "name": "python2action",
-                    "tag": "1.13.0-incubating"
-                },
-                "deprecated": false,
-                "attached": {
-                    "attachmentName": "codefile",
-                    "attachmentType": "text/plain"
-                }
-            },
-            {
                 "kind": "python:3",
                 "default": true,
                 "image": {
@@ -245,22 +231,6 @@
                     "name": "action-dotnet-v3.1",
                     "tag": "1.15.0"
                 },
-                "attached": {
-                    "attachmentName": "codefile",
-                    "attachmentType": "text/plain"
-                }
-            }
-        ],
-        "ballerina": [
-            {
-                "kind": "ballerina:0.990",
-                "default": true,
-                "image": {
-                    "prefix": "openwhisk",
-                    "name": "action-ballerina-v0.990.2",
-                    "tag": "nightly"
-                },
-                "deprecated": false,
                 "attached": {
                     "attachmentName": "codefile",
                     "attachmentType": "text/plain"
