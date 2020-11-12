@@ -57,7 +57,7 @@ spec:
 {{- if .Values.k8s.persistence.enabled }}
       initContainers:
       - name: redis-init
-        image: "{{- .Values.docker.registry.name -}}busybox"
+        image: "{{- .Values.docker.registry.name -}}{{- .Values.busybox.imageName -}}:{{- .Values.busybox.imageTag -}}"
         command:
           - chown
           - -v
