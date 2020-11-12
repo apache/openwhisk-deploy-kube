@@ -398,6 +398,10 @@ providers:
     apiPort: 8080
     dbPrefix: "kp"
 
+busybox:
+  imageName: "busybox"
+  imageTag: "latest"
+
 
 # Used to define pod affinity and anti-affinity for the Kubernetes scheduler.
 # If affinity.enabled is true, then all of the deployments for the OpenWhisk
