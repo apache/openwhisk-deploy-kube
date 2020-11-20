@@ -25,7 +25,7 @@ Apache OpenWhisk is an open source, distributed serverless platform that execute
 
 The [Apache OpenWhisk](https://openwhisk.apache.org/) serverless platform supports a programming model in which developers write functional logic (called Actions), in any supported programming language, that can be dynamically scheduled and run in response to associated events (via Triggers) from external sources (Feeds) or from HTTP requests.
 
-This chart will deploy the core OpenWhisk platform to your Kubernetes cluster.  In its default configuration, the chart enables runtime support for executing actions written in NodeJS, Python, Swift, Java, PHP, Ruby, Go, and "blackbox" docker containers.  The main components of the OpenWhisk platform are a front-end that provides a REST API to the user and the `wsk` CLI, a CouchDB instance that stores user and system data, and a control plane that is responsible for scheduling incoming invocations of user actions onto dedicated Kubernetes worker nodes that have been labeled as "invoker nodes".
+This chart will deploy the core OpenWhisk platform to your Kubernetes cluster.  In its default configuration, the chart enables runtime support for executing actions written in NodeJS, Python, Swift, Java, PHP, Ruby, Go, Rust, .Net, and "blackbox" docker containers.  The main components of the OpenWhisk platform are a front-end that provides a REST API to the user and the `wsk` CLI, a CouchDB instance that stores user and system data, and a control plane that is responsible for scheduling incoming invocations of user actions onto dedicated Kubernetes worker nodes that have been labeled as "invoker nodes".
 
 Further documentation of the OpenWhisk system architecture, programming model, tutorials, and sample programs can all be found at on the [Apache OpenWhisk project website](https://openwhisk.apache.org/).
 
@@ -37,9 +37,8 @@ In its default configuration, this chart will create the following Kubernetes re
 * Internal Services
    * apigateway, controller, couchdb, kafka, nginx, redis, zookeeper
 * OpenWhisk control plane Pods:
-   * DaemonSet: invoker (on all nodes with label `openwhisk-role=invoker`)
    * Deployments: apigateway, couchdb, nginx, redis
-   * SatefulSets: controller, kafka, zookeeper
+   * SatefulSets: controller, invoker, kafka, zookeeper
 * Persistent Volume Claims
    * couchdb-pvc
    * kafka-pvc
@@ -49,7 +48,7 @@ In its default configuration, this chart will create the following Kubernetes re
 
 All user interaction with OpenWhisk uses the REST API exposed by the nginx service via its NodePort ingress.
 
-The chart requires one or more Kubernetes worker nodes to be designated to be used by OpenWhisk's invokers to execute user actions.  These nodes are designated by being labeled with `openwhisk-role=invoker` (see below for the `kubectl` command).  In its default configuration, the invokers will schedule the containers to execute the user actions on these nodes *without* interacting with the Kubernetes scheduler.
+The chart requires one or more Kubernetes worker nodes to be designated to be used by OpenWhisk's invokers to execute user actions.  These nodes are designated by being labeled with `openwhisk-role=invoker` (see below for the `kubectl` command).
 
 ## Resources Required
 
@@ -145,12 +144,12 @@ Please ensure that you have reviewed the [prerequisites](#prerequisites) and the
 To install the chart using helm cli:
 
 ```bash
-$ helm install [--tls] openwhisk --namespace <my-namespace> --name <my-release> --set whisk.ingress.apiHostName=<cluster-ip-address>
+$ helm install <my-release> openwhisk --namespace <my-namespace> --create-namespace --set whisk.ingress.apiHostName=<cluster-ip-address>
 ```
 
 The command deploys OpenWhisk on the Kubernetes cluster in the default configuration.  The [configuration](#configuration) section lists the parameters that can be configured during installation.
 
-You can use the command ```helm status <my-release> [--tls]``` to get a summary of the various Kubernetes artifacts that make up your OpenWhisk deployment. Once the ```<my-release>-install-packages``` Pod is in the Completed state, your OpenWhisk deployment is ready to be used.
+You can use the command ```helm status <my-release>``` to get a summary of the various Kubernetes artifacts that make up your OpenWhisk deployment. Once the ```<my-release>-install-packages``` Pod is in the Completed state, your OpenWhisk deployment is ready to be used.
 
 ### Configuration
 
@@ -160,7 +159,7 @@ You can use the command ```helm status <my-release> [--tls]``` to get a summary 
 
 To verify your deployment was successful, simply run:
 ```bash
-helm test <my-release> [--tls] --cleanup
+helm test <my-release> --cleanup
 ```
 
 ## Uninstalling the Chart
@@ -168,7 +167,7 @@ helm test <my-release> [--tls] --cleanup
 To uninstall/delete the deployment:
 
 ```bash
-$ helm delete <my-release> --purge [--tls]
+$ helm delete <my-release>
 ```
 
 The command removes all the Kubernetes components associated with the chart and deletes the release.
