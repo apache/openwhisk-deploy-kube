@@ -1,3 +1,4 @@
+<!--
 #
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
@@ -14,18 +15,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+-->
 
-apiVersion: v2
-type: application
-name: openwhisk
-version: 1.0.0
-home: https://openwhisk.apache.org
-description: Apache OpenWhisk is an open source serverless cloud platform
-icon: https://raw.githubusercontent.com/apache/openwhisk/682eb5b62ee6ba8017ab54226c2ace3637f4f1ec/docs/images/whisk_icon_full-color_with_tm_64x64-300dpi.png
-keywords:
-  - Apache OpenWhisk
-  - amd64
-maintainers:
-  - name: Apache OpenWhisk Community
-    email: dev@openwhisk.apache.org
-kubeVersion: ">=v1.14.0-r0"
+# Changelog
+
+## 1.0.0
+  * First Apache Release
