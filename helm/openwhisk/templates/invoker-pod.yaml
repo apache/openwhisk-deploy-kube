@@ -207,6 +207,10 @@ spec:
 {{- end }}
           - name: "CONFIG_whisk_helm_release"
             value: "{{ .Release.Name }}"
+          - name: "CONFIG_akka_coordinatedShutdown_phases_actorSystemTerminate_timeout"
+            value: "{{ .Values.akka.actorSystemTerminateTimeout }}"
+          - name: "CONFIG_whisk_runtime_delete_timeout"
+            value: "{{ .Values.invoker.runtimeDeleteTimeout }}"
         ports:
         - name: invoker
           containerPort: {{ .Values.invoker.port }}

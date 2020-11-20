@@ -265,6 +265,7 @@ invoker:
   imageTag: "ed3f76e"
   imagePullPolicy: "IfNotPresent"
   restartPolicy: "Always"
+  runtimeDeleteTimeout: "30 seconds"
   port: 8080
   options: ""
   jvmHeapMB: "512"
@@ -664,3 +665,6 @@ elasticsearch:
   indexPattern: "openwhisk-%s"
   username: "admin"
   password: "admin"
+
+akka:
+  actorSystemTerminateTimeout: "30 s"
