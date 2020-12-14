@@ -179,7 +179,7 @@ spec:
           - name: "METRICS_KAMON"
             value: "true"
 {{ end }}
-{{ if and .Values.metrics.kamonEnabled .Values.metrics.kamonTags }}
+{{ if .Values.metrics.kamonTags }}
           - name: "METRICS_KAMON_TAGS"
             value: "true"
 {{ end }}
