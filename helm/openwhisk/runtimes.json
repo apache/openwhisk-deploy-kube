@@ -7,7 +7,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-nodejs-v10",
-                    "tag": "1.16.0"
+                    "tag": "1.17.0"
                 },
                 "deprecated": false,
                 "attached": {
@@ -27,7 +27,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-nodejs-v12",
-                    "tag": "1.16.0"
+                    "tag": "1.17.0"
                 },
                 "deprecated": false,
                 "attached": {
@@ -41,7 +41,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-nodejs-v14",
-                    "tag": "1.16.0"
+                    "tag": "1.17.0"
                 },
                 "deprecated": false,
                 "attached": {
