@@ -56,6 +56,10 @@ spec:
             containerPort: {{ .Values.apigw.mgmtPort }}
           - name: api
             containerPort: {{ .Values.apigw.apiPort }}
+{{- if .Values.apigw.resources }}
+          resources:
+{{ toYaml .Values.apigw.resources | indent 12 }}
+{{- end }}
           env:
           - name: "REDIS_HOST"
             value: "{{ include "openwhisk.redis_host" . }}"

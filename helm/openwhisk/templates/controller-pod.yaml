@@ -107,6 +107,10 @@ spec:
           initialDelaySeconds: {{ .Values.probes.controller.readinessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.probes.controller.readinessProbe.periodSeconds }}
           timeoutSeconds: {{ .Values.probes.controller.readinessProbe.timeoutSeconds }}
+{{- if .Values.controller.resources }}
+        resources:
+{{ toYaml .Values.controller.resources | indent 10 }}
+{{- end }}
         env:
         - name: "PORT"
           value: {{ .Values.controller.port | quote }}

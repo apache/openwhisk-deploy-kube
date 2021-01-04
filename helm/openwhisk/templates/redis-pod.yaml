@@ -83,4 +83,8 @@ spec:
           ports:
           - name: redis
             containerPort: {{ .Values.redis.port }}
+{{- if .Values.redis.resources }}
+          resources:
+{{ toYaml .Values.redis.resources | indent 12 }}
+{{- end }}
 {{ end }}

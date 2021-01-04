@@ -186,6 +186,7 @@ zookeeper:
     syncLimit: 2
     dataDir: "/data"
     dataLogDir: "/datalog"
+  resources: ~
 
 # kafka configurations
 kafka:
@@ -199,6 +200,7 @@ kafka:
   port: 9092
   persistence:
     size: 512Mi
+  resources: ~
 
 # Database configuration
 db:
@@ -246,6 +248,7 @@ nginx:
     cert_file: ""
     key_file: ""
     sslPassword: ""
+  resources: ~
 
 # Controller configurations
 controller:
@@ -259,6 +262,7 @@ controller:
   jvmHeapMB: "1024"
   jvmOptions: ""
   loglevel: "INFO"
+  resources: ~
 
 # Invoker configurations
 invoker:
@@ -289,6 +293,7 @@ invoker:
     kubernetes:
       isolateUserActions: true
       replicaCount: 1
+  resources: ~
 
 # API Gateway configurations
 apigw:
@@ -300,6 +305,7 @@ apigw:
   restartPolicy: "Always"
   apiPort: 9000
   mgmtPort: 8080
+  resources: ~
 
 # Redis (used by apigateway)
 redis:
@@ -314,6 +320,7 @@ redis:
   port: 6379
   persistence:
     size: 256Mi
+  resources: ~
 
 # User-events configuration
 user_events:

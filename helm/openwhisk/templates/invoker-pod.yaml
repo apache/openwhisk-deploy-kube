@@ -94,6 +94,10 @@ spec:
             . /invoker-scripts/configureDNS.sh &&
 {{- end }}
             /init.sh --uniqueName $INVOKER_NAME
+{{- if .Values.invoker.resources }}
+        resources:
+{{ toYaml .Values.invoker.resources | indent 10 }}
+{{- end }}
         env:
           - name: "PORT"
             value: {{ .Values.invoker.port | quote }}
