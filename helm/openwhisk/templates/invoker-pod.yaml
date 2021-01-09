@@ -181,7 +181,7 @@ spec:
           - name: "METRICS_KAMON"
             value: "true"
 {{ end }}
-{{ if and .Values.metrics.kamonTags .Values.metrics.prometheusEnabled }}
+{{ if .Values.metrics.kamonTags }}
           - name: "METRICS_KAMON_TAGS"
             value: "true"
 {{ end }}
