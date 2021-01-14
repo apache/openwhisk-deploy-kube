@@ -72,7 +72,7 @@ spec:
       - name: jmxremote-secret
         secret:
           secretName: {{ .Release.Name }}-jmxremote-secret
-{{ include "openwhisk.invoker.volumes" .  | indent 6 }}
+{{ include "openwhisk.invoker.volumes" . | indent 6 }}
 
       initContainers:
 {{- if eq .Values.invoker.containerFactory.impl "docker" }}

@@ -63,7 +63,7 @@ spec:
 {{- end }}
 {{ include "openwhisk.readiness.waitForCouchDB" . | indent 6 }}
 {{- if eq .Values.activationStoreBackend "ElasticSearch" }}
-# The controller must wait for elasticsearch to be ready before it starts
+      # The controller must wait for elasticsearch to be ready before it starts
 {{ include "openwhisk.readiness.waitForElasticSearch" . | indent 6 }}
 {{- end }}
       volumes:
