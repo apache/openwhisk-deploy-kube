@@ -104,7 +104,7 @@ spec:
           mountPath: "/conf/jmxremote.password"
           subPath: "jmxremote.password"
 {{- if .Values.controller.lean }}
-{{ include "openwhisk.invoker.volume_mounts" .  | indent 8 }}
+{{ include "openwhisk.invoker.volume_mounts" . | indent 8 }}
 {{- end }}
         livenessProbe:
           httpGet:
