@@ -72,7 +72,7 @@ spec:
           secretName: {{ .Release.Name }}-jmxremote-secret
       # The lean controller requires invoker volumes mounts
 {{- if .Values.controller.lean }}
-{{ include "openwhisk.invoker.volumes" . }}
+{{ include "openwhisk.invoker.volumes" . | indent 6 }}
 {{- end }}
 {{ include "openwhisk.docker.imagePullSecrets" . | indent 6 }}
 
@@ -104,7 +104,7 @@ spec:
           mountPath: "/conf/jmxremote.password"
           subPath: "jmxremote.password"
 {{- if .Values.controller.lean }}
-{{ include "openwhisk.invoker.volume_mounts" . }}
+{{ include "openwhisk.invoker.volume_mounts" .  | indent 8 }}
 {{- end }}
         livenessProbe:
           httpGet:

@@ -292,21 +292,21 @@ imagePullSecrets:
 {{/* Environment variables required for invoker volumes configuration */}}
 {{- define "openwhisk.invoker.volumes" -}}
 {{- if eq .Values.invoker.containerFactory.impl "docker" }}
-{{ include "openwhisk.docker_volumes" . | indent 6 }}
-      - name: scripts-dir
-        configMap:
-          name: {{ .Release.Name }}-invoker-scripts
+{{ include "openwhisk.docker_volumes" . }}
+- name: scripts-dir
+  configMap:
+    name: {{ .Release.Name }}-invoker-scripts
 {{- end }}
 {{- end }}
 
 {{/* Environment variables required for invoker volumes configuration */}}
 {{- define "openwhisk.invoker.volume_mounts" -}}
 {{- if (eq .Values.invoker.containerFactory.impl "docker") }}
-{{ include "openwhisk.docker_volume_mounts" . | indent 8 }}
+{{ include "openwhisk.docker_volume_mounts" . }}
 {{- if .Values.invoker.containerFactory.networkConfig.dns.inheritInvokerConfig }}
-        - name: scripts-dir
-          mountPath: "/invoker-scripts/configureDNS.sh"
-          subPath: "configureDNS.sh"
+- name: scripts-dir
+  mountPath: "/invoker-scripts/configureDNS.sh"
+  subPath: "configureDNS.sh"
 {{- end }}
 {{- end }}
 {{- end }}
