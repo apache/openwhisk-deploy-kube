@@ -68,7 +68,10 @@ spec:
       tolerations:
 {{ include "openwhisk.toleration.invoker" . | indent 8 }}
 {{- end }}
-
+      volumes:
+      - name: jmxremote-secret
+        secret:
+          secretName: {{ .Release.Name }}-jmxremote-secret
 {{ include "openwhisk.invoker.volumes" . }}
 
       initContainers:
@@ -138,7 +141,7 @@ spec:
 
           # Java options
           - name: "JAVA_OPTS"
-            value: "-Xmx{{- .Values.invoker.jvmHeapMB -}}M {{ .Values.invoker.jvmOptions }}"
+            value: "-Xmx{{- .Values.invoker.jvmHeapMB -}}M {{ .Values.invoker.jvmOptions }} {{ if .Values.jmx.enabled }} {{ .Values.jmx.jvmCommonArgs }} -Dcom.sun.management.jmxremote.rmi.port={{ .Values.jmx.rmiPort }} -Dcom.sun.management.jmxremote.port={{ .Values.jmx.port }} {{ end }}"
 
           # Invoker options
           - name: "INVOKER_OPTS"
@@ -214,5 +217,16 @@ spec:
         ports:
         - name: invoker
           containerPort: {{ .Values.invoker.port }}
+        - name: jmx
+          jmxPort: {{ .Values.jmx.port }}
+        - name: jmx-rmi
+          jmxPort: {{ .Values.jmx.rmiPort }}
+        volumeMounts:
+        - name: jmxremote-secret
+          mountPath: "/conf/jmxremote.access"
+          subPath: "jmxremote.access"
+        - name: jmxremote-secret
+          mountPath: "/conf/jmxremote.password"
+          subPath: "jmxremote.password"
 {{ include "openwhisk.invoker.volume_mounts" . }}
 {{- end }}

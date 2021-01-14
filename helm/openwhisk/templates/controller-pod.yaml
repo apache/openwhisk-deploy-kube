@@ -63,9 +63,13 @@ spec:
 {{- end }}
 {{ include "openwhisk.readiness.waitForCouchDB" . | indent 6 }}
 {{- if eq .Values.activationStoreBackend "ElasticSearch" }}
-      # The controller must wait for elasticsearch to be ready before it starts
+# The controller must wait for elasticsearch to be ready before it starts
 {{ include "openwhisk.readiness.waitForElasticSearch" . | indent 6 }}
 {{- end }}
+      volumes:
+      - name: jmxremote-secret
+        secret:
+          secretName: {{ .Release.Name }}-jmxremote-secret
       # The lean controller requires invoker volumes mounts
 {{- if .Values.controller.lean }}
 {{ include "openwhisk.invoker.volumes" . }}
@@ -84,10 +88,21 @@ spec:
         ports:
         - name: controller
           containerPort: {{ .Values.controller.port }}
+        - name: jmx
+          jmxPort: {{ .Values.jmx.port }}
+        - name: jmx-rmi
+          jmxPort: {{ .Values.jmx.rmiPort }}
         - name: akka-remoting
           containerPort: 2552
         - name: akka-mgmt-http
           containerPort: 19999
+        volumeMounts:
+        - name: jmxremote-secret
+          mountPath: "/conf/jmxremote.access"
+          subPath: "jmxremote.access"
+        - name: jmxremote-secret
+          mountPath: "/conf/jmxremote.password"
+          subPath: "jmxremote.password"
 {{- if .Values.controller.lean }}
 {{ include "openwhisk.invoker.volume_mounts" . }}
 {{- end }}
@@ -127,7 +142,7 @@ spec:
 
         # Java options
         - name: "JAVA_OPTS"
-          value: "-Xmx{{- .Values.controller.jvmHeapMB -}}M {{ .Values.controller.jvmOptions }}"
+          value: "-Xmx{{- .Values.controller.jvmHeapMB -}}M {{ .Values.controller.jvmOptions }} {{ if .Values.jmx.enabled }} {{ .Values.jmx.jvmCommonArgs }} -Dcom.sun.management.jmxremote.rmi.port={{ .Values.jmx.rmiPort }} -Dcom.sun.management.jmxremote.port={{ .Values.jmx.port }} {{ end }}"
 
         # specific controller arguments
         - name: "CONTROLLER_OPTS"

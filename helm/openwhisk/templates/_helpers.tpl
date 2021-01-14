@@ -292,7 +292,6 @@ imagePullSecrets:
 {{/* Environment variables required for invoker volumes configuration */}}
 {{- define "openwhisk.invoker.volumes" -}}
 {{- if eq .Values.invoker.containerFactory.impl "docker" }}
-      volumes:
 {{ include "openwhisk.docker_volumes" . | indent 6 }}
       - name: scripts-dir
         configMap:
@@ -303,7 +302,6 @@ imagePullSecrets:
 {{/* Environment variables required for invoker volumes configuration */}}
 {{- define "openwhisk.invoker.volume_mounts" -}}
 {{- if (eq .Values.invoker.containerFactory.impl "docker") }}
-        volumeMounts:
 {{ include "openwhisk.docker_volume_mounts" . | indent 8 }}
 {{- if .Values.invoker.containerFactory.networkConfig.dns.inheritInvokerConfig }}
         - name: scripts-dir
