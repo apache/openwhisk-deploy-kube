@@ -24,6 +24,7 @@ metadata:
 {{ include "openwhisk.label_boilerplate" . | indent 4 }}
 data:
   nginx.conf: |
+    worker_processes {{ .Values.nginx.workerProcesses }};
     worker_rlimit_nofile 4096;
 
     events {
@@ -44,6 +45,17 @@ data:
       # needed to enable keepalive to upstream controllers
       proxy_http_version 1.1;
       proxy_set_header Connection "";
+
+      upstream controllers {
+         # Mark the controller as unavailable after fail_timeout seconds, to not get any requests during restart.
+         # Otherwise, nginx would dispatch requests when the container is up, but the backend in the container not.
+         # From the docs:
+         #  "normally, requests with a non-idempotent method (POST, LOCK, PATCH) are not passed to
+         #   the next server if a request has been sent to an upstream server"
+         server {{ include "openwhisk.controller_host" . }}:{{ .Values.controller.port }} fail_timeout=60s;
+
+         keepalive 512;
+      }
 
       server {
         listen 80;
@@ -72,7 +84,6 @@ data:
 
         # Hack to convince nginx to dynamically resolve the dns entries.
         resolver {{ .Values.k8s.dns }};
-        set $controllers {{ include "openwhisk.controller_host" . }};
 {{- if or (eq .Values.whisk.ingress.type "NodePort") (eq .Values.whisk.ingress.type "LoadBalancer") }}
         set $apigw {{ include "openwhisk.apigw_host" . }};
 {{ if or .Values.metrics.prometheusEnabled .Values.metrics.userMetricsEnabled }}
@@ -85,12 +96,12 @@ data:
             if ($namespace) {
                 rewrite    /(.*) /api/v1/web/${namespace}/$1 break;
             }
-            proxy_pass http://$controllers:{{ .Values.controller.port }};
+            proxy_pass http://controllers;
             proxy_read_timeout 75s; # 70+5 additional seconds to allow controller to terminate request
         }
 
         location /api/v1 {
-            proxy_pass http://$controllers:{{ .Values.controller.port }};
+            proxy_pass http://controllers;
             proxy_read_timeout 75s; # 70+5 additional seconds to allow controller to terminate request
         }
 
@@ -116,7 +127,7 @@ data:
             if ($namespace) {
               rewrite    /(.*) /api/v1/web/${namespace}/$1 break;
             }
-            proxy_pass http://$controllers:{{ .Values.controller.port }};
+            proxy_pass http://controllers;
             proxy_read_timeout 75s; # 70+5 additional seconds to allow controller to terminate request
         }
 
