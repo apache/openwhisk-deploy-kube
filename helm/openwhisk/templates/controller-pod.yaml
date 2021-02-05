@@ -79,6 +79,11 @@ spec:
 {{- if .Values.controller.lean }}
         securityContext:
           privileged: true
+{{- else if .Values.controller.secure }}
+        securityContext:
+          capabilities:
+            drop:
+              - all
 {{- end }}
         command: ["/bin/bash", "-c", "/init.sh `hostname | awk -F '-' '{print $NF}'`"]
         ports:

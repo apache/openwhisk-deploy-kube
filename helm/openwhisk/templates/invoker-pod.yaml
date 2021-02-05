@@ -238,5 +238,13 @@ spec:
         ports:
         - name: invoker
           containerPort: {{ .Values.invoker.port }}
+{{- if .Values.invoker.secure }}
+        securityContext:
+          capabilities:
+            drop:
+              - all
+            add:
+              - SYS_ADMIN
+{{- end }}
 {{ include "openwhisk.invoker.volume_mounts" . }}
 {{- end }}

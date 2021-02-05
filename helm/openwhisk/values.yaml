@@ -263,6 +263,7 @@ controller:
   jvmOptions: ""
   loglevel: "INFO"
   resources: ~
+  secure: false
 
 # Invoker configurations
 invoker:
@@ -294,6 +295,7 @@ invoker:
       isolateUserActions: true
       replicaCount: 1
   resources: ~
+  secure: false
 
 # API Gateway configurations
 apigw:
@@ -306,6 +308,7 @@ apigw:
   apiPort: 9000
   mgmtPort: 8080
   resources: ~
+  secure: false
 
 # Redis (used by apigateway)
 redis:
