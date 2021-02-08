@@ -77,10 +77,6 @@ nginx:
 
 ### Using helm to install OpenWhisk
 
-Installation expects `openwhisk` namespace to be created. To create, run
-
-`kubectl create namespace openwhisk`
-
 Indicate the Kubernetes worker nodes that should be used to execute user
 containers by OpenWhisk's invokers. For a single node development cluster,
 simply run:
@@ -92,7 +88,7 @@ Make sure you created your
 
 ```cmd
 cd openwhisk-deploy-kube
-helm install owdev ./helm/openwhisk -n openwhisk -f mycluster.yaml
+helm install owdev ./helm/openwhisk -n openwhisk --create-namespace -f mycluster.yaml
 ```
 
 You can use the command `helm status owdev -n openwhisk` to get a summary of the various

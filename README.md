@@ -243,16 +243,33 @@ For simplicity, in this README, we have used `owdev` as the release name and
 You can use a different name and/or namespace simply by changing the commands
 used below.
 
-**NOTE:** Clone the repository https://github.com/apache/openwhisk-deploy-kube.git and use to Helm chart available under the `helm/openwhisk` folder.
+**NOTE:** The commands below assume Helm v3.2.0 or higher. Verfiy your local Helm version with the command `helm version`.
 
-Deployment can be done by using the following single command:
+### Deploying Released Charts from Helm Repository
+
+The OpenWhisk project maintains a Helm repository at `https://openwhisk.apache.org/charts`.
+You may install officially released versions of OpenWhisk from this repository:
+
+```
+helm repo add openwhisk https://openwhisk.apache.org/charts
+helm repo update
+helm install owdev openwhisk/openwhisk -n openwhisk --create-namespace -f mycluster.yaml
+```
+
+### Deploying from Git
+
+To deploy directly from sources, either download the
+[latest source release](https://github.com/apache/openwhisk-deploy-kube/releases) or
+`git clone https://github.com/apache/openwhisk-deploy-kube.git` and use the Helm chart
+from the `helm/openwhisk` folder of the sourc tree.
+
 ```shell
 helm install owdev ./helm/openwhisk -n openwhisk --create-namespace -f mycluster.yaml
 ```
 
-**NOTE:** The above command will only work for Helm v3.2.0 or higher versions. Verfiy your local Helm version with the command `helm version`.
+### Deploying to OKD/OpenShift
 
-Deploying to OKD/OpenShift uses the command sequence:
+Deploying to OKD/OpenShift currently requires a two command sequence:
 ```shell
 helm template owdev ./helm/openwhisk -n openwhisk -f mycluster.yaml > owdev.yaml
 oc create -f owdev.yaml
@@ -261,6 +278,8 @@ The two step sequence is currently required because the `oc` command must be
 used to create the `Route` resource specified in the generated `owdev.yaml`.
 We recommend generating to a file to make it easier to undeploy OpenWhisk later
 by simply doing `oc delete -f owdev.yaml`
+
+### Checking status
 
 You can use the command `helm status owdev -n openwhisk` to get a summary
 of the various Kubernetes artifacts that make up your OpenWhisk
