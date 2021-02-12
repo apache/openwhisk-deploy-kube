@@ -33,10 +33,9 @@
 {{/* Init container that waits for kafka to be ready */}}
 {{- define "openwhisk.readiness.waitForKafka" -}}
 - name: "wait-for-kafka"
-  image: "{{- .Values.docker.registry.name -}}{{- .Values.busybox.imageName -}}:{{- .Values.busybox.imageTag -}}"
+  image: "{{- .Values.docker.registry.name -}}{{- .Values.utility.imageName -}}:{{- .Values.utility.imageTag -}}"
   imagePullPolicy: "IfNotPresent"
-  # TODO: I haven't found an easy external test to determine that kafka is up, so as a hack we wait for zookeeper and then sleep for 10 seconds and cross our fingers!
-  command: ["sh", "-c", 'result=1; until [ $result -eq 0 ]; do OK=$(echo ruok | nc -w 1 {{ include "openwhisk.zookeeper_zero_host" . }} {{ .Values.zookeeper.port }}); if [ "$OK" == "imok" ]; then result=0; echo "zookeeper returned imok!"; else echo waiting for zookeeper to be ready; sleep 1; fi done; echo "Zookeeper is up; will wait for 10 seconds to give kafka time to initialize"; sleep 10;']
+  command: ["sh", "-c", 'cacert="/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"; token="$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)"; while true; do rc=$(curl -sS --cacert $cacert --header "Authorization: Bearer $token" https://kubernetes.default.svc/api/v1/namespaces/{{ .Release.Namespace }}/endpoints/{{ .Release.Name }}-kafka | jq -r ".subsets[].addresses | length"); echo "num ready kafka endpoints is $rc"; if [ $rc -gt 0 ]; then echo "Success: ready kafka endpoint!"; break; fi; echo "kafka not ready yet; sleeping for 3 seconds"; sleep 3; done;']
 {{- end -}}
 
 {{/* Init container that waits for zookeeper to be ready */}}
