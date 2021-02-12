@@ -73,6 +73,13 @@ spec:
         ports:
         - containerPort: {{ .Values.kafka.port }}
           name: kafka
+
+        livenessProbe:
+          tcpSocket:
+            port: {{ .Values.kafka.port }}
+          initialDelaySeconds: {{ .Values.probes.kafka.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.probes.kafka.livenessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.probes.kafka.livenessProbe.timeoutSeconds }}
         readinessProbe:
           initialDelaySeconds: {{ .Values.probes.kafka.readinessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.probes.kafka.readinessProbe.periodSeconds }}
