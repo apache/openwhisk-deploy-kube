@@ -43,11 +43,13 @@ spec:
       labels:
         name: {{ .Release.Name }}-invoker
 {{ include "openwhisk.label_boilerplate" . | indent 8 }}
-
-      {{- if .Values.metrics.prometheusEnabled }}
       annotations:
+      {{- if .Values.metrics.prometheusEnabled }}
         prometheus.io/scrape: 'true'
         prometheus.io/port:   '{{ .Values.invoker.port }}'
+      {{- end }}
+      {{- if .Values.invoker.secure }}
+        seccomp.security.alpha.kubernetes.io/pod: localhost/invoker.json
       {{- end }}
 
     spec:
