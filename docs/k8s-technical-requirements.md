@@ -21,8 +21,8 @@
 
 The Kubernetes cluster on which you are deploying OpenWhisk must meet
 the following requirements:
-* [Kubernetes](https://github.com/kubernetes/kubernetes) version 1.14+.
-  Our automated testing currently covers Kubernetes versions 1.16, 1.17 and 1.18.
+* [Kubernetes](https://github.com/kubernetes/kubernetes) version 1.16+.
+  Our automated testing currently covers Kubernetes versions 1.17, 1.18 and 1.19.
 * The ability to create Ingresses to make a Kubernetes service
   available outside of the cluster so you can actually use OpenWhisk.
 * Unless you disable persistence (see

@@ -28,4 +28,4 @@ keywords:
 maintainers:
   - name: Apache OpenWhisk Community
     email: dev@openwhisk.apache.org
-kubeVersion: ">=v1.14.0-r0"
+kubeVersion: ">=v1.16.0-r0"
