@@ -35,10 +35,13 @@ spec:
         name: {{ .Release.Name }}-controller
 {{ include "openwhisk.label_boilerplate" . | indent 8 }}
 
-      {{- if .Values.metrics.prometheusEnabled }}
       annotations:
+      {{- if .Values.metrics.prometheusEnabled }}
         prometheus.io/scrape: 'true'
         prometheus.io/port:   '{{ .Values.controller.port }}'
+      {{- end }}
+      {{- if .Values.controller.secure }}
+        seccomp.security.alpha.kubernetes.io/pod: localhost/controller.json
       {{- end }}
 
     spec:
