@@ -135,7 +135,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-php-v7.3",
-                    "tag": "1.15.0"
+                    "tag": "1.16.0"
                 },
                 "attached": {
                     "attachmentName": "codefile",
@@ -149,7 +149,21 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-php-v7.4",
-                    "tag": "1.15.0"
+                    "tag": "1.16.0"
+                },
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                }
+            },
+            {
+                "kind": "php:8.0",
+                "default": false,
+                "deprecated": false,
+                "image": {
+                    "prefix": "openwhisk",
+                    "name": "action-php-v7.4",
+                    "tag": "1.16.0"
                 },
                 "attached": {
                     "attachmentName": "codefile",
