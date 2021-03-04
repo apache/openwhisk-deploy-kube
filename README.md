@@ -334,7 +334,7 @@ If your deployment is not working, check our
 
 Using defaults, your deployment is configured to provide a bare-minimum working platform for testing and exploration. For your specialized workloads, you can scale-up your openwhisk deployment by defining your deployment configurations in your `mycluster.yaml` which overrides the defaults in `helm/openwhisk/values.yaml`. Some important parameters to consider (for other parameters, check `helm/openwhisk/values.yaml` and [configurationChoices](./docs/configurationChoices.md)):
 * `actionsInvokesPerminute`: limits the maximum number of invocations per minute.
-* `actionsInvokesPerminute`: limits the maximum concurrent invocations.
+* `actionsInvokesConcurrent`: limits the maximum concurrent invocations.
 * `containerPool`: total memory available per `invoker` instance. `Invoker` uses this memory to create containers for user-actions. The concurrency-limit (actions running in parallel) will depend upon the total memory configured for `containerPool` and memory allocated per action (`default:` 256mb per container).
 
 For more information about increasing concurrency-limit, check [scaling-up your deployment](./docs/k8s-custom-build-cluster-scaleup.md).
