@@ -52,7 +52,7 @@ might also have installed on your machine.  Finally, pick the
 You will be using a NodePort ingress to access OpenWhisk. Assuming
 `kubectl describe nodes | grep InternalIP` returns 192.168.65.3 and
 port 31001 is available to be used on your host machine, a
-mycluster.yaml for a standard deployment of OpenWhisk would be:
+`mycluster.yaml` for a standard deployment of OpenWhisk would be:
 ```yaml
 whisk:
   ingress:

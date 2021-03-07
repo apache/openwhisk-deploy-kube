@@ -75,15 +75,18 @@ kubectl label node kind-worker2 openwhisk-role=invoker
 
 ### Configuring OpenWhisk
 
-To configure OpenWhisk, you first need to define a mycluster.yaml
+To configure OpenWhisk, you first need to define a `mycluster.yaml`
 that specifies the "inside the cluster" ingress information and
 other system configuration. First, determine the internalIP of
 a worker node with the command:
+
 ```
 kubectl describe node kind-worker | grep InternalIP: | awk '{print $2}'
 ```
-A mycluster.yaml for a standard deployment of OpenWhisk would look
+
+A `mycluster.yaml` for a standard deployment of OpenWhisk would look
 like the below, replacing <InternalIP> with its actual value:
+
 ```yaml
 whisk:
   ingress:
