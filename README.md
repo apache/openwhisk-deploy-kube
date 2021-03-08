@@ -294,7 +294,7 @@ Configure the OpenWhisk CLI, wsk, by setting the auth and apihost
 properties (if you don't already have the wsk cli, follow the
 instructions [here](https://github.com/apache/openwhisk-cli)
 to get it). Replace `whisk.ingress.apiHostName` and `whisk.ingress.apiHostPort`
-with the actual values from your mycluster.yaml.
+with the actual values from your `mycluster.yaml`.
 ```shell
 wsk property set --apihost <whisk.ingress.apiHostName>:<whisk.ingress.apiHostPort>
 wsk property set --auth 23bc46b1-71f6-4ed5-8c54-816aa4f8c502:123zO3xZCLrMN6v2BKK1dXYFpXlPkccOFqm12CdAsMgRU4VrNZ9lyGVCGuMDGIwP
@@ -306,7 +306,7 @@ host environment. Instead, exposed NodePorts are forwarded from localhost
 to the appropriate containers.  This means that you will use `localhost`
 instead of `whisk.ingress.apiHostName` when configuring
 the `wsk` cli and replace `whisk.ingress.apiHostPort`
-with the actual values from your mycluster.yaml.
+with the actual values from your `mycluster.yaml`.
 
 ```shell
 wsk property set --apihost localhost:<whisk.ingress.apiHostPort>

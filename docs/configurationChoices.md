@@ -157,20 +157,23 @@ approach to provisioning dynamic storage if it's not already provisioned
 on your cluster.
 
 If your cluster is not thus configured and you want to use persistence,
-then you will need to add the following stanza to your mycluster.yaml.
+then you will need to add the following stanza to your `mycluster.yaml`.
+
 ```yaml
 k8s:
   persistence:
     hasDefaultStorageClass: false
     explicitStorageClass: <DESIRED_STORAGE_CLASS_NAME>
 ```
+
 If <DESIRED_STORAGE_CLASS_NAME> has a dynamic provisioner, deploying
 the Helm chart will automatically create the required PersistentVolumes.
 If <DESIRED_STORAGE_CLASS_NAME> does not have a dynamic provisioner,
 then you will need to manually create the required persistent volumes.
 
 Alternatively, you may also entirely disable the usage of persistence
-by adding the following stanza to your mycluster.yaml:
+by adding the following stanza to your `mycluster.yaml`:
+
 ```yaml
 k8s:
   persistence:
