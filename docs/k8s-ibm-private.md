@@ -42,7 +42,7 @@ or be prepared to provision volumes manually for OpenWhisk
 
 IBM Cloud Private includes a provision for filtering the images that are
 allowed to be deployed into a particular namespace.  One _could_ disable this
-capability for the OpenWhisk namespace, but initally it is best to define
+capability for the OpenWhisk namespace, but initially it is best to define
 a policy for the namespace:  (In this case we assume the namespace is
 `openwhisk`)
 

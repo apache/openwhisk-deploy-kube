@@ -243,7 +243,7 @@ For simplicity, in this README, we have used `owdev` as the release name and
 You can use a different name and/or namespace simply by changing the commands
 used below.
 
-**NOTE:** The commands below assume Helm v3.2.0 or higher. Verfiy your local Helm version with the command `helm version`.
+**NOTE:** The commands below assume Helm v3.2.0 or higher. Verify your local Helm version with the command `helm version`.
 
 ### Deploying Released Charts from Helm Repository
 
@@ -261,7 +261,7 @@ helm install owdev openwhisk/openwhisk -n openwhisk --create-namespace -f myclus
 To deploy directly from sources, either download the
 [latest source release](https://github.com/apache/openwhisk-deploy-kube/releases) or
 `git clone https://github.com/apache/openwhisk-deploy-kube.git` and use the Helm chart
-from the `helm/openwhisk` folder of the sourc tree.
+from the `helm/openwhisk` folder of the source tree.
 
 ```shell
 helm install owdev ./helm/openwhisk -n openwhisk --create-namespace -f mycluster.yaml
@@ -409,7 +409,7 @@ controller:
 ### Selectively redeploying using a locally built docker image
 
 You can use the `helm upgrade` command to selectively redeploy one or
-more OpenWhisk componenets.  Continuing the example above, if you make
+more OpenWhisk components.  Continuing the example above, if you make
 additional changes to the controller source code and want to just
 redeploy it without redeploying the entire OpenWhisk system you can do
 the following:
@@ -424,7 +424,7 @@ controller:
   imageName: "whisk/controller"
   imageTag: "v2"
 ```
-Redeploy with Helm by executing this commaned in your
+Redeploy with Helm by executing this command in your
 openwhisk-deploy-kube directory:
 ```shell
 helm upgrade owdev ./helm/openwhisk -n openwhisk -f mycluster.yaml

@@ -139,8 +139,8 @@
         "limits": {
           "type": "object",
           "properties": {
-            "actionsInvokesPerminute": { "type": "number", "minimum": 0, "descrption": "The maximum number of action invocations per minute by a single namespace" },
-            "actionsInvokesConcurrent": { "type": "number", "minimum": 0, "descrption":  "The maximum number of concurrent action invocations by a single namespace" },
+            "actionsInvokesPerminute": { "type": "number", "minimum": 0, "description": "The maximum number of action invocations per minute by a single namespace" },
+            "actionsInvokesConcurrent": { "type": "number", "minimum": 0, "description":  "The maximum number of concurrent action invocations by a single namespace" },
             "triggersFiresPerminute": { "type": "number", "minimum": 0, "description": "The maximum triggers fired per minute for a single namespace" },
             "actionsSequenceMaxLength": { "type": "number", "minimum": 0, "description": "The maximum length of an action sequence" },
             "actions": {

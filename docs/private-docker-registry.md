@@ -42,7 +42,7 @@ By default, helm charts currently use docker hub to download images to deploy Op
     registry:
       name: "registry-name/"
       username: username
-      password: "Passowrd"
+      password: "Password"
   ```
 
   > - enabling registry information will cause all your images to be pulled from private docker registry only.
