@@ -52,7 +52,7 @@ until $ACTION_LIST_PASSED; do
 done
 
 # next invoke the new hello world action via the CLI
-echo "Inoking action via CLI"
+echo "Invoking action via CLI"
 RESULT=$(wsk -i action invoke --blocking hello | grep "\"status\": \"success\"")
 if [ -z "$RESULT" ]; then
   echo "FAILED! Could not invoke hello action via CLI"
@@ -79,7 +79,7 @@ if [ -z "$RESULT" ]; then
   exit 1
 fi
 
-# now delete the resouces so the test could be run again
+# now delete the resources so the test could be run again
 wsk -i api delete /demo || (echo "FAILED! failed to delete API"; exit 1)
 wsk -i action delete hello || (echo "FAILED! failed to delete action"; exit 1)
 
