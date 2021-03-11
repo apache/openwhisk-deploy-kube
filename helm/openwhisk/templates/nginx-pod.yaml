@@ -75,6 +75,10 @@ spec:
           containerPort: {{ .Values.nginx.httpPort }}
         - name: http-api
           containerPort: {{ .Values.nginx.httpsPort }}
+{{- if .Values.nginx.resources }}
+        resources:
+{{ toYaml .Values.nginx.resources | indent 10 }}
+{{- end }}
         volumeMounts:
         - name: nginx-conf
           mountPath: "/etc/nginx/nginx.conf"

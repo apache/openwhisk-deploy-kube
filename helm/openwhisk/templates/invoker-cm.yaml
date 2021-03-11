@@ -24,3 +24,4 @@ metadata:
 data:
 {{ (.Files.Glob "configMapFiles/dockerPullRuntimes/playbook.yml").AsConfig | indent 2 }}
 {{ (.Files.Glob "configMapFiles/configureDNS/configureDNS.sh").AsConfig | indent 2 }}
+{{ (.Files.Glob "configMapFiles/dockerLogin/dockerLogin.sh").AsConfig | indent 2 }}

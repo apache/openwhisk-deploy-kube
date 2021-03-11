@@ -75,7 +75,10 @@ spec:
           containerPort: {{ .Values.zookeeper.serverPort }}
         - name: leader-election
           containerPort: {{ .Values.zookeeper.leaderElectionPort }}
-
+{{- if .Values.zookeeper.resources }}
+        resources:
+{{ toYaml .Values.zookeeper.resources | indent 10 }}
+{{- end }}
         livenessProbe:
           tcpSocket:
             port: {{ .Values.zookeeper.port }}

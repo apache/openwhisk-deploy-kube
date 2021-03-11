@@ -73,6 +73,10 @@ spec:
         ports:
         - containerPort: {{ .Values.kafka.port }}
           name: kafka
+{{- if .Values.kafka.resources }}
+        resources:
+{{ toYaml .Values.kafka.resources | indent 10 }}
+{{- end }}
         env:
         - name: "HOSTNAME_COMMAND"
           value: "hostname -f"
