@@ -114,7 +114,7 @@ CPUs to deploy the default configuration of OpenWhisk.  You can deploy
 to significantly larger clusters by scaling up the replica count of
 the various components and labeling multiple nodes as invoker nodes.
 For more detailed documentation, see:
-* [OKD/OpenShift 3.11](docs/okd-311.md)
+* [OKD/OpenShift 4.5](docs/okd-45.md)
 
 ### Using a Kubernetes cluster you built yourself
 

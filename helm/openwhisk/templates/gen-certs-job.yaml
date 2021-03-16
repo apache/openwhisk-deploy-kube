@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 
+{{- if not (eq .Values.whisk.ingress.type "OpenShift") }}
 {{- if not .Values.nginx.certificate.external }}
 apiVersion: batch/v1
 kind: Job
@@ -56,4 +57,5 @@ spec:
             configMapKeyRef:
               name: {{ .Release.Name }}-whisk.config
               key: whisk_api_host_name
+{{- end }}
 {{- end }}

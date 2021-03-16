@@ -21,7 +21,7 @@
 
 The OKD/OpenShift cluster on which you are deploying OpenWhisk must meet
 the following requirements:
-* OKD/OpenShift version 3.11.x
+* OKD/OpenShift version 4.5 or newer (these instructions were tested on 4.5).
 * The ability to create routes to make a Kubernetes service
   available outside of the cluster so you can actually use OpenWhisk.
 * Unless you disable persistence (see
