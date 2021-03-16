@@ -17,11 +17,11 @@
 #
 -->
 
-# Deploying OpenWhisk on OKD/OpenShift 3.11
+# Deploying OpenWhisk on OKD/OpenShift 4.5
 
 ## Overview
 
-The 3.11 version of OKD/OpenShift is based on Kubernetes 1.11.
+The 4.5 version of OKD/OpenShift is based on Kubernetes 1.18.
 
 We assume you have an operational cluster that meets the
 [technical requirements](okd-technical-requirements.md) and that you

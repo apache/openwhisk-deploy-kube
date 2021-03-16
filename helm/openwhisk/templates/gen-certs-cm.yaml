@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 
+{{- if not (eq .Values.whisk.ingress.type "OpenShift") }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -31,4 +32,5 @@ data:
     {{ .Values.nginx.certificate.sslPassword }}
 {{- else }}
 {{ (.Files.Glob "configMapFiles/genCerts/gencerts.sh").AsConfig | indent 2 }}
+{{- end }}
 {{- end }}
