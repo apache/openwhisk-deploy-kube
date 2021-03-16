@@ -446,6 +446,15 @@ probes:
       initialDelaySeconds: 5
       periodSeconds: 10
       timeoutSeconds: 1
+  kafka:
+    livenessProbe:
+      initialDelaySeconds: 5
+      periodSeconds: 10
+      timeoutSeconds: 1
+    readinessProbe:
+      initialDelaySeconds: 5
+      periodSeconds: 10
+      timeoutSeconds: 5
   controller:
     livenessProbe:
       initialDelaySeconds: 10
