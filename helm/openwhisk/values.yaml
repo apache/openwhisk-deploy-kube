@@ -454,7 +454,7 @@ probes:
     readinessProbe:
       initialDelaySeconds: 5
       periodSeconds: 10
-      timeoutSeconds: 1
+      timeoutSeconds: 5
   controller:
     livenessProbe:
       initialDelaySeconds: 10
