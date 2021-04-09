@@ -423,7 +423,7 @@ The first step is to rebuild the docker image:
 # Execute this command in your openwhisk directory
 bin/wskdev controller -b
 ```
-Note that the ```wskdev``` flags ```-x``` and ```-d``` are not compatible 
+Note that the ```wskdev``` flags ```-x``` and ```-d``` are not compatible
 with the Kubernetes deployment of OpenWhisk.
 
 Alternatively, you can build all of the OpenWhisk docker components:
