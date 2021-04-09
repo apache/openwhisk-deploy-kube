@@ -413,11 +413,31 @@ more OpenWhisk components.  Continuing the example above, if you make
 additional changes to the controller source code and want to just
 redeploy it without redeploying the entire OpenWhisk system you can do
 the following:
+
+If you are using a multi-node Kubernetes cluster you will need to
+repeat the following steps on all nodes that may run the controller
+component.
+
+The first step is to rebuild the docker image:
 ```shell
-# Execute these commands in your openwhisk directory
+# Execute this command in your openwhisk directory
+bin/wskdev controller -b
+```
+Note that the ```wskdev``` flags ```-x``` and ```-d``` are not compatible
+with the Kubernetes deployment of OpenWhisk.
+
+Alternatively, you can build all of the OpenWhisk docker components:
+```shell
+# Execute this command in your openwhisk directory
 ./gradlew distDocker
+```
+
+After building the new docker image(s), tag the new image:
+```shell
+# Tag the docker image you seek to redeploy
 docker tag whisk/controller whisk/controller:v2
 ```
+
 Then, edit your `mycluster.yaml` to contain:
 ```yaml
 controller:
