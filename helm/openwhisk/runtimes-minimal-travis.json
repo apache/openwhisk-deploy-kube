@@ -22,8 +22,8 @@
                 "kind": "python:3",
                 "image": {
                     "prefix": "openwhisk",
-                    "name": "python3action",
-                    "tag": "1.15.0"
+                    "name": "actionloop-python-v3.7",
+                    "tag": "1.16.0"
                 },
                 "deprecated": false
             }
