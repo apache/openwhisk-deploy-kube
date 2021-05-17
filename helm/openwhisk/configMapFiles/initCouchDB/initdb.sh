@@ -16,7 +16,11 @@
 #
 
 # Clone OpenWhisk to get the ansible playbooks needed to initialize CouchDB
-git clone https://github.com/apache/openwhisk /openwhisk
+until git clone https://github.com/apache/openwhisk /openwhisk
+do
+    echo "Can't git clone yet, trying again"
+    sleep 2
+done
 pushd /openwhisk
     git checkout $OW_GIT_TAG_OPENWHISK
 popd
