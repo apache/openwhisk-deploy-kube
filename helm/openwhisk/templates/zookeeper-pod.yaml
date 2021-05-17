@@ -24,6 +24,8 @@ metadata:
   labels:
     name: {{ .Release.Name }}-zookeeper
 {{ include "openwhisk.label_boilerplate" . | indent 4 }}
+  annotations:
+    config.linkerd.io/opaque-ports: "{{ .Values.zookeeper.port }}"
 spec:
   serviceName: {{ .Release.Name }}-zookeeper
   podManagementPolicy: "Parallel"
