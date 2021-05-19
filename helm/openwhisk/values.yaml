@@ -296,6 +296,7 @@ invoker:
       replicaCount: 1
   resources: ~
   secure: false
+  extraCaps: []
 
 # API Gateway configurations
 apigw:

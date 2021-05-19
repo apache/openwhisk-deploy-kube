@@ -247,6 +247,9 @@ spec:
               - all
             add:
               - SYS_ADMIN
+{{- range .Values.invoker.extraCaps }}
+              - {{ . }}
+{{- end }}
 {{- end }}
 {{ include "openwhisk.invoker.volume_mounts" . }}
 {{- end }}
