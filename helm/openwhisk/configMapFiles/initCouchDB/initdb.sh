@@ -18,7 +18,7 @@
 # Clone OpenWhisk to get the ansible playbooks needed to initialize CouchDB
 until git clone https://github.com/apache/openwhisk /openwhisk
 do
-    echo "Can't git clone yet, trying again"
+    echo "Network not ready yet"
     sleep 2
 done
 pushd /openwhisk
