@@ -19,7 +19,7 @@
 until git clone https://github.com/apache/openwhisk /openwhisk
 do
     echo "Network not ready yet"
-    sleep 2
+    sleep 1
 done
 pushd /openwhisk
     git checkout $OW_GIT_TAG_OPENWHISK
