@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-until kubectl get nodes
+until kubectl get secret
 do
     echo "Network not ready yet"
     sleep 1
