@@ -44,62 +44,43 @@ On Linux, make sure your userid is in the `docker` group on the host
 machine.  This will enable you to run `kind` without
 requiring `sudo` to gain `root` privileges.
 
-Create a kind-cluster.yaml to configure your cluster.
-```yaml
-kind: Cluster
-apiVersion: kind.x-k8s.io/v1alpha4
-nodes:
-- role: control-plane
-- role: worker
-  extraPortMappings:
-    - hostPort: 31001
-      containerPort: 31001
-- role: worker
+We've provided a [script](./deploy/kind/start-kind.sh)
+that you can use to bring up a kind cluster in a
+reasonable configuration for OpenWhisk. The script
+assumes that port 31001 is available on your machine
+and can be used by openwhisk.  To use a different port,
+edit `deploy/kind/kind-cluster.yaml`.
 ```
-The extraPortMappings stanza enables port forwarding
-from the localhost to the in-cluster network.
-This is required on MacOS, but to simplify the instructions
-we use the same setup for all platforms.
-
-Now create your cluster with the command:
-```shell
-kind create cluster --config kind-cluster.yaml
-```
-
-Then label the two worker nodes so that one is reserved for the invoker
-and the other will be used to run the rest of the OpenWhisk system.
-```shell
-kubectl label node kind-worker openwhisk-role=core
-kubectl label node kind-worker2 openwhisk-role=invoker
+./deploy/kind/start-kind.sh
 ```
 
 ### Configuring OpenWhisk
 
-To configure OpenWhisk, you first need to define a `mycluster.yaml`
-that specifies the "inside the cluster" ingress information and
-other system configuration. First, determine the internalIP of
-a worker node with the command:
-
-```
-kubectl describe node kind-worker | grep InternalIP: | awk '{print $2}'
-```
-
-A `mycluster.yaml` for a standard deployment of OpenWhisk would look
-like the below, replacing <InternalIP> with its actual value:
+Assuming you used the default port 31001 when starting kind, a
+[mycluster.yaml](../deploy/kind/mycluster.yaml]
+for a standard deployment of OpenWhisk would be:
 
 ```yaml
 whisk:
   ingress:
     type: NodePort
-    apiHostName: <INTERNAL_IP>
+    apiHostName: localhost
     apiHostPort: 31001
-
-invoker:
-  containerFactory:
-    impl: "kubernetes"
+    useInternally: false
 
 nginx:
   httpsNodePort: 31001
+
+# disable affinity
+affinity:
+  enabled: false
+toleration:
+  enabled: false
+invoker:
+  options: "-Dwhisk.kubernetes.user-pod-node-affinity.enabled=false"
+  # must use KCF as kind uses containerd as its container runtime
+  containerFactory:
+    impl: "kubernetes"
 ```
 Note that you must use the KubernetesContainerFactory when running
 OpenWhisk on `kind` because it is configured to use `containerd`
@@ -107,8 +88,8 @@ as the underlying container engine.
 
 External to the Kubernetes cluster, for example when using the `wsk` cli,
 we will use the port forwarding configured by the `extraPortMappings`
-in kind-cluster.yaml to allow the OpenWhisk apihost property
-to be set to localhost:31001
+in [kind-cluster.yaml](../deploy/kind/kind-cluster.yaml) to allow the
+OpenWhisk apihost property to be set to localhost:31001
 
 ## Hints and Tips
 

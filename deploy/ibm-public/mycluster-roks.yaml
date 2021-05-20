@@ -1,0 +1,47 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+whisk:
+  ingress:
+    # NOTE: Replace <domain> with your cluster's actual domain
+    apiHostName: openwhisk.<domain>
+    apiHostPort: 443
+    apiHostProto: https
+    type: Standard
+    useInternally: true
+    # NOTE: Replace <domain> with your cluster's actual domain
+    domain: openwhisk.<domain>
+    tls:
+      enabled: true
+      secretenabled: true
+      createsecret: false
+      # NOTE: Replace <ibmtlssecret> with your cluster's actual tlssecret
+      secretname: <ibmtlssecret>
+    annotations:
+      kubernetes.io/ingress.class: public-iks-k8s-nginx
+      nginx.ingress.kubernetes.io/use-regex: "true"
+      nginx.ingress.kubernetes.io/configuration-snippet: |
+         proxy_set_header X-Request-ID $request_id;
+      nginx.ingress.kubernetes.io/proxy-body-size: 50m
+      nginx.ingress.kubernetes.io/proxy-read-timeout: "75"
+
+k8s:
+  dns: dns-default.openshift-dns
+
+invoker:
+  containerFactory:
+    impl: kubernetes

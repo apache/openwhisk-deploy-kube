@@ -31,17 +31,10 @@ language, that can be dynamically scheduled and run in response to
 associated events (via Triggers) from external sources (Feeds) or from
 HTTP requests.
 
-This repository supports deploying OpenWhisk to Kubernetes.
+This repository supports deploying OpenWhisk to Kubernetes and OpenShift.
 It contains a Helm chart that can be used to deploy the core
 OpenWhisk platform and optionally some of its Event Providers
-to both single-node and multi-node Kubernetes clusters.
-
-The same Helm chart can also be used to deploy OpenWhisk to
-OKD/OpenShift via a strategy of using `helm template` to
-generate yaml that is then fed to the `oc` cli.  There are some
-rough edges still in this process, we would welcome community
-contributions to help improve the targeting of OKD/OpenShift and
-document the necessary steps.
+to both single-node and multi-node Kubernetes and OpenShift clusters.
 
 # Table of Contents
 
@@ -101,29 +94,28 @@ by scaling up the replica count of the various components and labeling multiple
 nodes as invoker nodes. We have
 detailed documentation on using Kubernetes clusters from the following
 major cloud providers:
-* [IBM (IKS)](docs/k8s-ibm-public.md) and [IBM (ICP)](docs/k8s-ibm-private.md)
+* [IBM (IKS)](docs/k8s-ibm-public.md)
 * [Google (GKE)](docs/k8s-google.md)
 * [Amazon (EKS)](docs/k8s-aws.md)
 
 We would welcome contributions of documentation for Azure (AKS) and any other public cloud providers.
 
-### Using OKD/OpenShift
+### Using OpenShift
 
 You will need at least 1 worker node with 4GB of memory and 2 virtual
 CPUs to deploy the default configuration of OpenWhisk.  You can deploy
 to significantly larger clusters by scaling up the replica count of
 the various components and labeling multiple nodes as invoker nodes.
 For more detailed documentation, see:
-* [OKD/OpenShift 4.5](docs/okd-45.md)
+* [OpenShift 4](docs/openshift-4.md)
 
 ### Using a Kubernetes cluster you built yourself
 
 If you are comfortable with building your own Kubernetes clusters and
 deploying services with ingresses to them, you should also
 be able to deploy OpenWhisk to a do-it-yourself cluster. Make sure
-your cluster meets the [technical
-requirements](docs/k8s-technical-requirements.md).  You will need at
-least 1 worker node with 4GB of memory and 2 virtual CPUs to deploy
+your cluster meets the [technical requirements](docs/k8s-technical-requirements.md).
+You will need at least 1 worker node with 4GB of memory and 2 virtual CPUs to deploy
 the default configuration of OpenWhisk.  You can deploy to
 significantly larger clusters by scaling up the replica count of the
 various components and labeling multiple nodes as invoker nodes.
@@ -136,7 +128,7 @@ Additional more detailed instructions:
 
 [Helm](https://github.com/kubernetes/helm) is a tool to simplify the
 deployment and management of applications on Kubernetes clusters.
-The OpenWhisk Helm chart requires the Helm 3.
+The OpenWhisk Helm chart requires Helm 3.
 
 Our automated testing currently uses Helm v3.2.4
 
@@ -153,12 +145,15 @@ the Helm 3 CLI, you are ready to deploy OpenWhisk.
 You will use Helm to deploy OpenWhisk to your Kubernetes cluster.
 There are four deployment steps that are described in more
 detail below in the rest of this section.
-1. [Initial cluster setup](#initial-setup). You will label your
-Kubernetes worker nodes to indicate their intended usage by OpenWhisk.
+1. [Initial cluster setup](#initial-setup). If you have provisioned a
+multi-node cluster, you should label the worker nodes
+to indicate their intended usage by OpenWhisk.
 2. [Customize the deployment](#customize-the-deployment). You will
 create a `mycluster.yaml` that specifies key facts about your
 Kubernetes cluster and the OpenWhisk configuration you wish to
-deploy.
+deploy. Predefined `mycluster.yaml` files for common flavors
+of Kubernetes clusters are provided in the [deploy](./deploy)
+directory.
 3. [Deploy OpenWhisk with Helm](#deploy-with-helm). You will use Helm and
 `mycluster.yaml` to deploy OpenWhisk to your Kubernetes cluster.
 4. [Configure the `wsk` CLI](#configure-the-wsk-cli). You need to
@@ -166,26 +161,42 @@ tell the `wsk` CLI how to connect to your OpenWhisk deployment.
 
 ## Initial setup
 
-Indicate the Kubernetes worker nodes that should be used to execute
-user containers by OpenWhisk's invokers.  Do this by labeling each node with
+### Single Worker Node Clusters
+
+If your cluster has a single worker node, then you should
+configure OpenWhisk without node affinity. This is done by adding
+the following lines to your `mycluster.yaml`
+```
+affinity:
+  enabled: false
+
+toleration:
+  enabled: false
+
+invoker:
+  options: "-Dwhisk.kubernetes.user-pod-node-affinity.enabled=false"
+```
+
+### Multi Worker Node Clusters
+
+If you are deploying OpenWhisk to a cluster with multiple worker
+nodes, we recommend using node affinity to segregate the compute nodes
+used for the OpenWhisk control plane from those used to execute user
+functions. Do this by labeling each node with
 `openwhisk-role=invoker`. In the default configuration, which uses the
 KubernetesContainerFactory, the node labels are used in conjunction
 with Pod affinities to inform the Kubernetes scheduler how to place
 work so that user actions will not interfere with the OpenWhisk
 control plane.  When using the non-default DockerContainerFactory,
-OpenWhisk assumes it has exclusive use of these invoker nodes and
-will schedule work on them directly, completely bypassing the Kubernetes
-scheduler. For a single node cluster, simply do
+OpenWhisk assumes it has exclusive use of these invoker nodes and will
+schedule work on them directly, completely bypassing the Kubernetes
+scheduler. For each node
+<INVOKER_NODE_NAME> you want to be an invoker, execute
 ```shell
-kubectl label nodes --all openwhisk-role=invoker
-```
-If you have a multi-node cluster, then for each node <INVOKER_NODE_NAME>
-you want to be an invoker, execute
-```shell
-$ kubectl label nodes <INVOKER_NODE_NAME> openwhisk-role=invoker
+kubectl label node <INVOKER_NODE_NAME> openwhisk-role=invoker
 ```
 
-If you are targeting OKD/OpenShift, use the command
+If you are targeting OpenShift, use the command
 ```shell
 oc label node <INVOKER_NODE_NAME> openwhisk-role=invoker
 ```
@@ -200,36 +211,30 @@ If you have dedicated Ingress nodes, label them with
 Event Providers on specific nodes, label those nodes with
 `openwhisk-role=provider`.
 
-### Disabling affinity (not recommended)
-If the Kubernetes cluster does not allow you to assign a label to a node, or you cannot use the affinity attribute, you can disable it.
-Please note that it is suitable for testing purposes only and may interfere with the OpenWhisk control plane.
-
-You can disable affinity by editing the `mycluster.yaml` file:
-
-```yaml
-affinity:
-  enabled: false
-invoker:
-  options: "-Dwhisk.kubernetes.user-pod-node-affinity.enabled=false"
-```
+If the Kubernetes cluster does not allow you to assign a label to a
+node, or you cannot use the affinity attribute, you use the yaml
+snippet shown above in the single worker node configuration to disable
+the use of affinities by OpenWhisk.
 
 ## Customize the Deployment
 
-You must create a `mycluster.yaml` file to record key aspects of your
+You will need a `mycluster.yaml` file to record key aspects of your
 Kubernetes cluster that are needed to configure the deployment of
 OpenWhisk to your cluster. For details, see the documentation
 appropriate to your Kubernetes cluster:
 * [Docker for Mac](docs/k8s-docker-for-mac.md#configuring-openwhisk)
 * [Docker for Windows](docs/k8s-docker-for-windows.md#configuring-openwhisk)
 * [kind](docs/k8s-kind.md#configuring-openwhisk)
-* [IBM Kubernetes Service (IKS)](docs/k8s-ibm-public.md#configuring-openwhisk)
-* [IBM Cloud Private (ICP)](docs/k8s-ibm-private.md#configuring-openwhisk)
+* [IBM Cloud Kubernetes Service (IKS)](docs/k8s-ibm-public.md#configuring-openwhisk)
 * [Google (GKE)](docs/k8s-google.md#configuring-openwhisk)
 * [Amazon (EKS)](docs/k8s-aws.md#configuring-openwhisk)
-* [OKD/OpenShift](docs/okd-311.md##configuring-openwhisk)
+* [OpenShift](docs/openshift-4.md##configuring-openwhisk)
 
-Beyond the Kubernetes cluster specific configuration information,
-the `mycluster.yaml` file is also used
+Default/template `mycluster.yaml` for various types of Kubernetes clusets
+can be found in subdirectories of [deploy](./deploy).
+
+Beyond the basic Kubernetes cluster specific configuration information,
+the `mycluster.yaml` file can also be used
 to customize your OpenWhisk deployment by enabling optional features
 and controlling the replication factor of the various microservices
 that make up the OpenWhisk implementation. See the [configuration
@@ -266,18 +271,6 @@ from the `helm/openwhisk` folder of the source tree.
 ```shell
 helm install owdev ./helm/openwhisk -n openwhisk --create-namespace -f mycluster.yaml
 ```
-
-### Deploying to OKD/OpenShift
-
-Deploying to OKD/OpenShift currently requires a two command sequence:
-```shell
-helm template owdev ./helm/openwhisk -n openwhisk -f mycluster.yaml > owdev.yaml
-oc create -f owdev.yaml
-```
-The two step sequence is currently required because the `oc` command must be
-used to create the `Route` resource specified in the generated `owdev.yaml`.
-We recommend generating to a file to make it easier to undeploy OpenWhisk later
-by simply doing `oc delete -f owdev.yaml`
 
 ### Checking status
 
@@ -466,13 +459,6 @@ helm uninstall owdev -n openwhisk
 ```
 By default, `helm uninstall` removes the history of previous deployments.
 If you want to keep the history, add the command line flag `--keep-history`.
-
-For OpenShift deployments, you cannot use `helm uninstall` to remove the OpenWhisk
-deployment because we did not do a `helm install`.
-If you saved the output from `helm template` into a file,
-you can simply use that file as an argument to `oc delete`.  If you
-did not save the file, you can redo the `helm template` command and
-feed the generated yaml into an `oc delete` command.
 
 # Issues
 

@@ -18,15 +18,9 @@
 
 set -x
 
-# Create cluster config
-cat > mycluster.yaml <<EOF
-kind: Cluster
-apiVersion: kind.x-k8s.io/v1alpha4
-nodes:
-- role: control-plane
-- role: worker
-- role: worker
-EOF
+SCRIPTDIR=$(cd $(dirname "$0") && pwd)
+
+TRAVIS_KUBE_VERSION=${TRAVIS_KUBE_VERSION:="v1.20"}
 
 # Map from Kubernetes major versions to the kind node image tag
 case $TRAVIS_KUBE_VERSION in
@@ -41,7 +35,7 @@ case $TRAVIS_KUBE_VERSION in
 esac
 
 # Boot cluster
-kind create cluster --config mycluster.yaml --name kind --image kindest/node:${KIND_NODE_TAG} --wait 10m || exit 1
+kind create cluster --config "$SCRIPTDIR/kind-cluster.yaml" --name kind --image kindest/node:${KIND_NODE_TAG} --wait 10m || exit 1
 
 echo "Kubernetes cluster is deployed and reachable"
 kubectl describe nodes

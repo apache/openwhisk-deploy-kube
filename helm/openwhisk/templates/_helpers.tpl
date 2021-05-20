@@ -268,17 +268,17 @@ imagePullSecrets:
   valueFrom:
     configMapKeyRef:
       name: {{ .Release.Name }}-whisk.config
-      key: whisk_api_host_proto
+      key: whisk_internal_api_host_proto
 - name: "WHISK_API_HOST_PORT"
   valueFrom:
     configMapKeyRef:
       name: {{ .Release.Name }}-whisk.config
-      key: whisk_api_host_port
+      key: whisk_internal_api_host_port
 - name: "WHISK_API_HOST_NAME"
   valueFrom:
     configMapKeyRef:
       name: {{ .Release.Name }}-whisk.config
-      key: whisk_api_host_name
+      key: whisk_internal_api_host_name
 {{- end -}}
 
 {{/* Environment variables required for invoker containerpool/containerfactory configuration */}}

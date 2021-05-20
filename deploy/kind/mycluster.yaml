@@ -15,22 +15,23 @@
 # limitations under the License.
 #
 
-{{- if or (eq .Values.whisk.ingress.type "NodePort") (eq .Values.whisk.ingress.type "LoadBalancer") }}
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ .Release.Name }}-gen-certs
-  labels:
-{{ include "openwhisk.label_boilerplate" . | indent 4 }}
-data:
-{{- if .Values.nginx.certificate.external }}
-  tls.crt: |
-{{ include "openwhisk.nginx_cert" . | indent 4 }}
-  tls.key: |
-{{ include "openwhisk.nginx_key" . | indent 4 }}
-  sslPassword: |
-    {{ .Values.nginx.certificate.sslPassword }}
-{{- else }}
-{{ (.Files.Glob "configMapFiles/genCerts/gencerts.sh").AsConfig | indent 2 }}
-{{- end }}
-{{- end }}
+whisk:
+  ingress:
+    type: NodePort
+    apiHostName: localhost
+    apiHostPort: 31001
+    useInternally: false
+
+nginx:
+  httpsNodePort: 31001
+
+# disable affinity
+affinity:
+  enabled: false
+toleration:
+  enabled: false
+invoker:
+  options: "-Dwhisk.kubernetes.user-pod-node-affinity.enabled=false"
+  # must use KCF as kind uses containerd as its container runtime
+  containerFactory:
+    impl: "kubernetes"

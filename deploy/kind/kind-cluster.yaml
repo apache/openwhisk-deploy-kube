@@ -15,22 +15,12 @@
 # limitations under the License.
 #
 
-{{- if or (eq .Values.whisk.ingress.type "NodePort") (eq .Values.whisk.ingress.type "LoadBalancer") }}
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ .Release.Name }}-gen-certs
-  labels:
-{{ include "openwhisk.label_boilerplate" . | indent 4 }}
-data:
-{{- if .Values.nginx.certificate.external }}
-  tls.crt: |
-{{ include "openwhisk.nginx_cert" . | indent 4 }}
-  tls.key: |
-{{ include "openwhisk.nginx_key" . | indent 4 }}
-  sslPassword: |
-    {{ .Values.nginx.certificate.sslPassword }}
-{{- else }}
-{{ (.Files.Glob "configMapFiles/genCerts/gencerts.sh").AsConfig | indent 2 }}
-{{- end }}
-{{- end }}
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+- role: control-plane
+- role: worker
+  extraPortMappings:
+    - hostPort: 31001
+      containerPort: 31001
+- role: worker

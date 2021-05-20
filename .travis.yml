@@ -42,7 +42,7 @@ before_install:
   - ./tools/travis/setupscan.sh
   - ./tools/travis/scancode.sh
   - ./tools/travis/setup.sh
-  - ./tools/travis/start-kind.sh
+  - ./deploy/kind/start-kind.sh
 
 script:
   - ./tools/travis/deploy-chart.sh
