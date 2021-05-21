@@ -35,7 +35,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-swift-v4.2",
-                    "tag": "1.15.0"
+                    "tag": "1.16.0"
                 },
                 "deprecated": false,
                 "attached": {

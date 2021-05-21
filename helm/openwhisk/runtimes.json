@@ -87,7 +87,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-swift-v4.2",
-                    "tag": "1.15.0"
+                    "tag": "1.16.0"
                 },
                 "deprecated": false,
                 "attached": {
@@ -101,7 +101,21 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-swift-v5.1",
-                    "tag": "1.15.0"
+                    "tag": "1.16.0"
+                },
+                "deprecated": false,
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                }
+            },
+            {
+                "kind": "swift:5.3",
+                "default": false,
+                "image": {
+                    "prefix": "openwhisk",
+                    "name": "action-swift-v5.3",
+                    "tag": "1.16.0"
                 },
                 "deprecated": false,
                 "attached": {
