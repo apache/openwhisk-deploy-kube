@@ -17,11 +17,11 @@
 #
 -->
 
-# Deploying OpenWhisk on OpenShift 4.5
+# Deploying OpenWhisk on OpenShift 4.6
 
 ## Overview
 
-The 4.5 version of OpenShift is based on Kubernetes 1.18.
+The 4.6 version of OpenShift is based on Kubernetes 1.19.
 
 We assume you have an operational cluster that meets the
 [technical requirements](openshift-technical-requirements.md) and that you
