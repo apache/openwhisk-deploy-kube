@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-{{- if not (eq .Values.whisk.ingress.type "OpenShift") }}
+{{- if or (eq .Values.whisk.ingress.type "NodePort") (eq .Values.whisk.ingress.type "LoadBalancer") }}
 apiVersion: v1
 kind: ConfigMap
 metadata:

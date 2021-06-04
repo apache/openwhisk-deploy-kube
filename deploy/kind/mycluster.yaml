@@ -15,17 +15,23 @@
 # limitations under the License.
 #
 
-apiVersion: v2
-type: application
-name: openwhisk
-version: 1.0.0
-home: https://openwhisk.apache.org
-description: Apache OpenWhisk is an open source serverless cloud platform
-icon: https://raw.githubusercontent.com/apache/openwhisk/682eb5b62ee6ba8017ab54226c2ace3637f4f1ec/docs/images/whisk_icon_full-color_with_tm_64x64-300dpi.png
-keywords:
-  - Apache OpenWhisk
-  - amd64
-maintainers:
-  - name: Apache OpenWhisk Community
-    email: dev@openwhisk.apache.org
-kubeVersion: ">=v1.19.0-r0"
+whisk:
+  ingress:
+    type: NodePort
+    apiHostName: localhost
+    apiHostPort: 31001
+    useInternally: false
+
+nginx:
+  httpsNodePort: 31001
+
+# disable affinity
+affinity:
+  enabled: false
+toleration:
+  enabled: false
+invoker:
+  options: "-Dwhisk.kubernetes.user-pod-node-affinity.enabled=false"
+  # must use KCF as kind uses containerd as its container runtime
+  containerFactory:
+    impl: "kubernetes"

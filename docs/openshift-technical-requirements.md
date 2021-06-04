@@ -17,12 +17,11 @@
 #
 -->
 
-# Technical Requirements for Kubernetes
+# Technical Requirements for OpenShift
 
-The Kubernetes cluster on which you are deploying OpenWhisk must meet
+The OpenShift cluster on which you are deploying OpenWhisk must meet
 the following requirements:
-* [Kubernetes](https://github.com/kubernetes/kubernetes) version 1.19+.
-  Our automated testing currently covers Kubernetes versions 1.19 and 1.20.
+* OpenShift version 4.5 or newer (these instructions were tested on 4.5).
 * The ability to create Ingresses to make a Kubernetes service
   available outside of the cluster so you can actually use OpenWhisk.
 * Unless you disable persistence (see
@@ -32,6 +31,3 @@ the following requirements:
   and you must have a DefaultStorageClass admission controller enabled
   or you must manually create any necessary PersistentVolumes when
   deploying the Helm chart.
-* Endpoints of Kubernetes services must be able to loopback to
-  themselves (the kubelet's `hairpin-mode` must not be `none`).
-

@@ -171,35 +171,18 @@ OW_INCLUDE_SYSTEM_TESTS=${OW_INCLUDE_SYSTEM_TESTS:="false"}
 # Default timeout limit to 60 steps
 TIMEOUT_STEP_LIMIT=${TIMEOUT_STEP_LIMIT:=60}
 
-# Label nodes for affinity.
-# For DockerContainerFactory, at least one must be labeled as an invoker.
-echo "Labeling nodes with openwhisk-role assignments"
-kubectl label nodes kind-worker openwhisk-role=core
-kubectl label nodes kind-worker2 openwhisk-role=invoker
-
 # Create namespace
 kubectl create namespace openwhisk
 
-# Configure a NodePort Ingress assuming kind conventions.
-# Use kind-worker as the ingress, since we labeled it as our core node above.
-# (But using kind-worker2 would also work because Kubernetes
-#  exposes the same NodePort service on all worker nodes.)
-WSK_PORT=31001
-WSK_HOST=$(kubectl describe node kind-worker | grep InternalIP: | awk '{print $2}')
-if [ -z "$WSK_HOST" ]; then
-  echo "FAILED! Could not determine value for WSK_HOST"
-  exit 1
-fi
+# Default to kind conventions of using localhost:31001
+WSK_PORT=${WSK_PORT:=31001}
+WSK_HOST=${WSK_HOST:=localhost}
 
 # Deploy OpenWhisk using Helm
 cd $ROOTDIR
 
-cat > mycluster.yaml <<EOF
+cat > ow-config.yaml <<EOF
 whisk:
-  ingress:
-    type: NodePort
-    apiHostName: $WSK_HOST
-    apiHostPort: $WSK_PORT
   runtimes: "runtimes-minimal-travis.json"
   testing:
     includeSystemTests: $OW_INCLUDE_SYSTEM_TESTS
@@ -208,9 +191,6 @@ invoker:
   containerFactory:
     impl: $OW_CONTAINER_FACTORY
 
-nginx:
-  httpsNodePort: $WSK_PORT
-
 controller:
   lean: ${OW_LEAN_MODE:-false}
 
@@ -218,11 +198,11 @@ metrics:
   userMetricsEnabled: true
 EOF
 
-echo "Contents of mycluster.yaml are:"
-cat mycluster.yaml
+echo "Contents of ow-config.yaml are:"
+cat ow-config.yaml
 
-helm lint helm/openwhisk -n openwhisk -f mycluster.yaml || exit 1
-helm install ow4travis helm/openwhisk -n openwhisk -f mycluster.yaml || exit 1
+helm lint helm/openwhisk -n openwhisk -f deploy/kind/mycluster.yaml -f ow-config.yaml || exit 1
+helm install ow4travis helm/openwhisk -n openwhisk -f deploy/kind/mycluster.yaml -f ow-config.yaml || exit 1
 
 # Wait for controller to be up
 statefulsetHealthCheck "ow4travis-controller"

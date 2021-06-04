@@ -16,7 +16,7 @@
 #
 
 {{- if eq .Values.whisk.ingress.type "Standard" }}
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ .Release.Name }}-ingress
@@ -31,7 +31,7 @@ spec:
   tls:
   - hosts:
     - {{ .Values.whisk.ingress.domain }}
-    {{- if .Values.whisk.ingress.tls.secretenabled }}
+    {{- if ne .Values.whisk.ingress.tls.secretname "" }}
     secretName: {{ .Values.whisk.ingress.tls.secretname | quote }}
     {{- end }}
   {{- end }}
@@ -40,30 +40,48 @@ spec:
     http:
       paths:
       - path: /api/v1/web
+        pathType: Prefix
         backend:
-          serviceName: {{ .Release.Name }}-controller
-          servicePort: http
+          service:
+            name: {{ .Release.Name }}-controller
+            port:
+              name: http
       - path: /api/v1
+        pathType: Prefix
         backend:
-          serviceName: {{ .Release.Name }}-controller
-          servicePort: http
+          service:
+            name: {{ .Release.Name }}-controller
+            port:
+              name: http
       # API GW generated API invocation
       - path: /api
+        pathType: Prefix
         backend:
-          serviceName: {{ .Release.Name }}-apigateway
-          servicePort: mgmt
+          service:
+            name: {{ .Release.Name }}-apigateway
+            port:
+              name: mgmt
       # API GW health status
       - path: /v1/health-check
+        pathType: Prefix
         backend:
-          serviceName: {{ .Release.Name }}-apigateway
-          servicePort: api
+          service:
+            name: {{ .Release.Name }}-apigateway
+            port:
+              name: api
       # API management REST APIs
       - path: /v2
+        pathType: Prefix
         backend:
-          serviceName: {{ .Release.Name }}-apigateway
-          servicePort: api
+          service:
+            name: {{ .Release.Name }}-apigateway
+            port:
+              name: api
       - path: /
+        pathType: Prefix
         backend:
-          serviceName: {{ .Release.Name }}-nginx
-          servicePort: http
+          service:
+            name: {{ .Release.Name }}-nginx
+            port:
+              name: http
 {{- end }}

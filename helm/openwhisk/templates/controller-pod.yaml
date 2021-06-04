@@ -131,7 +131,7 @@ spec:
 
         # specific controller arguments
         - name: "CONTROLLER_OPTS"
-          value: "{{ .Values.controller.options }} {{ if .Values.controller.lean }} {{ include "openwhisk.invoker.add_opts" . }} {{ end }}"
+          value: "{{ .Values.controller.options }} {{ if .Values.controller.lean }} {{ .Values.invoker.options }} {{ include "openwhisk.invoker.add_opts" . }} {{ end }}"
 
         # action runtimes
         - name: "RUNTIMES_MANIFEST"

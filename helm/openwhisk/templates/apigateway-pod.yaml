@@ -65,9 +65,9 @@ spec:
             valueFrom:
               configMapKeyRef:
                 name: {{ .Release.Name }}-whisk.config
-                key: whisk_api_host_url
+                key: whisk_external_api_host_url
           - name: "BACKEND_HOST"
             valueFrom:
               configMapKeyRef:
                 name: {{ .Release.Name }}-whisk.config
-                key: whisk_api_host_url
+                key: whisk_internal_api_host_url
