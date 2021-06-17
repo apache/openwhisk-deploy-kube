@@ -134,7 +134,7 @@ whisk:
     openwhiskCli:
       tag: "1.1.0"
     openwhiskCatalog:
-      gitTag: "0.11.0"
+      gitTag: "1.0.0"
     openwhiskPackageAlarms:
       gitTag: "2.2.0"
     openwhiskPackageKafka:
