@@ -54,7 +54,6 @@ packageListingCheck "github"
 packageListingCheck "slack"
 packageListingCheck "utils"
 packageListingCheck "samples"
-packageListingCheck "weather"
 packageListingCheck "websocket"
 
 # Check packages for installed event providers
