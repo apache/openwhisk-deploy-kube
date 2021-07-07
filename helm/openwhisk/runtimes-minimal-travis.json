@@ -8,7 +8,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-nodejs-v10",
-                    "tag": "1.17.0"
+                    "tag": "1.18.0"
                 },
                 "deprecated": false,
                 "attached": {
