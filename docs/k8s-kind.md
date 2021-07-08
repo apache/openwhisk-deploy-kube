@@ -36,7 +36,7 @@ operate a default cluster with two virtual worker nodes.
 
 Download the latest stable release of `kind` for your platform from
 https://github.com/kubernetes-sigs/kind/releases. Our TravisCI testing
-currently uses kind v0.10.0 on an ubuntu 18.04 host.
+currently uses kind v0.11.1 on an ubuntu 18.04 host.
 
 ### Creating the Kubernetes Cluster
 
