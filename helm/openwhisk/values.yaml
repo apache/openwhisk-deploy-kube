@@ -289,6 +289,15 @@ invoker:
       isolateUserActions: true
       replicaCount: 1
 
+# JMX configurations
+jmx:
+  enabled: false
+  port: 15000
+  rmiPort: 16000
+  user: "jmxuser"
+  pass: "jmxpass"
+  jvmCommonArgs: "-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.local.only=false -Dcom.sun.management.jmxremote.authenticate=true -Dcom.sun.management.jmxremote.password.file=/home/owuser/jmxremote.password -Dcom.sun.management.jmxremote.access.file=/home/owuser/jmxremote.access"
+
 # API Gateway configurations
 apigw:
   imageName: "openwhisk/apigateway"
