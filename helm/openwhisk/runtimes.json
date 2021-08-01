@@ -213,7 +213,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-golang-v1.15",
-                    "tag": "1.17.0"
+                    "tag": "1.18.0"
                 }
             }
         ],
