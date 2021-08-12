@@ -10,7 +10,7 @@
                     "name": "action-nodejs-v10",
                     "tag": "1.18.0"
                 },
-                "deprecated": true,
+                "deprecated": false,
                 "attached": {
                     "attachmentName": "codefile",
                     "attachmentType": "text/plain"
