@@ -4,11 +4,25 @@
         "nodejs": [
             {
                 "kind": "nodejs:10",
-                "default": true,
+                "default": false,
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-nodejs-v10",
                     "tag": "1.18.0"
+                },
+                "deprecated": true,
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                }
+            },
+            {
+                "kind": "nodejs:14",
+                "default": true,
+                "image": {
+                    "prefix": "openwhisk",
+                    "name": "action-nodejs-v14",
+                    "tag": "1.19.0"
                 },
                 "deprecated": false,
                 "attached": {
@@ -23,7 +37,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "actionloop-python-v3.7",
-                    "tag": "1.16.0"
+                    "tag": "1.17.0"
                 },
                 "deprecated": false
             }
@@ -35,7 +49,7 @@
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-swift-v4.2",
-                    "tag": "1.16.0"
+                    "tag": "1.17.0"
                 },
                 "deprecated": false,
                 "attached": {
