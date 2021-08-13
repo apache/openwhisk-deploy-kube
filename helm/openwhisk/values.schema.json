@@ -281,50 +281,69 @@
     },
 
     "zookeeper": {
-      "allOf": [
-        { "$ref": "#/definitions/podspec" },
-        { "$comment": "Zookeeper's quorum protocol is designed to have an odd number of replicas",
-          "properties": { "replicaCount": { "not": { "multipleOf": 2 } } }
-        },
-        { "properties": {
-            "port": { "type": "integer", "minimum": 0 },
-            "serverPort": { "type": "integer", "minimum": 0 },
-            "leaderElectionPort": { "type": "integer", "minimum": 0 },
-            "config": {
-              "type": "object",
-              "properties": {
-                "tickTime": { "type": "integer" },
-                "initLimit": { "type": "integer" },
-                "syncLimit": { "type": "integer" },
-                "dataDir": { "type": "string" },
-                "dataLogDir": { "type": "string" }
-              },
-              "required": ["tickTime", "initLimit", "syncLimit", "dataDir", "dataLogDir"],
-              "additionalProperties": false
-            }
+      "type": "object",
+      "properties": { "external": { "type": "boolean" } },
+      "required": ["external"],
+      "if": { "properties": { "external": { "const": false } } },
+      "then": {
+        "allOf": [
+          { "$ref": "#/definitions/podspec" },
+          { "$comment": "Zookeeper's quorum protocol is designed to have an odd number of replicas",
+            "properties": { "replicaCount": { "not": { "multipleOf": 2 } } }
           },
-          "required": ["port", "serverPort", "leaderElectionPort", "config"]
-        }
-      ]
+          { "properties": {
+              "port": { "type": "integer", "minimum": 0 },
+              "serverPort": { "type": "integer", "minimum": 0 },
+              "leaderElectionPort": { "type": "integer", "minimum": 0 },
+              "config": {
+                "type": "object",
+                "properties": {
+                  "tickTime": { "type": "integer" },
+                  "initLimit": { "type": "integer" },
+                  "syncLimit": { "type": "integer" },
+                  "dataDir": { "type": "string" },
+                  "dataLogDir": { "type": "string" }
+                },
+                "required": ["tickTime", "initLimit", "syncLimit", "dataDir", "dataLogDir"],
+                "additionalProperties": false
+              }
+            },
+            "required": ["port", "serverPort", "leaderElectionPort", "config"]
+          }
+        ]
+      }
     },
 
     "kafka": {
-      "allOf": [
-        { "$ref": "#/definitions/podspec" },
-        { "properties": { "port": { "type": "integer", "minimum": 0 } }, "required": ["port"] }
-      ]
+      "type": "object",
+      "properties": { "external": { "type": "boolean" } },
+      "required": ["external"],
+      "if": { "properties": { "external": { "const": false } } },
+      "then": {
+        "allOf": [
+          { "$ref": "#/definitions/podspec" },
+          { "properties": { "port": { "type": "integer", "minimum": 0 } }, "required": ["port"] }
+        ]
+      },
+      "else": { "properties": { "connect_string": { "type": "string" } }, "required": ["connect_string"] }
     },
 
     "db": {
-      "allOf": [
-        { "$ref": "#/definitions/podspec" },
-        { "properties": { "port": { "type": "integer", "minimum": 0 } }, "required": ["port"] },
-        { "$comment": "wipeAndInit implies replicaCount is 1 because initdb.sh enables single node mode",
-          "if": { "properties": { "wipeAndInit": { "const": true } } },
-          "then": { "properties": { "replicaCount": { "const": 1 } } }
-        },
-        { "$ref": "#/definitions/optionalExternalHostCheck" }
-      ]
+      "type": "object",
+      "properties": { "external": { "type": "boolean" } },
+      "required": ["external"],
+      "if": { "properties": { "external": { "const": false } } },
+      "then": {
+        "allOf": [
+          { "$ref": "#/definitions/podspec" },
+          { "properties": { "port": { "type": "integer", "minimum": 0 } }, "required": ["port"] },
+          { "$comment": "wipeAndInit implies replicaCount is 1 because initdb.sh enables single node mode",
+            "if": { "properties": { "wipeAndInit": { "const": true } } },
+            "then": { "properties": { "replicaCount": { "const": 1 } } }
+          },
+          { "$ref": "#/definitions/optionalExternalHostCheck" }
+        ]
+      }
     },
 
     "nginx": {
@@ -365,12 +384,18 @@
     },
 
     "redis": {
-      "allOf": [
-        { "$ref": "#/definitions/podspec" },
-        { "properties": { "port": { "type": "integer", "minimum": 0 } }, "required": ["port"] },
-        { "properties": { "replicaCount": { "const": 1 } } },
-        { "$ref": "#/definitions/optionalExternalHostCheck" }
-      ]
+      "type": "object",
+      "properties": { "external": { "type": "boolean" } },
+      "required": ["external"],
+      "if": { "properties": { "external": { "const": false } } },
+      "then": {
+        "allOf": [
+          { "$ref": "#/definitions/podspec" },
+          { "properties": { "port": { "type": "integer", "minimum": 0 } }, "required": ["port"] },
+          { "properties": { "replicaCount": { "const": 1 } } },
+          { "$ref": "#/definitions/optionalExternalHostCheck" }
+        ]
+      }
     },
 
     "user_events": {
