@@ -77,6 +77,21 @@ spec:
         resources:
 {{ toYaml .Values.kafka.resources | indent 10 }}
 {{- end }}
+        livenessProbe:
+          tcpSocket:
+            port: {{ .Values.kafka.port }}
+          initialDelaySeconds: {{ .Values.probes.kafka.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.probes.kafka.livenessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.probes.kafka.livenessProbe.timeoutSeconds }}
+        readinessProbe:
+          initialDelaySeconds: {{ .Values.probes.kafka.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.probes.kafka.readinessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.probes.kafka.readinessProbe.timeoutSeconds }}
+          exec:
+            command:
+            - /opt/kafka/bin/kafka-topics.sh
+            - localhost:{{ .Values.kafka.port }}
+            - --version
         env:
         - name: "HOSTNAME_COMMAND"
           value: "hostname -f"

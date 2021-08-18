@@ -50,18 +50,27 @@ might also have installed on your machine.  Finally, pick the
 ### Configuring OpenWhisk
 
 You will be using a NodePort ingress to access OpenWhisk. Assuming
-`kubectl describe nodes | grep InternalIP` returns 192.168.65.3 and
 port 31001 is available to be used on your host machine, a
-mycluster.yaml for a standard deployment of OpenWhisk would be:
+[mycluster.yaml](../deploy/docker-macOS/mycluster.yaml]
+for a standard deployment of OpenWhisk would be:
 ```yaml
 whisk:
   ingress:
     type: NodePort
-    apiHostName: 192.168.65.3
+    apiHostName: localhost
     apiHostPort: 31001
+    useInternally: false
 
 nginx:
   httpsNodePort: 31001
+
+# A single node cluster; so disable affinity
+affinity:
+  enabled: false
+toleration:
+  enabled: false
+invoker:
+  options: "-Dwhisk.kubernetes.user-pod-node-affinity.enabled=false"
 ```
 
 ## Hints and Tips
@@ -88,16 +97,3 @@ deployments of OpenWhisk.
 TLS termination will be handled by OpenWhisk's `nginx` service and
 will use self-signed certificates.  You will need to invoke `wsk` with
 the `-i` command line argument to bypass certificate checking.
-
-The docker network is not exposed to the host on MacOS. However, the
-exposed ports for NodePort services are forwarded from localhost.
-Therefore you must use different host names to connect to OpenWhisk
-from outside the cluster (with the `wsk` cli) and from inside the
-cluster (in `mycluster.yaml`).  Continuing the example from above,
-when setting the `--apihost` for the `wsk` cli, you would use
-`localhost:31001`.  This networking difference also shows up when
-listing apis via `wsk -i api list`. The listed URLs will show the
-cluster-internal apihost,
-e.g. `https://192.168.65.3:31001/api/<UID>/<PATH>`, to invoke the api
-from outside the cluster you should use `localhost:31001` instead, e.g.
-`https://localhost:31001/api/<UID>/<PATH>`.

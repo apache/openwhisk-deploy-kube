@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 
+{{- if or (eq .Values.whisk.ingress.type "NodePort") (eq .Values.whisk.ingress.type "LoadBalancer") }}
 {{- if not .Values.nginx.certificate.external }}
 apiVersion: batch/v1
 kind: Job
@@ -55,5 +56,6 @@ spec:
           valueFrom:
             configMapKeyRef:
               name: {{ .Release.Name }}-whisk.config
-              key: whisk_api_host_name
+              key: whisk_external_api_host_name
+{{- end }}
 {{- end }}

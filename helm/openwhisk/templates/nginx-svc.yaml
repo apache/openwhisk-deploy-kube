@@ -15,7 +15,6 @@
 # limitations under the License.
 #
 
-{{- if ne .Values.whisk.ingress.type "OpenShift" }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -40,12 +39,14 @@ spec:
   ports:
     - port: {{ .Values.nginx.httpPort }}
       name: http
+      targetPort: http
     - port: {{ .Values.nginx.httpsPort }}
       {{- if eq .Values.whisk.ingress.type "NodePort" }}
       nodePort: {{ .Values.nginx.httpsNodePort }}
       {{- end }}
-      name: https-api
+      name: https
       {{- if eq .Values.whisk.ingress.awsSSL "true"}}
       targetPort: http
+      {{- else }}
+      targetPort: https
       {{- end}}
-{{- end }}

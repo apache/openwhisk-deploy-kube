@@ -52,7 +52,7 @@ spec:
         valueFrom:
           configMapKeyRef:
             name: {{ .Release.Name }}-whisk.config
-            key: whisk_api_host_url
+            key: whisk_internal_api_host_url
       - name: "OW_GIT_TAG_OPENWHISK"
         value: {{ .Values.whisk.versions.openwhisk.gitTag | quote }}
 {{- end }}

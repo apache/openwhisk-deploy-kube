@@ -28,6 +28,10 @@ spec:
   selector:
     matchLabels:
       name: {{ .Release.Name }}-alarmprovider
+  {{- if .Values.k8s.persistence.enabled }}
+  strategy:
+    type: "Recreate"
+  {{- end }}
   template:
     metadata:
       labels:
@@ -93,12 +97,12 @@ spec:
           valueFrom:
             configMapKeyRef:
               name: {{ .Release.Name }}-whisk.config
-              key: whisk_api_host_nameAndPort
+              key: whisk_internal_api_host_nameAndPort
         - name: "ENDPOINT_AUTH"
           valueFrom:
             configMapKeyRef:
               name: {{ .Release.Name }}-whisk.config
-              key: whisk_api_host_nameAndPort
+              key: whisk_internal_api_host_nameAndPort
         volumeMounts:
           - name: alarm-logs
             mountPath: /logs

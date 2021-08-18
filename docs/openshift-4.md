@@ -17,28 +17,45 @@
 #
 -->
 
-# Deploying OpenWhisk on IBM Cloud Kubernetes Service (IKS)
+# Deploying OpenWhisk on OpenShift 4.6
 
 ## Overview
 
-IBM provides both a "Lite" and a "Standard" Kubernetes offering in its
-public cloud Kubernetes service (IKS). These differ in capabilities,
-so they are described separately below.
+The 4.6 version of OpenShift is based on Kubernetes 1.19.
 
-## Initial setup
+We assume you have an operational cluster that meets the
+[technical requirements](openshift-technical-requirements.md) and that you
+have sufficient privileges to perform the necessary `oc adm`
+operations detailed below.
 
-### Creating the Kubernetes Cluster
+## Initial Setup
 
-Follow IBM's instructions to provision your cluster.
+Create an openwhisk project (Kubernetes namespace) using the command
+```shell
+oc new-project openwhisk
+```
 
-### Configuring OpenWhisk
+Because OpenShift doesn’t allow pods to run with arbitrary UIDs
+by default, you will need to add adjust some policy options
+before deploying OpenWhisk.  Execute the following commands:
+```shell
+oc adm policy add-scc-to-user anyuid -z default
+oc adm policy add-scc-to-user privileged -z default
+oc adm policy add-scc-to-user anyuid -z openwhisk-core
+oc adm policy add-scc-to-user privileged -z openwhisk-core
+oc adm policy add-scc-to-user anyuid -z owdev-init-sa
+oc adm policy add-scc-to-user privileged -z owdev-init-sa
+```
 
-####  IBM Cloud Standard cluster
+## Configuring OpenWhisk
 
-An IBM Cloud Standard cluster has full support for TLS
-including a wild-card certificate for subdomains
-and can be configured with additional annotations to
-fine tune ingress performance.
+You must use the KubernetesContainerFactory on OpenShift.
+
+### Red Hat OpenShift on IBM Cloud
+
+A Red Hat OpenShift on IBM Cloud cluster has full support for TLS
+including a wild-card certificate for subdomains and can be configured
+with additional annotations to fine tune ingress performance.
 
 First, determine the values for <domain> and <ibmtlssecret> for
 your cluster by running the command:
@@ -57,6 +74,11 @@ Ingress Secret:     <ibmtlssecret>
 ...
 ```
 
+The ingress secret is not automatically copied to new OpenShift
+projects. Before deploying OpenWhisk, you will need to copy the
+ingress secret (<ibmtlssecret> from the `openshift-ingress` namespace
+to the `openwhisk` namespace.
+
 As described in [IBM's ingress documentation](https://cloud.ibm.com/docs/containers/cs_ingress.html#ingress),
 to enable applications deployed in multiple namespaces to share the ingress resource,
 you should use a unique subdomain name for each namespace.  We suggest
@@ -64,8 +86,8 @@ a convention of using the namespace name as the subdomain name.  So if you
 are deploying openwhisk into the `openwhisk` namespace, use `openwhisk`
 as your subdomain (as shown below in the example `mycluster.yaml`).
 
-A template [mycluster.yaml](../deploy/ibm-public/mycluster-iks.yaml]
-for a standard deployment of OpenWhisk on IKS would be:
+A template [mycluster.yaml](../deploy/ibm-public/mycluster-roks.yaml]
+for a standard deployment of OpenWhisk on ROKS would be:
 ```yaml
 whisk:
   ingress:
@@ -91,61 +113,14 @@ whisk:
       nginx.ingress.kubernetes.io/proxy-body-size: 50m
       nginx.ingress.kubernetes.io/proxy-read-timeout: "75"
 
+k8s:
+  dns: dns-default.openshift-dns
+
 invoker:
   containerFactory:
     impl: kubernetes
-```
-
-The underlying container runtime used by IKS is containerd.
-Therefore, you cannot use the DockerContainerFactory on IKS and must
-use the KubernetesContainerFactory.
-
-####  IBM Cloud Lite cluster
-
-The only available ingress method for an IBM Cloud Lite cluster is to
-use a NodePort. Obtain the Public IP address of the sole worker node
-by using the command
-```shell
-ibmcloud cs workers <my-cluster>
-```
-Then define `mycluster.yaml` as
-```yaml
-whisk:
-  ingress:
-    type: NodePort
-    apiHostName: YOUR_WORKERS_PUBLIC_IP_ADDR
-    apiHostPort: 31001
-    useInternally: true
-
-nginx:
-  httpsNodePort: 31001
-
-# disable affinity
-affinity:
-  enabled: false
-toleration:
-  enabled: false
-invoker:
-  options: "-Dwhisk.kubernetes.user-pod-node-affinity.enabled=false"
-  # must use KCF as IKS uses containerd as its container runtime
-  containerFactory:
-    impl: "kubernetes"
-```
-
-## Hints and Tips
-
-On IBM Standard clusters, you can configure OpenWhisk to integrate
-with platform logging and monitoring services following the general
-instructions for enabling these services for pods deployed on
-Kubernetes.
+``
 
 ## Limitations
 
-Using an IBM Cloud Lite cluster is only appropriate for development
-and testing purposes.  It is not recommended for production
-deployments of OpenWhisk.
-
-When using an IBM Cloud Lite cluster, TLS termination will be handled
-by OpenWhisk's `nginx` service and will use self-signed certificates.
-You will need to invoke `wsk` with the `-i` command line argument to
-bypass certificate checking.
+No known limitations.

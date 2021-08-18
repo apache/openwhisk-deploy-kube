@@ -40,7 +40,7 @@ NOTE: setting the replicaCount to be greater than 1 for the following
 components is not currently supported:
 - apigateway and redis. Running only a single replica of these services is
   unlikely to be a significant scalability bottleneck.
-- couchdb. For production deployments of OpenWhisk on Kubernetes, we strongly recomend running
+- couchdb. For production deployments of OpenWhisk on Kubernetes, we strongly recommend running
   CouchDB externally to OpenWhisk as described below. An external CouchDB instance enables
   better management of the database and decouples its lifecycle from that of the OpenWhisk deployment.
 - The event providers: alarmprovider and kafkaprovider.
@@ -152,25 +152,28 @@ be scheduled.  If your Kubernetes cluster is properly configured to support
 including having a DefaultStorageClass admission controller and a
 designated default StorageClass, then this will all happen seamlessly.
 
-See [NFS Dynamis Storage Provisioning](./k8s-nfs-dynamic-storage.md) for one
+See [NFS Dynamic Storage Provisioning](./k8s-nfs-dynamic-storage.md) for one
 approach to provisioning dynamic storage if it's not already provisioned
 on your cluster.
 
 If your cluster is not thus configured and you want to use persistence,
-then you will need to add the following stanza to your mycluster.yaml.
+then you will need to add the following stanza to your `mycluster.yaml`.
+
 ```yaml
 k8s:
   persistence:
     hasDefaultStorageClass: false
     explicitStorageClass: <DESIRED_STORAGE_CLASS_NAME>
 ```
+
 If <DESIRED_STORAGE_CLASS_NAME> has a dynamic provisioner, deploying
 the Helm chart will automatically create the required PersistentVolumes.
 If <DESIRED_STORAGE_CLASS_NAME> does not have a dynamic provisioner,
 then you will need to manually create the required persistent volumes.
 
 Alternatively, you may also entirely disable the usage of persistence
-by adding the following stanza to your mycluster.yaml:
+by adding the following stanza to your `mycluster.yaml`:
+
 ```yaml
 k8s:
   persistence:

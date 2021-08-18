@@ -53,59 +53,39 @@ In a nutshell, open the Docker preferences window, switch to the
 allocated to Docker**. Then switch to the Kubernetes panel, and check
 the box to enable Kubernetes.
 
-### Using Git to Clone this Repository
-
-`git clone https://github.com/apache/openwhisk-deploy-kube.git`
-
 ### Configuring OpenWhisk
 
 You will be using a NodePort ingress to access OpenWhisk. Assuming
 `kubectl describe nodes | find "InternalIP"` returns 192.168.65.3 and
 port 31001 is available to be used on your host machine, a
-mycluster.yaml for a standard deployment of OpenWhisk would be:
+[mycluster.yaml](../deploy/docker-windows/mycluster.yaml) for a standard deployment of OpenWhisk would be:
 
 ```yaml
 whisk:
   ingress:
     type: NodePort
-    apiHostName: 192.168.65.3
+    apiHostName: localhost
     apiHostPort: 31001
+    useInternally: false
 
 nginx:
   httpsNodePort: 31001
+
+# A single node cluster; so disable affinity
+affinity:
+  enabled: false
+toleration:
+  enabled: false
+invoker:
+  options: "-Dwhisk.kubernetes.user-pod-node-affinity.enabled=false"
 ```
 
-### Using helm to install OpenWhisk
+## Hints and Tips
 
-Indicate the Kubernetes worker nodes that should be used to execute user
-containers by OpenWhisk's invokers. For a single node development cluster,
-simply run:
-
-`kubectl label nodes --all openwhisk-role=invoker`
-
-Make sure you created your
-`mycluster.yaml` file as described above, and run:
-
-```cmd
-cd openwhisk-deploy-kube
-helm install owdev ./helm/openwhisk -n openwhisk --create-namespace -f mycluster.yaml
-```
-
-You can use the command `helm status owdev -n openwhisk` to get a summary of the various
-Kubernetes artifacts that make up your OpenWhisk deployment. Once the
-`install-packages` Pod is in the Completed state, your OpenWhisk deployment
-is ready to be used.
-
-Tip: If you notice errors or pods stuck in the pending state (`init-couchdb`
+If you notice errors or pods stuck in the pending state (`init-couchdb`
 as an example), try running `kubectl get pvc --all-namespaces`. If you notice
 that claims are stuck in the Pending state, you may need to follow the
 workaround mentioned in this [Docker for Windows Github Issue](https://github.com/docker/for-win/issues/1758#issuecomment-376054370).
-
-You are now ready to set up the wsk cli. Further instructions can be
-[found here](https://github.com/apache/openwhisk-deploy-kube#https://github.com/apache/openwhisk-deploy-kube#configure-the-wsk-cli).
-Follow the Docker for Windows instructions.
-
-## Hints and Tips
 
 One nice feature of using Kubernetes in Docker, is that the
 containers being run in Kubernetes are also directly
@@ -130,11 +110,3 @@ deployments of OpenWhisk.
 TLS termination will be handled by OpenWhisk's `nginx` service and
 will use self-signed certificates. You will need to invoke `wsk` with
 the `-i` command line argument to bypass certificate checking.
-
-The docker network is not exposed to the host on Windows. However, the
-exposed ports for NodePort services are forwarded from localhost.
-Therefore you must use different host names to connect to OpenWhisk
-from outside the cluster (with the `wsk` cli) and from inside the
-cluster (in `mycluster.yaml`). Continuing the example from above,
-when setting the `--apihost` for the `wsk` cli, you would use
-`localhost:31001`.

@@ -1,3 +1,4 @@
+<!--
 #
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
@@ -14,18 +15,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+-->
 
-{{- if eq .Values.whisk.ingress.type "Standard" }}
-{{- if .Values.whisk.ingress.tls.createsecret }}
-apiVersion: v1
-kind: Secret
-metadata:
-  name: {{ .Values.whisk.ingress.tls.secretname | quote }}
-  labels:
-{{ include "openwhisk.label_boilerplate" . | indent 4 }}
-type: {{ .Values.whisk.ingress.tls.secrettype | quote }}
-data:
-  tls.crt: {{ .Values.whisk.ingress.tls.crt | b64enc }}
-  tls.key: {{ .Values.whisk.ingress.tls.key | b64enc }}
-{{- end}}
-{{- end }}
+# Technical Requirements for OpenShift
+
+The OpenShift cluster on which you are deploying OpenWhisk must meet
+the following requirements:
+* OpenShift version 4.5 or newer (these instructions were tested on 4.5).
+* The ability to create Ingresses to make a Kubernetes service
+  available outside of the cluster so you can actually use OpenWhisk.
+* Unless you disable persistence (see
+  [configurationChoices.md](configurationChoices.md)),
+  either your cluster must be configured to support [Dynamic Volume
+  Provision](https://kubernetes.io/docs/concepts/storage/dynamic-provisioning/)
+  and you must have a DefaultStorageClass admission controller enabled
+  or you must manually create any necessary PersistentVolumes when
+  deploying the Helm chart.

@@ -20,7 +20,7 @@ set -x
 
 HELM_VERSION=v3.2.4
 # When changing KIND_VERSION, you must also update the case statement of KIND_NODE_TAG in start-kind.sh
-KIND_VERSION=v0.10.0
+KIND_VERSION=v0.11.1
 KUBECTL_VERSION=v1.18.8
 WSK_CLI_VERSION=latest
 

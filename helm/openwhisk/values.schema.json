@@ -111,15 +111,16 @@
             "apiHostName": { "type": "string", "description": "The external hostname or IP address used to access the Ingress of your Kubernetes cluster" },
             "apiHostPort": { "type": "integer", "minimum": 0, "description": "The external port used to access the Ingress of your Kubernetes cluster" },
             "apiHostProto": { "type": "string", "enum": ["http", "https"], "description": "The protocol to be used to connect to the Ingress of your Kubernetes cluster" },
-            "type": { "type": "string", "enum": ["NodePort", "Standard", "LoadBalancer", "OpenShift"], "description": "The type of Ingress being deployed" },
+            "type": { "type": "string", "enum": ["NodePort", "Standard", "LoadBalancer"], "description": "The type of Ingress being deployed" },
             "annotations": { "type": "object", "description": "Annotations to add to Ingress resource. Specify as a list of key: value pairs" },
             "domain": { "type": "string", "description": "The Fully Qualified Host Name for the Ingress domain" },
+            "useInternally": { "type": "boolean", "description": "Should the external ingress be used for operations from inside the cluster" },
             "tls": {
               "type": "object",
               "properties": {
                 "enabled": { "type": "boolean" },
-                "secretenabled": { "type": "boolean" },
                 "createsecret": { "type": "boolean" },
+                "secretname": { "type": "string" },
                 "secrettype": { "type": "string" },
                 "crt": { "type": "string" },
                 "key": { "type": "string" }
@@ -139,8 +140,8 @@
         "limits": {
           "type": "object",
           "properties": {
-            "actionsInvokesPerminute": { "type": "number", "minimum": 0, "descrption": "The maximum number of action invocations per minute by a single namespace" },
-            "actionsInvokesConcurrent": { "type": "number", "minimum": 0, "descrption":  "The maximum number of concurrent action invocations by a single namespace" },
+            "actionsInvokesPerminute": { "type": "number", "minimum": 0, "description": "The maximum number of action invocations per minute by a single namespace" },
+            "actionsInvokesConcurrent": { "type": "number", "minimum": 0, "description":  "The maximum number of concurrent action invocations by a single namespace" },
             "triggersFiresPerminute": { "type": "number", "minimum": 0, "description": "The maximum triggers fired per minute for a single namespace" },
             "actionsSequenceMaxLength": { "type": "number", "minimum": 0, "description": "The maximum length of an action sequence" },
             "actions": {

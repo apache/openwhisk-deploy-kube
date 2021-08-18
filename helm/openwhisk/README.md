@@ -38,7 +38,7 @@ In its default configuration, this chart will create the following Kubernetes re
    * apigateway, controller, couchdb, kafka, nginx, redis, zookeeper
 * OpenWhisk control plane Pods:
    * Deployments: apigateway, couchdb, nginx, redis
-   * SatefulSets: controller, invoker, kafka, zookeeper
+   * StatefulSets: controller, invoker, kafka, zookeeper
 * Persistent Volume Claims
    * couchdb-pvc
    * kafka-pvc
@@ -56,7 +56,7 @@ The chart requires one or more Kubernetes worker nodes to be designated to be us
 
 ## Prerequisites
 
-* Kubernetes 1.14 - 1.18.*
+* Kubernetes 1.19+
 
 ### Image Policy Requirements
 

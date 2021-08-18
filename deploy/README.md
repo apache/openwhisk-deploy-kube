@@ -17,17 +17,6 @@
 #
 -->
 
-# Technical Requirements for OKD/OpenShift
+This directory contains scripts and configuration files for configuring
+various flavors of Kubernetes cluster providers.
 
-The OKD/OpenShift cluster on which you are deploying OpenWhisk must meet
-the following requirements:
-* OKD/OpenShift version 3.11.x
-* The ability to create routes to make a Kubernetes service
-  available outside of the cluster so you can actually use OpenWhisk.
-* Unless you disable persistence (see
-  [configurationChoices.md](configurationChoices.md)),
-  either your cluster must be configured to support [Dynamic Volume
-  Provision](https://kubernetes.io/docs/concepts/storage/dynamic-provisioning/)
-  and you must have a DefaultStorageClass admission controller enabled
-  or you must manually create any necessary PersistentVolumes when
-  deploying the Helm chart.

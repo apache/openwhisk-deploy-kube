@@ -15,17 +15,12 @@
 # limitations under the License.
 #
 
-{{- if eq .Values.whisk.ingress.type "Standard" }}
-{{- if .Values.whisk.ingress.tls.createsecret }}
-apiVersion: v1
-kind: Secret
-metadata:
-  name: {{ .Values.whisk.ingress.tls.secretname | quote }}
-  labels:
-{{ include "openwhisk.label_boilerplate" . | indent 4 }}
-type: {{ .Values.whisk.ingress.tls.secrettype | quote }}
-data:
-  tls.crt: {{ .Values.whisk.ingress.tls.crt | b64enc }}
-  tls.key: {{ .Values.whisk.ingress.tls.key | b64enc }}
-{{- end}}
-{{- end }}
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+- role: control-plane
+- role: worker
+  extraPortMappings:
+    - hostPort: 31001
+      containerPort: 31001
+- role: worker

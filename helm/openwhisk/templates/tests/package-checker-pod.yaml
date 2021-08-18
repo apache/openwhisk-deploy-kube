@@ -52,7 +52,7 @@ spec:
         valueFrom:
           configMapKeyRef:
             name: {{ .Release.Name }}-whisk.config
-            key: whisk_api_host_url
+            key: whisk_internal_api_host_url
 
       # Which of the providers was installed (and thus should be checked)?
       - name: "OW_INSTALL_ALARM_PROVIDER"

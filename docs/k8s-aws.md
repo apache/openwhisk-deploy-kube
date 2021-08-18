@@ -64,8 +64,10 @@ A typical output would be as shown below
     ]
 }
 ```
-Add the following to your mycluster.yaml, using your certificate's Arn
+
+Add the following to your `mycluster.yaml`, using your certificate's Arn
 instead of the example one:
+
 ```yaml
 whisk:
   ingress:
