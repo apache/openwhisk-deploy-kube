@@ -310,11 +310,6 @@ imagePullSecrets:
           mountPath: "/invoker-scripts/configureDNS.sh"
           subPath: "configureDNS.sh"
 {{- end }}
-{{- if ne .Values.docker.registry.name "" }}
-        - name: scripts-dir
-          mountPath: "/invoker-scripts/dockerLogin.sh"
-          subPath: "dockerLogin.sh"
-{{- end }}
 {{- end }}
 {{- end }}
 

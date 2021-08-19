@@ -89,9 +89,6 @@ spec:
           - /bin/bash
           - -c
           -
-{{- if ne .Values.docker.registry.name "" }}
-            . /invoker-scripts/dockerLogin.sh &&
-{{- end }}
 {{- if and (eq .Values.invoker.containerFactory.impl "docker") .Values.invoker.containerFactory.networkConfig.dns.inheritInvokerConfig }}
             . /invoker-scripts/configureDNS.sh &&
 {{- end }}
