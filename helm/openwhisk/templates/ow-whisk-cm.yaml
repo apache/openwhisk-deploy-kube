@@ -38,9 +38,9 @@ data:
   whisk_internal_api_host_nameAndPort: "{{ .Values.whisk.ingress.apiHostName }}:{{ .Values.whisk.ingress.apiHostPort }}"
   whisk_internal_api_host_url: "{{ .Values.whisk.ingress.apiHostProto }}://{{ .Values.whisk.ingress.apiHostName }}:{{ .Values.whisk.ingress.apiHostPort }}"
 {{- else }}
-  whisk_internal_api_host_proto: "http"
-  whisk_internal_api_host_port: {{ .Values.nginx.httpPort | quote }}
+  whisk_internal_api_host_proto: "https"
+  whisk_internal_api_host_port: {{ .Values.nginx.httpsPort | quote }}
   whisk_internal_api_host_name: "{{ .Release.Name }}-nginx.{{ .Release.Namespace }}.svc.{{ .Values.k8s.domain }}"
-  whisk_internal_api_host_nameAndPort: "{{ .Release.Name }}-nginx.{{ .Release.Namespace }}.svc.{{ .Values.k8s.domain }}:{{ .Values.nginx.httpPort }}"
-  whisk_internal_api_host_url: "http://{{ .Release.Name }}-nginx.{{ .Release.Namespace }}.svc.{{ .Values.k8s.domain }}:{{ .Values.nginx.httpPort }}"
+  whisk_internal_api_host_nameAndPort: "{{ .Release.Name }}-nginx.{{ .Release.Namespace }}.svc.{{ .Values.k8s.domain }}:{{ .Values.nginx.httpsPort }}"
+  whisk_internal_api_host_url: "https://{{ .Release.Name }}-nginx.{{ .Release.Namespace }}.svc.{{ .Values.k8s.domain }}:{{ .Values.nginx.httpsPort }}"
 {{- end }}
