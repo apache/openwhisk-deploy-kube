@@ -128,15 +128,15 @@ whisk:
     includeSystemTests: false
   versions:
     openwhisk:
-      buildDate: "2020-10-07-10:25:41Z"
-      buildNo: "20201007a"
-      gitTag: "ed3f76e38d89468d11e862ee0539e74f02ac7f8e"
+      buildDate: "2021-08-17-05:51:11Z"
+      buildNo: "20210817a"
+      gitTag: "3e6138d088fbd502a69c31314ad7c0089c5f5283"
     openwhiskCli:
       tag: "1.1.0"
     openwhiskCatalog:
       gitTag: "1.0.0"
     openwhiskPackageAlarms:
-      gitTag: "2.2.0"
+      gitTag: "2.3.0"
     openwhiskPackageKafka:
       gitTag: "2.1.0"
 
@@ -151,7 +151,7 @@ k8s:
 # Images used to run auxillary tasks/jobs
 utility:
   imageName: "openwhisk/ow-utils"
-  imageTag: "ed3f76e"
+  imageTag: "3e6138d"
   imagePullPolicy: "IfNotPresent"
 
 # Docker registry
@@ -232,7 +232,7 @@ activationStoreBackend: "CouchDB"
 # Nginx configurations
 nginx:
   imageName: "nginx"
-  imageTag: "1.19"
+  imageTag: "1.21.1"
   imagePullPolicy: "IfNotPresent"
   replicaCount: 1
   restartPolicy: "Always"
@@ -249,7 +249,7 @@ nginx:
 # Controller configurations
 controller:
   imageName: "openwhisk/controller"
-  imageTag: "ed3f76e"
+  imageTag: "3e6138d"
   imagePullPolicy: "IfNotPresent"
   replicaCount: 1
   restartPolicy: "Always"
@@ -262,7 +262,7 @@ controller:
 # Invoker configurations
 invoker:
   imageName: "openwhisk/invoker"
-  imageTag: "ed3f76e"
+  imageTag: "3e6138d"
   imagePullPolicy: "IfNotPresent"
   restartPolicy: "Always"
   runtimeDeleteTimeout: "30 seconds"
@@ -317,7 +317,7 @@ redis:
 # User-events configuration
 user_events:
   imageName: "openwhisk/user-events"
-  imageTag: "ed3f76e"
+  imageTag: "3e6138d"
   imagePullPolicy: "IfNotPresent"
   replicaCount: 1
   restartPolicy: "Always"
@@ -378,7 +378,7 @@ providers:
   alarm:
     enabled: true
     imageName: "openwhisk/alarmprovider"
-    imageTag: "2.2.0"
+    imageTag: "2.3.0"
     imagePullPolicy: "IfNotPresent"
     # NOTE: replicaCount > 1 doesn't work because of the PVC
     replicaCount: 1
@@ -431,9 +431,8 @@ toleration:
 # timeoutSeconds - Probe will timeouts after defined seconds, defaults to 1 second,
 #                  minimum value is 1
 # for more information please refer - https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
-# Note - for now added probes settings for zookeeper and controller only.
-#        in future all components probes timing settings should be
-#        configured here if any.
+# Note - for now added probes settings for zookeeper, kafka, and controller only.
+#        in future all components probes timing settings should be configured here.
 
 probes:
   zookeeper:
