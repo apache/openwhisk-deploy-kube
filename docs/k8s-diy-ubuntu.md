@@ -100,7 +100,7 @@ Now you have a running cluster with a master node and one or more worker nodes.
 
 Before deploying OpenWhisk, you have to set up [Dynamic Volume
 Provision](https://kubernetes.io/docs/concepts/storage/dynamic-provisioning/), as the [technical
-requirements](docs/k8s-technical-requirements.md) specify. For example, you can dynamically provision NFS persistent volumes, setting up an nfs server, a client provisioner and a storage class. Now you're ready to deploy openwhisk with [Helm](../README.md#deploy-with-helm).
+requirements](k8s-technical-requirements.md) specify. For example, you can dynamically provision NFS persistent volumes, setting up an nfs server, a client provisioner and a storage class. Now you're ready to deploy openwhisk with [Helm](../README.md#deploy-with-helm).
 
 #### Weave Network Plugin Troubleshooting
 ensure that weave has launched by running `kubectl get pods -A` and looking for a pod named similarly to `weave-net-#####` - if the status is `Running` you're good. if you see `CrashLoopBackOff` perform the following steps:
@@ -110,3 +110,4 @@ ensure that weave has launched by running `kubectl get pods -A` and looking for 
 4. Choose a new [private network](https://en.wikipedia.org/wiki/Private_network) and init the cluster like this: `sudo kubeadm init --pod-network-cidr=192.168.128.0/17 --apiserver-advertise-address=<IP ADDRESS>`
 5. tell the weave plugin to use these new values as listed in the [configuration options](https://www.weave.works/docs/net/latest/kubernetes/kube-addon/#-changing-configuration-options) `kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')&env.IPALLOC_RANGE=192.168.128.0/17"`
 6. it should now show as `Running` under status
+
