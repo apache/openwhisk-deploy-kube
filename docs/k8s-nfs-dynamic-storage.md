@@ -26,7 +26,7 @@ You will need an already-provisioned NFS server supporting NFS v4 or better, pre
 ### Set up the nfs server
 
 #### Helm chart
-You may wish to consider the [nfs-server-provisioner](https://github.com/helm/charts/tree/master/stable/nfs-server-provisioner) Helm Chart to deploy a nfs server in your k8s cluster. If you experience any problems or you're just interested in setting up your own nfs server, try to set up manually with the following section.
+You may wish to consider the [nfs-server-provisioner](https://github.com/ckotzbauer/helm-charts/tree/main/charts/nfs-client-provisioner) Helm Chart to deploy a nfs server in your k8s cluster. If you experience any problems or you're just interested in setting up your own nfs server, try to set up manually with the following section.
 
 #### Manually
 Assuming you're using a linux machine, first install the nfs server related packages on the nfs server host.
