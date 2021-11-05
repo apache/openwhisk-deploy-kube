@@ -44,8 +44,8 @@ the box to enable Kubernetes. It is recommended that you use the
 `kubectl` cli that is installed by Docker in `/usr/local/bin`, so
 please make sure it is appears in your path before any `kubectl` you
 might also have installed on your machine.  Finally, pick the
-`docker-for-desktop` config for `kubectl` by executing the command
-`kubectl config use-context docker-for-desktop`.
+`docker-desktop` config for `kubectl` by executing the command
+`kubectl config use-context docker-desktop`.
 
 ### Configuring OpenWhisk
 
