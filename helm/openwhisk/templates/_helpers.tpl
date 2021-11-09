@@ -335,14 +335,14 @@ imagePullSecrets:
 {{/* nginx cert */}}
 {{- define "openwhisk.nginx_cert" -}}
 {{- if .Values.nginx.certificate.external }}
-{{ .Files.Get .Values.nginx.certificate.cert_file }}
+{{ .Values.nginx.certificate.cert_file | .Files.Get }}
 {{- end -}}
 {{- end -}}
 
 {{/* nginx key */}}
 {{- define "openwhisk.nginx_key" -}}
 {{- if .Values.nginx.certificate.external }}
-{{ .Files.Get .Values.nginx.certificate.key_file }}
+{{ .Values.nginx.certificate.key_file | .Files.Get }}
 {{- end -}}
 {{- end -}}
 
