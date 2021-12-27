@@ -44,7 +44,7 @@ On Linux, make sure your userid is in the `docker` group on the host
 machine.  This will enable you to run `kind` without
 requiring `sudo` to gain `root` privileges.
 
-We've provided a [script](./deploy/kind/start-kind.sh)
+We've provided a [script](../deploy/kind/start-kind.sh)
 that you can use to bring up a kind cluster in a
 reasonable configuration for OpenWhisk. The script
 assumes that port 31001 is available on your machine
