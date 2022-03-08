@@ -35,6 +35,10 @@ spec:
 {{ include "openwhisk.label_boilerplate" . | indent 8 }}
     spec:
       restartPolicy: {{ .Values.providers.kafka.restartPolicy }}
+{{- if .Values.affinity.enabled }}
+      affinity:
+{{ include "openwhisk.affinity.provider" . | indent 8 }}
+{{- end }}
       initContainers:
       # Wait for a controller to be up (which implies couchdb and kafka are up as well).
 {{ include "openwhisk.readiness.waitForController" . | indent 6 }}

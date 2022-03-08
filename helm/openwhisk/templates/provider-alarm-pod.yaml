@@ -47,6 +47,12 @@ spec:
 {{- else }}
           emptyDir: {}
 {{- end }}
+
+{{- if .Values.affinity.enabled }}
+      affinity:
+{{ include "openwhisk.affinity.provider" . | indent 8 }}
+{{- end }}
+
       initContainers:
       # Wait for a controller to be up (which implies couchdb is up as well).
 {{ include "openwhisk.readiness.waitForController" . | indent 6 }}
