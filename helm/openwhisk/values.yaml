@@ -128,9 +128,9 @@ whisk:
     includeSystemTests: false
   versions:
     openwhisk:
-      buildDate: "2021-08-17-05:51:11Z"
-      buildNo: "20210817a"
-      gitTag: "3e6138d088fbd502a69c31314ad7c0089c5f5283"
+      buildDate: "2022-06-23-06:18:00Z"
+      buildNo: "20220623a"
+      gitTag: "c5970a657a3070e9964cb14715b9df31819d3b75"
     openwhiskCli:
       tag: "1.1.0"
     openwhiskCatalog:
@@ -151,7 +151,7 @@ k8s:
 # Images used to run auxillary tasks/jobs
 utility:
   imageName: "openwhisk/ow-utils"
-  imageTag: "3e6138d"
+  imageTag: "c5970a6"
   imagePullPolicy: "IfNotPresent"
 
 # Docker registry
@@ -249,7 +249,7 @@ nginx:
 # Controller configurations
 controller:
   imageName: "openwhisk/controller"
-  imageTag: "3e6138d"
+  imageTag: "c5970a6"
   imagePullPolicy: "IfNotPresent"
   replicaCount: 1
   restartPolicy: "Always"
@@ -262,7 +262,7 @@ controller:
 # Invoker configurations
 invoker:
   imageName: "openwhisk/invoker"
-  imageTag: "3e6138d"
+  imageTag: "c5970a6"
   imagePullPolicy: "IfNotPresent"
   restartPolicy: "Always"
   runtimeDeleteTimeout: "30 seconds"
@@ -317,7 +317,7 @@ redis:
 # User-events configuration
 user_events:
   imageName: "openwhisk/user-events"
-  imageTag: "3e6138d"
+  imageTag: "c5970a6"
   imagePullPolicy: "IfNotPresent"
   replicaCount: 1
   restartPolicy: "Always"
