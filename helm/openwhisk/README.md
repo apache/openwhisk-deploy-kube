@@ -37,7 +37,7 @@ In its default configuration, this chart will create the following Kubernetes re
 * Internal Services
    * apigateway, controller, couchdb, kafka, nginx, redis, zookeeper
 * OpenWhisk control plane Pods:
-   * Deployments: apigateway, couchdb, nginx, redis
+   * Deployments: apigateway, couchdb, nginx, redis, alarmprovider
    * StatefulSets: controller, invoker, kafka, zookeeper
 * Persistent Volume Claims
    * alarmprovider-pvc
