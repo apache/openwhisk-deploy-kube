@@ -73,6 +73,7 @@ This chart requires 6 Persistent Volumes to be created to avoid loss of data.  O
 * When the chart is deployed, the value `k8s.persistence.enabled` is set to false to disable usage of Persistent Volumes (for development and test activities).
 * The Kubernetes cluster supports Dynamic Volume Provisioning and has a default StorageClass defined with an associated provisioner.
 * The Kubernetes cluster supports Dynamic Volume Provisioning and when the chart is deployed, the value `k8s.persistence.hasDefaultStorageClass` is set to `false` and `k8s.persistence.explicitStorageClass` is set to a StorageClass which has an associated provisioner.
+* The Kubernetes cluster does not support Dynamic Volume Provisioning and a default StorageClass with an associated provisioner is defined. The PersistantVolumes were created statically. Look at the default values for [persistence.size](https://github.com/apache/openwhisk-deploy-kube/blob/master/helm/openwhisk/values.yaml) to avoid PersistantVolumeClaims to be stuck.
 
 ### PodSecurityPolicy Requirements
 
