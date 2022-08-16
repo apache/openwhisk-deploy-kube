@@ -2,26 +2,12 @@
     "runtimes": {
         "nodejs": [
             {
-                "kind": "nodejs:12",
-                "default": false,
-                "image": {
-                    "prefix": "openwhisk",
-                    "name": "action-nodejs-v12",
-                    "tag": "1.19.0"
-                },
-                "deprecated": false,
-                "attached": {
-                    "attachmentName": "codefile",
-                    "attachmentType": "text/plain"
-                }
-            },
-            {
                 "kind": "nodejs:14",
                 "default": true,
                 "image": {
                     "prefix": "openwhisk",
                     "name": "action-nodejs-v14",
-                    "tag": "1.19.0"
+                    "tag": "1.20.0"
                 },
                 "deprecated": false,
                 "attached": {
@@ -41,7 +27,21 @@
                         }
                     }
                 ]
-            }
+            },
+            {
+                "kind": "nodejs:16",
+                "default": false,
+                "image": {
+                    "prefix": "openwhisk",
+                    "name": "action-nodejs-v16",
+                    "tag": "1.20.0"
+                },
+                "deprecated": false,
+                "attached": {
+                    "attachmentName": "codefile",
+                    "attachmentType": "text/plain"
+                }
+            },
         ],
         "python": [
             {
@@ -196,7 +196,7 @@
         ],
         "go": [
             {
-                "kind": "go:1.15",
+                "kind": "go:1.17",
                 "default": true,
                 "deprecated": false,
                 "attached": {
@@ -205,8 +205,8 @@
                 },
                 "image": {
                     "prefix": "openwhisk",
-                    "name": "action-golang-v1.15",
-                    "tag": "1.18.0"
+                    "name": "action-golang-v1.17",
+                    "tag": "1.20.0"
                 }
             }
         ],
