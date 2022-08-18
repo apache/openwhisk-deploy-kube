@@ -52,7 +52,7 @@ app: {{ template "openwhisk.fullname" . }}
 {{- end -}}
 
 {{- define "openwhisk.db_authentication" -}}
-{{ .Values.db.auth.username }}:{{ .Values.db.auth.password }}
+{{ .Values.db.auth.admin.username }}:{{ .Values.db.auth.admin.password }}
 {{- end -}}
 
 {{- define "openwhisk.elasticsearch_authentication" -}}
@@ -114,16 +114,6 @@ app: {{ template "openwhisk.fullname" . }}
 
 {{/* Environment variables required for accessing CouchDB from a pod */}}
 {{- define "openwhisk.dbEnvVars" -}}
-- name: "CONFIG_whisk_couchdb_username"
-  valueFrom:
-    secretKeyRef:
-      name: {{ .Release.Name }}-db.auth
-      key: db_username
-- name: "CONFIG_whisk_couchdb_password"
-  valueFrom:
-    secretKeyRef:
-      name: {{ .Release.Name }}-db.auth
-      key: db_password
 - name: "CONFIG_whisk_couchdb_port"
   valueFrom:
     configMapKeyRef:

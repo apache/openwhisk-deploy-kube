@@ -151,6 +151,16 @@ spec:
           value: "{{ include "openwhisk.kafka_connect" . }}"
 {{ include "openwhisk.kafkaConfigEnvVars" . | indent 8 }}
 
+        - name: "CONFIG_whisk_couchdb_username"
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-db.auth
+              key: db_controller_username
+        - name: "CONFIG_whisk_couchdb_password"
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-db.auth
+              key: db_controller_password
         # properties for DB connection
 {{ include "openwhisk.dbEnvVars" . | indent 8 }}
 

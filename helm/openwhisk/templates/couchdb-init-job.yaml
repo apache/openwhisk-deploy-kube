@@ -83,6 +83,26 @@ spec:
             secretKeyRef:
               name: {{ .Release.Name }}-db.auth
               key: db_password
+        - name: "COUCHDB_CONTROLLER_USERNAME"
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-db.auth
+              key: db_controller_username
+        - name: "COUCHDB_CONTROLLER_PASSWORD"
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-db.auth
+              key: db_controller_password
+        - name: "COUCHDB_INVOKER_USERNAME"
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-db.auth
+              key: db_invoker_username
+        - name: "COUCHDB_INVOKER_PASSWORD"
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-db.auth
+              key: db_invoker_password
         - name: "NODENAME"
           value: "couchdb0"
 
