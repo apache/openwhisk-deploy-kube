@@ -94,7 +94,7 @@ OpenWhisk apihost property to be set to localhost:31001
 ## Hints and Tips
 
 If you are working on the core OpenWhisk system and want
-to use a locally built controller, invoker, or scheduler image 
+to use a locally built controller, invoker, or scheduler image
 to test your changes, you need to push the image to the docker image
 repository inside the `kind` cluster.
 
