@@ -45,6 +45,16 @@ components is not currently supported:
   better management of the database and decouples its lifecycle from that of the OpenWhisk deployment.
 - The event providers: alarmprovider and kafkaprovider.
 
+### Openwhisk Scheduler
+
+By default, the scheduler is enabled. To disable the scheduler, add the following
+to your `mycluster.yaml`
+
+```yaml
+scheduler:
+  enable: false
+```
+
 ### Using an external database
 
 You may want to use an external CouchDB or Cloudant instance instead
@@ -179,6 +189,8 @@ k8s:
   persistence:
     enabled: false
 ```
+
+Currently, etcd persistence is not supported.
 
 ### Selectively Deploying Event Providers
 

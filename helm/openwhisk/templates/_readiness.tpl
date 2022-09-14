@@ -57,6 +57,17 @@
   command: ["sh", "-c", "result=1; until [ $result -eq 0 ]; do echo 'Checking controller readiness'; wget -T 5 --spider $READINESS_URL; result=$?; sleep 1; done; echo 'Success: controller is ready'"]
 {{- end -}}
 
+{{/* Init container that waits for scheduler to be ready */}}
+{{- define "openwhisk.readiness.waitForScheduler" -}}
+- name: "wait-for-scheduler"
+  image: "{{- .Values.docker.registry.name -}}{{- .Values.busybox.imageName -}}:{{- .Values.busybox.imageTag -}}"
+  imagePullPolicy: "IfNotPresent"
+  env:
+  - name: "READINESS_URL"
+    value: http://{{ include "openwhisk.scheduler_host" . }}:{{ .Values.scheduler.port }}/ping
+  command: ["sh", "-c", "result=1; until [ $result -eq 0 ]; do echo 'Checking scheduler readiness'; wget -T 5 --spider $READINESS_URL; result=$?; sleep 1; done; echo 'Success: scheduler is ready'"]
+{{- end -}}
+
 {{/* Init container that waits for at least 1 healthy invoker */}}
 {{- define "openwhisk.readiness.waitForHealthyInvoker" -}}
 - name: "wait-for-healthy-invoker"

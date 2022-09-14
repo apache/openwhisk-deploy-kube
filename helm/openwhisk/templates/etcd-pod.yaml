@@ -1,0 +1,120 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+{{ if not .Values.etcd.external }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-etcd
+  labels:
+    name: {{ .Release.Name }}-etcd
+{{ include "openwhisk.label_boilerplate" . | indent 4 }}
+spec:
+  replicas: {{ .Values.etcd.replicaCount }}
+  selector:
+    matchLabels:
+      name: {{ .Release.Name }}-etcd
+  {{- if .Values.k8s.persistence.enabled }}
+  strategy:
+    type: "Recreate"
+  {{- end }}
+  template:
+    metadata:
+      labels:
+        name: {{ .Release.Name }}-etcd
+{{ include "openwhisk.label_boilerplate" . | indent 8 }}
+    spec:
+      restartPolicy: {{ .Values.etcd.restartPolicy }}
+
+      {{- if .Values.affinity.enabled }}
+      affinity:
+{{ include "openwhisk.affinity.core" . | indent 8 }}
+{{ include "openwhisk.affinity.selfAntiAffinity" ( printf "%s-etcd" .Release.Name | quote ) | indent 8 }}
+      {{- end }}
+
+      {{- if .Values.toleration.enabled }}
+      tolerations:
+{{ include "openwhisk.toleration.core" . | indent 8 }}
+      {{- end }}
+
+{{- if .Values.k8s.persistence.enabled }}
+      volumes:
+      - name: etcd-data
+        persistentVolumeClaim:
+          claimName: {{ .Release.Name }}-etcd-pvc
+{{- end }}
+
+{{- if .Values.k8s.persistence.enabled }}
+      initContainers:
+      - name: etcd-init
+        image: "{{- .Values.docker.registry.name -}}{{- .Values.busybox.imageName -}}:{{- .Values.busybox.imageTag -}}"
+        command:
+          - chown
+          - -v
+          - -R
+          - 999:999
+          - /data
+        volumeMounts:
+        - mountPath: /data
+          name: etcd-data
+          readOnly: false
+{{- end }}
+{{ include "openwhisk.docker.imagePullSecrets" . | indent 6 }}
+      # TODO: current command will always restart from scratch.
+      containers:
+        - name: etcd
+          image: "{{- .Values.docker.registry.name -}}{{- .Values.etcd.imageName -}}:{{- .Values.etcd.imageTag -}}"
+          command:
+            - /usr/local/bin/etcd
+            - --data-dir=/data
+            - --name
+            - etcd0
+            - --initial-advertise-peer-urls
+            - http://127.0.0.1:2480
+            - --advertise-client-urls
+            - http://0.0.0.0:2379
+            - --listen-peer-urls
+            - http://127.0.0.1:2480
+            - --listen-client-urls
+            - http://0.0.0.0:2379
+            - --initial-cluster
+            - etcd0=http://127.0.0.1:2480
+            - --initial-cluster-state
+            - new
+            - --initial-cluster-token
+            - openwhisk-etcd-token
+            - --quota-backend-bytes
+            - "0"
+            - --snapshot-count
+            - "100000"
+            - --auto-compaction-retention
+            - "1"
+            - --auto-compaction-mode
+            - periodic
+            - --log-level
+            - info
+          imagePullPolicy: {{ .Values.etcd.imagePullPolicy | quote }}
+{{- if .Values.k8s.persistence.enabled }}
+          volumeMounts:
+          - mountPath: /data
+            name: etcd-data
+            readOnly: false
+{{- end }}
+          ports:
+          - name: etcd
+            containerPort: {{ .Values.etcd.port }}
+{{ end }}

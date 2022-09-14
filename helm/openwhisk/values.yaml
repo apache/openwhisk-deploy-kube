@@ -120,9 +120,15 @@ whisk:
         segmentBytes: ""
         retentionBytes: ""
         retentionMs: ""
+      scheduler:
+        segmentBytes: ""
+        retentionBytes: ""
+        retentionMs: ""
   containerPool:
     userMemory: "2048m"
   runtimes: "runtimes.json"
+  durationChecker:
+    timeWindow: "1 d"
   testing:
     includeTests: true
     includeSystemTests: false
@@ -151,7 +157,7 @@ k8s:
 # Images used to run auxillary tasks/jobs
 utility:
   imageName: "openwhisk/ow-utils"
-  imageTag: "c5970a6"
+  imageTag: "a1639f0"
   imagePullPolicy: "IfNotPresent"
 
 # Docker registry
@@ -249,7 +255,7 @@ nginx:
 # Controller configurations
 controller:
   imageName: "openwhisk/controller"
-  imageTag: "c5970a6"
+  imageTag: "a1639f0"
   imagePullPolicy: "IfNotPresent"
   replicaCount: 1
   restartPolicy: "Always"
@@ -259,10 +265,59 @@ controller:
   jvmOptions: ""
   loglevel: "INFO"
 
+# Scheduler configurations
+scheduler:
+  enable: true
+  imageName: "openwhisk/scheduler"
+  imageTag: "a1639f0"
+  imagePullPolicy: "IfNotPresent"
+  replicaCount: 1
+  restartPolicy: "Always"
+  port: 8080
+  rpcPort: 13001
+  options: ""
+  jvmHeapMB: "1024"
+  jvmOptions: ""
+  loglevel: "INFO"
+  protocol: "http"
+  maxPeek: 128
+  # Sometimes the kubernetes client takes a long time for pod creation
+  inProgressJobRetention: "20 seconds"
+  blackboxMultiple: 15
+  dataManagementService:
+    retryInterval: "1 second"
+  queueManager:
+    maxSchedulingTime: "20 seconds"
+    maxRetriesToGetQueue: "13"
+  queue:
+    idleGrace: "20 seconds"
+    stopGrace: "20 seconds"
+    flushGrace: "60 seconds"
+    gracefulShutdownTimeout: "5 seconds"
+    maxRetentionSize: 10000
+    maxRetentionMs: 60000
+    throttlingFraction: 0.9
+    durationBufferSize: 10
+
+# etcd (used by scheduler and controller if scheduler is enabled)
+etcd:
+  external: false
+  imageName: "quay.io/coreos/etcd"
+  imageTag: "v3.4.0"
+  imagePullPolicy: "IfNotPresent"
+  # NOTE: setting replicaCount > 1 will not work; need to add etcd cluster configuration
+  replicaCount: 1
+  restartPolicy: "Always"
+  port: 2379
+  lease_timeout: 1
+  pool_threads: 10
+  persistence:
+    size: 256Mi
+
 # Invoker configurations
 invoker:
   imageName: "openwhisk/invoker"
-  imageTag: "c5970a6"
+  imageTag: "a1639f0"
   imagePullPolicy: "IfNotPresent"
   restartPolicy: "Always"
   runtimeDeleteTimeout: "30 seconds"
@@ -317,7 +372,7 @@ redis:
 # User-events configuration
 user_events:
   imageName: "openwhisk/user-events"
-  imageTag: "c5970a6"
+  imageTag: "a1639f0"
   imagePullPolicy: "IfNotPresent"
   replicaCount: 1
   restartPolicy: "Always"
@@ -454,6 +509,15 @@ probes:
       periodSeconds: 10
       timeoutSeconds: 5
   controller:
+    livenessProbe:
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      timeoutSeconds: 1
+    readinessProbe:
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      timeoutSeconds: 1
+  scheduler:
     livenessProbe:
       initialDelaySeconds: 10
       periodSeconds: 10

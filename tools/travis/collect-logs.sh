@@ -32,6 +32,7 @@ kubectl -n openwhisk logs -lname=ow4travis-couchdb >& logs/couchdb.log
 kubectl -n openwhisk logs -lname=ow4travis-zookeeper >& logs/zookeeper.log
 kubectl -n openwhisk logs -lname=ow4travis-kafka >& logs/kafka.log
 kubectl -n openwhisk logs -lname=ow4travis-controller >& logs/controller.log
+kubectl -n openwhisk logs -lname=ow4travis-scheduler >& logs/scheduler.log
 kubectl -n openwhisk logs -lname=ow4travis-invoker -c docker-pull-runtimes >& logs/invoker-docker-pull.log
 kubectl -n openwhisk logs -lname=ow4travis-invoker -c invoker >& logs/invoker-invoker.log
 kubectl -n openwhisk logs -lname=ow4travis-nginx >& logs/nginx.log

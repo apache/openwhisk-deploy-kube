@@ -150,8 +150,7 @@
                 "time": { "$ref": "#/definitions/actionLimitSpecString" },
                 "memory": { "$ref": "#/definitions/actionLimitSpecString" },
                 "concurrency": { "$ref": "#/definitions/actionLimitSpecInteger" },
-                "log": { "$ref": "#/definitions/actionLimitSpecString" },
-                "time": { "$ref": "#/definitions/actionLimitSpecString" }
+                "log": { "$ref": "#/definitions/actionLimitSpecString" }
               }
             },
             "activation": {
@@ -186,7 +185,8 @@
               "completed": { "$ref": "#/definitions/kafkaTopicConfig" },
               "events": { "$ref": "#/definitions/kafkaTopicConfig" },
               "health": { "$ref": "#/definitions/kafkaTopicConfig" },
-              "invoker": { "$ref": "#/definitions/kafkaTopicConfig" }
+              "invoker": { "$ref": "#/definitions/kafkaTopicConfig" },
+              "scheduler": { "$ref": "#/definitions/kafkaTopicConfig" }
             }
           }
         }
@@ -198,6 +198,10 @@
         }
       },
       "runtimes": { "type": "string" },
+      "durationChecker": {
+        "type": "object",
+	"timeWindow": { "type": "string" }
+      },
       "testing": {
         "type": "object",
         "properties": {
@@ -368,6 +372,57 @@
       ]
     },
 
+    "scheduler": {
+      "allOf": [
+        { "$ref": "#/definitions/podspec" },
+        { "properties": { "port": { "type": "integer", "minimum": 0 } }, "required": ["port"] },
+        { "properties": { "rpcPort": { "type": "integer", "minimum": 0 } }, "required": ["rpcPort"] },
+	{ "properties": {
+          "options": { "type": "string" },
+          "jvmHeapMB": { "type": "string" },
+          "jvmOptions": { "type": "string" },
+	  "logLevel": { "type": "string" },
+          "protocol": { "type": "string" },
+          "maxPeek": { "type": "integer", "minimum": 0 },
+          "inProgressJobRetention": { "type": "string" },
+          "blackboxMultiple": { "type": "integer" },
+          "dataManagementService": { "retryInterval": { "type": "string" } },
+          "queue": {
+            "idleGrace": { "type": "string" },
+            "stopGrace": { "type": "string" },
+            "flushGrace": { "type": "string" },
+            "gracefulShutdownTimeout": { "type": "string" },
+            "maxRetentionSize": { "type": "integer", "minimum": 0 },
+            "maxRetentionMs": { "type": "integer", "minimum": 0 },
+            "throttlingFraction": { "type": "number", "minimum": 0, "maximum": 1.0 },
+            "durationBufferSize": { "type": "integer", "minimum": 0 } },
+          "queueManager": {
+            "maxSchedulingTime": { "type": "string" },
+            "maxRetriesToGetQueue": { "type": "integer", "minimum": 0 } }
+        },
+        "required": ["jvmHeapMB"]
+        }
+      ]
+    },
+
+    "etcd": {
+      "type": "object",
+      "properties": { "external": { "type": "boolean" } },
+      "required": ["external"],
+      "if": { "properties": { "external": { "const": false } } },
+      "then": {
+        "allOf": [
+          { "$ref": "#/definitions/podspec" },
+          { "properties": { "port": { "type": "integer", "minimum": 0 } }, "required": ["port"] },
+          { "properties": { "replicaCount": { "const": 1 } } },
+          { "properties": { "lease_timeout": { "type": "integer" } } },
+          { "properties": { "pool_threads": { "type": "integer", "minimum": 1 } } },
+          { "properties": { "persistence": { "size": { "type": "string" } } } },
+          { "$ref": "#/definitions/optionalExternalHostCheck" }
+        ]
+      }
+    },
+
     "invoker": {
       "allOf": [
         { "$ref": "#/definitions/daemonset" },
@@ -514,7 +569,9 @@
       "type": "object",
       "properties": {
         "zookeeper": { "$ref": "#/definitions/standardPodProbes" },
-        "controller": { "$ref": "#/definitions/standardPodProbes" }
+        "kafka": { "$ref": "#/definitions/standardPodProbes" },
+        "controller": { "$ref": "#/definitions/standardPodProbes" },
+        "scheduler": { "$ref": "#/definitions/standardPodProbes" }
       }
     }
   },

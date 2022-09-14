@@ -15,40 +15,41 @@
 # limitations under the License.
 #
 
+{{- if .Values.scheduler.enable }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ .Release.Name }}-controller
+  name: {{ .Release.Name }}-scheduler
   labels:
-    name: {{ .Release.Name }}-controller
+    name: {{ .Release.Name }}-scheduler
 {{ include "openwhisk.label_boilerplate" . | indent 4 }}
 spec:
-  serviceName: {{ .Release.Name }}-controller
+  serviceName: {{ .Release.Name }}-scheduler
   podManagementPolicy: "Parallel"
-  replicas: {{ .Values.controller.replicaCount }}
+  replicas: {{ .Values.scheduler.replicaCount }}
   selector:
     matchLabels:
-      name: {{ .Release.Name }}-controller
+      name: {{ .Release.Name }}-scheduler
   template:
     metadata:
       labels:
-        name: {{ .Release.Name }}-controller
+        name: {{ .Release.Name }}-scheduler
 {{ include "openwhisk.label_boilerplate" . | indent 8 }}
 
       {{- if .Values.metrics.prometheusEnabled }}
       annotations:
         prometheus.io/scrape: 'true'
-        prometheus.io/port:   '{{ .Values.controller.port }}'
+        prometheus.io/port:   '{{ .Values.scheduler.port }}'
       {{- end }}
 
     spec:
       serviceAccountName: {{ .Release.Name }}-core
-      restartPolicy: {{ .Values.controller.restartPolicy }}
+      restartPolicy: {{ .Values.scheduler.restartPolicy }}
 
       {{- if .Values.affinity.enabled }}
       affinity:
 {{ include "openwhisk.affinity.core" . | indent 8 }}
-{{ include "openwhisk.affinity.selfAntiAffinity" ( printf "%s-controller" .Release.Name ) | indent 8 }}
+{{ include "openwhisk.affinity.selfAntiAffinity" ( printf "%s-scheduler" .Release.Name ) | indent 8 }}
       {{- end }}
 
       {{- if .Values.toleration.enabled }}
@@ -57,68 +58,57 @@ spec:
       {{- end }}
 
       initContainers:
-{{- if not .Values.controller.lean }}
-      # The controller must wait for kafka and/or couchdb to be ready before it starts
-{{ include "openwhisk.readiness.waitForKafka" . | indent 6 }}
-# Note: we may need to wait for etcd
-{{- end }}
-{{ include "openwhisk.readiness.waitForCouchDB" . | indent 6 }}
-{{- if eq .Values.activationStoreBackend "ElasticSearch" }}
-      # The controller must wait for elasticsearch to be ready before it starts
-{{ include "openwhisk.readiness.waitForElasticSearch" . | indent 6 }}
-{{- end }}
-      # The lean controller requires invoker volumes mounts
-{{- if .Values.controller.lean }}
-{{ include "openwhisk.invoker.volumes" . }}
-{{- end }}
+      # The scheduler must wait for kafka and/or couchdb to be ready before it starts
+{{ include "openwhisk.readiness.waitForController" . | indent 6 }}
 {{ include "openwhisk.docker.imagePullSecrets" . | indent 6 }}
 
       containers:
-      - name: controller
-        imagePullPolicy: {{ .Values.controller.imagePullPolicy | quote }}
-        image: "{{- .Values.docker.registry.name -}}{{- .Values.controller.imageName -}}:{{- .Values.controller.imageTag -}}"
-{{- if .Values.controller.lean }}
-        securityContext:
-          privileged: true
-{{- end }}
+      - name: scheduler
+        imagePullPolicy: {{ .Values.scheduler.imagePullPolicy | quote }}
+        image: "{{- .Values.docker.registry.name -}}{{- .Values.scheduler.imageName -}}:{{- .Values.scheduler.imageTag -}}"
         command: ["/bin/bash", "-c", "/init.sh `hostname | awk -F '-' '{print $NF}'`"]
         ports:
-        - name: controller
-          containerPort: {{ .Values.controller.port }}
+        - name: scheduler
+          containerPort: {{ .Values.scheduler.port }}
+        - name: rpc
+          containerPort: {{ .Values.scheduler.rpcPort }}
         - name: akka-remoting
           containerPort: 25520
         - name: akka-mgmt-http
           containerPort: 19999
-{{- if .Values.controller.lean }}
-{{ include "openwhisk.invoker.volume_mounts" . }}
-{{- end }}
         livenessProbe:
           httpGet:
             path: "/ping"
-            port: {{ .Values.controller.port }}
+            port: {{ .Values.scheduler.port }}
             scheme: "HTTP"
-          initialDelaySeconds: {{ .Values.probes.controller.livenessProbe.initialDelaySeconds }}
-          periodSeconds: {{ .Values.probes.controller.livenessProbe.periodSeconds }}
-          timeoutSeconds: {{ .Values.probes.controller.livenessProbe.timeoutSeconds }}
+          initialDelaySeconds: {{ .Values.probes.scheduler.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.probes.scheduler.livenessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.probes.scheduler.livenessProbe.timeoutSeconds }}
         readinessProbe:
           httpGet:
             path: "/ping"
-            port: {{ .Values.controller.port }}
+            port: {{ .Values.scheduler.port }}
             scheme: "HTTP"
-          initialDelaySeconds: {{ .Values.probes.controller.readinessProbe.initialDelaySeconds }}
-          periodSeconds: {{ .Values.probes.controller.readinessProbe.periodSeconds }}
-          timeoutSeconds: {{ .Values.probes.controller.readinessProbe.timeoutSeconds }}
+          initialDelaySeconds: {{ .Values.probes.scheduler.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.probes.scheduler.readinessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.probes.scheduler.readinessProbe.timeoutSeconds }}
         env:
         - name: "PORT"
-          value: {{ .Values.controller.port | quote }}
-
-        - name: "TZ"
-          value: {{ .Values.docker.timezone | quote }}
+          value: {{ .Values.scheduler.port | quote }}
 
         - name: "POD_IP"
           valueFrom:
             fieldRef:
               fieldPath: status.podIP
+
+        - name: "WHISK_SCHEDULER_ENDPOINTS_RPCPORT"
+          value: {{ .Values.scheduler.rpcPort | quote }}
+
+        - name: "WHISK_SCHEDULER_ENDPOINTS_AKKAPORT"
+          value: "25520"
+
+        - name: "TZ"
+          value: {{ .Values.docker.timezone | quote }}
 
         - name:  "CONFIG_whisk_info_date"
           valueFrom:
@@ -133,27 +123,17 @@ spec:
 
         # Java options
         - name: "JAVA_OPTS"
-          value: "-Xmx{{- .Values.controller.jvmHeapMB -}}M {{ .Values.controller.jvmOptions }}"
+          value: "-Xmx{{- .Values.scheduler.jvmHeapMB -}}M {{ .Values.scheduler.jvmOptions }}"
 
-        # specific controller arguments
-        - name: "CONTROLLER_OPTS"
-          value: "{{ .Values.controller.options }} {{ if .Values.controller.lean }} {{ .Values.invoker.options }} {{ include "openwhisk.invoker.add_opts" . }} {{ end }}"
-
-        # action runtimes
-        - name: "RUNTIMES_MANIFEST"
-          value: {{ template "openwhisk.runtimes_manifest" . }}
-
-        # scheduler settings
-{{ if .Values.scheduler.enable }}
-        - name: "CONFIG_whisk_spi_LoadBalancerProvider"
-          value: "org.apache.openwhisk.core.loadBalancer.FPCPoolBalancer"
-
-        - name: "CONFIG_whisk_spi_EntitlementSpiProvider"
-          value: "org.apache.openwhisk.core.entitlement.FPCEntitlementProvider"
-{{ end }}
+        # specific scheduler arguments
+        - name: "SCHEDULER_OPTS"
+          value: "{{ .Values.scheduler.options }}"
 
         # Action limits
 {{ include "openwhisk.limitsEnvVars" . | indent 8 }}
+
+        - name: "CONFIG_whisk_durationChecker_timeWindow"
+          value: {{ .Values.whisk.durationChecker.timeWindow }}
 
         - name: "CONFIG_whisk_loadbalancer_blackboxFraction"
           value: {{ .Values.whisk.loadbalancer.blackboxFraction | quote }}
@@ -176,28 +156,86 @@ spec:
         - name: "CONFIG_whisk_etcd_pool_threads"
           value: {{ .Values.etcd.pool_threads | quote }}
 
-        # properties for DB connection
+        # properties for zookeeper connection
+        - name: "ZOOKEEPER_HOSTS"
+          value: "{{ include "openwhisk.zookeeper_connect" . }}"
+
+        # action runtimes
+        - name: "RUNTIMES_MANIFEST"
+          value: {{ template "openwhisk.runtimes_manifest" . }}
+
+          # properties for DB connection
 {{ include "openwhisk.dbEnvVars" . | indent 8 }}
 
-        - name: "CONTROLLER_INSTANCES"
-          value: {{ .Values.controller.replicaCount | quote }}
+        - name: "WHISK_SCHEDULER_ENDPOINTS_HOST"
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
 
-{{- if gt (int .Values.controller.replicaCount) 1 }}
+        - name: "CONFIG_whisk_scheduler_dataManagementService_retryInterval"
+          value: {{ .Values.scheduler.dataManagementService.retryInterval | quote }}
+
+        - name: "CONFIG_whisk_scheduler_queueManager_maxSchedulingTime"
+          value: {{ .Values.scheduler.queueManager.maxSchedulingTime | quote }}
+
+        - name: "CONFIG_whisk_scheduler_queueManager_maxRetriesToGetQueue"
+          value: {{ .Values.scheduler.queueManager.maxRetriesToGetQueue | quote }}
+
+        - name: "CONFIG_whisk_scheduler_queue_idleGrace"
+          value: {{ .Values.scheduler.queue.idleGrace | quote }}
+
+        - name: "CONFIG_whisk_scheduler_queue_stopGrace"
+          value: {{ .Values.scheduler.queue.stopGrace | quote }}
+
+        - name: "CONFIG_whisk_scheduler_queue_flushGrace"
+          value: {{ .Values.scheduler.queue.flushGrace | quote }}
+
+        - name: "CONFIG_whisk_scheduler_queue_gracefulShutdownTimeout"
+          value: {{ .Values.scheduler.queue.gracefulShutdownTimeout | quote }}
+
+        - name: "CONFIG_whisk_scheduler_queue_maxRetentionSize"
+          value: {{ .Values.scheduler.queue.maxRetentionSize | quote }}
+
+        - name: "CONFIG_whisk_scheduler_queue_maxRetentionMs"
+          value: {{ .Values.scheduler.queue.maxRetentionMs | quote }}
+
+        - name: "CONFIG_whisk_scheduler_queue_throttlingFraction"
+          value: {{ .Values.scheduler.queue.throttlingFraction | quote }}
+
+        - name: "CONFIG_whisk_scheduler_queue_durationBufferSize"
+          value: {{ .Values.scheduler.queue.durationBufferSize | quote }}
+
+        - name: "CONFIG_whisk_scheduler_protocol"
+          value: {{ .Values.scheduler.protocol | quote }}
+
+        - name: "CONFIG_whisk_scheduler_maxPeek"
+          value: {{ .Values.scheduler.maxPeek | quote }}
+
+        - name: "CONFIG_whisk_scheduler_inProgressJobRetention"
+          value: {{ .Values.scheduler.inProgressJobRetention | quote }}
+
+        - name: "CONFIG_whisk_scheduler_blackboxMultiple"
+          value: {{ .Values.scheduler.blackboxMultiple | quote }}
+
+        - name: "SCHEDULER_INSTANCES"
+          value: {{ .Values.scheduler.replicaCount | quote }}
+
+{{- if gt (int .Values.scheduler.replicaCount) 1 }}
         - name: "CONFIG_whisk_cluster_useClusterBootstrap"
           value: "true"
         - name: "CONFIG_akka_actor_provider"
           value: "cluster"
-        - name: "CONFIG_akka_discovery_method"
+        - name: "CONFIG_akka_management_cluster_bootstrap_contactPointDiscovery_discoveryMethod"
           value: "kubernetes-api"
+        - name: "CONFIG_akka_coordinatedShutdown_exitJvm"
+          value: "on"
         - name: "CONFIG_akka_discovery_kubernetesApi_podNamespace"
           value: {{ .Release.Namespace | quote }}
         - name: "CONFIG_akka_discovery_kubernetesApi_podLabelSelector"
-          value: "name={{ .Release.Name }}-controller"
-        - name: "CONFIG_akka_discovery_kubernetesApi_podPortName"
-          value: "akka-mgmt-http"
+          value: "name={{ .Release.Name }}-scheduler"
 {{- else }}
         - name: "CONFIG_akka_cluster_seedNodes_0"
-          value: "akka://controller-actor-system@$(POD_IP):25520"
+          value: "akka://scheduler-actor-system@$(POD_IP):25520"
 {{- end }}
 
 {{- if .Values.metrics.prometheusEnabled }}
@@ -217,7 +255,7 @@ spec:
           value: "true"
 {{ end }}
         - name: "CONFIG_logback_log_level"
-          value: "{{ .Values.controller.loglevel }}"
+          value: "{{ .Values.scheduler.loglevel }}"
 {{- if eq .Values.activationStoreBackend "ElasticSearch" }}
         - name: "CONFIG_whisk_activationStore_elasticsearch_protocol"
           value: "{{ .Values.elasticsearch.protocol }}"
@@ -232,12 +270,4 @@ spec:
         - name: "CONFIG_whisk_spi_ActivationStoreProvider"
           value: "org.apache.openwhisk.core.database.elasticsearch.ElasticSearchActivationStoreProvider"
 {{- end }}
-        # properties for lean messaging provider
-{{ include "openwhisk.lean.provider" . | indent 8 }}
-
-{{- if .Values.controller.lean }}
-{{ include "openwhisk.invoker.apihost" . | indent 8 }}
-{{ include "openwhisk.invoker.containerconfig" . | indent 8 }}
-        - name: "CONFIG_whisk_helm_release"
-          value: "{{ .Release.Name }}"
 {{- end }}
