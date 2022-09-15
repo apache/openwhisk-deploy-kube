@@ -144,7 +144,7 @@ spec:
           value: {{ template "openwhisk.runtimes_manifest" . }}
 
         # scheduler settings
-{{ if .Values.scheduler.enable }}
+{{ if .Values.scheduler.enabled }}
         - name: "CONFIG_whisk_spi_LoadBalancerProvider"
           value: "org.apache.openwhisk.core.loadBalancer.FPCPoolBalancer"
 

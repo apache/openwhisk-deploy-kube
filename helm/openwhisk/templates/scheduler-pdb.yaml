@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-{{- if .Values.scheduler.enable }}
+{{- if .Values.scheduler.enabled }}
 {{- if and .Values.pdb.enable (gt (int .Values.scheduler.replicaCount)  1) }}
 ---
 apiVersion: policy/v1beta1

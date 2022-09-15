@@ -171,6 +171,9 @@ OW_INCLUDE_SYSTEM_TESTS=${OW_INCLUDE_SYSTEM_TESTS:="false"}
 # Default timeout limit to 60 steps
 TIMEOUT_STEP_LIMIT=${TIMEOUT_STEP_LIMIT:=60}
 
+# Default is to not use the scheduler component
+OW_SCHEDULER_ENABLED=${OW_SCHEDULER_ENABLED:="false"}
+
 # Create namespace
 kubectl create namespace openwhisk
 
@@ -194,6 +197,9 @@ invoker:
 controller:
   lean: ${OW_LEAN_MODE:-false}
 
+scheduler:
+  enable: $OW_SCHEDULER_ENABLED
+
 metrics:
   userMetricsEnabled: true
 EOF
@@ -216,8 +222,10 @@ if [ "${OW_LEAN_MODE:-false}" == "false" ]; then
   # Wait for the controller to confirm that it has at least one healthy invoker
   verifyHealthyInvoker
 
+if [ "${OW_SCHEDULER_ENABLED:-false}" == "true" ]; then
   # Wait for scheduler to be up
   statefulsetHealthCheck "ow4travis-scheduler"
+fi
 
   # Verify that the user-metrics components were deployed successfully
   deploymentHealthCheck "ow4travis-user-events"

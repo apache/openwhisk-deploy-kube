@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-{{- if .Values.scheduler.enable }}
+{{- if .Values.scheduler.enabled }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:

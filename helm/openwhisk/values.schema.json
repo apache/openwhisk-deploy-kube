@@ -373,36 +373,41 @@
     },
 
     "scheduler": {
-      "allOf": [
-        { "$ref": "#/definitions/podspec" },
-        { "properties": { "port": { "type": "integer", "minimum": 0 } }, "required": ["port"] },
-        { "properties": { "rpcPort": { "type": "integer", "minimum": 0 } }, "required": ["rpcPort"] },
-	{ "properties": {
-          "options": { "type": "string" },
-          "jvmHeapMB": { "type": "string" },
-          "jvmOptions": { "type": "string" },
-	  "logLevel": { "type": "string" },
-          "protocol": { "type": "string" },
-          "maxPeek": { "type": "integer", "minimum": 0 },
-          "inProgressJobRetention": { "type": "string" },
-          "blackboxMultiple": { "type": "integer" },
-          "dataManagementService": { "retryInterval": { "type": "string" } },
-          "queue": {
-            "idleGrace": { "type": "string" },
-            "stopGrace": { "type": "string" },
-            "flushGrace": { "type": "string" },
-            "gracefulShutdownTimeout": { "type": "string" },
-            "maxRetentionSize": { "type": "integer", "minimum": 0 },
-            "maxRetentionMs": { "type": "integer", "minimum": 0 },
-            "throttlingFraction": { "type": "number", "minimum": 0, "maximum": 1.0 },
-            "durationBufferSize": { "type": "integer", "minimum": 0 } },
-          "queueManager": {
-            "maxSchedulingTime": { "type": "string" },
-            "maxRetriesToGetQueue": { "type": "integer", "minimum": 0 } }
-        },
-        "required": ["jvmHeapMB"]
-        }
-      ]
+      "properties": { "enabled": { "type": "boolean" } },
+      "required": ["enabled"],
+      "if": { "properties": { "enabled": { "const": true } } },
+      "then": {
+        "allOf": [
+          { "$ref": "#/definitions/podspec" },
+          { "properties": { "port": { "type": "integer", "minimum": 0 } }, "required": ["port"] },
+          { "properties": { "rpcPort": { "type": "integer", "minimum": 0 } }, "required": ["rpcPort"] },
+	  { "properties": {
+            "options": { "type": "string" },
+            "jvmHeapMB": { "type": "string" },
+            "jvmOptions": { "type": "string" },
+	    "logLevel": { "type": "string" },
+            "protocol": { "type": "string" },
+            "maxPeek": { "type": "integer", "minimum": 0 },
+            "inProgressJobRetention": { "type": "string" },
+            "blackboxMultiple": { "type": "integer" },
+            "dataManagementService": { "retryInterval": { "type": "string" } },
+            "queue": {
+              "idleGrace": { "type": "string" },
+              "stopGrace": { "type": "string" },
+              "flushGrace": { "type": "string" },
+              "gracefulShutdownTimeout": { "type": "string" },
+              "maxRetentionSize": { "type": "integer", "minimum": 0 },
+              "maxRetentionMs": { "type": "integer", "minimum": 0 },
+              "throttlingFraction": { "type": "number", "minimum": 0, "maximum": 1.0 },
+              "durationBufferSize": { "type": "integer", "minimum": 0 } },
+            "queueManager": {
+              "maxSchedulingTime": { "type": "string" },
+              "maxRetriesToGetQueue": { "type": "integer", "minimum": 0 } }
+          },
+          "required": ["jvmHeapMB"]
+          }
+        ]
+      }
     },
 
     "etcd": {

@@ -267,7 +267,7 @@ controller:
 
 # Scheduler configurations
 scheduler:
-  enable: true
+  enabled: false
   imageName: "openwhisk/scheduler"
   imageTag: "a1639f0"
   imagePullPolicy: "IfNotPresent"

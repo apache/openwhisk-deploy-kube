@@ -140,7 +140,7 @@ spec:
           - name: "JAVA_OPTS"
             value: "-Xmx{{- .Values.invoker.jvmHeapMB -}}M {{ .Values.invoker.jvmOptions }}"
 
-{{- if .Values.scheduler.enable }}
+{{- if .Values.scheduler.enabled }}
           # Options only needed when new scheduler is enabled
           - name: "CONFIG_whisk_scheduler_dataManagementService_retryInterval"
             value: "{{ .Values.scheduler.dataManagementService.retryInterval }}"
