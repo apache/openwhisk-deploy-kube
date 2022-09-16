@@ -58,8 +58,10 @@ spec:
       {{- end }}
 
       initContainers:
-      # The scheduler must wait for kafka and/or couchdb to be ready before it starts
-{{ include "openwhisk.readiness.waitForController" . | indent 6 }}
+      # The scheduler must wait for etcd, kafka, and/or couchdb to be ready before it starts
+{{ include "openwhisk.readiness.waitForEtcd" . | indent 6 }}
+{{ include "openwhisk.readiness.waitForKafka" . | indent 6 }}
+{{ include "openwhisk.readiness.waitForCouchDB" . | indent 6 }}
 {{ include "openwhisk.docker.imagePullSecrets" . | indent 6 }}
 
       containers:

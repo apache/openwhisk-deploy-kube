@@ -74,7 +74,7 @@ spec:
           readOnly: false
 {{- end }}
 {{ include "openwhisk.docker.imagePullSecrets" . | indent 6 }}
-      # TODO: current command will always restart from scratch.
+      # current command will always restart from scratch (no persistence)
       containers:
         - name: etcd
           image: "{{- .Values.docker.registry.name -}}{{- .Values.etcd.imageName -}}:{{- .Values.etcd.imageTag -}}"
@@ -86,11 +86,11 @@ spec:
             - --initial-advertise-peer-urls
             - http://127.0.0.1:2480
             - --advertise-client-urls
-            - http://0.0.0.0:2379
+            - http://0.0.0.0:{{ .Values.etcd.port }}
             - --listen-peer-urls
             - http://127.0.0.1:2480
             - --listen-client-urls
-            - http://0.0.0.0:2379
+            - http://0.0.0.0:{{ .Values.etcd.port }}
             - --initial-cluster
             - etcd0=http://127.0.0.1:2480
             - --initial-cluster-state
@@ -108,12 +108,6 @@ spec:
             - --log-level
             - info
           imagePullPolicy: {{ .Values.etcd.imagePullPolicy | quote }}
-{{- if .Values.k8s.persistence.enabled }}
-          volumeMounts:
-          - mountPath: /data
-            name: etcd-data
-            readOnly: false
-{{- end }}
           ports:
           - name: etcd
             containerPort: {{ .Values.etcd.port }}

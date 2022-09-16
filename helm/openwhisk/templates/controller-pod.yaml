@@ -60,7 +60,9 @@ spec:
 {{- if not .Values.controller.lean }}
       # The controller must wait for kafka and/or couchdb to be ready before it starts
 {{ include "openwhisk.readiness.waitForKafka" . | indent 6 }}
-# Note: we may need to wait for etcd
+{{- if .Values.scheduler.enabled }}
+{{ include "openwhisk.readiness.waitForEtcd" . | indent 6 }}
+{{- end }}
 {{- end }}
 {{ include "openwhisk.readiness.waitForCouchDB" . | indent 6 }}
 {{- if eq .Values.activationStoreBackend "ElasticSearch" }}
