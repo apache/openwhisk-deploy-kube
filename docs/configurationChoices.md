@@ -47,12 +47,12 @@ components is not currently supported:
 
 ### Openwhisk Scheduler
 
-By default, the scheduler is enabled. To disable the scheduler, add the following
+By default, the scheduler is disabled. To enable the scheduler, add the following
 to your `mycluster.yaml`
 
 ```yaml
 scheduler:
-  enable: false
+  enabled: true
 ```
 
 ### Using an external database
