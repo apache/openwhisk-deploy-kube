@@ -214,6 +214,8 @@ app: {{ template "openwhisk.fullname" . }}
 {{- define "openwhisk.kafkaConfigEnvVars" -}}
 - name: "CONFIG_whisk_kafka_replicationFactor"
   value: {{ .Values.whisk.kafka.replicationFactor | quote }}
+- name: "CONFIG_whisk_kafka_topics_prefix"
+  value: {{ .Values.whisk.kafka.topics.prefix | quote }}
 - name: "CONFIG_whisk_kafka_topics_cacheInvalidation_retentionBytes"
   value: {{ .Values.whisk.kafka.topics.cacheInvalidation.retentionBytes | quote }}
 - name: "CONFIG_whisk_kafka_topics_cacheInvalidation_retentionMs"

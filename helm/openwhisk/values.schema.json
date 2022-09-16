@@ -181,6 +181,7 @@
           "topics": {
             "type": "object",
             "properties": {
+              "prefix": { "type": "string" },
               "cacheInvalidation": { "$ref": "#/definitions/kafkaTopicConfig" },
               "completed": { "$ref": "#/definitions/kafkaTopicConfig" },
               "events": { "$ref": "#/definitions/kafkaTopicConfig" },
