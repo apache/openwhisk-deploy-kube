@@ -300,8 +300,13 @@ scheduler:
     gracefulShutdownTimeout: "5 seconds"
     maxRetentionSize: 10000
     maxRetentionMs: 60000
+    maxBlackboxRetentionMs: 300000
     throttlingFraction: 0.9
     durationBufferSize: 10
+  scheduling:
+    staleThreshold: "100ms"
+    checkInterval: "100ms"
+    dropInterval: "10 minutes"
 
 # etcd (used by scheduler and controller if scheduler is enabled)
 etcd:

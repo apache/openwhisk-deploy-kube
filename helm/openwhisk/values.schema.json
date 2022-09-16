@@ -399,11 +399,16 @@
               "gracefulShutdownTimeout": { "type": "string" },
               "maxRetentionSize": { "type": "integer", "minimum": 0 },
               "maxRetentionMs": { "type": "integer", "minimum": 0 },
+	      "maxBlackboxRetentionMs": { "type": "integer", "minimum": 0 },
               "throttlingFraction": { "type": "number", "minimum": 0, "maximum": 1.0 },
               "durationBufferSize": { "type": "integer", "minimum": 0 } },
             "queueManager": {
               "maxSchedulingTime": { "type": "string" },
-              "maxRetriesToGetQueue": { "type": "integer", "minimum": 0 } }
+              "maxRetriesToGetQueue": { "type": "integer", "minimum": 0 } },
+	    "scheduling": {
+              "staleThreshold": { "type": "string" },
+	      "checkInterval": { "type": "string" },
+	      "dropInterval": { "type": "string" } }
           },
           "required": ["jvmHeapMB"]
           }

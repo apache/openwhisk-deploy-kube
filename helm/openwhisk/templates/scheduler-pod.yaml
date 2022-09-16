@@ -201,6 +201,9 @@ spec:
         - name: "CONFIG_whisk_scheduler_queue_maxRetentionMs"
           value: {{ .Values.scheduler.queue.maxRetentionMs | quote }}
 
+        - name: "CONFIG_whisk_scheduler_queue_maxBlackboxRetentionMs"
+          value: {{ .Values.scheduler.queue.maxBlackboxRetentionMs | quote }}
+
         - name: "CONFIG_whisk_scheduler_queue_throttlingFraction"
           value: {{ .Values.scheduler.queue.throttlingFraction | quote }}
 
@@ -218,6 +221,15 @@ spec:
 
         - name: "CONFIG_whisk_scheduler_blackboxMultiple"
           value: {{ .Values.scheduler.blackboxMultiple | quote }}
+
+        - name: "CONFIG_whisk_scheduler_scheduling_staleThreshold"
+          value: {{ .Values.scheduler.scheduling.staleThreshold | quote }}
+
+        - name: "CONFIG_whisk_scheduler_scheduling_checkInterval"
+          value: {{ .Values.scheduler.scheduling.checkInterval | quote }}
+
+        - name: "CONFIG_whisk_scheduler_scheduling_dropInterval"
+          value: {{ .Values.scheduler.scheduling.dropInterval | quote }}
 
         - name: "SCHEDULER_INSTANCES"
           value: {{ .Values.scheduler.replicaCount | quote }}
