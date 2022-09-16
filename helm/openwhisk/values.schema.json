@@ -186,7 +186,8 @@
               "events": { "$ref": "#/definitions/kafkaTopicConfig" },
               "health": { "$ref": "#/definitions/kafkaTopicConfig" },
               "invoker": { "$ref": "#/definitions/kafkaTopicConfig" },
-              "scheduler": { "$ref": "#/definitions/kafkaTopicConfig" }
+              "scheduler": { "$ref": "#/definitions/kafkaTopicConfig" },
+              "creationAck": { "$ref": "#/definitions/kafkaTopicConfig" }
             }
           }
         }

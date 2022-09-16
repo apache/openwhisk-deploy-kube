@@ -252,6 +252,13 @@ app: {{ template "openwhisk.fullname" . }}
   value: {{ .Values.whisk.kafka.topics.scheduler.retentionMs | quote }}
 - name: "CONFIG_whisk_kafka_topics_scheduler_segmentBytes"
   value: {{ .Values.whisk.kafka.topics.scheduler.segmentBytes | quote }}
+
+- name: "CONFIG_whisk_kafka_topics_creationAck_retentionBytes"
+  value: {{ .Values.whisk.kafka.topics.creationAck.retentionBytes | quote }}
+- name: "CONFIG_whisk_kafka_topics_creationAck_retentionMs"
+  value: {{ .Values.whisk.kafka.topics.creationAck.retentionMs | quote }}
+- name: "CONFIG_whisk_kafka_topics_creationAck_segmentBytes"
+  value: {{ .Values.whisk.kafka.topics.creationAck.segmentBytes | quote }}
 {{- end -}}
 
 {{/* tlssecretname for ingress */}}

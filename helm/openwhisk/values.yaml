@@ -124,6 +124,10 @@ whisk:
         segmentBytes: ""
         retentionBytes: ""
         retentionMs: ""
+      creationAck:
+        segmentBytes: ""
+        retentionBytes: ""
+        retentionMs: ""
   containerPool:
     userMemory: "2048m"
   runtimes: "runtimes.json"
