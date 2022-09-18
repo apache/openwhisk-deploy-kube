@@ -278,8 +278,10 @@ scheduler:
   imagePullPolicy: "IfNotPresent"
   replicaCount: 1
   restartPolicy: "Always"
-  port: 8080
-  rpcPort: 13001
+  endpoints:
+    akkaPort: 25520
+    port: 8080
+    rpcPort: 13001
   options: ""
   jvmHeapMB: "1024"
   jvmOptions: ""

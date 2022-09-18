@@ -39,7 +39,7 @@ spec:
       {{- if .Values.metrics.prometheusEnabled }}
       annotations:
         prometheus.io/scrape: 'true'
-        prometheus.io/port:   '{{ .Values.scheduler.port }}'
+        prometheus.io/port:   '{{ .Values.scheduler.endpoints.port }}'
       {{- end }}
 
     spec:
@@ -71,17 +71,17 @@ spec:
         command: ["/bin/bash", "-c", "/init.sh `hostname | awk -F '-' '{print $NF}'`"]
         ports:
         - name: scheduler
-          containerPort: {{ .Values.scheduler.port }}
+          containerPort: {{ .Values.scheduler.endpoints.port }}
         - name: rpc
-          containerPort: {{ .Values.scheduler.rpcPort }}
+          containerPort: {{ .Values.scheduler.endpoints.rpcPort }}
         - name: akka-remoting
-          containerPort: 25520
+          containerPort: {{ .Values.scheduler.endpoints.akkaPort }}
         - name: akka-mgmt-http
           containerPort: 19999
         livenessProbe:
           httpGet:
             path: "/ping"
-            port: {{ .Values.scheduler.port }}
+            port: {{ .Values.scheduler.endpoints.port }}
             scheme: "HTTP"
           initialDelaySeconds: {{ .Values.probes.scheduler.livenessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.probes.scheduler.livenessProbe.periodSeconds }}
@@ -89,14 +89,14 @@ spec:
         readinessProbe:
           httpGet:
             path: "/ping"
-            port: {{ .Values.scheduler.port }}
+            port: {{ .Values.scheduler.endpoints.port }}
             scheme: "HTTP"
           initialDelaySeconds: {{ .Values.probes.scheduler.readinessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.probes.scheduler.readinessProbe.periodSeconds }}
           timeoutSeconds: {{ .Values.probes.scheduler.readinessProbe.timeoutSeconds }}
         env:
         - name: "PORT"
-          value: {{ .Values.scheduler.port | quote }}
+          value: {{ .Values.scheduler.endpoints.port | quote }}
 
         - name: "POD_IP"
           valueFrom:
@@ -104,10 +104,13 @@ spec:
               fieldPath: status.podIP
 
         - name: "WHISK_SCHEDULER_ENDPOINTS_RPCPORT"
-          value: {{ .Values.scheduler.rpcPort | quote }}
+          value: {{ .Values.scheduler.endpoints.rpcPort | quote }}
 
         - name: "WHISK_SCHEDULER_ENDPOINTS_AKKAPORT"
-          value: "25520"
+          value: {{ .Values.scheduler.endpoints.akkaPort | quote }}
+
+        - name: "CONFIG_akka_remote_artery_canonical_port"
+          value: {{ .Values.scheduler.endpoints.akkaPort | quote }}
 
         - name: "TZ"
           value: {{ .Values.docker.timezone | quote }}
@@ -249,7 +252,7 @@ spec:
           value: "name={{ .Release.Name }}-scheduler"
 {{- else }}
         - name: "CONFIG_akka_cluster_seedNodes_0"
-          value: "akka://scheduler-actor-system@$(POD_IP):25520"
+          value: "akka://scheduler-actor-system@$(POD_IP):{{ .Values.scheduler.endpoints.akkaPort }}"
 {{- end }}
 
 {{- if .Values.metrics.prometheusEnabled }}

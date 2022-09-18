@@ -27,10 +27,10 @@ spec:
   selector:
     name: {{ .Release.Name }}-scheduler
   ports:
-    - port: {{ .Values.scheduler.port }}
+    - port: {{ .Values.scheduler.endpoints.port }}
       name: http
-    - port: {{ .Values.scheduler.rpcPort }}
+    - port: {{ .Values.scheduler.endpoints.rpcPort }}
       name: grpc
-    - port: 25520
+    - port: {{ .Values.scheduler.endpoints.akkaPort }}
       name: akka
 {{- end }}

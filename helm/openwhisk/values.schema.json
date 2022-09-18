@@ -381,9 +381,13 @@
       "then": {
         "allOf": [
           { "$ref": "#/definitions/podspec" },
-          { "properties": { "port": { "type": "integer", "minimum": 0 } }, "required": ["port"] },
-          { "properties": { "rpcPort": { "type": "integer", "minimum": 0 } }, "required": ["rpcPort"] },
 	  { "properties": {
+             "endpoints": {
+	       "properties": {
+	         "port": { "type": "integer", "minimum": 0 },
+                 "rpcPort": { "type": "integer", "minimum": 0 },
+	         "akkaPort": { "type": "integer", "minimum": 0 } },
+	       "required": ["port", "rpcPort", "akkaPort"] },
             "options": { "type": "string" },
             "jvmHeapMB": { "type": "string" },
             "jvmOptions": { "type": "string" },

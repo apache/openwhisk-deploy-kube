@@ -75,7 +75,7 @@
   imagePullPolicy: "IfNotPresent"
   env:
   - name: "READINESS_URL"
-    value: http://{{ include "openwhisk.scheduler_host" . }}:{{ .Values.scheduler.port }}/ping
+    value: http://{{ include "openwhisk.scheduler_host" . }}:{{ .Values.scheduler.endpoints.port }}/ping
   command: ["sh", "-c", "result=1; until [ $result -eq 0 ]; do echo 'Checking scheduler readiness'; wget -T 5 --spider $READINESS_URL; result=$?; sleep 1; done; echo 'Success: scheduler is ready'"]
 {{- end -}}
 
