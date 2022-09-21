@@ -186,14 +186,9 @@ spec:
 {{ include "openwhisk.kafkaConfigEnvVars" . | indent 10 }}
 
           # etcd properties
-          - name: "CONFIG_whisk_etcd_hosts"
-            value: {{ include "openwhisk.etcd_host" . }}:{{ .Values.etcd.port }}
-
-          - name: "CONFIG_whisk_etcd_lease_timeout"
-            value: {{ .Values.etcd.lease_timeout | quote }}
-
-          - name: "CONFIG_whisk_etcd_pool_threads"
-            value: {{ .Values.etcd.pool_threads | quote }}
+{{- if .Values.scheduler.enabled }}
+{{ include "openwhisk.etcdConfigEnvVars" . | indent 10 }}
+{{- end }}
 
           # properties for zookeeper connection
           - name: "ZOOKEEPER_HOSTS"

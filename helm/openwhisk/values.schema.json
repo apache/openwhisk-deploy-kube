@@ -423,7 +423,9 @@
 
     "etcd": {
       "type": "object",
-      "properties": { "external": { "type": "boolean" } },
+      "properties": {
+	      "external": { "type": "boolean" },
+              "clusterName": { "type": "string" } },
       "required": ["external"],
       "if": { "properties": { "external": { "const": false } } },
       "then": {
@@ -431,8 +433,8 @@
           { "$ref": "#/definitions/podspec" },
           { "properties": { "port": { "type": "integer", "minimum": 0 } }, "required": ["port"] },
           { "properties": { "replicaCount": { "const": 1 } } },
-          { "properties": { "lease_timeout": { "type": "integer" } } },
-          { "properties": { "pool_threads": { "type": "integer", "minimum": 1 } } },
+          { "properties": { "leaseTimeout": { "type": "integer" } } },
+          { "properties": { "poolThreads": { "type": "integer", "minimum": 1 } } },
           { "properties": { "persistence": { "size": { "type": "string" } } } },
           { "$ref": "#/definitions/optionalExternalHostCheck" }
         ]

@@ -210,6 +210,18 @@ app: {{ template "openwhisk.fullname" . }}
   value: {{ .Values.whisk.limits.activation.payload.max | quote }}
 {{- end -}}
 
+{{/* Environment variables for configuring etcd */}}
+{{- define "openwhisk.etcdConfigEnvVars" -}}
+- name: "CONFIG_whisk_cluster_name"
+  value: {{ .Values.etcd.clusterName | quote }}
+- name: "CONFIG_whisk_etcd_hosts"
+  value: {{ include "openwhisk.etcd_host" . }}:{{ .Values.etcd.port }}
+- name: "CONFIG_whisk_etcd_lease_timeout"
+  value: {{ .Values.etcd.leaseTimeout | quote }}
+- name: "CONFIG_whisk_etcd_pool_threads"
+  value: {{ .Values.etcd.poolThreads | quote }}
+{{- end -}}
+
 {{/* Environment variables for configuring kafka topics */}}
 {{- define "openwhisk.kafkaConfigEnvVars" -}}
 - name: "CONFIG_whisk_kafka_replicationFactor"

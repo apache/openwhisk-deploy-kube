@@ -313,7 +313,9 @@ scheduler:
 
 # etcd (used by scheduler and controller if scheduler is enabled)
 etcd:
+  # NOTE: external etcd is not supported yet
   external: false
+  clusterName: ""
   imageName: "quay.io/coreos/etcd"
   imageTag: "v3.4.0"
   imagePullPolicy: "IfNotPresent"
@@ -321,8 +323,8 @@ etcd:
   replicaCount: 1
   restartPolicy: "Always"
   port: 2379
-  lease_timeout: 1
-  pool_threads: 10
+  leaseTimeout: 1
+  poolThreads: 10
   persistence:
     size: 256Mi
 
