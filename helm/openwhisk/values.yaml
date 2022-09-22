@@ -139,7 +139,7 @@ whisk:
     includeSystemTests: false
   versions:
     openwhisk:
-      buildDate: "2022-09-12-06:18:00Z"
+      buildDate: "2022-09-13-02:40:10Z"
       buildNo: "20220912"
       gitTag: "a1639f0e4d7270c9a230190ac26acb61413b6bbb"
     openwhiskCli:
