@@ -41,6 +41,9 @@ spec:
 {{ include "openwhisk.readiness.waitForController" . | indent 6 }}
 {{- else }}
 {{ include "openwhisk.readiness.waitForHealthyInvoker" . | indent 6 }}
+{{- if .Values.scheduler.enabled }}
+{{ include "openwhisk.readiness.waitForScheduler" . | indent 6 }}
+{{ end }}
 {{ end }}
 {{ include "openwhisk.docker.imagePullSecrets" . | indent 6 }}
       containers:

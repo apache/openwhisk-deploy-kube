@@ -60,6 +60,9 @@ spec:
 {{- if not .Values.controller.lean }}
       # The controller must wait for kafka and/or couchdb to be ready before it starts
 {{ include "openwhisk.readiness.waitForKafka" . | indent 6 }}
+{{- if .Values.scheduler.enabled }}
+{{ include "openwhisk.readiness.waitForEtcd" . | indent 6 }}
+{{- end }}
 {{- end }}
 {{ include "openwhisk.readiness.waitForCouchDB" . | indent 6 }}
 {{- if eq .Values.activationStoreBackend "ElasticSearch" }}
@@ -85,7 +88,7 @@ spec:
         - name: controller
           containerPort: {{ .Values.controller.port }}
         - name: akka-remoting
-          containerPort: 2552
+          containerPort: 25520
         - name: akka-mgmt-http
           containerPort: 19999
 {{- if .Values.controller.lean }}
@@ -114,6 +117,11 @@ spec:
         - name: "TZ"
           value: {{ .Values.docker.timezone | quote }}
 
+        - name: "POD_IP"
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+
         - name:  "CONFIG_whisk_info_date"
           valueFrom:
             configMapKeyRef:
@@ -137,6 +145,15 @@ spec:
         - name: "RUNTIMES_MANIFEST"
           value: {{ template "openwhisk.runtimes_manifest" . }}
 
+        # scheduler settings
+{{ if .Values.scheduler.enabled }}
+        - name: "CONFIG_whisk_spi_LoadBalancerProvider"
+          value: "org.apache.openwhisk.core.loadBalancer.FPCPoolBalancer"
+
+        - name: "CONFIG_whisk_spi_EntitlementSpiProvider"
+          value: "org.apache.openwhisk.core.entitlement.FPCEntitlementProvider"
+{{ end }}
+
         # Action limits
 {{ include "openwhisk.limitsEnvVars" . | indent 8 }}
 
@@ -151,11 +168,17 @@ spec:
           value: "{{ include "openwhisk.kafka_connect" . }}"
 {{ include "openwhisk.kafkaConfigEnvVars" . | indent 8 }}
 
+        # etcd properties
+{{- if .Values.scheduler.enabled }}
+{{ include "openwhisk.etcdConfigEnvVars" . | indent 8 }}
+{{- end }}
+
         # properties for DB connection
 {{ include "openwhisk.dbEnvVars" . | indent 8 }}
 
         - name: "CONTROLLER_INSTANCES"
           value: {{ .Values.controller.replicaCount | quote }}
+
 {{- if gt (int .Values.controller.replicaCount) 1 }}
         - name: "CONFIG_whisk_cluster_useClusterBootstrap"
           value: "true"
@@ -169,7 +192,11 @@ spec:
           value: "name={{ .Release.Name }}-controller"
         - name: "CONFIG_akka_discovery_kubernetesApi_podPortName"
           value: "akka-mgmt-http"
+{{- else }}
+        - name: "CONFIG_akka_cluster_seedNodes_0"
+          value: "akka://controller-actor-system@$(POD_IP):25520"
 {{- end }}
+
 {{- if .Values.metrics.prometheusEnabled }}
         - name: "OPENWHISK_ENCODED_CONFIG"
           value: {{ template "openwhisk.whiskconfig" . }}

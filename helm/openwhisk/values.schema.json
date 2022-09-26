@@ -150,8 +150,7 @@
                 "time": { "$ref": "#/definitions/actionLimitSpecString" },
                 "memory": { "$ref": "#/definitions/actionLimitSpecString" },
                 "concurrency": { "$ref": "#/definitions/actionLimitSpecInteger" },
-                "log": { "$ref": "#/definitions/actionLimitSpecString" },
-                "time": { "$ref": "#/definitions/actionLimitSpecString" }
+                "log": { "$ref": "#/definitions/actionLimitSpecString" }
               }
             },
             "activation": {
@@ -182,11 +181,14 @@
           "topics": {
             "type": "object",
             "properties": {
+              "prefix": { "type": "string" },
               "cacheInvalidation": { "$ref": "#/definitions/kafkaTopicConfig" },
               "completed": { "$ref": "#/definitions/kafkaTopicConfig" },
               "events": { "$ref": "#/definitions/kafkaTopicConfig" },
               "health": { "$ref": "#/definitions/kafkaTopicConfig" },
-              "invoker": { "$ref": "#/definitions/kafkaTopicConfig" }
+              "invoker": { "$ref": "#/definitions/kafkaTopicConfig" },
+              "scheduler": { "$ref": "#/definitions/kafkaTopicConfig" },
+              "creationAck": { "$ref": "#/definitions/kafkaTopicConfig" }
             }
           }
         }
@@ -198,6 +200,10 @@
         }
       },
       "runtimes": { "type": "string" },
+      "durationChecker": {
+        "type": "object",
+	"timeWindow": { "type": "string" }
+      },
       "testing": {
         "type": "object",
         "properties": {
@@ -368,6 +374,73 @@
       ]
     },
 
+    "scheduler": {
+      "properties": { "enabled": { "type": "boolean" } },
+      "required": ["enabled"],
+      "if": { "properties": { "enabled": { "const": true } } },
+      "then": {
+        "allOf": [
+          { "$ref": "#/definitions/podspec" },
+	  { "properties": {
+             "endpoints": {
+	       "properties": {
+	         "port": { "type": "integer", "minimum": 0 },
+                 "rpcPort": { "type": "integer", "minimum": 0 },
+	         "akkaPort": { "type": "integer", "minimum": 0 } },
+	       "required": ["port", "rpcPort", "akkaPort"] },
+            "options": { "type": "string" },
+            "jvmHeapMB": { "type": "string" },
+            "jvmOptions": { "type": "string" },
+	    "logLevel": { "type": "string" },
+            "protocol": { "type": "string" },
+            "maxPeek": { "type": "integer", "minimum": 0 },
+            "inProgressJobRetention": { "type": "string" },
+            "blackboxMultiple": { "type": "integer" },
+            "dataManagementService": { "retryInterval": { "type": "string" } },
+            "queue": {
+              "idleGrace": { "type": "string" },
+              "stopGrace": { "type": "string" },
+              "flushGrace": { "type": "string" },
+              "gracefulShutdownTimeout": { "type": "string" },
+              "maxRetentionSize": { "type": "integer", "minimum": 0 },
+              "maxRetentionMs": { "type": "integer", "minimum": 0 },
+	      "maxBlackboxRetentionMs": { "type": "integer", "minimum": 0 },
+              "throttlingFraction": { "type": "number", "minimum": 0, "maximum": 1.0 },
+              "durationBufferSize": { "type": "integer", "minimum": 0 } },
+            "queueManager": {
+              "maxSchedulingTime": { "type": "string" },
+              "maxRetriesToGetQueue": { "type": "integer", "minimum": 0 } },
+	    "scheduling": {
+              "staleThreshold": { "type": "string" },
+	      "checkInterval": { "type": "string" },
+	      "dropInterval": { "type": "string" } }
+          },
+          "required": ["jvmHeapMB"]
+          }
+        ]
+      }
+    },
+
+    "etcd": {
+      "type": "object",
+      "properties": {
+	      "external": { "type": "boolean" },
+              "clusterName": { "type": "string" } },
+      "required": ["external"],
+      "if": { "properties": { "external": { "const": false } } },
+      "then": {
+        "allOf": [
+          { "$ref": "#/definitions/podspec" },
+          { "properties": { "port": { "type": "integer", "minimum": 0 } }, "required": ["port"] },
+          { "properties": { "replicaCount": { "const": 1 } } },
+          { "properties": { "leaseTimeout": { "type": "integer" } } },
+          { "properties": { "poolThreads": { "type": "integer", "minimum": 1 } } },
+          { "properties": { "persistence": { "size": { "type": "string" } } } },
+          { "$ref": "#/definitions/optionalExternalHostCheck" }
+        ]
+      }
+    },
+
     "invoker": {
       "allOf": [
         { "$ref": "#/definitions/daemonset" },
@@ -514,7 +587,9 @@
       "type": "object",
       "properties": {
         "zookeeper": { "$ref": "#/definitions/standardPodProbes" },
-        "controller": { "$ref": "#/definitions/standardPodProbes" }
+        "kafka": { "$ref": "#/definitions/standardPodProbes" },
+        "controller": { "$ref": "#/definitions/standardPodProbes" },
+        "scheduler": { "$ref": "#/definitions/standardPodProbes" }
       }
     }
   },

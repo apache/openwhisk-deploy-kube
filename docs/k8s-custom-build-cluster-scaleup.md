@@ -40,7 +40,7 @@ Modifying the above mentioned parameters, one can easily increase the concurrenc
 In order to further increase the scale-up beyond `Small Scale`, one needs to modify the following additional configurations appropriately (on top of the above mentioned):
 * `invoker:jvmHeapMB`: jvmHeap memory available to each invoker instance. May or may not require increase based on running functions. For more information check `troubleshooting` below.
 * `invoker:containerFactory:_:replicaCount`: number of invoker instances that will be used to handle the incoming workload. By default, there is only one invoker instance which can become overwhelmed if workload goes beyond a certain threshold.
-* `controller:replicaCount`: number of controller instances that will be used to handle the incoming workload. Same as invoker instances.
+* `controller:replicaCount`: number of controller instances that will be used to handle the incoming workload. Same as invoker and scheduler instances.
 * `invoker:options`: Log processing at the invoker can become a bottleneck for the KubernetesContainerFactory. One might try disabling invoker log processing by setting it to `-Dwhisk.spi.LogStoreProvider=org.apache.openwhisk.core.containerpool.logging.LogDriverLogStoreProvider`. In general, one needs to offload log processing from the invoker to a node-level log store provider if one is trying to push a large load through the system.
 
 ## Troubleshooting

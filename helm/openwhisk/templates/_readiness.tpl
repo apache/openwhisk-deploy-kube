@@ -38,6 +38,17 @@
   command: ["sh", "-c", 'cacert="/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"; token="$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)"; while true; do rc=$(curl -sS --cacert $cacert --header "Authorization: Bearer $token" https://kubernetes.default.svc/api/v1/namespaces/{{ .Release.Namespace }}/endpoints/{{ .Release.Name }}-kafka | jq -r ".subsets[].addresses | length"); echo "num ready kafka endpoints is $rc"; if [ $rc -gt 0 ]; then echo "Success: ready kafka endpoint!"; break; fi; echo "kafka not ready yet; sleeping for 3 seconds"; sleep 3; done;']
 {{- end -}}
 
+{{/* Init container that waits for etcd to be ready */}}
+{{- define "openwhisk.readiness.waitForEtcd" -}}
+- name: "wait-for-etcd"
+  image: "{{- .Values.docker.registry.name -}}{{- .Values.utility.imageName -}}:{{- .Values.utility.imageTag -}}"
+  imagePullPolicy: "IfNotPresent"
+  env:
+  - name: "READINESS_URL"
+    value: http://{{ include "openwhisk.etcd_host" . }}:{{ .Values.etcd.port }}/health
+  command: ["sh", "-c", "while true; do echo 'checking etcd readiness'; health_result=$(curl -m 5 $READINESS_URL) && echo $health_result | jq -e '. | select(.health==\"true\")'; result=$?; if [ $result -eq 0 ]; then echo 'Success: etcd is ready!'; break; fi; echo '...not ready yet; sleeping 3 seconds before retry'; sleep 3; done;"]
+{{- end -}}
+
 {{/* Init container that waits for zookeeper to be ready */}}
 {{- define "openwhisk.readiness.waitForZookeeper" -}}
 - name: "wait-for-zookeeper"
@@ -55,6 +66,17 @@
   - name: "READINESS_URL"
     value: http://{{ include "openwhisk.controller_host" . }}:{{ .Values.controller.port }}/ping
   command: ["sh", "-c", "result=1; until [ $result -eq 0 ]; do echo 'Checking controller readiness'; wget -T 5 --spider $READINESS_URL; result=$?; sleep 1; done; echo 'Success: controller is ready'"]
+{{- end -}}
+
+{{/* Init container that waits for scheduler to be ready */}}
+{{- define "openwhisk.readiness.waitForScheduler" -}}
+- name: "wait-for-scheduler"
+  image: "{{- .Values.docker.registry.name -}}{{- .Values.busybox.imageName -}}:{{- .Values.busybox.imageTag -}}"
+  imagePullPolicy: "IfNotPresent"
+  env:
+  - name: "READINESS_URL"
+    value: http://{{ include "openwhisk.scheduler_host" . }}:{{ .Values.scheduler.endpoints.port }}/ping
+  command: ["sh", "-c", "result=1; until [ $result -eq 0 ]; do echo 'Checking scheduler readiness'; wget -T 5 --spider $READINESS_URL; result=$?; sleep 1; done; echo 'Success: scheduler is ready'"]
 {{- end -}}
 
 {{/* Init container that waits for at least 1 healthy invoker */}}

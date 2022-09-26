@@ -76,7 +76,7 @@ spec:
       # Pull images for all default runtimes before starting invoker
 {{ include "openwhisk.docker_pull_runtimes" . | indent 6 }}
 {{- end }}
-      # Wait for a controller to be up (which implies kafka, zookeeper, couchdb are all up as well).
+      # Wait for a controller to be up (which implies kafka, zookeeper, couchdb, etcd are all up as well).
 {{ include "openwhisk.readiness.waitForController" . | indent 6 }}
 {{ include "openwhisk.docker.imagePullSecrets" . | indent 6 }}
       containers:
@@ -140,6 +140,21 @@ spec:
           - name: "JAVA_OPTS"
             value: "-Xmx{{- .Values.invoker.jvmHeapMB -}}M {{ .Values.invoker.jvmOptions }}"
 
+{{- if .Values.scheduler.enabled }}
+          # Options only needed when new scheduler is enabled
+          - name: "CONFIG_whisk_scheduler_dataManagementService_retryInterval"
+            value: "{{ .Values.scheduler.dataManagementService.retryInterval }}"
+
+          - name: "CONFIG_whisk_spi_InvokerProvider"
+            value: "org.apache.openwhisk.core.invoker.FPCInvokerReactive"
+
+          - name: "CONFIG_whisk_spi_InvokerServerProvider"
+            value: "org.apache.openwhisk.core.invoker.FPCInvokerServer"
+
+          - name: "CONFIG_whisk_invoker_containerCreation_maxPeek"
+            value: "500"
+{{- end }}
+
           # Invoker options
           - name: "INVOKER_OPTS"
             value: "{{ .Values.invoker.options }} {{ include "openwhisk.invoker.add_opts" . }}"
@@ -169,6 +184,11 @@ spec:
           - name: "KAFKA_HOSTS"
             value: "{{ include "openwhisk.kafka_connect" . }}"
 {{ include "openwhisk.kafkaConfigEnvVars" . | indent 10 }}
+
+          # etcd properties
+{{- if .Values.scheduler.enabled }}
+{{ include "openwhisk.etcdConfigEnvVars" . | indent 10 }}
+{{- end }}
 
           # properties for zookeeper connection
           - name: "ZOOKEEPER_HOSTS"

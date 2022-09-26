@@ -42,6 +42,11 @@ app: {{ template "openwhisk.fullname" . }}
 {{ .Release.Name }}-controller.{{ .Release.Namespace }}.svc.{{ .Values.k8s.domain }}
 {{- end -}}
 
+{{/* hostname for scheduler */}}
+{{- define "openwhisk.scheduler_host" -}}
+{{ .Release.Name }}-scheduler.{{ .Release.Namespace }}.svc.{{ .Values.k8s.domain }}
+{{- end -}}
+
 {{/* hostname for database */}}
 {{- define "openwhisk.db_host" -}}
 {{- if .Values.db.external -}}
@@ -65,6 +70,15 @@ app: {{ template "openwhisk.fullname" . }}
 {{ .Values.redis.host }}
 {{- else -}}
 {{ .Release.Name }}-redis.{{ .Release.Namespace }}.svc.{{ .Values.k8s.domain }}
+{{- end -}}
+{{- end -}}
+
+{{/* hostname for etcd */}}
+{{- define "openwhisk.etcd_host" -}}
+{{- if .Values.etcd.external -}}
+{{ .Values.etcd.host }}
+{{- else -}}
+{{ .Release.Name }}-etcd.{{ .Release.Namespace }}.svc.{{ .Values.k8s.domain }}
 {{- end -}}
 {{- end -}}
 
@@ -196,10 +210,24 @@ app: {{ template "openwhisk.fullname" . }}
   value: {{ .Values.whisk.limits.activation.payload.max | quote }}
 {{- end -}}
 
+{{/* Environment variables for configuring etcd */}}
+{{- define "openwhisk.etcdConfigEnvVars" -}}
+- name: "CONFIG_whisk_cluster_name"
+  value: {{ .Values.etcd.clusterName | quote }}
+- name: "CONFIG_whisk_etcd_hosts"
+  value: {{ include "openwhisk.etcd_host" . }}:{{ .Values.etcd.port }}
+- name: "CONFIG_whisk_etcd_lease_timeout"
+  value: {{ .Values.etcd.leaseTimeout | quote }}
+- name: "CONFIG_whisk_etcd_pool_threads"
+  value: {{ .Values.etcd.poolThreads | quote }}
+{{- end -}}
+
 {{/* Environment variables for configuring kafka topics */}}
 {{- define "openwhisk.kafkaConfigEnvVars" -}}
 - name: "CONFIG_whisk_kafka_replicationFactor"
   value: {{ .Values.whisk.kafka.replicationFactor | quote }}
+- name: "CONFIG_whisk_kafka_topics_prefix"
+  value: {{ .Values.whisk.kafka.topics.prefix | quote }}
 - name: "CONFIG_whisk_kafka_topics_cacheInvalidation_retentionBytes"
   value: {{ .Values.whisk.kafka.topics.cacheInvalidation.retentionBytes | quote }}
 - name: "CONFIG_whisk_kafka_topics_cacheInvalidation_retentionMs"
@@ -224,12 +252,27 @@ app: {{ template "openwhisk.fullname" . }}
   value: {{ .Values.whisk.kafka.topics.health.retentionMs | quote }}
 - name: "CONFIG_whisk_kafka_topics_health_segmentBytes"
   value: {{ .Values.whisk.kafka.topics.health.segmentBytes | quote }}
+
 - name: "CONFIG_whisk_kafka_topics_invoker_retentionBytes"
   value: {{ .Values.whisk.kafka.topics.invoker.retentionBytes | quote }}
 - name: "CONFIG_whisk_kafka_topics_invoker_retentionMs"
   value: {{ .Values.whisk.kafka.topics.invoker.retentionMs | quote }}
 - name: "CONFIG_whisk_kafka_topics_invoker_segmentBytes"
   value: {{ .Values.whisk.kafka.topics.invoker.segmentBytes | quote }}
+
+- name: "CONFIG_whisk_kafka_topics_scheduler_retentionBytes"
+  value: {{ .Values.whisk.kafka.topics.scheduler.retentionBytes | quote }}
+- name: "CONFIG_whisk_kafka_topics_scheduler_retentionMs"
+  value: {{ .Values.whisk.kafka.topics.scheduler.retentionMs | quote }}
+- name: "CONFIG_whisk_kafka_topics_scheduler_segmentBytes"
+  value: {{ .Values.whisk.kafka.topics.scheduler.segmentBytes | quote }}
+
+- name: "CONFIG_whisk_kafka_topics_creationAck_retentionBytes"
+  value: {{ .Values.whisk.kafka.topics.creationAck.retentionBytes | quote }}
+- name: "CONFIG_whisk_kafka_topics_creationAck_retentionMs"
+  value: {{ .Values.whisk.kafka.topics.creationAck.retentionMs | quote }}
+- name: "CONFIG_whisk_kafka_topics_creationAck_segmentBytes"
+  value: {{ .Values.whisk.kafka.topics.creationAck.segmentBytes | quote }}
 {{- end -}}
 
 {{/* tlssecretname for ingress */}}

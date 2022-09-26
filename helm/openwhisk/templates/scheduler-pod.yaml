@@ -1,0 +1,283 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+{{- if .Values.scheduler.enabled }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Release.Name }}-scheduler
+  labels:
+    name: {{ .Release.Name }}-scheduler
+{{ include "openwhisk.label_boilerplate" . | indent 4 }}
+spec:
+  serviceName: {{ .Release.Name }}-scheduler
+  podManagementPolicy: "Parallel"
+  replicas: {{ .Values.scheduler.replicaCount }}
+  selector:
+    matchLabels:
+      name: {{ .Release.Name }}-scheduler
+  template:
+    metadata:
+      labels:
+        name: {{ .Release.Name }}-scheduler
+{{ include "openwhisk.label_boilerplate" . | indent 8 }}
+
+      {{- if .Values.metrics.prometheusEnabled }}
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/port:   '{{ .Values.scheduler.endpoints.port }}'
+      {{- end }}
+
+    spec:
+      serviceAccountName: {{ .Release.Name }}-core
+      restartPolicy: {{ .Values.scheduler.restartPolicy }}
+
+      {{- if .Values.affinity.enabled }}
+      affinity:
+{{ include "openwhisk.affinity.core" . | indent 8 }}
+{{ include "openwhisk.affinity.selfAntiAffinity" ( printf "%s-scheduler" .Release.Name ) | indent 8 }}
+      {{- end }}
+
+      {{- if .Values.toleration.enabled }}
+      tolerations:
+{{ include "openwhisk.toleration.core" . | indent 8 }}
+      {{- end }}
+
+      initContainers:
+      # The scheduler must wait for etcd, kafka, and/or couchdb to be ready before it starts
+{{ include "openwhisk.readiness.waitForEtcd" . | indent 6 }}
+{{ include "openwhisk.readiness.waitForKafka" . | indent 6 }}
+{{ include "openwhisk.readiness.waitForCouchDB" . | indent 6 }}
+{{ include "openwhisk.docker.imagePullSecrets" . | indent 6 }}
+
+      containers:
+      - name: scheduler
+        imagePullPolicy: {{ .Values.scheduler.imagePullPolicy | quote }}
+        image: "{{- .Values.docker.registry.name -}}{{- .Values.scheduler.imageName -}}:{{- .Values.scheduler.imageTag -}}"
+        command: ["/bin/bash", "-c", "/init.sh `hostname | awk -F '-' '{print $NF}'`"]
+        ports:
+        - name: scheduler
+          containerPort: {{ .Values.scheduler.endpoints.port }}
+        - name: rpc
+          containerPort: {{ .Values.scheduler.endpoints.rpcPort }}
+        - name: akka-remoting
+          containerPort: {{ .Values.scheduler.endpoints.akkaPort }}
+        - name: akka-mgmt-http
+          containerPort: 19999
+        livenessProbe:
+          httpGet:
+            path: "/ping"
+            port: {{ .Values.scheduler.endpoints.port }}
+            scheme: "HTTP"
+          initialDelaySeconds: {{ .Values.probes.scheduler.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.probes.scheduler.livenessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.probes.scheduler.livenessProbe.timeoutSeconds }}
+        readinessProbe:
+          httpGet:
+            path: "/ping"
+            port: {{ .Values.scheduler.endpoints.port }}
+            scheme: "HTTP"
+          initialDelaySeconds: {{ .Values.probes.scheduler.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.probes.scheduler.readinessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.probes.scheduler.readinessProbe.timeoutSeconds }}
+        env:
+        - name: "PORT"
+          value: {{ .Values.scheduler.endpoints.port | quote }}
+
+        - name: "POD_IP"
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+
+        - name: "WHISK_SCHEDULER_ENDPOINTS_RPCPORT"
+          value: {{ .Values.scheduler.endpoints.rpcPort | quote }}
+
+        - name: "WHISK_SCHEDULER_ENDPOINTS_AKKAPORT"
+          value: {{ .Values.scheduler.endpoints.akkaPort | quote }}
+
+        - name: "CONFIG_akka_remote_artery_canonical_port"
+          value: {{ .Values.scheduler.endpoints.akkaPort | quote }}
+
+        - name: "TZ"
+          value: {{ .Values.docker.timezone | quote }}
+
+        - name:  "CONFIG_whisk_info_date"
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Release.Name }}-whisk.config
+              key: whisk_info_date
+        - name: "CONFIG_whisk_info_buildNo"
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Release.Name }}-whisk.config
+              key: whisk_info_buildNo
+
+        # Java options
+        - name: "JAVA_OPTS"
+          value: "-Xmx{{- .Values.scheduler.jvmHeapMB -}}M {{ .Values.scheduler.jvmOptions }}"
+
+        # specific scheduler arguments
+        - name: "SCHEDULER_OPTS"
+          value: "{{ .Values.scheduler.options }}"
+
+        # Action limits
+{{ include "openwhisk.limitsEnvVars" . | indent 8 }}
+
+        - name: "CONFIG_whisk_durationChecker_timeWindow"
+          value: {{ .Values.whisk.durationChecker.timeWindow }}
+
+        - name: "CONFIG_whisk_loadbalancer_blackboxFraction"
+          value: {{ .Values.whisk.loadbalancer.blackboxFraction | quote }}
+
+        - name: "CONFIG_whisk_loadbalancer_timeoutFactor"
+          value: {{ .Values.whisk.loadbalancer.timeoutFactor | quote }}
+
+        # Kafka properties
+        - name: "KAFKA_HOSTS"
+          value: "{{ include "openwhisk.kafka_connect" . }}"
+{{ include "openwhisk.kafkaConfigEnvVars" . | indent 8 }}
+
+        # etcd properties
+{{ include "openwhisk.etcdConfigEnvVars" . | indent 8 }}
+
+        # properties for zookeeper connection
+        - name: "ZOOKEEPER_HOSTS"
+          value: "{{ include "openwhisk.zookeeper_connect" . }}"
+
+        # action runtimes
+        - name: "RUNTIMES_MANIFEST"
+          value: {{ template "openwhisk.runtimes_manifest" . }}
+
+          # properties for DB connection
+{{ include "openwhisk.dbEnvVars" . | indent 8 }}
+
+        - name: "WHISK_SCHEDULER_ENDPOINTS_HOST"
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+
+        - name: "CONFIG_whisk_scheduler_dataManagementService_retryInterval"
+          value: {{ .Values.scheduler.dataManagementService.retryInterval | quote }}
+
+        - name: "CONFIG_whisk_scheduler_queueManager_maxSchedulingTime"
+          value: {{ .Values.scheduler.queueManager.maxSchedulingTime | quote }}
+
+        - name: "CONFIG_whisk_scheduler_queueManager_maxRetriesToGetQueue"
+          value: {{ .Values.scheduler.queueManager.maxRetriesToGetQueue | quote }}
+
+        - name: "CONFIG_whisk_scheduler_queue_idleGrace"
+          value: {{ .Values.scheduler.queue.idleGrace | quote }}
+
+        - name: "CONFIG_whisk_scheduler_queue_stopGrace"
+          value: {{ .Values.scheduler.queue.stopGrace | quote }}
+
+        - name: "CONFIG_whisk_scheduler_queue_flushGrace"
+          value: {{ .Values.scheduler.queue.flushGrace | quote }}
+
+        - name: "CONFIG_whisk_scheduler_queue_gracefulShutdownTimeout"
+          value: {{ .Values.scheduler.queue.gracefulShutdownTimeout | quote }}
+
+        - name: "CONFIG_whisk_scheduler_queue_maxRetentionSize"
+          value: {{ .Values.scheduler.queue.maxRetentionSize | quote }}
+
+        - name: "CONFIG_whisk_scheduler_queue_maxRetentionMs"
+          value: {{ .Values.scheduler.queue.maxRetentionMs | quote }}
+
+        - name: "CONFIG_whisk_scheduler_queue_maxBlackboxRetentionMs"
+          value: {{ .Values.scheduler.queue.maxBlackboxRetentionMs | quote }}
+
+        - name: "CONFIG_whisk_scheduler_queue_throttlingFraction"
+          value: {{ .Values.scheduler.queue.throttlingFraction | quote }}
+
+        - name: "CONFIG_whisk_scheduler_queue_durationBufferSize"
+          value: {{ .Values.scheduler.queue.durationBufferSize | quote }}
+
+        - name: "CONFIG_whisk_scheduler_protocol"
+          value: {{ .Values.scheduler.protocol | quote }}
+
+        - name: "CONFIG_whisk_scheduler_maxPeek"
+          value: {{ .Values.scheduler.maxPeek | quote }}
+
+        - name: "CONFIG_whisk_scheduler_inProgressJobRetention"
+          value: {{ .Values.scheduler.inProgressJobRetention | quote }}
+
+        - name: "CONFIG_whisk_scheduler_blackboxMultiple"
+          value: {{ .Values.scheduler.blackboxMultiple | quote }}
+
+        - name: "CONFIG_whisk_scheduler_scheduling_staleThreshold"
+          value: {{ .Values.scheduler.scheduling.staleThreshold | quote }}
+
+        - name: "CONFIG_whisk_scheduler_scheduling_checkInterval"
+          value: {{ .Values.scheduler.scheduling.checkInterval | quote }}
+
+        - name: "CONFIG_whisk_scheduler_scheduling_dropInterval"
+          value: {{ .Values.scheduler.scheduling.dropInterval | quote }}
+
+        - name: "SCHEDULER_INSTANCES"
+          value: {{ .Values.scheduler.replicaCount | quote }}
+
+{{- if gt (int .Values.scheduler.replicaCount) 1 }}
+        - name: "CONFIG_whisk_cluster_useClusterBootstrap"
+          value: "true"
+        - name: "CONFIG_akka_actor_provider"
+          value: "cluster"
+        - name: "CONFIG_akka_management_cluster_bootstrap_contactPointDiscovery_discoveryMethod"
+          value: "kubernetes-api"
+        - name: "CONFIG_akka_coordinatedShutdown_exitJvm"
+          value: "on"
+        - name: "CONFIG_akka_discovery_kubernetesApi_podNamespace"
+          value: {{ .Release.Namespace | quote }}
+        - name: "CONFIG_akka_discovery_kubernetesApi_podLabelSelector"
+          value: "name={{ .Release.Name }}-scheduler"
+{{- else }}
+        - name: "CONFIG_akka_cluster_seedNodes_0"
+          value: "akka://scheduler-actor-system@$(POD_IP):{{ .Values.scheduler.endpoints.akkaPort }}"
+{{- end }}
+
+{{- if .Values.metrics.prometheusEnabled }}
+        - name: "OPENWHISK_ENCODED_CONFIG"
+          value: {{ template "openwhisk.whiskconfig" . }}
+{{- end }}
+{{ if or .Values.metrics.kamonEnabled .Values.metrics.prometheusEnabled }}
+        - name: "METRICS_KAMON"
+          value: "true"
+{{ end }}
+{{ if .Values.metrics.kamonTags }}
+        - name: "METRICS_KAMON_TAGS"
+          value: "true"
+{{ end }}
+{{ if .Values.metrics.userMetricsEnabled }}
+        - name: "CONFIG_whisk_userEvents_enabled"
+          value: "true"
+{{ end }}
+        - name: "CONFIG_logback_log_level"
+          value: "{{ .Values.scheduler.loglevel }}"
+{{- if eq .Values.activationStoreBackend "ElasticSearch" }}
+        - name: "CONFIG_whisk_activationStore_elasticsearch_protocol"
+          value: "{{ .Values.elasticsearch.protocol }}"
+        - name: "CONFIG_whisk_activationStore_elasticsearch_hosts"
+          value: {{ template "openwhisk.elasticsearch_connect" . }}
+        - name: "CONFIG_whisk_activationStore_elasticsearch_indexPattern"
+          value: {{ .Values.elasticsearch.indexPattern }}
+        - name: "CONFIG_whisk_activationStore_elasticsearch_username"
+          value: "{{ .Values.elasticsearch.username }}"
+        - name: "CONFIG_whisk_activationStore_elasticsearch_password"
+          value: "{{ .Values.elasticsearch.password }}"
+        - name: "CONFIG_whisk_spi_ActivationStoreProvider"
+          value: "org.apache.openwhisk.core.database.elasticsearch.ElasticSearchActivationStoreProvider"
+{{- end }}
+{{- end }}
