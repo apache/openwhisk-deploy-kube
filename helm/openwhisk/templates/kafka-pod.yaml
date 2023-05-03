@@ -104,6 +104,14 @@ spec:
           value: "EXTERNAL://_{HOSTNAME_COMMAND}:{{ .Values.kafka.port }}"
         - name: "KAFKA_INTER_BROKER_LISTENER_NAME"
           value: "EXTERNAL"
+{{- if .Values.kafka.quota.producer }}
+        - name: "KAFKA_QUOTA_PRODUCER"
+          value: "{{.Values.kafka.quota.producer}}"
+{{- end}}
+{{- if .Values.kafka.quota.consumer }}
+        - name: "KAFKA_QUOTA_CONSUMER"
+          value: "{{.Values.kafka.quota.consumer}}"
+{{- end}}
 
         # zookeeper info
         - name: "KAFKA_ZOOKEEPER_CONNECT"
