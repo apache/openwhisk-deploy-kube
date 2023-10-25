@@ -119,7 +119,7 @@ k8s:
 invoker:
   containerFactory:
     impl: kubernetes
-``
+```
 
 ## Limitations
 
