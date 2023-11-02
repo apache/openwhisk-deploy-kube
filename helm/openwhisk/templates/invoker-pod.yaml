@@ -43,11 +43,13 @@ spec:
       labels:
         name: {{ .Release.Name }}-invoker
 {{ include "openwhisk.label_boilerplate" . | indent 8 }}
-
-      {{- if .Values.metrics.prometheusEnabled }}
       annotations:
+      {{- if .Values.metrics.prometheusEnabled }}
         prometheus.io/scrape: 'true'
         prometheus.io/port:   '{{ .Values.invoker.port }}'
+      {{- end }}
+      {{- if .Values.invoker.secure }}
+        seccomp.security.alpha.kubernetes.io/pod: localhost/invoker.json
       {{- end }}
 
     spec:
@@ -83,10 +85,17 @@ spec:
       - name: invoker
         image: "{{- .Values.docker.registry.name -}}{{- .Values.invoker.imageName -}}:{{- .Values.invoker.imageTag -}}"
         imagePullPolicy: {{ .Values.invoker.imagePullPolicy | quote }}
+        command:
+          - /bin/bash
+          - -c
+          -
 {{- if and (eq .Values.invoker.containerFactory.impl "docker") .Values.invoker.containerFactory.networkConfig.dns.inheritInvokerConfig }}
-        command: [ "/bin/bash", "-c", ". /invoker-scripts/configureDNS.sh && /init.sh --uniqueName $INVOKER_NAME" ]
-{{- else }}
-        command: [ "/bin/bash", "-c", "/init.sh --uniqueName $INVOKER_NAME" ]
+            . /invoker-scripts/configureDNS.sh &&
+{{- end }}
+            /init.sh --uniqueName $INVOKER_NAME
+{{- if .Values.invoker.resources }}
+        resources:
+{{ toYaml .Values.invoker.resources | indent 10 }}
 {{- end }}
         env:
           - name: "PORT"
@@ -231,8 +240,33 @@ spec:
             value: "{{ .Values.akka.actorSystemTerminateTimeout }}"
           - name: "CONFIG_whisk_runtime_delete_timeout"
             value: "{{ .Values.invoker.runtimeDeleteTimeout }}"
+{{- if ne .Values.docker.registry.name "" }}
+          - name: "RUNTIMES_REGISTRY"
+            value: "{{- .Values.docker.registry.name -}}"
+          - name: "RUNTIMES_REGISTRY_USERNAME"
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Release.Name }}-docker.registry.auth
+                key: docker_registry_username
+          - name: "RUNTIMES_REGISTRY_PASSWORD"
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Release.Name }}-docker.registry.auth
+                key: docker_registry_password
+{{- end }}
         ports:
         - name: invoker
           containerPort: {{ .Values.invoker.port }}
+{{- if .Values.invoker.secure }}
+        securityContext:
+          capabilities:
+            drop:
+              - all
+            add:
+              - SYS_ADMIN
+{{- range .Values.invoker.extraCaps }}
+              - {{ . }}
+{{- end }}
+{{- end }}
 {{ include "openwhisk.invoker.volume_mounts" . }}
 {{- end }}
