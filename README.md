@@ -252,6 +252,8 @@ used below.
 
 ### Deploying Released Charts from Helm Repository
 
+> :warning: TL;DR: the released charts at `https://openwhisk.apache.org/charts` Helm repository are as old as late 2020 ([release 1.0.0](https://github.com/apache/openwhisk-deploy-kube/releases/tag/1.0.0)), and it is broken due to using legacy softwares (see https://github.com/apache/openwhisk-deploy-kube/issues/735); consider [Deploying from Git](#deploying-from-git) instead.
+
 The OpenWhisk project maintains a Helm repository at `https://openwhisk.apache.org/charts`.
 You may install officially released versions of OpenWhisk from this repository:
 
