@@ -63,6 +63,7 @@ spec:
       containers:
         - name: grafana
           image: "{{- .Values.docker.registry.name -}}{{- .Values.grafana.imageName -}}:{{- .Values.grafana.imageTag -}}"
+          imagePullPolicy: {{ .Values.grafana.imagePullPolicy }}
           env:
           - name: "GF_AUTH_ANONYMOUS_ENABLED"
             value: "true"
