@@ -378,14 +378,14 @@ imagePullSecrets:
 {{/* nginx cert */}}
 {{- define "openwhisk.nginx_cert" -}}
 {{- if .Values.nginx.certificate.external }}
-{{ .Files.Get .Values.nginx.certificate.cert_file }}
+{{ .Files.Get .Values.nginx.certificate.cert_file | b64enc }}
 {{- end -}}
 {{- end -}}
 
 {{/* nginx key */}}
 {{- define "openwhisk.nginx_key" -}}
 {{- if .Values.nginx.certificate.external }}
-{{ .Files.Get .Values.nginx.certificate.key_file }}
+{{ .Files.Get .Values.nginx.certificate.key_file | b64enc }}
 {{- end -}}
 {{- end -}}
 

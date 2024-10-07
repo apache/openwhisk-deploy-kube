@@ -50,8 +50,8 @@ spec:
       {{- if or (eq .Values.whisk.ingress.type "NodePort") (eq .Values.whisk.ingress.type "LoadBalancer") }}
       {{- if .Values.nginx.certificate.external }}
       - name: nginx-certs
-        configMap:
-          name: {{ .Release.Name }}-gen-certs
+        secret:
+          secretName: {{ .Release.Name }}-gen-certs
       {{- else }}
       - name: nginx-certs
         secret:
