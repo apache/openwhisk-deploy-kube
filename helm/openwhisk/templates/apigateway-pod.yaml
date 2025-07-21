@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 
+{{- if .Values.apigw.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -71,3 +72,4 @@ spec:
               configMapKeyRef:
                 name: {{ .Release.Name }}-whisk.config
                 key: whisk_internal_api_host_url
+{{- end }}

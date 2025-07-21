@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-{{- if and (not .Values.redis.external) .Values.k8s.persistence.enabled }}
+{{- if and .Values.apigw.enabled (not .Values.redis.external) .Values.k8s.persistence.enabled }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:

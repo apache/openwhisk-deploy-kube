@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 
+{{- if .Values.apigw.enabled }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -30,3 +31,4 @@ spec:
       name: mgmt
     - port: {{ .Values.apigw.apiPort }}
       name: api
+{{- end }}

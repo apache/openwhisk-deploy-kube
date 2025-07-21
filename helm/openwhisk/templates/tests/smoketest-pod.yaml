@@ -53,4 +53,6 @@ spec:
           configMapKeyRef:
             name: {{ .Release.Name }}-whisk.config
             key: whisk_internal_api_host_url
+      - name: "WSK_API_GATEWAY_ENABLED"
+        value: {{ if .Values.apigw.enabled }} "yes" {{ else }} "no" {{ end }}
 {{- end }}

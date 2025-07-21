@@ -360,6 +360,7 @@ invoker:
 
 # API Gateway configurations
 apigw:
+  enabled: true # Disabling this also disables Redis
   imageName: "openwhisk/apigateway"
   imageTag: "1.0.0"
   imagePullPolicy: "IfNotPresent"

@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-{{ if not .Values.redis.external }}
+{{ if and .Values.apigw.enabled (not .Values.redis.external) }}
 apiVersion: v1
 kind: Service
 metadata:

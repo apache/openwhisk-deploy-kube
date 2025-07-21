@@ -72,6 +72,8 @@ spec:
                 name: {{ .Release.Name }}-whisk.config
                 key: whisk_internal_api_host_url
           # apigateway configuration (for installing routemgmt actions)
+          - name: "WHISK_API_GATEWAY_ENABLED"
+            value: {{ if .Values.apigw.enabled }} "yes" {{ else }} "no" {{ end }}
           - name: "WHISK_SYSTEM_NAMESPACE"
             valueFrom:
               configMapKeyRef:
